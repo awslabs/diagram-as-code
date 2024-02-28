@@ -1,0 +1,427 @@
+Definitions:
+  Main:
+    Type: Zip
+    ZipFile:
+      SourceType: url
+      Url: "https://d1.awsstatic.com/webteam/architecture-icons/q3-2023/AWS-Architecture-Icons-Deck_For-Light-BG_10232023.pptx.2e395948d65116b6284ac4e12f102f517c7fb91e.zip"
+
+  ArchitectureIconsPptx:
+    Type: Zip
+    ZipFile:
+      SourceType: file
+      Source: Main
+      Path: "AWS-Architecture-Icons-Deck_For-Light-BG_10232023.pptx"
+
+  ArchitectureIconsPptxMedia:
+    Type: Directory
+    Directory:
+      Source: ArchitectureIconsPptx
+      Path: "ppt/media/"
+
+  ## Groups
+  AWS::Diagram::Cloud:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image7.png"
+    Border:
+      Color: "rgba(0, 0, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Label:
+      Title: "AWS Cloud"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWSCloudNoLogo:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image40.png"
+    Border:
+      Color: "rgba(0, 0, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Label:
+      Title: "AWS Cloud"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Region:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image42.png"
+
+  AWS::AutoScaling::AutoScalingGroup:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image21.png"
+    Label:
+      Title: "Auto Scaling Group"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::VPC:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image15.png"
+    Label:
+      Title: "VPC"
+      Color: "rgba(105, 59, 197, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Border:
+      Color: "rgba(105, 59, 197, 255)"
+
+  AWS::EC2::Subnet:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+    Label:
+      Title: "Subnet"
+      Color: "rgba(0, 0, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 25)"
+    Border:
+      Color: "rgba(0, 0, 0, 0)"
+
+  PrivateSubnet:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image44.png"
+    Label:
+      Title: "Private Subnet"
+      Color: "rgba(91, 156, 213, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Border:
+      Color: "rgba(0, 164, 166, 255)"
+
+  PublicSubnet:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image26.png"
+    Label:
+      Title: "Public Subnet"
+      Color: "rgba(29, 137, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Border:
+      Color: "rgba(122, 161, 22, 255)"
+
+  AWS::Diagram::DataCenter:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image48.png"
+    Label:
+      Title: "Corporate data center"
+      Color: "rgba(29, 137, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Border:
+      Color: "rgba(125, 137, 152, 255)"
+
+  AWS::EC2::SpotFleet:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image52.png"
+    Label:
+      Title: "Spot Fleet"
+      Color: "rgba(29, 137, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Border:
+      Color: "rgba(237, 113, 0, 255)"
+
+  AWS::Diagram::Account:
+    Type: Group
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image54.png"
+    Label:
+      Title: "AWS account"
+      Color: "rgba(29, 137, 0, 255)"
+    Fill:
+      Color: "rgba(0, 0, 0, 0)"
+    Border:
+      Color: "rgba(231, 21, 123, 255)"
+
+  ## General Icons
+  User:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image124.png"
+    Label:
+      Title: "User"
+      Color: "rgba(0, 0, 0, 255)"
+
+  ## Compute
+
+  AWS::EC2::Instance:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image11.png"
+    Label:
+      Title: "EC2 Instance"
+      Color: "rgba(0, 0, 0, 255)"
+
+  ## Containers
+
+  AWS::EKS::Cluster:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image476.png"
+    Label:
+      Title: "Amazon EKS"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::ECS::Cluster:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image486.png"
+    Label:
+      Title: "Amazon ECS"
+      Color: "rgba(0, 0, 0, 255)"
+
+  Fargate:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image510.png"
+    Label:
+      Title: "Fargate"
+      Color: "rgba(0, 0, 0, 255)"
+
+  ## Networking & Content Delivery
+
+  AWS::EC2::NetworkInterface:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1285.png"
+    Label:
+      Title: "Elastic network interface"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::NatGateway:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image19.png"
+    Label:
+      Title: "NAT gateway"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::TransitGateway:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1239.png"
+    Label:
+      Title: "AWS Transit Gateway"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::VPNGateway:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1275.png"
+    Label:
+      Title: "VPN gateway"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::VPCEndpoint:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1279.png"
+    Label:
+      Title: "VPC Endpoint"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::VPNConnection:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1291.png"
+    Label:
+      Title: "VPN connection"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::InternetGateway:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image38.png"
+    Label:
+      Title: "Internet gateway"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::ClientVpnEndpoint:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1329.png"
+    Label:
+      Title: "AWS Client VPN"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::ElasticLoadBalancingV2::LoadBalancer:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1333.png"
+    Label:
+      Title: "Elastic Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
+  ApplicationLoadBalancer:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1335.png"
+    Label:
+      Title: "Application Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
+  NetworkLoadBalancer:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1337.png"
+    Label:
+      Title: "Network Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
+  ClassicLoadBalancer:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1339.png"
+    Label:
+      Title: "Classic Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
+  GatewayLoadBalancer:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1341.png"
+    Label:
+      Title: "Gateway Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Route53Resolver::ResolverEndpoint:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1261.png"
+    Label:
+      Title: "Resolver"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2::TrafficMirrorSession:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1283.png"
+    Label:
+      Title: "Trrafic mirroring"
+      Color: "rgba(0, 0, 0, 255)"
+
+  PrivateLink:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1343.png"
+    Label:
+      Title: "PrivateLink"
+      Color: "rgba(0, 0, 0, 255)"
+
+  CloudWAN:
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1345.png"
+    Label:
+      Title: "AWS Cloud WAN"
+      Color: "rgba(0, 0, 0, 255)"
+
+  # Storage
+
+  AWS::S3:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1625.png"
+    Label:
+      Title: "Amazon S3"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::S3::Bucket:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1627.png"
+    Label:
+      Title: "Bucket"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Lambda:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image32.png"
+    Label:
+      Title: "AWS Lambda"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Lambda::Function:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image416.png"
+    Label:
+      Title: "Lambda function"
+      Color: "rgba(0, 0, 0, 255)"
+
+  # Management & Governance
+
+  AWS::Synthetics::Canary:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1017.png"
+    Label:
+      Title: "Synthetics"
+      Color: "rgba(0, 0, 0, 255)"
+
+  # Security, Identity, & Compliance
+
+  AWS::WAFv2:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1477.png"
+    Label:
+      Title: "AWS WAF"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::WAFv2::WebACL:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1479.png"
+    Label:
+      Title: "Rule"
+      Color: "rgba(0, 0, 0, 255)"
+
+
