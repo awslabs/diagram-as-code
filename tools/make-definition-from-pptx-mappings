@@ -1,0 +1,21 @@
+AWS::EC2::Instance,Instance
+AWS::EKS::Cluster,Amazon Elastic Kubernetes Service (Amazon EKS)
+AWS::ECS::Cluster,Amazon Elastic Container Service (Amazon ECS)
+AWS::EC2::NetworkInterface,Elastic network interface
+AWS::EC2::NatGateway,NAT gateway
+AWS::EC2::TransitGateway,AWS Transit Gateway
+AWS::EC2::VPNGateway,VPN gateway
+AWS::EC2::VPCEndpoint,Endpoints
+AWS::EC2::VPNConnection,VPN connection
+AWS::EC2::InternetGateway,Internet gateway
+AWS::EC2::ClientVpnEndpoint,AWS Client VPN
+AWS::ElasticLoadBalancingV2::LoadBalancer,Elastic Load Balancing
+AWS::Route53Resolver::ResolverEndpoint,Resolver
+AWS::EC2::TrafficMirrorSession,Traffic mirroring
+AWS::S3,Amazon Simple Storage Service (Amazon S3)
+AWS::S3::Bucket,Bucket
+AWS::Lambda,AWS Lambda
+AWS::Lambda::Function,Lambda function
+AWS::Synthetics::Canary,Synthetics
+AWS::WAFv2,AWS WAF
+AWS::WAFv2::WebACL,Rule(3)
