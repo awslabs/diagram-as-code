@@ -8,6 +8,13 @@ The CLI tool promotes code reuse, testing, integration, and automating the diagr
 (generated from [example of NAT Gateway](examples/vpc-natgw.yaml))
 
 ## Getting started
+### for macOS user
+In preparing.
+
+### for Gopher
+```
+# go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
+```
 
 ## Resource Types
 See [doc/resource-types.md](doc/resource-types.md).
