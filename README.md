@@ -8,18 +8,18 @@ The CLI tool promotes code reuse, testing, integration, and automating the diagr
 (generated from [example of NAT Gateway](examples/vpc-natgw.yaml))
 
 ## Features
-- **Following AWS architecture guidelines.**  
+- **Compliant with AWS architecture guidelines**  
 Easily generate diagrams that follow [AWS diagram guidelines](https://aws.amazon.com/architecture/icons).
-- **Scalability**  
-Flexible layout allows you to adjust the position and size of groups automatically.
-- **Lightweight & Container-friends**  
-Experience the comfort of running on a scratch environment without a headless browser and GUI. It has small dependencies, making it suitable for generating large diagrams.
+- **Flexible**  
+Automatically adjust the position and size of groups.
+- **Lightweight & CI/CD-friendly**  
+Start quickly on a container; no dependency on headless browser or GUI.
 - **Integrate with your Infrastructure as Code**  
 Generate diagrams to align with your IaC code without managing diagrams manually.
 - **As a drawing library**  
-If you want to integrate with other IaC tools, AI, or drawing GUI tools, you can use this tool as a Golang library.
-- **Expandable**  
-All resources are defined in files; you can integrate them with other cloud, on-premises diagrams.
+Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI tools.
+- **Extensible**  
+Add definition files to create non-AWS diagrams as well.
 
 ## Getting started
 ### for macOS user
