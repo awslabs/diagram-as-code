@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/awslabs/diagram-as-code/internal/cache"
+	"golang.org/x/exp/maps"
 	"gopkg.in/yaml.v3"
 )
 
@@ -105,6 +106,9 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 		}
 		q = q[1:]
 	}
-	ds.Definitions = b.Definitions
+	if ds.Definitions == nil {
+		ds.Definitions = map[string]*Definition{}
+	}
+	maps.Copy(ds.Definitions, b.Definitions)
 	return nil
 }
