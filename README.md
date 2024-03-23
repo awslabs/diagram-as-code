@@ -30,10 +30,13 @@ In preparing.
 # go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
 ```
 
-## Resource Types
+## Resource types
 See [doc/resource-types.md](doc/resource-types.md).
 
-## Example Usage
+## Resource Link
+See [doc/links.md](doc/links.md).
+
+## Example usage
 See [examples templates](examples).
 
 ## Security
