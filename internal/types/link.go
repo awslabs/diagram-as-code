@@ -16,16 +16,18 @@ type Link struct {
 	SourcePosition string
 	Target         *Node
 	TargetPosition string
+	LineWidth      int
 	drawn          bool
 	lineColor      color.RGBA
 }
 
-func (l Link) Init(source *Node, sourcePosition string, target *Node, targetPosition string) *Link {
+func (l Link) Init(source *Node, sourcePosition string, target *Node, targetPosition string, lineWidth int) *Link {
 	gl := Link{}
 	gl.Source = source
 	gl.SourcePosition = sourcePosition
 	gl.Target = target
 	gl.TargetPosition = targetPosition
+	gl.LineWidth = lineWidth
 	gl.drawn = false
 	gl.lineColor = color.RGBA{0, 0, 0, 255}
 	return &gl
@@ -67,7 +69,12 @@ func (l *Link) Draw(img *image.RGBA) {
 		x := float64(sourcePt.X) + dx/length*float64(i)
 		y := float64(sourcePt.Y) + dy/length*float64(i)
 
-		l.drawNeighborsDot(img, x, y)
+		for j := 0; j < l.LineWidth; j++ {
+			u := float64(j) - float64(l.LineWidth-1)/2
+			wx := dy / length * u
+			wy := -dx / length * u
+			l.drawNeighborsDot(img, x+wx, y+wy)
+		}
 	}
 	l.drawn = true
 }
