@@ -26,45 +26,28 @@ Diagram:
 An essential resource type that indicates that it is a group of resources. The following attributes are defined for the group, and it is possible to customize the decoration with these attributes.
 `AWS::Diagram::Group` resources are often used implicitly, but it is also possible to create custom groups explicitly.
 
+| Attribute | Type     | Default Value   | Description                                                             |
+| --------- | -------- | --------------- | ----------------------------------------------------------------------- |
+| Icon      | string   | ` `             | Icon file                                                               |
+| Direction | string   | `horizontal`    | vertical: `left`,`center`,`right` horizontal: `top`, `center`, `bottom` |
+| Preset    | string   | ` `             | Override resource attributes from preset                                |
+| Align     | string   | `center`        | `vertical`, `horizontal`                                                |
+| FillColor | string   | `rgba(0,0,0,0)` |                                                                         |
+| Title     | string   | ` `             |                                                                         |
+| Children  | []string | `[]`            |                                                                         |
 
-| Attribute   | Type              | Default value                                        |
-| ----------- | ----------------- | ---------------------------------------------------- |
-| bindings    | `image.Rectangle` | `image.Rectangle{image.Point{0,0},image.Point{0,0}}` |
-| iconImage   | `image.Image`     | `nil`                                                |
-| iconBounds  | `image.Rectangle` | `image.Rectangle{image.Point{0,0},image.Point{0,0}}` |
-| borderColor | `color.RGBA`      | `color.RGBA{0, 0, 0, 0}`                             |
-| fillColor   | `color.RGBA`      | `color.RGBA{0, 0, 0, 0}`                             |
-| label       | `string`          | `""`                                                 |
-| fontColor   | `color.RGBA`      | `color.RGBA{0, 0, 0, 0}`                             |
-| width       | `int`             | `320`                                                |
-| height      | `int`             | `190`                                                |
-| margin      | `Margin`          | `Margin{20, 15, 20, 15}`                             |
-| padding     | `Padding`         | `Padding{20, 45, 20, 45}`                            |
-| direction   | `string`          | `"vertical"`                                         |
-| align       | `string`          | `"center"`                                           |
-| links       | `[]*Link`         | `[]`                                                 |
-| children    | `[]Node`          | `[]`                                                 |
-| drawn       | `bool`            | `false`                                              |
 
 ### AWS::Diagram::Resource
 An essential resource type that represents a single resource. The following attributes are defined for the group, and it is possible to customize the decoration with these attributes.
 `AWS::Diagram::Resource` resources are often used implicitly, but it is also possible to create custom resources explicitly.
 
-| Attribute   | Type              | Default value                                          |
-| ----------- | ----------------- | ------------------------------------------------------ |
-| bindings    | `image.Rectangle` | `image.Rectangle{image.Point{0,0},image.Point{0,0}}`   |
-| iconImage   | `image.Image`     | `nil`                                                  |
-| iconBounds  | `image.Rectangle` | `image.Rectangle{image.Point{0,0},image.Point{64,64}}` |
-| borderColor | `color.RGBA`      | `color.RGBA{0, 0, 0, 0}`                               |
-| fillColor   | `color.RGBA`      | `color.RGBA{0, 0, 0, 0}`                               |
-| label       | `string`          | `""`                                                   |
-| fontColor   | `color.RGBA`      | `color.RGBA{0, 0, 0, 0}`                               |
-| width       | `int`             | `64`                                                   |
-| height      | `int`             | `64`                                                   |
-| margin      | `Margin`          | `Margin{30, 100, 30, 100}`                             |
-| padding     | `Padding`         | `Padding{0, 0, 0, 0}`                                  |
-| links       | `[]*Link`         | `[]`                                                   |
-| drawn       | `bool`            | `false`                                                |
+| Attribute | Type     | Default Value   | Description                                                             |
+| --------- | -------- | --------------- | ----------------------------------------------------------------------- |
+| Icon      | string   | ` `             | Specify icon file                                                       |
+| Preset    | string   | ` `             | Override resource attributes from preset                                |
+| FillColor | string   | `rgba(0,0,0,0)` |                                                                         |
+| Title     | string   | ` `             |                                                                         |
+| Children  | []string | `[]`            |                                                                         |
 
 ### AWS::Diagram::VerticalStack
 A resource type that indicates a vertical stack. It is treated internally as a Group resource type but is undecorated by default.
@@ -79,5 +62,3 @@ A resource type that indicates a horizontal stack. It is treated internally as a
 ![Horizontal Stack](static/horizontal_stack.png)
 
 ### Other predefined resource types
-
-
