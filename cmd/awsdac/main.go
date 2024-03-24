@@ -58,6 +58,7 @@ type Link struct {
 	SourcePosition string `yaml:"SourcePosition"`
 	Target         string `yaml:"Target"`
 	TargetPosition string `yaml:"TargetPosition"`
+	LineWidth      int    `yaml:"LineWidth"`
 }
 
 func main() {
@@ -229,7 +230,11 @@ func main() {
 		target := resources[v.Target]
 
 		log.Infof("Add link(%s-%s)", v.Source, v.Target)
-		link := new(types.Link).Init(&source, v.SourcePosition, &target, v.TargetPosition)
+		lineWidth := v.LineWidth
+		if lineWidth == 0 {
+			lineWidth = 2
+		}
+		link := new(types.Link).Init(&source, v.SourcePosition, &target, v.TargetPosition, lineWidth)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}
