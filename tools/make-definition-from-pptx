@@ -1,7 +1,10 @@
 #!/bin/bash
 # For MacOS user, Associative arrays cannot be used in bash with MacOS. Install newly bash from homebrew `brew install bash` and use `/usr/local/bin/bash ./make-definition-from-pptx`
-wget https://d1.awsstatic.com/webteam/architecture-icons/q3-2023/AWS-Architecture-Icons-Deck_For-Light-BG_10232023.pptx.2e395948d65116b6284ac4e12f102f517c7fb91e.zip -O /tmp/AWS-Architecture-Icons-Deck_For-Light-BG.pptx.zip
+
+url=$(curl -s "https://aws.amazon.com/architecture/icons/" | pup 'a:contains("Download PPTx for Light Backgrounds") attr{href}')
+wget $url -O /tmp/AWS-Architecture-Icons-Deck_For-Light-BG.pptx.zip
 unzip -o /tmp/AWS-Architecture-Icons-Deck_For-Light-BG.pptx -d /tmp/aws-pptx/
+pptx_file=$(basename /tmp/aws-pptx/AWS-Architecture-Icons-Deck_For-Light-BG*.pptx)
 unzip -o /tmp/aws-pptx/AWS-Architecture-Icons-Deck_For-Light-BG*.pptx -d /tmp/aws-pptx-content/
 slides_path="/tmp/aws-pptx-content/ppt/slides"
 output_path="../definitions/definition-for-aws-icons-light.yaml"
@@ -53,14 +56,14 @@ Definitions:
     Type: Zip
     ZipFile:
       SourceType: url
-      Url: "https://d1.awsstatic.com/webteam/architecture-icons/q3-2023/AWS-Architecture-Icons-Deck_For-Light-BG_10232023.pptx.2e395948d65116b6284ac4e12f102f517c7fb91e.zip"
+      Url: "$url"
 
   ArchitectureIconsPptx:
     Type: Zip
     ZipFile:
       SourceType: file
       Source: Main
-      Path: "AWS-Architecture-Icons-Deck_For-Light-BG_10232023.pptx"
+      Path: "$pptx_file"
 
   ArchitectureIconsPptxMedia:
     Type: Directory
@@ -244,3 +247,5 @@ do
     ) >> $output_path
 done
 
+rm /tmp/AWS-Architecture-Icons-Deck_For-Light-BG.pptx.zip
+rm -rf /tmp/aws-pptx/
