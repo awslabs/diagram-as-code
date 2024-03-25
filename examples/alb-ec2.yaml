@@ -4,6 +4,7 @@ Diagram:
       Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
     #- Type: LocalFile
     #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -18,16 +19,15 @@ Diagram:
       Align: center
       Children:
         - VPC
-
+        - IGW
     # VPC
     VPC:
       Type: AWS::EC2::VPC
       Direction: vertical
       Children:
-        - VPCPublicSubnetStack
-        - VPCPrivateSubnetStack
-
-    VPCPublicSubnetStack:
+        - VPCPublicStack
+        - ALB
+    VPCPublicStack:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - VPCPublicSubnet1
@@ -36,37 +36,39 @@ Diagram:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
-        - VPCPublicSubnet1NatGateway
-    VPCPublicSubnet1NatGateway:
-      Type: AWS::EC2::NatGateway
+        - VPCPublicSubnet1Instance
+    VPCPublicSubnet1Instance:
+      Type: AWS::EC2::Instance
     VPCPublicSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
-        - VPCPublicSubnet2NatGateway
-    VPCPublicSubnet2NatGateway:
-      Type: AWS::EC2::NatGateway
-
-    VPCPrivateSubnetStack:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - VPCPrivateSubnet1
-        - VPCPrivateSubnet2
-    VPCPrivateSubnet1:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPCPrivateSubnet1Instance
-    VPCPrivateSubnet1Instance:
+        - VPCPublicSubnet2Instance
+    VPCPublicSubnet2Instance:
       Type: AWS::EC2::Instance
-    VPCPrivateSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPCPrivateSubnet2Instance
-    VPCPrivateSubnet2Instance:
-      Type: AWS::EC2::Instance
-
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    IGW:
+      Type: AWS::EC2::InternetGateway
     User:
       Type: AWS::Diagram::Resource
       Preset: User
+
+  Links:
+    - Source: ALB
+      SourcePosition: NNW
+      Target: VPCPublicSubnet1Instance
+      TargetPosition: SSE
+    - Source: ALB
+      SourcePosition: NNE
+      Target: VPCPublicSubnet2Instance
+      TargetPosition: SSW
+    - Source: IGW
+      SourcePosition: N
+      Target: ALB
+      TargetPosition: S
+    - Source: User
+      SourcePosition: N
+      Target: IGW
+      TargetPosition: S
