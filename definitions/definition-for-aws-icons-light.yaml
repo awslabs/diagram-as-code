@@ -71,7 +71,7 @@ Definitions:
       Path: "image15.png"
     Label:
       Title: "VPC"
-      Color: "rgba(105, 59, 197, 255)"
+      Color: "rgba(0, 0, 0, 255)"
     Fill:
       Color: "rgba(0, 0, 0, 0)"
     Border:
@@ -85,7 +85,7 @@ Definitions:
       Title: "Subnet"
       Color: "rgba(0, 0, 0, 255)"
     Fill:
-      Color: "rgba(0, 0, 0, 25)"
+      Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(0, 0, 0, 0)"
 
@@ -96,7 +96,7 @@ Definitions:
       Path: "image44.png"
     Label:
       Title: "Private Subnet"
-      Color: "rgba(91, 156, 213, 255)"
+      Color: "rgba(0, 0, 0, 255)"
     Fill:
       Color: "rgba(0, 0, 0, 0)"
     Border:
@@ -109,7 +109,7 @@ Definitions:
       Path: "image26.png"
     Label:
       Title: "Public Subnet"
-      Color: "rgba(29, 137, 0, 255)"
+      Color: "rgba(0, 0, 0, 255)"
     Fill:
       Color: "rgba(0, 0, 0, 0)"
     Border:
