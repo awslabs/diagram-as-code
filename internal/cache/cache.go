@@ -10,7 +10,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -22,7 +21,7 @@ func FetchFile(url string) (string, error) {
 
 	hashedUrl := md5.New()
 	io.WriteString(hashedUrl, url)
-	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedUrl.Sum(nil), path.Base(url)))
+	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedUrl.Sum(nil), filepath.Base(url)))
 
 	// Check cached same URL resource
 	if _, err := os.Stat(cacheFilePath); err != nil {
@@ -37,7 +36,7 @@ func FetchFile(url string) (string, error) {
 			return "", fmt.Errorf("Failed to fetch file %s: http status %d", url, resp.StatusCode)
 		}
 
-		err = os.MkdirAll(path.Dir(cacheFilePath), os.ModePerm)
+		err = os.MkdirAll(filepath.Dir(cacheFilePath), os.ModePerm)
 		if err != nil {
 			return "", err
 		}
@@ -49,6 +48,9 @@ func FetchFile(url string) (string, error) {
 		defer out.Close()
 
 		_, err = io.Copy(out, resp.Body)
+		if err != nil {
+			return "", err
+		}
 	}
 	return cacheFilePath, nil
 }
@@ -69,7 +71,7 @@ func ExtractZipFile(filePath string) (string, error) {
 	if _, err := io.Copy(hashedContent, f); err != nil {
 		return "", nil
 	}
-	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedContent.Sum(nil), path.Base(filePath)))
+	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedContent.Sum(nil), filepath.Base(filePath)))
 	if _, err := os.Stat(cacheFilePath); err != nil {
 
 		r, err := zip.OpenReader(filePath)
@@ -84,7 +86,7 @@ func ExtractZipFile(filePath string) (string, error) {
 
 			outputFilename := fmt.Sprintf("%s/%s", cacheFilePath, f.Name)
 
-			err = os.MkdirAll(path.Dir(outputFilename), os.ModePerm)
+			err = os.MkdirAll(filepath.Dir(outputFilename), os.ModePerm)
 			if err != nil {
 				return "", err
 			}
