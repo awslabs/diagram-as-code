@@ -1,0 +1,129 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Align: center
+      Children:
+        - HorizontalStack1
+        - HorizontalStack2
+    HorizontalStack1:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - VPC1
+        - PrivateLinkGroup
+        - VPC2
+    # VPC1
+    VPC1:
+      Type: AWS::EC2::VPC
+      Title: "VPC1 (10.0.0.0/16)"
+      Children:
+        - VPC1PublicStack
+        - NLB1
+
+    VPC1PublicStack:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - VPC1PublicSubnet1
+        - VPC1PublicSubnet2
+    VPC1PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPC1PublicSubnet1Instance
+    VPC1PublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+    VPC1PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPC1PublicSubnet2Instance
+    VPC1PublicSubnet2Instance:
+      Type: AWS::EC2::Instance
+    NLB1:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Network Load Balancer
+
+    PrivateLinkGroup:
+      Type: AWS::Diagram::Group
+      Preset: BlankGroup
+      Children:
+        - PrivateLink
+
+    PrivateLink:
+      Type: AWS::Diagram::Resource
+      Preset: AWS PrivateLink
+
+    # VPC2
+    VPC2:
+      Type: AWS::EC2::VPC
+      Title: "VPC2 (10.1.0.0/16)"
+      Children:
+        - VPC2Endpoint
+        - VPC2PublicStack
+
+    VPC2Endpoint:
+      Type: AWS::EC2::VPCEndpoint
+
+    VPC2PublicStack:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - VPC2PublicSubnet1
+        - VPC2PublicSubnet2
+    VPC2PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPC2PublicSubnet1Instance
+    VPC2PublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+    VPC2PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+    HorizontalStack2:
+      Type: AWS::Diagram::HorizontalStack
+      Align: bottom
+      Children:
+        - IGW1
+        - IGW2
+    IGW1:
+      Type: AWS::EC2::InternetGateway
+    IGW2:
+      Type: AWS::EC2::InternetGateway
+
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+  Links:
+    - Source: VPC2PublicSubnet1Instance
+      SourcePosition: W
+      Target: VPC2Endpoint
+      TargetPosition: E
+    - Source: VPC2Endpoint
+      SourcePosition: W
+      Target: PrivateLink
+      TargetPosition: E
+    - Source: PrivateLink
+      SourcePosition: W
+      Target: NLB1
+      TargetPosition: E
+    - Source: NLB1
+      SourcePosition: W
+      Target: VPC1PublicSubnet1Instance
+      TargetPosition: E
+    - Source: NLB1
+      SourcePosition: W
+      Target: VPC1PublicSubnet2Instance
+      TargetPosition: E
