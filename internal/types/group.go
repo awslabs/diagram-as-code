@@ -10,6 +10,7 @@ import (
 	"math"
 	"os"
 
+	fontPath "github.com/awslabs/diagram-as-code/internal/font"
 	"github.com/golang/freetype/truetype"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/draw"
@@ -276,7 +277,7 @@ func (g *Group) drawLabel(img *image.RGBA) {
 
 	p := g.bindings.Min.Add(g.iconBounds.Max)
 
-	f, err := os.Open("/Library/Fonts/Arial Unicode.ttf")
+	f, err := os.Open(fontPath.Arial)
 	if err != nil {
 		panic(err)
 	}

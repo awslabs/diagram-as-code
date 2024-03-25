@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 
+	fontPath "github.com/awslabs/diagram-as-code/internal/font"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
@@ -175,7 +176,7 @@ func (r *Resource) drawFrame(img *image.RGBA) {
 
 func (r *Resource) drawLabel(img *image.RGBA) {
 
-	f, err := os.Open("/Library/Fonts/Arial Unicode.ttf")
+	f, err := os.Open(fontPath.Arial)
 	if err != nil {
 		panic(err)
 	}
