@@ -211,10 +211,13 @@ echo -e "\n  # Resource Types\n" >> $output_path
 
 while read line
 do
-    type=$(echo "$line" | cut -d',' -f1)
-    name=$(echo "$line" | cut -d',' -f2)
+    type=$(echo "$line" | awk -F',' '{print $1}')
+    echo "$type" > /dev/stderr
+    name=$(echo "$line" | awk -F',' '{print $2}')
+    [[ "$name" == "" ]] && continue
     label=$(echo "$name" | sed 's/([0-9])//g')
     image=${image_mappings["$name"]}
+    [[ "$image" == "" ]] && echo "Not found $image" > /dev/stderr && continue
     (
         echo "  $type:"
         echo "    Type: Resource"

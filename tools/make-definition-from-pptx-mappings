@@ -1,21 +1,1307 @@
-AWS::EC2::Instance,Instance
-AWS::EKS::Cluster,Amazon Elastic Kubernetes Service (Amazon EKS)
-AWS::ECS::Cluster,Amazon Elastic Container Service (Amazon ECS)
-AWS::EC2::NetworkInterface,Elastic network interface
-AWS::EC2::NatGateway,NAT gateway
-AWS::EC2::TransitGateway,AWS Transit Gateway
-AWS::EC2::VPNGateway,VPN gateway
-AWS::EC2::VPCEndpoint,Endpoints
-AWS::EC2::VPNConnection,VPN connection
-AWS::EC2::InternetGateway,Internet gateway
+AWS::ACMPCA,AWS Certificate Manager (ACM)
+AWS::ACMPCA::Certificate,AWS Certificate Manager (ACM),ACMPCA Certificate
+AWS::ACMPCA::CertificateAuthority,Certificate authority,ACMPCA Certificate authority
+AWS::ACMPCA::CertificateAuthorityActivation
+AWS::ACMPCA::Permission
+AWS::APS,Amazon Managed Service for Prometheus
+AWS::APS::RuleGroupsNamespace
+AWS::APS::Workspace,Amazon Managed Service for Prometheus
+AWS::ARCZonalShift
+AWS::ARCZonalShift::ZonalAutoshiftConfiguration
+AWS::AccessAnalyzer,IAM Access Analyzer
+AWS::AccessAnalyzer::Analyzer,IAM Access Analyzer
+AWS::AmazonMQ,Amazon MQ
+AWS::AmazonMQ::Broker,Broker
+AWS::AmazonMQ::Configuration
+AWS::AmazonMQ::ConfigurationAssociation
+AWS::Amplify,AWS Amplify
+AWS::Amplify::App,AWS Amplify
+AWS::Amplify::Branch
+AWS::Amplify::Domain
+AWS::AmplifyUIBuilder::Component
+AWS::AmplifyUIBuilder::Form
+AWS::AmplifyUIBuilder::Theme
+AWS::ApiGateway,Amazon API Gateway
+AWS::ApiGateway::Account
+AWS::ApiGateway::ApiKey
+AWS::ApiGateway::Authorizer
+AWS::ApiGateway::BasePathMapping
+AWS::ApiGateway::ClientCertificate
+AWS::ApiGateway::Deployment
+AWS::ApiGateway::DocumentationPart
+AWS::ApiGateway::DocumentationVersion
+AWS::ApiGateway::DomainName
+AWS::ApiGateway::GatewayResponse
+AWS::ApiGateway::Method
+AWS::ApiGateway::Model
+AWS::ApiGateway::RequestValidator
+AWS::ApiGateway::Resource
+AWS::ApiGateway::RestApi
+AWS::ApiGateway::Stage
+AWS::ApiGateway::UsagePlan
+AWS::ApiGateway::UsagePlanKey
+AWS::ApiGateway::VpcLink
+AWS::ApiGatewayV2,Amazon API Gateway
+AWS::ApiGatewayV2::Api,Amazon API Gateway
+AWS::ApiGatewayV2::ApiGatewayManagedOverrides
+AWS::ApiGatewayV2::ApiMapping
+AWS::ApiGatewayV2::Authorizer
+AWS::ApiGatewayV2::Deployment
+AWS::ApiGatewayV2::DomainName
+AWS::ApiGatewayV2::Integration
+AWS::ApiGatewayV2::IntegrationResponse
+AWS::ApiGatewayV2::Model
+AWS::ApiGatewayV2::Route
+AWS::ApiGatewayV2::RouteResponse
+AWS::ApiGatewayV2::Stage
+AWS::ApiGatewayV2::VpcLink
+AWS::AppConfig,AWS AppConfig
+AWS::AppConfig::Application,AWS AppConfig
+AWS::AppConfig::ConfigurationProfile
+AWS::AppConfig::Deployment
+AWS::AppConfig::DeploymentStrategy
+AWS::AppConfig::Environment
+AWS::AppConfig::Extension
+AWS::AppConfig::ExtensionAssociation
+AWS::AppConfig::HostedConfigurationVersion
+AWS::AppFlow,Amazon AppFlow
+AWS::AppFlow::Connector
+AWS::AppFlow::ConnectorProfile
+AWS::AppFlow::Flow,Amazon AppFlow
+AWS::AppIntegrations::Application
+AWS::AppIntegrations::DataIntegration
+AWS::AppIntegrations::EventIntegration
+AWS::AppMesh,AWS App Mesh
+AWS::AppMesh::GatewayRoute
+AWS::AppMesh::Mesh,Mesh
+AWS::AppMesh::Route
+AWS::AppMesh::VirtualGateway,Virtual gateway
+AWS::AppMesh::VirtualNode,Virtual node
+AWS::AppMesh::VirtualRouter,Virtual router
+AWS::AppMesh::VirtualService,Virtual service
+AWS::AppRunner,AWS App Runner
+AWS::AppRunner::AutoScalingConfiguration
+AWS::AppRunner::ObservabilityConfiguration
+AWS::AppRunner::Service,AWS App Runner
+AWS::AppRunner::VpcConnector
+AWS::AppRunner::VpcIngressConnection
+AWS::AppStream,Amazon AppStream 2.0
+AWS::AppStream::AppBlock
+AWS::AppStream::AppBlockBuilder
+AWS::AppStream::Application,Amazon AppStream 2.0
+AWS::AppStream::ApplicationEntitlementAssociation
+AWS::AppStream::ApplicationFleetAssociation
+AWS::AppStream::DirectoryConfig
+AWS::AppStream::Entitlement
+AWS::AppStream::Fleet
+AWS::AppStream::ImageBuilder
+AWS::AppStream::Stack
+AWS::AppStream::StackFleetAssociation
+AWS::AppStream::StackUserAssociation
+AWS::AppStream::User
+AWS::AppSync,AWS AppSync
+AWS::AppSync::ApiCache
+AWS::AppSync::ApiKey
+AWS::AppSync::DataSource
+AWS::AppSync::DomainName
+AWS::AppSync::DomainNameApiAssociation
+AWS::AppSync::FunctionConfiguration
+AWS::AppSync::GraphQLApi
+AWS::AppSync::GraphQLSchema
+AWS::AppSync::Resolver
+AWS::AppSync::SourceApiAssociation
+AWS::ApplicationAutoScaling,AWS Application Auto Scaling
+AWS::ApplicationAutoScaling::ScalableTarget
+AWS::ApplicationAutoScaling::ScalingPolicy
+AWS::ApplicationInsights::Application
+AWS::Athena,Amazon Athena
+AWS::Athena::CapacityReservation
+AWS::Athena::DataCatalog
+AWS::Athena::NamedQuery
+AWS::Athena::PreparedStatement
+AWS::Athena::WorkGroup,Amazon Athena
+AWS::AuditManager::Assessment,AWS Audit Manager
+AWS::AutoScaling,Amazon EC2 Auto Scaling
+AWS::AutoScaling::AutoScalingGroup
+AWS::AutoScaling::LaunchConfiguration
+AWS::AutoScaling::LifecycleHook
+AWS::AutoScaling::ScalingPolicy
+AWS::AutoScaling::ScheduledAction
+AWS::AutoScaling::WarmPool
+AWS::AutoScalingPlans::ScalingPlan
+AWS::Backup,AWS Backup
+AWS::Backup::BackupPlan,Backup plan
+AWS::Backup::BackupSelection
+AWS::Backup::BackupVault,Backup vault
+AWS::Backup::Framework
+AWS::Backup::ReportPlan
+AWS::Backup::RestoreTestingPlan
+AWS::Backup::RestoreTestingSelection
+AWS::BackupGateway::Hypervisor
+AWS::Batch,AWS Batch
+AWS::Batch::ComputeEnvironment
+AWS::Batch::JobDefinition
+AWS::Batch::JobQueue
+AWS::Batch::SchedulingPolicy
+AWS::Budgets::Budget
+AWS::Budgets::BudgetsAction
+AWS::CE,AWS Cost Explorer
+AWS::CE::AnomalyMonitor
+AWS::CE::AnomalySubscription
+AWS::CE::CostCategory
+AWS::Cassandra,Amazon Keyspaces (for Apache Cassandra)
+AWS::Cassandra::Keyspace
+AWS::Cassandra::Table
+AWS::CertificateManager,AWS Certificate Manager (ACM)
+AWS::CertificateManager::Account
+AWS::CertificateManager::Certificate
+AWS::Chatbot,AWS Chatbot
+AWS::Chatbot::MicrosoftTeamsChannelConfiguration
+AWS::Chatbot::SlackChannelConfiguration
+AWS::CleanRooms,AWS Clean Rooms
+AWS::CleanRooms::AnalysisTemplate
+AWS::CleanRooms::Collaboration
+AWS::CleanRooms::ConfiguredTable
+AWS::CleanRooms::ConfiguredTableAssociation
+AWS::CleanRooms::Membership
+AWS::AWS Cloud9
+AWS::Cloud9::EnvironmentEC2
+AWS::CloudFormation,AWS CloudFormation
+AWS::CloudFormation::CustomResource
+AWS::CloudFormation::HookDefaultVersion
+AWS::CloudFormation::HookTypeConfig
+AWS::CloudFormation::HookVersion
+AWS::CloudFormation::Macro
+AWS::CloudFormation::ModuleDefaultVersion
+AWS::CloudFormation::ModuleVersion
+AWS::CloudFormation::PublicTypeVersion
+AWS::CloudFormation::Publisher
+AWS::CloudFormation::ResourceDefaultVersion
+AWS::CloudFormation::ResourceVersion
+AWS::CloudFormation::Stack
+AWS::CloudFormation::StackSet
+AWS::CloudFormation::TypeActivation
+AWS::CloudFormation::WaitCondition
+AWS::CloudFormation::WaitConditionHandle
+AWS::CloudFront,Amazon CloudFront
+AWS::CloudFront::CachePolicy
+AWS::CloudFront::CloudFrontOriginAccessIdentity
+AWS::CloudFront::ContinuousDeploymentPolicy
+AWS::CloudFront::Distribution
+AWS::CloudFront::Function,Functions
+AWS::CloudFront::KeyGroup
+AWS::CloudFront::KeyValueStore
+AWS::CloudFront::MonitoringSubscription
+AWS::CloudFront::OriginAccessControl
+AWS::CloudFront::OriginRequestPolicy
+AWS::CloudFront::PublicKey
+AWS::CloudFront::RealtimeLogConfig
+AWS::CloudFront::ResponseHeadersPolicy
+AWS::CloudFront::StreamingDistribution,Streaming distribution
+AWS::CloudTrail,AWS CloudTrail
+AWS::CloudTrail::Channel
+AWS::CloudTrail::EventDataStore
+AWS::CloudTrail::ResourcePolicy
+AWS::CloudTrail::Trail,AWS CloudTrail
+AWS::CloudWatch,Amazon CloudWatch
+AWS::CloudWatch::Alarm,Alarm
+AWS::CloudWatch::AnomalyDetector
+AWS::CloudWatch::CompositeAlarm
+AWS::CloudWatch::Dashboard
+AWS::CloudWatch::InsightRule,Rule
+AWS::CloudWatch::MetricStream
+AWS::CodeArtifact,AWS CodeArtifact
+AWS::CodeArtifact::Domain
+AWS::CodeArtifact::PackageGroup
+AWS::CodeArtifact::Repository
+AWS::CodeBuild,AWS CodeBuild
+AWS::CodeBuild::Fleet
+AWS::CodeBuild::Project
+AWS::CodeBuild::ReportGroup
+AWS::CodeBuild::SourceCredential
+AWS::CodeCommit,AWS CodeCommit
+AWS::CodeCommit::Repository,AWS CodeCommit
+AWS::CodeDeploy,AWS CodeDeploy
+AWS::CodeDeploy::Application,AWS CodeDeploy
+AWS::CodeDeploy::DeploymentConfig
+AWS::CodeDeploy::DeploymentGroup
+AWS::CodeGuruProfiler::ProfilingGroup
+AWS::CodeGuruReviewer::RepositoryAssociation
+AWS::CodePipeline,AWS CodePipeline
+AWS::CodePipeline::CustomActionType
+AWS::CodePipeline::Pipeline,AWS CodePipeline
+AWS::CodePipeline::Webhook
+AWS::CodeStar,AWS CodeStar
+AWS::CodeStar::GitHubRepository,AWS CodeStar
+AWS::CodeStarConnections::Connection
+AWS::CodeStarConnections::RepositoryLink
+AWS::CodeStarConnections::SyncConfiguration
+AWS::CodeStarNotifications::NotificationRule
+AWS::Cognito,Amazon Cognito
+AWS::Cognito::IdentityPool,Amazon Cognito,Amazon Cognito Identity Pool
+AWS::Cognito::IdentityPoolPrincipalTag
+AWS::Cognito::IdentityPoolRoleAttachment
+AWS::Cognito::LogDeliveryConfiguration
+AWS::Cognito::UserPool,Amazon Cognito,Amazon Cognito User Pool
+AWS::Cognito::UserPoolClient
+AWS::Cognito::UserPoolDomain
+AWS::Cognito::UserPoolGroup
+AWS::Cognito::UserPoolIdentityProvider
+AWS::Cognito::UserPoolResourceServer
+AWS::Cognito::UserPoolRiskConfigurationAttachment
+AWS::Cognito::UserPoolUICustomizationAttachment
+AWS::Cognito::UserPoolUser
+AWS::Cognito::UserPoolUserToGroupAttachment
+AWS::Comprehend,Amazon Comprehend
+AWS::Comprehend::DocumentClassifier
+AWS::Comprehend::Flywheel
+AWS::Config,AWS Config
+AWS::Config::AggregationAuthorization
+AWS::Config::ConfigRule
+AWS::Config::ConfigurationAggregator
+AWS::Config::ConfigurationRecorder
+AWS::Config::ConformancePack
+AWS::Config::DeliveryChannel
+AWS::Config::OrganizationConfigRule
+AWS::Config::OrganizationConformancePack
+AWS::Config::RemediationConfiguration
+AWS::Config::StoredQuery
+AWS::Connect,Amazon Connect
+AWS::Connect::ApprovedOrigin
+AWS::Connect::ContactFlow
+AWS::Connect::ContactFlowModule
+AWS::Connect::EvaluationForm
+AWS::Connect::HoursOfOperation
+AWS::Connect::Instance
+AWS::Connect::InstanceStorageConfig
+AWS::Connect::IntegrationAssociation
+AWS::Connect::PhoneNumber
+AWS::Connect::PredefinedAttribute
+AWS::Connect::Prompt
+AWS::Connect::Queue
+AWS::Connect::QuickConnect
+AWS::Connect::RoutingProfile
+AWS::Connect::Rule
+AWS::Connect::SecurityKey
+AWS::Connect::SecurityProfile
+AWS::Connect::TaskTemplate
+AWS::Connect::User
+AWS::Connect::UserHierarchyGroup
+AWS::Connect::View
+AWS::Connect::ViewVersion
+AWS::ControlTower,AWS Control Tower
+AWS::ControlTower::EnabledBaseline
+AWS::ControlTower::EnabledControl
+AWS::ControlTower::LandingZone
+AWS::CustomerProfiles::CalculatedAttributeDefinition
+AWS::CustomerProfiles::Domain
+AWS::CustomerProfiles::EventStream
+AWS::CustomerProfiles::Integration
+AWS::CustomerProfiles::ObjectType
+AWS::DAX::Cluster,Amazon DynamoDB Accelerator (DAX)
+AWS::DAX::ParameterGroup
+AWS::DAX::SubnetGroup
+AWS::DLM::LifecyclePolicy
+AWS::DMS,AWS Database Migration Service (AWS DMS)
+AWS::DMS::Certificate
+AWS::DMS::DataProvider
+AWS::DMS::Endpoint
+AWS::DMS::EventSubscription
+AWS::DMS::InstanceProfile
+AWS::DMS::MigrationProject
+AWS::DMS::ReplicationConfig
+AWS::DMS::ReplicationInstance
+AWS::DMS::ReplicationSubnetGroup
+AWS::DMS::ReplicationTask
+AWS::DataBrew,AWS Glue DataBrew
+AWS::DataBrew::Dataset
+AWS::DataBrew::Job
+AWS::DataBrew::Project
+AWS::DataBrew::Recipe
+AWS::DataBrew::Ruleset
+AWS::DataBrew::Schedule
+AWS::DataPipeline::Pipeline,AWS Data Pipeline
+AWS::DataSync,AWS DataSync
+AWS::DataSync::Agent,Agent
+AWS::DataSync::LocationAzureBlob
+AWS::DataSync::LocationEFS
+AWS::DataSync::LocationFSxLustre
+AWS::DataSync::LocationFSxONTAP
+AWS::DataSync::LocationFSxOpenZFS
+AWS::DataSync::LocationFSxWindows
+AWS::DataSync::LocationHDFS
+AWS::DataSync::LocationNFS
+AWS::DataSync::LocationObjectStorage
+AWS::DataSync::LocationS3
+AWS::DataSync::LocationSMB
+AWS::DataSync::StorageSystem
+AWS::DataSync::Task
+AWS::DataZone,Amazon DataZone
+AWS::DataZone::DataSource
+AWS::DataZone::Domain
+AWS::DataZone::Environment
+AWS::DataZone::EnvironmentBlueprintConfiguration
+AWS::DataZone::EnvironmentProfile
+AWS::DataZone::Project,Data projects
+AWS::DataZone::SubscriptionTarget
+AWS::Detective,Amazon Detective
+AWS::Detective::Graph
+AWS::Detective::MemberInvitation
+AWS::Detective::OrganizationAdmin
+AWS::DevOpsGuru,Amazon DevOps Guru
+AWS::DevOpsGuru::LogAnomalyDetectionIntegration
+AWS::DevOpsGuru::NotificationChannel
+AWS::DevOpsGuru::ResourceCollection
+AWS::DirectoryService,AWS Directory Service
+AWS::DirectoryService::MicrosoftAD,AWS Managed Microsoft AD
+AWS::DirectoryService::SimpleAD,Simple AD
+AWS::DocDB,Amazon DocumentDB (with MongoDB compatibility)
+AWS::DocDB::DBCluster,Amazon DocumentDB (with MongoDB compatibility)
+AWS::DocDB::DBClusterParameterGroup
+AWS::DocDB::DBInstance
+AWS::DocDB::DBSubnetGroup
+AWS::DocDB::EventSubscription
+AWS::DocDBElastic,Amazon DocumentDB Elastic Clusters
+AWS::DocDBElastic::Cluster,Amazon DocumentDB Elastic Clusters
+AWS::DynamoDB,Amazon DynamoDB
+AWS::DynamoDB::GlobalTable,Table
+AWS::DynamoDB::Table,Table
+AWS::EC2::CapacityReservation
+AWS::EC2::CapacityReservationFleet
+AWS::EC2::CarrierGateway,Carrier gateway
+AWS::EC2::ClientVpnAuthorizationRule
 AWS::EC2::ClientVpnEndpoint,AWS Client VPN
-AWS::ElasticLoadBalancingV2::LoadBalancer,Elastic Load Balancing
-AWS::Route53Resolver::ResolverEndpoint,Resolver
+AWS::EC2::ClientVpnRoute
+AWS::EC2::ClientVpnTargetNetworkAssociation
+AWS::EC2::CustomerGateway,Customer gateway
+AWS::EC2::DHCPOptions
+AWS::EC2::EC2Fleet
+AWS::EC2::EIP,Elastic IP address
+AWS::EC2::EIPAssociation
+AWS::EC2::EgressOnlyInternetGateway
+AWS::EC2::EnclaveCertificateIamRoleAssociation
+AWS::EC2::FlowLog,Flow logs
+AWS::EC2::GatewayRouteTableAssociation
+AWS::EC2::Host
+AWS::EC2::IPAM
+AWS::EC2::IPAMAllocation
+AWS::EC2::IPAMPool
+AWS::EC2::IPAMPoolCidr
+AWS::EC2::IPAMResourceDiscovery
+AWS::EC2::IPAMResourceDiscoveryAssociation
+AWS::EC2::IPAMScope
+AWS::EC2::Instance,Instance
+AWS::EC2::InstanceConnectEndpoint
+AWS::EC2::InternetGateway,Internet gateway
+AWS::EC2::KeyPair
+AWS::EC2::LaunchTemplate
+AWS::EC2::LocalGatewayRoute
+AWS::EC2::LocalGatewayRouteTable
+AWS::EC2::LocalGatewayRouteTableVPCAssociation
+AWS::EC2::LocalGatewayRouteTableVirtualInterfaceGroupAssociation
+AWS::EC2::NatGateway,NAT gateway
+AWS::EC2::NetworkAcl
+AWS::EC2::NetworkAclEntry
+AWS::EC2::NetworkInsightsAccessScope
+AWS::EC2::NetworkInsightsAccessScopeAnalysis
+AWS::EC2::NetworkInsightsAnalysis
+AWS::EC2::NetworkInsightsPath
+AWS::EC2::NetworkInterface,Elastic network interface
+AWS::EC2::NetworkInterfaceAttachment
+AWS::EC2::NetworkInterfacePermission
+AWS::EC2::NetworkPerformanceMetricSubscription
+AWS::EC2::PlacementGroup
+AWS::EC2::PrefixList
+AWS::EC2::Route
+AWS::EC2::RouteTable,Route table
+AWS::EC2::SecurityGroup
+AWS::EC2::SecurityGroupEgress
+AWS::EC2::SecurityGroupIngress
+AWS::EC2::SnapshotBlockPublicAccess
+AWS::EC2::SubnetCidrBlock
+AWS::EC2::SubnetNetworkAclAssociation
+AWS::EC2::SubnetRouteTableAssociation
+AWS::EC2::TrafficMirrorFilter
+AWS::EC2::TrafficMirrorFilterRule
 AWS::EC2::TrafficMirrorSession,Traffic mirroring
-AWS::S3,Amazon Simple Storage Service (Amazon S3)
-AWS::S3::Bucket,Bucket
+AWS::EC2::TrafficMirrorTarget
+AWS::EC2::TransitGateway,AWS Transit Gateway
+AWS::EC2::TransitGatewayAttachment,Attachment
+AWS::EC2::TransitGatewayConnect
+AWS::EC2::TransitGatewayMulticastDomain
+AWS::EC2::TransitGatewayMulticastDomainAssociation
+AWS::EC2::TransitGatewayMulticastGroupMember
+AWS::EC2::TransitGatewayMulticastGroupSource
+AWS::EC2::TransitGatewayPeeringAttachment
+AWS::EC2::TransitGatewayRoute
+AWS::EC2::TransitGatewayRouteTable
+AWS::EC2::TransitGatewayRouteTableAssociation
+AWS::EC2::TransitGatewayRouteTablePropagation
+AWS::EC2::TransitGatewayVpcAttachment
+AWS::EC2::VPCCidrBlock
+AWS::EC2::VPCDHCPOptionsAssociation
+AWS::EC2::VPCEndpoint,Endpoints
+AWS::EC2::VPCEndpointConnectionNotification
+AWS::EC2::VPCEndpointService,AWS PrivateLink
+AWS::EC2::VPCEndpointServicePermissions
+AWS::EC2::VPCGatewayAttachment
+AWS::EC2::VPCPeeringConnection,Peering connection
+AWS::EC2::VPNConnection,VPN connection
+AWS::EC2::VPNConnectionRoute
+AWS::EC2::VPNGateway,VPN gateway
+AWS::EC2::VPNGatewayRoutePropagation
+AWS::EC2::VerifiedAccessEndpoint,AWS Verified Access
+AWS::EC2::VerifiedAccessGroup
+AWS::EC2::VerifiedAccessInstance
+AWS::EC2::VerifiedAccessTrustProvider
+AWS::EC2::Volume,Volume
+AWS::EC2::VolumeAttachment
+AWS::ECR,Amazon Elastic Container Registry (Amazon ECR)
+AWS::ECR::PullThroughCacheRule
+AWS::ECR::RegistryPolicy
+AWS::ECR::ReplicationConfiguration
+AWS::ECR::Repository
+AWS::ECS,Amazon Elastic Container Service (Amazon ECS)
+AWS::ECS::CapacityProvider
+AWS::ECS::Cluster,Amazon Elastic Container Service (Amazon ECS)
+AWS::ECS::ClusterCapacityProviderAssociations
+AWS::ECS::PrimaryTaskSet
+AWS::ECS::Service,Service
+AWS::ECS::TaskDefinition,Task
+AWS::ECS::TaskSet
+AWS::EFS,Amazon Elastic File System (Amazon EFS)
+AWS::EFS::AccessPoint
+AWS::EFS::FileSystem
+AWS::EFS::MountTarget
+AWS::EKS,Amazon Elastic Kubernetes Service (Amazon EKS)
+AWS::EKS::AccessEntry
+AWS::EKS::Addon
+AWS::EKS::Cluster
+AWS::EKS::FargateProfile
+AWS::EKS::IdentityProviderConfig
+AWS::EKS::Nodegroup
+AWS::EKS::PodIdentityAssociation
+AWS::EMR,Amazon EMR
+AWS::EMR::Cluster,Cluster
+AWS::EMR::InstanceFleetConfig
+AWS::EMR::InstanceGroupConfig
+AWS::EMR::SecurityConfiguration
+AWS::EMR::Step
+AWS::EMR::Studio
+AWS::EMR::StudioSessionMapping
+AWS::EMR::WALWorkspace
+AWS::EMRContainers::VirtualCluster
+AWS::EMRServerless::Application
+AWS::ElastiCache,Amazon ElastiCache
+AWS::ElastiCache::CacheCluster,Amazon ElastiCache
+AWS::ElastiCache::GlobalReplicationGroup
+AWS::ElastiCache::ParameterGroup
+AWS::ElastiCache::ReplicationGroup
+AWS::ElastiCache::SecurityGroup
+AWS::ElastiCache::SecurityGroupIngress
+AWS::ElastiCache::ServerlessCache
+AWS::ElastiCache::SubnetGroup
+AWS::ElastiCache::User
+AWS::ElastiCache::UserGroup
+AWS::ElasticBeanstalk,AWS Elastic Beanstalk
+AWS::ElasticBeanstalk::Application,AWS Elastic Beanstalk
+AWS::ElasticBeanstalk::ApplicationVersion
+AWS::ElasticBeanstalk::ConfigurationTemplate
+AWS::ElasticBeanstalk::Environment
+AWS::ElasticLoadBalancing,Elastic Load Balancing
+AWS::ElasticLoadBalancing::LoadBalancer,Elastic Load Balancing
+AWS::ElasitcLoadBalancingV2,Elastic Load Balancing
+AWS::ElasticLoadBalancingV2::Listener
+AWS::ElasticLoadBalancingV2::ListenerCertificate
+AWS::ElasticLoadBalancingV2::ListenerRule
+AWS::ElasticLoadBalancingV2::LoadBalancer
+AWS::ElasticLoadBalancingV2::TargetGroup
+AWS::ElasticLoadBalancingV2::TrustStore
+AWS::ElasticLoadBalancingV2::TrustStoreRevocation
+AWS::Elasticsearch::Domain
+AWS::EntityResolution,AWS Entity Resolution
+AWS::EntityResolution::MatchingWorkflow
+AWS::EntityResolution::SchemaMapping
+AWS::EventSchemas,Amazon CloudWatch
+AWS::EventSchemas::Discoverer
+AWS::EventSchemas::Registry
+AWS::EventSchemas::RegistryPolicy
+AWS::EventSchemas::Schema
+AWS::Events,Amazon CloudWatch
+AWS::Events::ApiDestination
+AWS::Events::Archive
+AWS::Events::Connection
+AWS::Events::Endpoint
+AWS::Events::EventBus
+AWS::Events::EventBusPolicy
+AWS::Events::Rule,Rule,Events rule
+AWS::Evidently,Evidently
+AWS::Evidently::Experiment
+AWS::Evidently::Feature
+AWS::Evidently::Launch
+AWS::Evidently::Project
+AWS::Evidently::Segment
+AWS::FIS,AWS Fault Injection Simulator
+AWS::FIS::ExperimentTemplate,AWS Fault Injection Simulator
+AWS::FIS::TargetAccountConfiguration
+AWS::FMS::NotificationChannel
+AWS::FMS::Policy
+AWS::FMS::ResourceSet
+AWS::FSx,Amazon FSx
+AWS::FSx::DataRepositoryAssociation
+AWS::FSx::FileSystem,File system
+AWS::FSx::Snapshot
+AWS::FSx::StorageVirtualMachine
+AWS::FSx::Volume
+AWS::Forecast,Amazon Forecast
+AWS::Forecast::Dataset
+AWS::Forecast::DatasetGroup
+AWS::GameList,Amazon GameLift
+AWS::GameLift::Alias
+AWS::GameLift::Build
+AWS::GameLift::Fleet
+AWS::GameLift::GameServerGroup
+AWS::GameLift::GameSessionQueue
+AWS::GameLift::Location
+AWS::GameLift::MatchmakingConfiguration
+AWS::GameLift::MatchmakingRuleSet
+AWS::GameLift::Script
+AWS::GlobalAccelerator,AWS Global Accelerator
+AWS::GlobalAccelerator::Accelerator,AWS Global Accelerator
+AWS::GlobalAccelerator::CrossAccountAttachment
+AWS::GlobalAccelerator::EndpointGroup
+AWS::GlobalAccelerator::Listener
+AWS::Glue,AWS Glue
+AWS::Glue::Classifier
+AWS::Glue::Connection
+AWS::Glue::Crawler,Crawler
+AWS::Glue::CustomEntityType
+AWS::Glue::DataCatalogEncryptionSettings
+AWS::Glue::DataQualityRuleset
+AWS::Glue::Database
+AWS::Glue::DevEndpoint
+AWS::Glue::Job
+AWS::Glue::MLTransform
+AWS::Glue::Partition
+AWS::Glue::Registry
+AWS::Glue::Schema
+AWS::Glue::SchemaVersion
+AWS::Glue::SchemaVersionMetadata
+AWS::Glue::SecurityConfiguration
+AWS::Glue::Table
+AWS::Glue::TableOptimizer
+AWS::Glue::Trigger
+AWS::Glue::Workflow
+AWS::Grafana::Workspace,Amazon Managed Grafana
+AWS::Greengrass,AWS IoT Greengrass
+AWS::Greengrass::ConnectorDefinition
+AWS::Greengrass::ConnectorDefinitionVersion
+AWS::Greengrass::CoreDefinition
+AWS::Greengrass::CoreDefinitionVersion
+AWS::Greengrass::DeviceDefinition
+AWS::Greengrass::DeviceDefinitionVersion
+AWS::Greengrass::FunctionDefinition
+AWS::Greengrass::FunctionDefinitionVersion
+AWS::Greengrass::Group
+AWS::Greengrass::GroupVersion
+AWS::Greengrass::LoggerDefinition
+AWS::Greengrass::LoggerDefinitionVersion
+AWS::Greengrass::ResourceDefinition
+AWS::Greengrass::ResourceDefinitionVersion
+AWS::Greengrass::SubscriptionDefinition
+AWS::Greengrass::SubscriptionDefinitionVersion
+AWS::GreengrassV2::ComponentVersion
+AWS::GreengrassV2::Deployment
+AWS::GuardDuty,Amazon GuardDuty
+AWS::GuardDuty::Detector
+AWS::GuardDuty::Filter
+AWS::GuardDuty::IPSet
+AWS::GuardDuty::Master
+AWS::GuardDuty::Member
+AWS::GuardDuty::ThreatIntelSet
+AWS::IAM,AWS Identity and Access Management (IAM)
+AWS::IAM::AccessKey
+AWS::IAM::Group
+AWS::IAM::GroupPolicy
+AWS::IAM::InstanceProfile
+AWS::IAM::ManagedPolicy
+AWS::IAM::OIDCProvider
+AWS::IAM::Policy
+AWS::IAM::Role,Role
+AWS::IAM::RolePolicy
+AWS::IAM::SAMLProvider
+AWS::IAM::ServerCertificate
+AWS::IAM::ServiceLinkedRole
+AWS::IAM::User
+AWS::IAM::UserPolicy
+AWS::IAM::UserToGroupAddition
+AWS::IAM::VirtualMFADevice
+AWS::IVS,Amazon Interactive Video Service
+AWS::IVS::Channel
+AWS::IVS::PlaybackKeyPair
+AWS::IVS::RecordingConfiguration
+AWS::IVS::Stage
+AWS::IVS::StreamKey
+AWS::IVSChat::LoggingConfiguration
+AWS::IVSChat::Room
+AWS::IdentityStore::Group
+AWS::IdentityStore::GroupMembership
+AWS::ImageBuilder,Amazon EC2 Image Builder
+AWS::ImageBuilder::Component
+AWS::ImageBuilder::ContainerRecipe
+AWS::ImageBuilder::DistributionConfiguration
+AWS::ImageBuilder::Image
+AWS::ImageBuilder::ImagePipeline
+AWS::ImageBuilder::ImageRecipe
+AWS::ImageBuilder::InfrastructureConfiguration
+AWS::ImageBuilder::LifecyclePolicy
+AWS::ImageBuilder::Workflow
+AWS::Inspector,Amazon Inspector
+AWS::Inspector::AssessmentTarget
+AWS::Inspector::AssessmentTemplate
+AWS::Inspector::ResourceGroup
+AWS::InspectorV2,Amazon Inspector
+AWS::InspectorV2::CisScanConfiguration
+AWS::InspectorV2::Filter
+AWS::InternetMonitor::Monitor
+AWS::IoT1Click,AWS IoT 1-Click
+AWS::IoT1Click::Device
+AWS::IoT1Click::Placement
+AWS::IoT1Click::Project
+AWS::IoT,AWS IoT Core
+AWS::IoT::AccountAuditConfiguration
+AWS::IoT::Authorizer
+AWS::IoT::BillingGroup
+AWS::IoT::CACertificate
+AWS::IoT::Certificate
+AWS::IoT::CertificateProvider
+AWS::IoT::CustomMetric
+AWS::IoT::Dimension
+AWS::IoT::DomainConfiguration
+AWS::IoT::FleetMetric
+AWS::IoT::JobTemplate
+AWS::IoT::Logging
+AWS::IoT::MitigationAction
+AWS::IoT::Policy
+AWS::IoT::PolicyPrincipalAttachment
+AWS::IoT::ProvisioningTemplate
+AWS::IoT::ResourceSpecificLogging
+AWS::IoT::RoleAlias
+AWS::IoT::ScheduledAudit
+AWS::IoT::SecurityProfile
+AWS::IoT::SoftwarePackage
+AWS::IoT::SoftwarePackageVersion
+AWS::IoT::Thing
+AWS::IoT::ThingGroup
+AWS::IoT::ThingPrincipalAttachment
+AWS::IoT::ThingType
+AWS::IoT::TopicRule
+AWS::IoT::TopicRuleDestination
+AWS::IoTAnalytics,AWS IoT Analytics
+AWS::IoTAnalytics::Channel,Channel
+AWS::IoTAnalytics::Dataset,Dataset
+AWS::IoTAnalytics::Datastore,Data store
+AWS::IoTAnalytics::Pipeline,Pipeline
+AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+AWS::IoTEvents,AWS IoT Events
+AWS::IoTEvents::AlarmModel
+AWS::IoTEvents::DetectorModel
+AWS::IoTEvents::Input
+AWS::IoTFleetHub,AWS IoT FleetWise
+AWS::IoTFleetHub::Application
+AWS::IoTSiteWise,AWS IoT SiteWise
+AWS::IoTSiteWise::AccessPolicy
+AWS::IoTSiteWise::Asset,Asset
+AWS::IoTSiteWise::AssetModel,Asset model
+AWS::IoTSiteWise::Dashboard
+AWS::IoTSiteWise::Gateway
+AWS::IoTSiteWise::Portal
+AWS::IoTSiteWise::Project
+AWS::IoTThingsGraph,AWS IoT Things Graph
+AWS::IoTThingsGraph::FlowTemplate
+AWS::IoTTwinMaker,AWS IoT TwinMaker
+AWS::IoTTwinMaker::ComponentType
+AWS::IoTTwinMaker::Entity
+AWS::IoTTwinMaker::Scene
+AWS::IoTTwinMaker::SyncJob
+AWS::IoTTwinMaker::Workspace
+AWS::IoTWireless::Destination
+AWS::IoTWireless::DeviceProfile
+AWS::IoTWireless::FuotaTask
+AWS::IoTWireless::MulticastGroup
+AWS::IoTWireless::NetworkAnalyzerConfiguration
+AWS::IoTWireless::ServiceProfile
+AWS::IoTWireless::TaskDefinition
+AWS::IoTWireless::WirelessDevice
+AWS::IoTWireless::WirelessGateway
+AWS::KMS,AWS Key Management Service (AWS KMS)
+AWS::KMS::Alias
+AWS::KMS::Key
+AWS::KMS::ReplicaKey
+AWS::KafkaConnect,Amazon Managed Streaming for Apache Kafka (Amazon MSK)
+AWS::KafkaConnect::Connector
+AWS::KafkaConnect::CustomPlugin
+AWS::KafkaConnect::WorkerConfiguration
+AWS::Kendra,Amazon Kendra
+AWS::Kendra::DataSource
+AWS::Kendra::Faq
+AWS::Kendra::Index
+AWS::KendraRanking::ExecutionPlan
+AWS::Kinesis,Amazon Kinesis
+AWS::Kinesis::Stream
+AWS::Kinesis::StreamConsumer
+AWS::KinesisAnalytics::Application
+AWS::KinesisAnalytics::ApplicationOutput
+AWS::KinesisAnalytics::ApplicationReferenceDataSource
+AWS::KinesisAnalyticsV2::Application
+AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption
+AWS::KinesisAnalyticsV2::ApplicationOutput
+AWS::KinesisAnalyticsV2::ApplicationReferenceDataSource
+AWS::KinesisFirehose,Amazon Kinesis Data Firehose
+AWS::KinesisFirehose::DeliveryStream
+AWS::KinesisVideo,Amazon Kinesis Video Streams
+AWS::KinesisVideo::SignalingChannel
+AWS::KinesisVideo::Stream
+AWS::LakeFormation,AWS Lake Formation
+AWS::LakeFormation::DataCellsFilter
+AWS::LakeFormation::DataLakeSettings
+AWS::LakeFormation::Permissions
+AWS::LakeFormation::PrincipalPermissions
+AWS::LakeFormation::Resource
+AWS::LakeFormation::Tag
+AWS::LakeFormation::TagAssociation
 AWS::Lambda,AWS Lambda
+AWS::Lambda::Alias
+AWS::Lambda::CodeSigningConfig
+AWS::Lambda::EventInvokeConfig
+AWS::Lambda::EventSourceMapping
 AWS::Lambda::Function,Lambda function
+AWS::Lambda::LayerVersion
+AWS::Lambda::LayerVersionPermission
+AWS::Lambda::Permission
+AWS::Lambda::Url
+AWS::Lambda::Version
+AWS::Lex,Amazon Lex
+AWS::Lex::Bot
+AWS::Lex::BotAlias
+AWS::Lex::BotVersion
+AWS::Lex::ResourcePolicy
+AWS::LicenseManager,AWS License Manager
+AWS::LicenseManager::Grant
+AWS::LicenseManager::License
+AWS::Lightsail,Amazon Lightsail
+AWS::Lightsail::Alarm
+AWS::Lightsail::Bucket
+AWS::Lightsail::Certificate
+AWS::Lightsail::Container
+AWS::Lightsail::Database
+AWS::Lightsail::Disk
+AWS::Lightsail::Instance
+AWS::Lightsail::LoadBalancer
+AWS::Lightsail::LoadBalancerTlsCertificate
+AWS::Lightsail::StaticIp
+AWS::Location,Amazon Location Service
+AWS::Location::APIKey
+AWS::Location::GeofenceCollection
+AWS::Location::Map
+AWS::Location::PlaceIndex
+AWS::Location::RouteCalculator
+AWS::Location::Tracker
+AWS::Location::TrackerConsumer
+AWS::Logs,Amazon CloudWatch
+AWS::Logs::AccountPolicy
+AWS::Logs::Delivery
+AWS::Logs::DeliveryDestination
+AWS::Logs::DeliverySource
+AWS::Logs::Destination
+AWS::Logs::LogAnomalyDetector
+AWS::Logs::LogGroup
+AWS::Logs::LogStream
+AWS::Logs::LogStream
+AWS::Logs::MetricFilter
+AWS::Logs::QueryDefinition
+AWS::Logs::ResourcePolicy
+AWS::Logs::SubscriptionFilter
+AWS::LookoutMetrics,Amazon Lookout for Metrics
+AWS::LookoutMetrics::Alert
+AWS::LookoutMetrics::AnomalyDetector
+AWS::LookoutVision,Amazon Lookout for Vision
+AWS::LookoutVision::Project
+AWS::M2::Application
+AWS::M2::Environment
+AWS::MSK,Amazon Managed Streaming for Apache Kafka (Amazon MSK)
+AWS::MSK::BatchScramSecret
+AWS::MSK::Cluster
+AWS::MSK::ClusterPolicy
+AWS::MSK::Configuration
+AWS::MSK::Replicator
+AWS::MSK::ServerlessCluster
+AWS::MSK::VpcConnection
+AWS::MWAA,Amazon Managed Workflows for Apache Airflow (Amazon MWAA)
+AWS::MWAA::Environment
+AWS::Macie,Amazon Macie
+AWS::Macie::AllowList
+AWS::Macie::CustomDataIdentifier
+AWS::Macie::FindingsFilter
+AWS::Macie::Session
+AWS::ManagedBlockchain,Amazon Managed Blockchain
+AWS::ManagedBlockchain::Accessor
+AWS::ManagedBlockchain::Member
+AWS::ManagedBlockchain::Node
+AWS::MediaConnect,AWS Elemental MediaConnect
+AWS::MediaConnect::Bridge
+AWS::MediaConnect::BridgeOutput
+AWS::MediaConnect::BridgeSource
+AWS::MediaConnect::Flow
+AWS::MediaConnect::FlowEntitlement
+AWS::MediaConnect::FlowOutput
+AWS::MediaConnect::FlowSource
+AWS::MediaConnect::FlowVpcInterface
+AWS::MediaConnect::Gateway,MediaConnect Gateway
+AWS::MediaConvert::JobTemplate
+AWS::MediaConvert::Preset
+AWS::MediaConvert::Queue
+AWS::MediaLive,AWS Elemental MediaLive
+AWS::MediaLive::Channel
+AWS::MediaLive::Input
+AWS::MediaLive::InputSecurityGroup
+AWS::MediaLive::Multiplex
+AWS::MediaLive::Multiplexprogram
+AWS::MediaPackage,AWS Elemental MediaPackage
+AWS::MediaPackage::Asset
+AWS::MediaPackage::Channel
+AWS::MediaPackage::OriginEndpoint
+AWS::MediaPackage::PackagingConfiguration
+AWS::MediaPackage::PackagingGroup
+AWS::MediaPackageV2,AWS Elemental MediaPackage
+AWS::MediaPackageV2::Channel
+AWS::MediaPackageV2::ChannelGroup
+AWS::MediaPackageV2::ChannelPolicy
+AWS::MediaPackageV2::OriginEndpoint
+AWS::MediaPackageV2::OriginEndpointPolicy
+AWS::MediaStore,AWS Elemental MediaStore
+AWS::MediaStore::Container
+AWS::MediaTailor,AWS Elemental MediaTailor
+AWS::MediaTailor::Channel
+AWS::MediaTailor::ChannelPolicy
+AWS::MediaTailor::LiveSource
+AWS::MediaTailor::PlaybackConfiguration
+AWS::MediaTailor::SourceLocation
+AWS::MediaTailor::VodSource
+AWS::MemoryDB,Amazon MemoryDB for Redis
+AWS::MemoryDB::ACL
+AWS::MemoryDB::Cluster
+AWS::MemoryDB::ParameterGroup
+AWS::MemoryDB::SubnetGroup
+AWS::MemoryDB::User
+AWS::Neptune,Amazon Neptune
+AWS::Neptune::DBCluster
+AWS::Neptune::DBClusterParameterGroup
+AWS::Neptune::DBInstance
+AWS::Neptune::DBParameterGroup
+AWS::Neptune::DBSubnetGroup
+AWS::NeptuneGraph::Graph
+AWS::NeptuneGraph::PrivateGraphEndpoint
+AWS::NetworkFirewall,AWS Network Firewall
+AWS::NetworkFirewall::Firewall
+AWS::NetworkFirewall::FirewallPolicy
+AWS::NetworkFirewall::LoggingConfiguration
+AWS::NetworkFirewall::RuleGroup
+AWS::NetworkFirewall::TLSInspectionConfiguration
+AWS::NetworkManager,AWS Cloud WAN
+AWS::NetworkManager::ConnectAttachment
+AWS::NetworkManager::ConnectPeer
+AWS::NetworkManager::CoreNetwork,Core network edge
+AWS::NetworkManager::CustomerGatewayAssociation
+AWS::NetworkManager::Device
+AWS::NetworkManager::GlobalNetwork
+AWS::NetworkManager::Link
+AWS::NetworkManager::LinkAssociation
+AWS::NetworkManager::Site
+AWS::NetworkManager::SiteToSiteVpnAttachment
+AWS::NetworkManager::TransitGatewayPeering
+AWS::NetworkManager::TransitGatewayRegistration
+AWS::NetworkManager::TransitGatewayRouteTableAttachment,Transit gateway route table attachment
+AWS::NetworkManager::VpcAttachment
+AWS::NimbleStudio,Amazon Nimble Studio
+AWS::NimbleStudio::LaunchProfile
+AWS::NimbleStudio::StreamingImage
+AWS::NimbleStudio::Studio
+AWS::NimbleStudio::StudioComponent
+AWS::OSIS::Pipeline
+AWS::Oam::Link
+AWS::Oam::Sink
+AWS::OpenSearchServerless::AccessPolicy
+AWS::OpenSearchServerless::Collection
+AWS::OpenSearchServerless::LifecyclePolicy
+AWS::OpenSearchServerless::SecurityConfig
+AWS::OpenSearchServerless::SecurityPolicy
+AWS::OpenSearchServerless::VpcEndpoint
+AWS::OpenSearchService::Domain
+AWS::OpsWorks,AWS OpsWorks
+AWS::OpsWorks::App,Apps
+AWS::OpsWorks::ElasticLoadBalancerAttachment
+AWS::OpsWorks::Instance,Instances
+AWS::OpsWorks::Layer,Layers
+AWS::OpsWorks::Stack,Stack2
+AWS::OpsWorks::UserProfile
+AWS::OpsWorks::Volume
+AWS::OpsWorksCM::Server
+AWS::Organizations,AWS Organizations
+AWS::Organizations::Account,Account
+AWS::Organizations::Organization,AWS Organizations
+AWS::Organizations::OrganizationalUnit,Organizational unit
+AWS::Organizations::Policy
+AWS::Organizations::ResourcePolicy
+AWS::PCAConnectorAD::Connector
+AWS::PCAConnectorAD::DirectoryRegistration
+AWS::PCAConnectorAD::ServicePrincipalName
+AWS::PCAConnectorAD::Template
+AWS::PCAConnectorAD::TemplateGroupAccessControlEntry
+AWS::Personalize,Amazon Personalize
+AWS::Personalize::Dataset
+AWS::Personalize::DatasetGroup
+AWS::Personalize::Schema
+AWS::Personalize::Solution
+AWS::Pinpoing,Amazon Pinpoint
+AWS::Pinpoint::ADMChannel
+AWS::Pinpoint::APNSChannel
+AWS::Pinpoint::APNSSandboxChannel
+AWS::Pinpoint::APNSVoipChannel
+AWS::Pinpoint::APNSVoipSandboxChannel
+AWS::Pinpoint::App
+AWS::Pinpoint::ApplicationSettings
+AWS::Pinpoint::BaiduChannel
+AWS::Pinpoint::Campaign
+AWS::Pinpoint::EmailChannel
+AWS::Pinpoint::EmailTemplate
+AWS::Pinpoint::EventStream
+AWS::Pinpoint::GCMChannel
+AWS::Pinpoint::InAppTemplate
+AWS::Pinpoint::PushTemplate
+AWS::Pinpoint::SMSChannel
+AWS::Pinpoint::Segment
+AWS::Pinpoint::SmsTemplate
+AWS::Pinpoint::VoiceChannel
+AWS::Pipes::Pipe,Pipes
+AWS::Proton,AWS Proton
+AWS::Proton::EnvironmentAccountConnection
+AWS::Proton::EnvironmentTemplate
+AWS::Proton::ServiceTemplate
+AWS::QLDB,Amazon Quantum Ledger Database (Amazon QLDB)
+AWS::QLDB::Ledger
+AWS::QLDB::Stream
+AWS::QuickSight,Amazon QuickSight
+AWS::QuickSight::Analysis
+AWS::QuickSight::Dashboard
+AWS::QuickSight::DataSet
+AWS::QuickSight::DataSource
+AWS::QuickSight::RefreshSchedule
+AWS::QuickSight::Template
+AWS::QuickSight::Theme
+AWS::QuickSight::VPCConnection
+AWS::RAM::Permission
+AWS::RAM::ResourceShare
+AWS::RDS,Amazon Relational Database Service (Amazon RDS)
+AWS::RDS::CustomDBEngineVersion
+AWS::RDS::DBCluster
+AWS::RDS::DBClusterParameterGroup
+AWS::RDS::DBInstance
+AWS::RDS::DBParameterGroup
+AWS::RDS::DBProxy
+AWS::RDS::DBProxyEndpoint
+AWS::RDS::DBProxyTargetGroup
+AWS::RDS::DBSecurityGroup
+AWS::RDS::DBSecurityGroupIngress
+AWS::RDS::DBSubnetGroup
+AWS::RDS::EventSubscription
+AWS::RDS::GlobalCluster
+AWS::RDS::Integration
+AWS::RDS::OptionGroup
+AWS::RUM,Amazon CloudWatch
+AWS::RUM::AppMonitor,RUM
+AWS::Redshift,Amazon Redshift
+AWS::Redshift::Cluster
+AWS::Redshift::ClusterParameterGroup
+AWS::Redshift::ClusterSecurityGroup
+AWS::Redshift::ClusterSecurityGroupIngress
+AWS::Redshift::ClusterSubnetGroup
+AWS::Redshift::EndpointAccess
+AWS::Redshift::EndpointAuthorization
+AWS::Redshift::EventSubscription
+AWS::Redshift::ScheduledAction
+AWS::RedshiftServerless,Amazon Redshift
+AWS::RedshiftServerless::Namespace
+AWS::RedshiftServerless::Workgroup
+AWS::RefactorSpaces,AWS Migration Hub
+AWS::RefactorSpaces::Application,Refactor Spaces applications
+AWS::RefactorSpaces::Environment,Refactor Spaces environments
+AWS::RefactorSpaces::Route
+AWS::RefactorSpaces::Service,Refactor Spaces services
+AWS::Rekognition,Amazon Rekognition
+AWS::Rekognition::Collection
+AWS::Rekognition::Project
+AWS::Rekognition::StreamProcessor
+AWS::ResilienceHub::App,AWS Resilience Hub
+AWS::ResilienceHub::ResiliencyPolicy
+AWS::ResourceExplorer2,AWS Resource Explorer
+AWS::ResourceExplorer2::DefaultViewAssociation
+AWS::ResourceExplorer2::Index
+AWS::ResourceExplorer2::View
+AWS::ResourceGroups::Group
+AWS::RoboMaker,AWS RoboMaker
+AWS::RoboMaker::Fleet,Fleet management
+AWS::RoboMaker::Robot
+AWS::RoboMaker::RobotApplication
+AWS::RoboMaker::RobotApplicationVersion
+AWS::RoboMaker::SimulationApplication,Simulation
+AWS::RoboMaker::SimulationApplicationVersion
+AWS::RolesAnywhere::CRL
+AWS::RolesAnywhere::Profile
+AWS::RolesAnywhere::TrustAnchor
+AWS::Route53,Amazon Route 53
+AWS::Route53::CidrCollection
+AWS::Route53::DNSSEC
+AWS::Route53::HealthCheck
+AWS::Route53::HostedZone,Hosted zone
+AWS::Route53::KeySigningKey
+AWS::Route53::RecordSet
+AWS::Route53::RecordSetGroup
+AWS::Route53Resolver::FirewallDomainList
+AWS::Route53Resolver::FirewallRuleGroup,Resolver DNS firewall
+AWS::Route53Resolver::FirewallRuleGroupAssociation
+AWS::Route53Resolver::OutpostResolver
+AWS::Route53Resolver::ResolverConfig
+AWS::Route53Resolver::ResolverDNSSECConfig
+AWS::Route53Resolver::ResolverEndpoint,Resolver
+AWS::Route53Resolver::ResolverQueryLoggingConfig,Resolver query logging
+AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation
+AWS::Route53Resolver::ResolverRule
+AWS::Route53Resolver::ResolverRuleAssociation
+AWS::S3,Amazon Simple Storage Service (Amazon S3)
+AWS::S3::AccessGrant
+AWS::S3::AccessGrantsInstance
+AWS::S3::AccessGrantsLocation
+AWS::S3::AccessPoint
+AWS::S3::Bucket,Bucket
+AWS::S3::BucketPolicy
+AWS::S3::MultiRegionAccessPoint,Access points
+AWS::S3::MultiRegionAccessPointPolicy
+AWS::S3::StorageLens,S3 Storage Lens
+AWS::S3::StorageLensGroup
+AWS::S3Express::BucketPolicy
+AWS::S3Express::DirectoryBucket
+AWS::S3ObjectLambda::AccessPoint
+AWS::S3ObjectLambda::AccessPointPolicy
+AWS::S3Outposts::AccessPoint
+AWS::S3Outposts::Bucket
+AWS::S3Outposts::BucketPolicy
+AWS::S3Outposts::Endpoint
+AWS::SDB::Domain
+AWS::SES,Amazon Simple Email Service (Amazon SES)
+AWS::SES::ConfigurationSet
+AWS::SES::ConfigurationSetEventDestination
+AWS::SES::ContactList
+AWS::SES::DedicatedIpPool
+AWS::SES::EmailIdentity
+AWS::SES::ReceiptFilter
+AWS::SES::ReceiptRule
+AWS::SES::ReceiptRuleSet
+AWS::SES::Template
+AWS::SES::VdmAttributes
+AWS::SNS,Amazon Simple Notification Service (Amazon SNS)
+AWS::SNS::Subscription
+AWS::SNS::Topic,Topic
+AWS::SNS::TopicInlinePolicy
+AWS::SNS::TopicPolicy
+AWS::SQS,Amazon Simple Queue Service (Amazon SQS)
+AWS::SQS::Queue,Queue
+AWS::SQS::QueueInlinePolicy
+AWS::SQS::QueuePolicy
+AWS::SSM,AWS Systems Manager
+AWS::SSM::Association
+AWS::SSM::Document,Documents
+AWS::SSM::MaintenanceWindow,Maintenance Windows
+AWS::SSM::MaintenanceWindowTarget
+AWS::SSM::MaintenanceWindowTask
+AWS::SSM::Parameter,Parameter Store
+AWS::SSM::PatchBaseline,Patch Manager
+AWS::SSM::ResourceDataSync
+AWS::SSM::ResourcePolicy
+AWS::SSMContacts::Contact
+AWS::SSMContacts::ContactChannel
+AWS::SSMContacts::Plan
+AWS::SSMContacts::Rotation
+AWS::SSMIncidents::ReplicationSet
+AWS::SSMIncidents::ResponsePlan
+AWS::SSO::Assignment
+AWS::SSO::InstanceAccessControlAttributeConfiguration
+AWS::SSO::PermissionSet
+AWS::SageMaker,Amazon SageMaker
+AWS::SageMaker::App
+AWS::SageMaker::AppImageConfig
+AWS::SageMaker::CodeRepository
+AWS::SageMaker::DataQualityJobDefinition
+AWS::SageMaker::Device
+AWS::SageMaker::DeviceFleet
+AWS::SageMaker::Domain
+AWS::SageMaker::Endpoint
+AWS::SageMaker::EndpointConfig
+AWS::SageMaker::FeatureGroup
+AWS::SageMaker::Image
+AWS::SageMaker::ImageVersion
+AWS::SageMaker::InferenceComponent
+AWS::SageMaker::InferenceExperiment
+AWS::SageMaker::Model,Model
+AWS::SageMaker::ModelBiasJobDefinition
+AWS::SageMaker::ModelCard
+AWS::SageMaker::ModelExplainabilityJobDefinition
+AWS::SageMaker::ModelPackage
+AWS::SageMaker::ModelPackageGroup
+AWS::SageMaker::ModelQualityJobDefinition
+AWS::SageMaker::MonitoringSchedule
+AWS::SageMaker::NotebookInstance,Notebook
+AWS::SageMaker::NotebookInstanceLifecycleConfig
+AWS::SageMaker::Pipeline
+AWS::SageMaker::Project
+AWS::SageMaker::Space
+AWS::SageMaker::UserProfile
+AWS::SageMaker::Workteam
+AWS::Scheduler,Scheduler
+AWS::Scheduler::Schedule,Scheduler
+AWS::Scheduler::ScheduleGroup
+AWS::SecretsManager,AWS Secrets Manager
+AWS::SecretsManager::ResourcePolicy
+AWS::SecretsManager::RotationSchedule
+AWS::SecretsManager::Secret
+AWS::SecretsManager::SecretTargetAttachment
+AWS::SecurityHub,AWS Security Hub
+AWS::SecurityHub::AutomationRule
+AWS::SecurityHub::DelegatedAdmin
+AWS::SecurityHub::Hub
+AWS::SecurityHub::Insight
+AWS::SecurityHub::ProductSubscription
+AWS::SecurityHub::Standard
+AWS::ServiceCatalog,AWS Service Catalog
+AWS::ServiceCatalog::AcceptedPortfolioShare
+AWS::ServiceCatalog::CloudFormationProduct
+AWS::ServiceCatalog::CloudFormationProvisionedProduct
+AWS::ServiceCatalog::LaunchNotificationConstraint
+AWS::ServiceCatalog::LaunchRoleConstraint
+AWS::ServiceCatalog::LaunchTemplateConstraint
+AWS::ServiceCatalog::Portfolio
+AWS::ServiceCatalog::PortfolioPrincipalAssociation
+AWS::ServiceCatalog::PortfolioProductAssociation
+AWS::ServiceCatalog::PortfolioShare
+AWS::ServiceCatalog::ResourceUpdateConstraint
+AWS::ServiceCatalog::ServiceAction
+AWS::ServiceCatalog::ServiceActionAssociation
+AWS::ServiceCatalog::StackSetConstraint
+AWS::ServiceCatalog::TagOption
+AWS::ServiceCatalog::TagOptionAssociation
+AWS::ServiceCatalogAppRegistry::Application
+AWS::ServiceCatalogAppRegistry::AttributeGroup
+AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation
+AWS::ServiceCatalogAppRegistry::ResourceAssociation
+AWS::ServiceDiscovery,
+AWS::ServiceDiscovery::HttpNamespace
+AWS::ServiceDiscovery::Instance
+AWS::ServiceDiscovery::PrivateDnsNamespace
+AWS::ServiceDiscovery::PublicDnsNamespace
+AWS::ServiceDiscovery::Service
+AWS::Shield,AWS Shield
+AWS::Shield::DRTAccess
+AWS::Shield::ProactiveEngagement
+AWS::Shield::Protection
+AWS::Shield::ProtectionGroup
+AWS::Signer,AWS Signer
+AWS::Signer::ProfilePermission
+AWS::Signer::SigningProfile
+AWS::StepFunctions,AWS Step Functions
+AWS::StepFunctions::Activity
+AWS::StepFunctions::StateMachine
+AWS::StepFunctions::StateMachineAlias
+AWS::StepFunctions::StateMachineVersion
+AWS::SupportApp,AWS Support
+AWS::SupportApp::AccountAlias
+AWS::SupportApp::SlackChannelConfiguration
+AWS::SupportApp::SlackWorkspaceConfiguration
+AWS::Synthetics,Amazon CloudWatch
 AWS::Synthetics::Canary,Synthetics
+AWS::Synthetics::Group
+AWS::SystemsManagerSAP::Application
+AWS::Timestream,Amazon Timestream
+AWS::Timestream::Database,Amazon Timestream
+AWS::Timestream::ScheduledQuery
+AWS::Timestream::Table
+AWS::Transfer,AWS Transfer Family
+AWS::Transfer::Agreement
+AWS::Transfer::Certificate
+AWS::Transfer::Connector
+AWS::Transfer::Profile
+AWS::Transfer::Server
+AWS::Transfer::User
+AWS::Transfer::Workflow
+AWS::VerifiedPermissions,Amazon Verified Permissions
+AWS::VerifiedPermissions::IdentitySource
+AWS::VerifiedPermissions::Policy
+AWS::VerifiedPermissions::PolicyStore
+AWS::VerifiedPermissions::PolicyTemplate
+AWS::VoiceID::Domain
+AWS::VpcLattice,Amazon VPC Lattice
+AWS::VpcLattice::AccessLogSubscription
+AWS::VpcLattice::AuthPolicy
+AWS::VpcLattice::Listener
+AWS::VpcLattice::ResourcePolicy
+AWS::VpcLattice::Rule
+AWS::VpcLattice::Service,Amazon VPC Lattice
+AWS::VpcLattice::ServiceNetwork
+AWS::VpcLattice::ServiceNetworkServiceAssociation
+AWS::VpcLattice::ServiceNetworkVpcAssociation
+AWS::VpcLattice::TargetGroup
+AWS::WAF,AWS WAF
+AWS::WAF::ByteMatchSet
+AWS::WAF::IPSet
+AWS::WAF::Rule
+AWS::WAF::SizeConstraintSet
+AWS::WAF::SqlInjectionMatchSet
+AWS::WAF::WebACL,Rule(3),WebACL
+AWS::WAF::XssMatchSet
+AWS::WAFRegional,AWS WAF
+AWS::WAFRegional::ByteMatchSet
+AWS::WAFRegional::GeoMatchSet
+AWS::WAFRegional::IPSet
+AWS::WAFRegional::RateBasedRule
+AWS::WAFRegional::RegexPatternSet
+AWS::WAFRegional::Rule
+AWS::WAFRegional::SizeConstraintSet
+AWS::WAFRegional::SqlInjectionMatchSet
+AWS::WAFRegional::WebACL,Rule(3),WebACL
+AWS::WAFRegional::WebACLAssociation
+AWS::WAFRegional::XssMatchSet
 AWS::WAFv2,AWS WAF
-AWS::WAFv2::WebACL,Rule(3)
+AWS::WAFv2::IPSet
+AWS::WAFv2::LoggingConfiguration
+AWS::WAFv2::RegexPatternSet
+AWS::WAFv2::RuleGroup
+AWS::WAFv2::WebACL,Rule(3),WebACL
+AWS::WAFv2::WebACLAssociation
+AWS::Wisdom::Assistant
+AWS::Wisdom::AssistantAssociation
+AWS::Wisdom::KnowledgeBase
+AWS::WorkSpaces,Amazon WorkSpaces Family,Amazon WorkSpaces
+AWS::WorkSpaces::ConnectionAlias
+AWS::WorkSpaces::Workspace
+AWS::WorkSpacesWeb,Amazon WorkSpaces Family,Amazon WorkSpaces Web
+AWS::WorkSpacesWeb::BrowserSettings
+AWS::WorkSpacesWeb::IdentityProvider
+AWS::WorkSpacesWeb::IpAccessSettings
+AWS::WorkSpacesWeb::NetworkSettings
+AWS::WorkSpacesWeb::Portal
+AWS::WorkSpacesWeb::TrustStore
+AWS::WorkSpacesWeb::UserAccessLoggingSettings
+AWS::WorkSpacesWeb::UserSettings
+AWS::XRay,AWS X-Ray
+AWS::XRay::Group
+AWS::XRay::ResourcePolicy
+AWS::XRay::SamplingRule
