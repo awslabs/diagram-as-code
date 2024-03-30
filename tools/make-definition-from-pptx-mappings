@@ -6,8 +6,8 @@ AWS::ACMPCA::Permission
 AWS::APS,Amazon Managed Service for Prometheus
 AWS::APS::RuleGroupsNamespace
 AWS::APS::Workspace,Amazon Managed Service for Prometheus
-AWS::ARCZonalShift
-AWS::ARCZonalShift::ZonalAutoshiftConfiguration
+AWS::ARCZonalShift,Route 53 Application Recovery Controller
+AWS::ARCZonalShift::ZonalAutoshiftConfiguration,Route 53 Application Recovery Controller
 AWS::AccessAnalyzer,IAM Access Analyzer
 AWS::AccessAnalyzer::Analyzer,IAM Access Analyzer
 AWS::AmazonMQ,Amazon MQ
@@ -18,6 +18,7 @@ AWS::Amplify,AWS Amplify
 AWS::Amplify::App,AWS Amplify
 AWS::Amplify::Branch
 AWS::Amplify::Domain
+AWS::AmplifyUIBuilder,AWS Amplify,AWS Amplify UI Builder
 AWS::AmplifyUIBuilder::Component
 AWS::AmplifyUIBuilder::Form
 AWS::AmplifyUIBuilder::Theme
@@ -120,6 +121,7 @@ AWS::Athena::DataCatalog
 AWS::Athena::NamedQuery
 AWS::Athena::PreparedStatement
 AWS::Athena::WorkGroup,Amazon Athena
+AWS::AuditManager,AWS Audit Manager
 AWS::AuditManager::Assessment,AWS Audit Manager
 AWS::AutoScaling,Amazon EC2 Auto Scaling
 AWS::AutoScaling::AutoScalingGroup
@@ -128,7 +130,7 @@ AWS::AutoScaling::LifecycleHook
 AWS::AutoScaling::ScalingPolicy
 AWS::AutoScaling::ScheduledAction
 AWS::AutoScaling::WarmPool
-AWS::AutoScalingPlans::ScalingPlan
+AWS::AutoScalingPlans::ScalingPlan,AWS Auto Scaling
 AWS::Backup,AWS Backup
 AWS::Backup::BackupPlan,Backup plan
 AWS::Backup::BackupSelection
@@ -137,13 +139,15 @@ AWS::Backup::Framework
 AWS::Backup::ReportPlan
 AWS::Backup::RestoreTestingPlan
 AWS::Backup::RestoreTestingSelection
-AWS::BackupGateway::Hypervisor
+AWS::BackupGateway,AWS Backup,AWS Backup Gateway
+AWS::BackupGateway::Hypervisor,AWS Backup,AWS Backup Gateway
 AWS::Batch,AWS Batch
 AWS::Batch::ComputeEnvironment
 AWS::Batch::JobDefinition
 AWS::Batch::JobQueue
 AWS::Batch::SchedulingPolicy
-AWS::Budgets::Budget
+AWS::Budgets,AWS Budgets
+AWS::Budgets::Budget,AWS Budgets
 AWS::Budgets::BudgetsAction
 AWS::CE,AWS Cost Explorer
 AWS::CE::AnomalyMonitor
@@ -164,8 +168,8 @@ AWS::CleanRooms::Collaboration
 AWS::CleanRooms::ConfiguredTable
 AWS::CleanRooms::ConfiguredTableAssociation
 AWS::CleanRooms::Membership
-AWS::AWS Cloud9
-AWS::Cloud9::EnvironmentEC2
+AWS::AWS Cloud9,AWS Cloud9
+AWS::Cloud9::EnvironmentEC2,AWS Cloud9
 AWS::CloudFormation,AWS CloudFormation
 AWS::CloudFormation::CustomResource
 AWS::CloudFormation::HookDefaultVersion
@@ -225,17 +229,20 @@ AWS::CodeDeploy,AWS CodeDeploy
 AWS::CodeDeploy::Application,AWS CodeDeploy
 AWS::CodeDeploy::DeploymentConfig
 AWS::CodeDeploy::DeploymentGroup
-AWS::CodeGuruProfiler::ProfilingGroup
-AWS::CodeGuruReviewer::RepositoryAssociation
+AWS::CodeGuruProfiler,Amazon CodeGuru,Amazon CodeGuru Profiler
+AWS::CodeGuruProfiler::ProfilingGroup,Amazon CodeGuru,Amazon CodeGuru Profiler
+AWS::CodeGuruReviewer::RepositoryAssociation,Amazon CodeGuru,Amazon CodeGuru Reviewer
 AWS::CodePipeline,AWS CodePipeline
 AWS::CodePipeline::CustomActionType
 AWS::CodePipeline::Pipeline,AWS CodePipeline
 AWS::CodePipeline::Webhook
 AWS::CodeStar,AWS CodeStar
 AWS::CodeStar::GitHubRepository,AWS CodeStar
+AWS::CodeStarConnections,AWS CodeStar,AWS CodeStar Connections
 AWS::CodeStarConnections::Connection
 AWS::CodeStarConnections::RepositoryLink
 AWS::CodeStarConnections::SyncConfiguration
+AWS::CodeStarNotifications,AWS CodeStar Notifications
 AWS::CodeStarNotifications::NotificationRule
 AWS::Cognito,Amazon Cognito
 AWS::Cognito::IdentityPool,Amazon Cognito,Amazon Cognito Identity Pool
@@ -293,15 +300,17 @@ AWS::ControlTower,AWS Control Tower
 AWS::ControlTower::EnabledBaseline
 AWS::ControlTower::EnabledControl
 AWS::ControlTower::LandingZone
+AWS::CustomerProfiles,Amazon Connect,Amazon Connect Customer Profiles
 AWS::CustomerProfiles::CalculatedAttributeDefinition
 AWS::CustomerProfiles::Domain
 AWS::CustomerProfiles::EventStream
 AWS::CustomerProfiles::Integration
 AWS::CustomerProfiles::ObjectType
+AWS::DAX,Amazon DynamoDB,Amazon DynamoDB Accelerator (DAX)
 AWS::DAX::Cluster,Amazon DynamoDB Accelerator (DAX)
 AWS::DAX::ParameterGroup
 AWS::DAX::SubnetGroup
-AWS::DLM::LifecyclePolicy
+AWS::DLM::LifecyclePolicy,Amazon Elastic Block Store (Amazon EBS),Amazon Data Lifecycle Manager
 AWS::DMS,AWS Database Migration Service (AWS DMS)
 AWS::DMS::Certificate
 AWS::DMS::DataProvider
@@ -320,6 +329,7 @@ AWS::DataBrew::Project
 AWS::DataBrew::Recipe
 AWS::DataBrew::Ruleset
 AWS::DataBrew::Schedule
+AWS::DataPipeline,AWS Data Pipeline
 AWS::DataPipeline::Pipeline,AWS Data Pipeline
 AWS::DataSync,AWS DataSync
 AWS::DataSync::Agent,Agent
@@ -366,6 +376,7 @@ AWS::DocDBElastic::Cluster,Amazon DocumentDB Elastic Clusters
 AWS::DynamoDB,Amazon DynamoDB
 AWS::DynamoDB::GlobalTable,Table
 AWS::DynamoDB::Table,Table
+AWS::EC2,Amazon Elastic Compute Cloud (Amazon EC2)
 AWS::EC2::CapacityReservation
 AWS::EC2::CapacityReservationFleet
 AWS::EC2::CarrierGateway,Carrier gateway
@@ -490,7 +501,9 @@ AWS::EMR::Step
 AWS::EMR::Studio
 AWS::EMR::StudioSessionMapping
 AWS::EMR::WALWorkspace
+AWS::EMRContainers,Amazon EMR,Amazon EMR Containers
 AWS::EMRContainers::VirtualCluster
+AWS::EMRServerless,Amazon EMR,Amazon EMR Serverless
 AWS::EMRServerless::Application
 AWS::ElastiCache,Amazon ElastiCache
 AWS::ElastiCache::CacheCluster,Amazon ElastiCache
@@ -510,7 +523,7 @@ AWS::ElasticBeanstalk::ConfigurationTemplate
 AWS::ElasticBeanstalk::Environment
 AWS::ElasticLoadBalancing,Elastic Load Balancing
 AWS::ElasticLoadBalancing::LoadBalancer,Elastic Load Balancing
-AWS::ElasitcLoadBalancingV2,Elastic Load Balancing
+AWS::ElasticLoadBalancingV2,Elastic Load Balancing
 AWS::ElasticLoadBalancingV2::Listener
 AWS::ElasticLoadBalancingV2::ListenerCertificate
 AWS::ElasticLoadBalancingV2::ListenerRule
@@ -518,6 +531,7 @@ AWS::ElasticLoadBalancingV2::LoadBalancer
 AWS::ElasticLoadBalancingV2::TargetGroup
 AWS::ElasticLoadBalancingV2::TrustStore
 AWS::ElasticLoadBalancingV2::TrustStoreRevocation
+AWS::Elasticsearch,Amazon OpenSearch Service
 AWS::Elasticsearch::Domain
 AWS::EntityResolution,AWS Entity Resolution
 AWS::EntityResolution::MatchingWorkflow
@@ -544,6 +558,7 @@ AWS::Evidently::Segment
 AWS::FIS,AWS Fault Injection Simulator
 AWS::FIS::ExperimentTemplate,AWS Fault Injection Simulator
 AWS::FIS::TargetAccountConfiguration
+AWS::FMS,AWS Firewall Manager
 AWS::FMS::NotificationChannel
 AWS::FMS::Policy
 AWS::FMS::ResourceSet
@@ -556,7 +571,7 @@ AWS::FSx::Volume
 AWS::Forecast,Amazon Forecast
 AWS::Forecast::Dataset
 AWS::Forecast::DatasetGroup
-AWS::GameList,Amazon GameLift
+AWS::GameLift,Amazon GameLift
 AWS::GameLift::Alias
 AWS::GameLift::Build
 AWS::GameLift::Fleet
@@ -592,6 +607,7 @@ AWS::Glue::Table
 AWS::Glue::TableOptimizer
 AWS::Glue::Trigger
 AWS::Glue::Workflow
+AWS::Grafana,Amazon Managed Grafana
 AWS::Grafana::Workspace,Amazon Managed Grafana
 AWS::Greengrass,AWS IoT Greengrass
 AWS::Greengrass::ConnectorDefinition
@@ -610,6 +626,7 @@ AWS::Greengrass::ResourceDefinition
 AWS::Greengrass::ResourceDefinitionVersion
 AWS::Greengrass::SubscriptionDefinition
 AWS::Greengrass::SubscriptionDefinitionVersion
+AWS::Greengrass,AWS IoT Greengrass
 AWS::GreengrassV2::ComponentVersion
 AWS::GreengrassV2::Deployment
 AWS::GuardDuty,Amazon GuardDuty
@@ -642,6 +659,7 @@ AWS::IVS::PlaybackKeyPair
 AWS::IVS::RecordingConfiguration
 AWS::IVS::Stage
 AWS::IVS::StreamKey
+AWS::IVSChat,Amazon Interactive Video Service,Amazon Interactive Video Service Chat
 AWS::IVSChat::LoggingConfiguration
 AWS::IVSChat::Room
 AWS::IdentityStore::Group
@@ -702,7 +720,8 @@ AWS::IoTAnalytics::Channel,Channel
 AWS::IoTAnalytics::Dataset,Dataset
 AWS::IoTAnalytics::Datastore,Data store
 AWS::IoTAnalytics::Pipeline,Pipeline
-AWS::IoTCoreDeviceAdvisor::SuiteDefinition
+AWS::IoTCoreDeviceAdvisor,AWS IoT Core,AWS IoT Core Device Advisor
+AWS::IoTCoreDeviceAdvisor::SuiteDefinition,Device Advisor
 AWS::IoTEvents,AWS IoT Events
 AWS::IoTEvents::AlarmModel
 AWS::IoTEvents::DetectorModel
@@ -746,9 +765,10 @@ AWS::Kendra,Amazon Kendra
 AWS::Kendra::DataSource
 AWS::Kendra::Faq
 AWS::Kendra::Index
+AWS::KendraRanking,Amazon Kendra,Amazon Kendra Ranking
 AWS::KendraRanking::ExecutionPlan
 AWS::Kinesis,Amazon Kinesis
-AWS::Kinesis::Stream
+AWS::Kinesis::Stream,Amazon Kinesis Data Streams
 AWS::Kinesis::StreamConsumer
 AWS::KinesisAnalytics::Application
 AWS::KinesisAnalytics::ApplicationOutput
@@ -827,6 +847,7 @@ AWS::LookoutMetrics::Alert
 AWS::LookoutMetrics::AnomalyDetector
 AWS::LookoutVision,Amazon Lookout for Vision
 AWS::LookoutVision::Project
+AWS::M2,AWS Mainframe Modernization
 AWS::M2::Application
 AWS::M2::Environment
 AWS::MSK,Amazon Managed Streaming for Apache Kafka (Amazon MSK)
@@ -858,6 +879,7 @@ AWS::MediaConnect::FlowOutput
 AWS::MediaConnect::FlowSource
 AWS::MediaConnect::FlowVpcInterface
 AWS::MediaConnect::Gateway,MediaConnect Gateway
+AWS::MediaConvert,AWS Elemental MediaConvert
 AWS::MediaConvert::JobTemplate
 AWS::MediaConvert::Preset
 AWS::MediaConvert::Queue
@@ -900,6 +922,7 @@ AWS::Neptune::DBClusterParameterGroup
 AWS::Neptune::DBInstance
 AWS::Neptune::DBParameterGroup
 AWS::Neptune::DBSubnetGroup
+AWS::NeptuneGraph,Amazon Neptune,Amazon Neptune Graph
 AWS::NeptuneGraph::Graph
 AWS::NeptuneGraph::PrivateGraphEndpoint
 AWS::NetworkFirewall,AWS Network Firewall
@@ -928,15 +951,19 @@ AWS::NimbleStudio::LaunchProfile
 AWS::NimbleStudio::StreamingImage
 AWS::NimbleStudio::Studio
 AWS::NimbleStudio::StudioComponent
+AWS::OSIS,Amazon OpenSearch Service,Amazon OpenSearch Ingestion Service
 AWS::OSIS::Pipeline
+AWS::Oam,Amazon CloudWatch
 AWS::Oam::Link
 AWS::Oam::Sink
+AWS::OpenSearchServerless,Amazon OpenSearch Service,Amazon OpenSearch Service Serverless
 AWS::OpenSearchServerless::AccessPolicy
 AWS::OpenSearchServerless::Collection
 AWS::OpenSearchServerless::LifecyclePolicy
 AWS::OpenSearchServerless::SecurityConfig
 AWS::OpenSearchServerless::SecurityPolicy
 AWS::OpenSearchServerless::VpcEndpoint
+AWS::OpenSearchService,Amazon OpenSearch Service
 AWS::OpenSearchService::Domain
 AWS::OpsWorks,AWS OpsWorks
 AWS::OpsWorks::App,Apps
@@ -946,6 +973,7 @@ AWS::OpsWorks::Layer,Layers
 AWS::OpsWorks::Stack,Stack2
 AWS::OpsWorks::UserProfile
 AWS::OpsWorks::Volume
+AWS::OpsWorksCM,AWS OpsWorks,AWS OpsWorks Configuration Management
 AWS::OpsWorksCM::Server
 AWS::Organizations,AWS Organizations
 AWS::Organizations::Account,Account
@@ -963,7 +991,7 @@ AWS::Personalize::Dataset
 AWS::Personalize::DatasetGroup
 AWS::Personalize::Schema
 AWS::Personalize::Solution
-AWS::Pinpoing,Amazon Pinpoint
+AWS::Pinpoint,Amazon Pinpoint
 AWS::Pinpoint::ADMChannel
 AWS::Pinpoint::APNSChannel
 AWS::Pinpoint::APNSSandboxChannel
@@ -983,6 +1011,7 @@ AWS::Pinpoint::SMSChannel
 AWS::Pinpoint::Segment
 AWS::Pinpoint::SmsTemplate
 AWS::Pinpoint::VoiceChannel
+AWS::Pipes,Amazon CloudWatch,Amazon EventBridge Pipes
 AWS::Pipes::Pipe,Pipes
 AWS::Proton,AWS Proton
 AWS::Proton::EnvironmentAccountConnection
@@ -1000,6 +1029,7 @@ AWS::QuickSight::RefreshSchedule
 AWS::QuickSight::Template
 AWS::QuickSight::Theme
 AWS::QuickSight::VPCConnection
+AWS::RAM,AWS Resource Access Manager
 AWS::RAM::Permission
 AWS::RAM::ResourceShare
 AWS::RDS,Amazon Relational Database Service (Amazon RDS)
@@ -1042,6 +1072,7 @@ AWS::Rekognition,Amazon Rekognition
 AWS::Rekognition::Collection
 AWS::Rekognition::Project
 AWS::Rekognition::StreamProcessor
+AWS::ResilienceHub,AWS Resilience Hub
 AWS::ResilienceHub::App,AWS Resilience Hub
 AWS::ResilienceHub::ResiliencyPolicy
 AWS::ResourceExplorer2,AWS Resource Explorer
@@ -1056,6 +1087,7 @@ AWS::RoboMaker::RobotApplication
 AWS::RoboMaker::RobotApplicationVersion
 AWS::RoboMaker::SimulationApplication,Simulation
 AWS::RoboMaker::SimulationApplicationVersion
+AWS::RolesAnywhere,AWS Identity and Access Management (IAM)
 AWS::RolesAnywhere::CRL
 AWS::RolesAnywhere::Profile
 AWS::RolesAnywhere::TrustAnchor
@@ -1089,10 +1121,13 @@ AWS::S3::MultiRegionAccessPoint,Access points
 AWS::S3::MultiRegionAccessPointPolicy
 AWS::S3::StorageLens,S3 Storage Lens
 AWS::S3::StorageLensGroup
+AWS::S3Express,Amazon Simple Storage Service (Amazon S3),Amazon Simple Storage Service (Amazon S3) Express
 AWS::S3Express::BucketPolicy
 AWS::S3Express::DirectoryBucket
+AWS::S3ObjectLambda,Amazon Simple Storage Service (Amazon S3),Amazon Simple Storage Service (Amazon S3) Object Lambda
 AWS::S3ObjectLambda::AccessPoint
 AWS::S3ObjectLambda::AccessPointPolicy
+AWS::S3Outposts,Amazon Simple Storage Service (Amazon S3),Amazon Simple Storage Service (Amazon S3) Outposts
 AWS::S3Outposts::AccessPoint
 AWS::S3Outposts::Bucket
 AWS::S3Outposts::BucketPolicy
@@ -1128,12 +1163,15 @@ AWS::SSM::Parameter,Parameter Store
 AWS::SSM::PatchBaseline,Patch Manager
 AWS::SSM::ResourceDataSync
 AWS::SSM::ResourcePolicy
+AWS::SSMContacts,AWS Systems Manager Contacts
 AWS::SSMContacts::Contact
 AWS::SSMContacts::ContactChannel
 AWS::SSMContacts::Plan
 AWS::SSMContacts::Rotation
+AWS::SSMIncidents,AWS Systems Manager,AWS Systems Manager Incidents
 AWS::SSMIncidents::ReplicationSet
 AWS::SSMIncidents::ResponsePlan
+AWS::SSO,AWS Identity and Access Management (IAM),Single-Sign on
 AWS::SSO::Assignment
 AWS::SSO::InstanceAccessControlAttributeConfiguration
 AWS::SSO::PermissionSet
@@ -1199,11 +1237,12 @@ AWS::ServiceCatalog::ServiceActionAssociation
 AWS::ServiceCatalog::StackSetConstraint
 AWS::ServiceCatalog::TagOption
 AWS::ServiceCatalog::TagOptionAssociation
+AWS::ServiceCatalog,AWS Service Catalog,AWS Service Catalog Application Registry
 AWS::ServiceCatalogAppRegistry::Application
 AWS::ServiceCatalogAppRegistry::AttributeGroup
 AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation
 AWS::ServiceCatalogAppRegistry::ResourceAssociation
-AWS::ServiceDiscovery,
+AWS::ServiceDiscovery,AWS Service Catalog
 AWS::ServiceDiscovery::HttpNamespace
 AWS::ServiceDiscovery::Instance
 AWS::ServiceDiscovery::PrivateDnsNamespace
@@ -1229,6 +1268,7 @@ AWS::SupportApp::SlackWorkspaceConfiguration
 AWS::Synthetics,Amazon CloudWatch
 AWS::Synthetics::Canary,Synthetics
 AWS::Synthetics::Group
+AWS::SystemsManagerSAP,AWS Systems Manager,AWS Systems Manager for SAP
 AWS::SystemsManagerSAP::Application
 AWS::Timestream,Amazon Timestream
 AWS::Timestream::Database,Amazon Timestream
@@ -1247,6 +1287,7 @@ AWS::VerifiedPermissions::IdentitySource
 AWS::VerifiedPermissions::Policy
 AWS::VerifiedPermissions::PolicyStore
 AWS::VerifiedPermissions::PolicyTemplate
+AWS::VoiceID,Amazon Connect
 AWS::VoiceID::Domain
 AWS::VpcLattice,Amazon VPC Lattice
 AWS::VpcLattice::AccessLogSubscription
@@ -1286,6 +1327,7 @@ AWS::WAFv2::RegexPatternSet
 AWS::WAFv2::RuleGroup
 AWS::WAFv2::WebACL,Rule(3),WebACL
 AWS::WAFv2::WebACLAssociation
+AWS::Wisdom,Amazon Connect,Amazon Connect Wisdom
 AWS::Wisdom::Assistant
 AWS::Wisdom::AssistantAssociation
 AWS::Wisdom::KnowledgeBase

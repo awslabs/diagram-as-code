@@ -201,6 +201,24 @@ Definitions:
       Title: "Amazon Managed Service for Prometheus"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::ARCZonalShift:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1277.png"
+    Label:
+      Title: "Route 53 Application Recovery Controller"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::ARCZonalShift::ZonalAutoshiftConfiguration:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1277.png"
+    Label:
+      Title: "Route 53 Application Recovery Controller"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::AccessAnalyzer:
     Type: Resource
     Icon:
@@ -247,6 +265,15 @@ Definitions:
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::Amplify::App:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image686.png"
+    Label:
+      Title: "AWS Amplify"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::AmplifyUIBuilder:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
@@ -426,6 +453,15 @@ Definitions:
       Title: "Amazon Athena"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::AuditManager:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1505.png"
+    Label:
+      Title: "AWS Audit Manager"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::AuditManager::Assessment:
     Type: Resource
     Icon:
@@ -442,6 +478,15 @@ Definitions:
       Path: "image17.png"
     Label:
       Title: "Amazon EC2 Auto Scaling"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::AutoScalingPlans::ScalingPlan:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1029.png"
+    Label:
+      Title: "AWS Auto Scaling"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::Backup:
@@ -471,6 +516,24 @@ Definitions:
       Title: "Backup vault"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::BackupGateway:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1593.png"
+    Label:
+      Title: "AWS Backup"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::BackupGateway::Hypervisor:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1593.png"
+    Label:
+      Title: "AWS Backup"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Batch:
     Type: Resource
     Icon:
@@ -478,6 +541,24 @@ Definitions:
       Path: "image468.png"
     Label:
       Title: "AWS Batch"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Budgets:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image378.png"
+    Label:
+      Title: "AWS Budgets"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Budgets::Budget:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image378.png"
+    Label:
+      Title: "AWS Budgets"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::CE:
@@ -514,6 +595,24 @@ Definitions:
       Path: "image271.png"
     Label:
       Title: "AWS Clean Rooms"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::AWS Cloud9:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image634.png"
+    Label:
+      Title: "AWS Cloud9"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Cloud9::EnvironmentEC2:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image634.png"
+    Label:
+      Title: "AWS Cloud9"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::CloudFormation:
@@ -651,6 +750,33 @@ Definitions:
       Title: "AWS CodeDeploy"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::CodeGuruProfiler:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image965.png"
+    Label:
+      Title: "Amazon CodeGuru"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::CodeGuruProfiler::ProfilingGroup:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image965.png"
+    Label:
+      Title: "Amazon CodeGuru"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::CodeGuruReviewer::RepositoryAssociation:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image965.png"
+    Label:
+      Title: "Amazon CodeGuru"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::CodePipeline:
     Type: Resource
     Icon:
@@ -679,6 +805,15 @@ Definitions:
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::CodeStar::GitHubRepository:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image646.png"
+    Label:
+      Title: "AWS CodeStar"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::CodeStarConnections:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
@@ -750,6 +885,24 @@ Definitions:
       Title: "AWS Control Tower"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::CustomerProfiles:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image355.png"
+    Label:
+      Title: "Amazon Connect"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::DAX:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image544.png"
+    Label:
+      Title: "Amazon DynamoDB"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::DAX::Cluster:
     Type: Resource
     Icon:
@@ -757,6 +910,15 @@ Definitions:
       Path: "image550.png"
     Label:
       Title: "Amazon DynamoDB Accelerator (DAX)"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::DLM::LifecyclePolicy:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1525.png"
+    Label:
+      Title: "Amazon Elastic Block Store (Amazon EBS)"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::DMS:
@@ -775,6 +937,15 @@ Definitions:
       Path: "image259.png"
     Label:
       Title: "AWS Glue DataBrew"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::DataPipeline:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image249.png"
+    Label:
+      Title: "AWS Data Pipeline"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::DataPipeline::Pipeline:
@@ -928,6 +1099,15 @@ Definitions:
       Path: "image556.png"
     Label:
       Title: "Table"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EC2:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image9.png"
+    Label:
+      Title: "Amazon Elastic Compute Cloud (Amazon EC2)"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::EC2::CarrierGateway:
@@ -1191,6 +1371,24 @@ Definitions:
       Title: "Cluster"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::EMRContainers:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image177.png"
+    Label:
+      Title: "Amazon EMR"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::EMRServerless:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image177.png"
+    Label:
+      Title: "Amazon EMR"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::ElastiCache:
     Type: Resource
     Icon:
@@ -1245,13 +1443,22 @@ Definitions:
       Title: "Elastic Load Balancing"
       Color: "rgba(0, 0, 0, 255)"
 
-  AWS::ElasitcLoadBalancingV2:
+  AWS::ElasticLoadBalancingV2:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image1341.png"
     Label:
       Title: "Elastic Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Elasticsearch:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image211.png"
+    Label:
+      Title: "Amazon OpenSearch Service"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::EntityResolution:
@@ -1317,6 +1524,15 @@ Definitions:
       Title: "AWS Fault Injection Simulator"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::FMS:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1443.png"
+    Label:
+      Title: "AWS Firewall Manager"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::FSx:
     Type: Resource
     Icon:
@@ -1344,7 +1560,7 @@ Definitions:
       Title: "Amazon Forecast"
       Color: "rgba(0, 0, 0, 255)"
 
-  AWS::GameList:
+  AWS::GameLift:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
@@ -1389,6 +1605,15 @@ Definitions:
       Title: "Crawler"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::Grafana:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1143.png"
+    Label:
+      Title: "Amazon Managed Grafana"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Grafana::Workspace:
     Type: Resource
     Icon:
@@ -1396,6 +1621,15 @@ Definitions:
       Path: "image1143.png"
     Label:
       Title: "Amazon Managed Grafana"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Greengrass:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image58.png"
+    Label:
+      Title: "AWS IoT Greengrass"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::Greengrass:
@@ -1435,6 +1669,15 @@ Definitions:
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::IVS:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1189.png"
+    Label:
+      Title: "Amazon Interactive Video Service"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::IVSChat:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
@@ -1533,6 +1776,24 @@ Definitions:
       Title: "Pipeline"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::IoTCoreDeviceAdvisor:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image736.png"
+    Label:
+      Title: "AWS IoT Core"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::IoTCoreDeviceAdvisor::SuiteDefinition:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image738.png"
+    Label:
+      Title: "Device Advisor"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::IoTEvents:
     Type: Resource
     Icon:
@@ -1623,6 +1884,15 @@ Definitions:
       Title: "Amazon Kendra"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::KendraRanking:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image963.png"
+    Label:
+      Title: "Amazon Kendra"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Kinesis:
     Type: Resource
     Icon:
@@ -1630,6 +1900,15 @@ Definitions:
       Path: "image189.png"
     Label:
       Title: "Amazon Kinesis"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Kinesis::Stream:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image193.png"
+    Label:
+      Title: "Amazon Kinesis Data Streams"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::KinesisFirehose:
@@ -1740,6 +2019,15 @@ Definitions:
       Title: "Amazon Lookout for Vision"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::M2:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1233.png"
+    Label:
+      Title: "AWS Mainframe Modernization"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::MSK:
     Type: Resource
     Icon:
@@ -1792,6 +2080,15 @@ Definitions:
       Path: "image1171.png"
     Label:
       Title: "MediaConnect Gateway"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::MediaConvert:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1173.png"
+    Label:
+      Title: "AWS Elemental MediaConvert"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::MediaLive:
@@ -1857,6 +2154,15 @@ Definitions:
       Title: "Amazon Neptune"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::NeptuneGraph:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image572.png"
+    Label:
+      Title: "Amazon Neptune"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::NetworkFirewall:
     Type: Resource
     Icon:
@@ -1900,6 +2206,42 @@ Definitions:
       Path: "image1193.png"
     Label:
       Title: "Amazon Nimble Studio"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::OSIS:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image211.png"
+    Label:
+      Title: "Amazon OpenSearch Service"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Oam:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1005.png"
+    Label:
+      Title: "Amazon CloudWatch"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::OpenSearchServerless:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image211.png"
+    Label:
+      Title: "Amazon OpenSearch Service"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::OpenSearchService:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image211.png"
+    Label:
+      Title: "Amazon OpenSearch Service"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::OpsWorks:
@@ -1947,6 +2289,15 @@ Definitions:
       Title: "Stack2"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::OpsWorksCM:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1053.png"
+    Label:
+      Title: "AWS OpsWorks"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Organizations:
     Type: Resource
     Icon:
@@ -1992,13 +2343,22 @@ Definitions:
       Title: "Amazon Personalize"
       Color: "rgba(0, 0, 0, 255)"
 
-  AWS::Pinpoing:
+  AWS::Pinpoint:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image357.png"
     Label:
       Title: "Amazon Pinpoint"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Pipes:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1005.png"
+    Label:
+      Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::Pipes::Pipe:
@@ -2035,6 +2395,15 @@ Definitions:
       Path: "image30.png"
     Label:
       Title: "Amazon QuickSight"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::RAM:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1503.png"
+    Label:
+      Title: "AWS Resource Access Manager"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::RDS:
@@ -2127,6 +2496,15 @@ Definitions:
       Title: "Amazon Rekognition"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::ResilienceHub:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1153.png"
+    Label:
+      Title: "AWS Resilience Hub"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::ResilienceHub::App:
     Type: Resource
     Icon:
@@ -2170,6 +2548,15 @@ Definitions:
       Path: "image1407.png"
     Label:
       Title: "Simulation"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::RolesAnywhere:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1445.png"
+    Label:
+      Title: "AWS Identity and Access Management (IAM)"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::Route53:
@@ -2251,6 +2638,33 @@ Definitions:
       Path: "image1657.png"
     Label:
       Title: "S3 Storage Lens"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::S3Express:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1633.png"
+    Label:
+      Title: "Amazon Simple Storage Service (Amazon S3)"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::S3ObjectLambda:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1633.png"
+    Label:
+      Title: "Amazon Simple Storage Service (Amazon S3)"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::S3Outposts:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1633.png"
+    Label:
+      Title: "Amazon Simple Storage Service (Amazon S3)"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::SES:
@@ -2343,6 +2757,24 @@ Definitions:
       Title: "Patch Manager"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::SSMIncidents:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1077.png"
+    Label:
+      Title: "AWS Systems Manager"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::SSO:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1445.png"
+    Label:
+      Title: "AWS Identity and Access Management (IAM)"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::SageMaker:
     Type: Resource
     Icon:
@@ -2415,6 +2847,24 @@ Definitions:
       Title: "AWS Service Catalog"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::ServiceCatalog:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1075.png"
+    Label:
+      Title: "AWS Service Catalog"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::ServiceDiscovery:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1075.png"
+    Label:
+      Title: "AWS Service Catalog"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Shield:
     Type: Resource
     Icon:
@@ -2469,6 +2919,15 @@ Definitions:
       Title: "Synthetics"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::SystemsManagerSAP:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1077.png"
+    Label:
+      Title: "AWS Systems Manager"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Timestream:
     Type: Resource
     Icon:
@@ -2503,6 +2962,15 @@ Definitions:
       Path: "image1515.png"
     Label:
       Title: "Amazon Verified Permissions"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::VoiceID:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image355.png"
+    Label:
+      Title: "Amazon Connect"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::VpcLattice:
@@ -2575,6 +3043,15 @@ Definitions:
       Path: "image1487.png"
     Label:
       Title: "Rule"
+      Color: "rgba(0, 0, 0, 255)"
+
+  AWS::Wisdom:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image355.png"
+    Label:
+      Title: "Amazon Connect"
       Color: "rgba(0, 0, 0, 255)"
 
   AWS::WorkSpaces:
