@@ -1452,6 +1452,15 @@ Definitions:
       Title: "Elastic Load Balancing"
       Color: "rgba(0, 0, 0, 255)"
 
+  AWS::ElasticLoadBalancingV2::LoadBalancer:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1341.png"
+    Label:
+      Title: "Elastic Load Balancing"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Elasticsearch:
     Type: Resource
     Icon:
@@ -1632,7 +1641,7 @@ Definitions:
       Title: "AWS IoT Greengrass"
       Color: "rgba(0, 0, 0, 255)"
 
-  AWS::Greengrass:
+  AWS::GreengrassV2:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
@@ -2847,7 +2856,7 @@ Definitions:
       Title: "AWS Service Catalog"
       Color: "rgba(0, 0, 0, 255)"
 
-  AWS::ServiceCatalog:
+  AWS::ServiceCatalogAppRegistry:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia

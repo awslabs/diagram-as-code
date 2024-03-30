@@ -527,7 +527,7 @@ AWS::ElasticLoadBalancingV2,Elastic Load Balancing
 AWS::ElasticLoadBalancingV2::Listener
 AWS::ElasticLoadBalancingV2::ListenerCertificate
 AWS::ElasticLoadBalancingV2::ListenerRule
-AWS::ElasticLoadBalancingV2::LoadBalancer
+AWS::ElasticLoadBalancingV2::LoadBalancer,Elastic Load Balancing
 AWS::ElasticLoadBalancingV2::TargetGroup
 AWS::ElasticLoadBalancingV2::TrustStore
 AWS::ElasticLoadBalancingV2::TrustStoreRevocation
@@ -626,7 +626,7 @@ AWS::Greengrass::ResourceDefinition
 AWS::Greengrass::ResourceDefinitionVersion
 AWS::Greengrass::SubscriptionDefinition
 AWS::Greengrass::SubscriptionDefinitionVersion
-AWS::Greengrass,AWS IoT Greengrass
+AWS::GreengrassV2,AWS IoT Greengrass
 AWS::GreengrassV2::ComponentVersion
 AWS::GreengrassV2::Deployment
 AWS::GuardDuty,Amazon GuardDuty
@@ -1237,7 +1237,7 @@ AWS::ServiceCatalog::ServiceActionAssociation
 AWS::ServiceCatalog::StackSetConstraint
 AWS::ServiceCatalog::TagOption
 AWS::ServiceCatalog::TagOptionAssociation
-AWS::ServiceCatalog,AWS Service Catalog,AWS Service Catalog Application Registry
+AWS::ServiceCatalogAppRegistry,AWS Service Catalog,AWS Service Catalog Application Registry
 AWS::ServiceCatalogAppRegistry::Application
 AWS::ServiceCatalogAppRegistry::AttributeGroup
 AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation
