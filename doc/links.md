@@ -35,6 +35,10 @@ Arrows add context and meaning to a diagram by indicating the direction of flow.
 ```
     - Source: ALB
       SourcePosition: NNW
+      SourceArrowHead: #(optional)
+        Type: Open #(required) Open/Default
+        Width: Default #  (optional) Narrow/Default/Wide default="Default"
+        Length: 2 # (optional) default=2
       Target: VPCPublicSubnet1Instance
       TargetPosition: SSE
       TargetArrowHead: #(optional)
