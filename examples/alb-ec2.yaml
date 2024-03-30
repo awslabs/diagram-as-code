@@ -60,15 +60,23 @@ Diagram:
       SourcePosition: NNW
       Target: VPCPublicSubnet1Instance
       TargetPosition: SSE
+      TargetArrowHead:
+        Type: Open
     - Source: ALB
       SourcePosition: NNE
       Target: VPCPublicSubnet2Instance
       TargetPosition: SSW
+      TargetArrowHead:
+        Type: Open
     - Source: IGW
       SourcePosition: N
       Target: ALB
       TargetPosition: S
+      TargetArrowHead:
+        Type: Open
     - Source: User
       SourcePosition: N
       Target: IGW
       TargetPosition: S
+      TargetArrowHead:
+        Type: Open

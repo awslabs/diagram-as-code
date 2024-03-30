@@ -12,21 +12,31 @@ import (
 )
 
 type Link struct {
-	Source         *Node
-	SourcePosition string
-	Target         *Node
-	TargetPosition string
-	LineWidth      int
-	drawn          bool
-	lineColor      color.RGBA
+	Source          *Node
+	SourcePosition  string
+	SourceArrowHead ArrowHead
+	Target          *Node
+	TargetPosition  string
+	TargetArrowHead ArrowHead
+	LineWidth       int
+	drawn           bool
+	lineColor       color.RGBA
 }
 
-func (l Link) Init(source *Node, sourcePosition string, target *Node, targetPosition string, lineWidth int) *Link {
+type ArrowHead struct {
+	Type   string  `yaml:"Type"`
+	Length float64 `yaml:"Length"`
+	Width  string  `yaml:"Width"`
+}
+
+func (l Link) Init(source *Node, sourcePosition string, sourceArrowHead ArrowHead, target *Node, targetPosition string, targetArrowHead ArrowHead, lineWidth int) *Link {
 	gl := Link{}
 	gl.Source = source
 	gl.SourcePosition = sourcePosition
+	gl.SourceArrowHead = sourceArrowHead
 	gl.Target = target
 	gl.TargetPosition = targetPosition
+	gl.TargetArrowHead = targetArrowHead
 	gl.LineWidth = lineWidth
 	gl.drawn = false
 	gl.lineColor = color.RGBA{0, 0, 0, 255}
@@ -50,17 +60,7 @@ func (l *Link) drawNeighborsDot(img *image.RGBA, x, y float64) {
 	}
 }
 
-func (l *Link) Draw(img *image.RGBA) {
-	source := *l.Source
-	target := *l.Target
-	if l.drawn {
-		log.Info("Link already drawn")
-		return
-	}
-	log.Info("Link Drawing")
-	sourcePt, _ := calcPosition(source.GetBindings(), l.SourcePosition)
-	targetPt, _ := calcPosition(target.GetBindings(), l.TargetPosition)
-
+func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Point) {
 	dx := float64(targetPt.X - sourcePt.X)
 	dy := float64(targetPt.Y - sourcePt.Y)
 	length := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
@@ -76,5 +76,70 @@ func (l *Link) Draw(img *image.RGBA) {
 			l.drawNeighborsDot(img, x+wx, y+wy)
 		}
 	}
+}
+
+func (l *Link) getThreeSide(t string) (float64, float64, float64) {
+	switch t {
+	case "Narrow":
+		return math.Sqrt(3.0), 2.0, 1.0
+	case "Default", "":
+		return 1.0, math.Sqrt(2.0), 1.0
+	case "Wide":
+		return 1.0, 2.0, math.Sqrt(3.0)
+	}
+	return 0, 0, 0
+}
+
+func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt image.Point, arrowHead ArrowHead) {
+	dx := float64(arrowPt.X - originPt.X)
+	dy := float64(arrowPt.Y - originPt.Y)
+	length := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	if arrowHead.Length == 0 {
+		arrowHead.Length = 10
+	}
+	log.Info(arrowHead.Width)
+	_a, _b, _c := l.getThreeSide(arrowHead.Width)
+	at1 := arrowPt.Sub(image.Point{
+		int(arrowHead.Length * (_a*dx - _c*dy) / (_b * length)),
+		int(arrowHead.Length * (_c*dx + _a*dy) / (_b * length)),
+	})
+	at2 := arrowPt.Sub(image.Point{
+		int(arrowHead.Length * (_a*dx + _c*dy) / (_b * length)),
+		int(arrowHead.Length * (-_c*dx + _a*dy) / (_b * length)),
+	})
+
+	switch arrowHead.Type {
+	case "Default":
+		log.Info("Default Arrow Head drawing")
+		al := int(arrowHead.Length)
+		for i := 0; i < al; i++ {
+			a := arrowPt.Mul(i)
+			b := a.Add(at1.Mul(al - i)).Div(al)
+			c := a.Add(at2.Mul(al - i)).Div(al)
+			l.drawLine(img, b, c)
+		}
+	case "Open":
+		log.Info("Open Arrow Head drawing")
+		l.drawLine(img, arrowPt, at1)
+		l.drawLine(img, arrowPt, at2)
+	}
+}
+
+func (l *Link) Draw(img *image.RGBA) {
+	source := *l.Source
+	target := *l.Target
+	if l.drawn {
+		log.Info("Link already drawn")
+		return
+	}
+	log.Info("Link Drawing")
+	sourcePt, _ := calcPosition(source.GetBindings(), l.SourcePosition)
+	targetPt, _ := calcPosition(target.GetBindings(), l.TargetPosition)
+
+	l.drawLine(img, sourcePt, targetPt)
+
+	l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
+	l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+
 	l.drawn = true
 }

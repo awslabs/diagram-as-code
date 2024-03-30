@@ -8,7 +8,6 @@ The start and end points of the line specify the location as the 16-wind rose of
 
 ![position](static/position.png)
 
-### Example
 ```
 Diagrams:
   Resources:
@@ -16,12 +15,34 @@ Diagrams:
     PublicSubnet1Instance: ...
     PublicSubnet2Instance: ...
   Links:
+    - Source: ALB # (required)
+      SourcePosition: NNW # (required)
+      Target: PublicSubnet1Instance # (required)
+      TargetPosition: S # (required)
+    - Source: ALB # (required)
+      SourcePosition: NNE # (required)
+      Target: PublicSubnet2Instance # (required)
+      TargetPosition: S # (required)
+```
+
+### Arrow head
+
+Arrows add context and meaning to a diagram by indicating the direction of flow.
+
+![arrow head](static/arrows.png)
+(generated from [static/arrows.yaml](static/arrows.yaml))
+
+```
     - Source: ALB
       SourcePosition: NNW
-      Target: PublicSubnet1Instance
-      TargetPosition: S
-    - Source: ALB
-      SourcePosition: NNE
-      Target: PublicSubnet2Instance
-      TargetPosition: S
+      SourceArrowHead: #(optional)
+        Type: Open #(required) Open/Default
+        Width: Default #  (optional) Narrow/Default/Wide default="Default"
+        Length: 2 # (optional) default=2
+      Target: VPCPublicSubnet1Instance
+      TargetPosition: SSE
+      TargetArrowHead: #(optional)
+        Type: Open #(required) Open/Default
+        Width: Default #  (optional) Narrow/Default/Wide default="Default"
+        Length: 2 # (optional) default=2
 ```
