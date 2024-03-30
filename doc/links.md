@@ -8,6 +8,13 @@ The start and end points of the line specify the location as the 16-wind rose of
 
 ![position](static/position.png)
 
+### Arrow head
+
+Arrows add context and meaning to a diagram by indicating the direction of flow.
+
+![arrow head](static/arrows.png)
+(generated from [static/arrows.yaml](static/arrows.yaml))
+
 ### Example
 ```
 Diagrams:
