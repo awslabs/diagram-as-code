@@ -54,11 +54,13 @@ type Resource struct {
 }
 
 type Link struct {
-	Source         string `yaml:"Source"`
-	SourcePosition string `yaml:"SourcePosition"`
-	Target         string `yaml:"Target"`
-	TargetPosition string `yaml:"TargetPosition"`
-	LineWidth      int    `yaml:"LineWidth"`
+	Source          string          `yaml:"Source"`
+	SourcePosition  string          `yaml:"SourcePosition"`
+	SourceArrowHead types.ArrowHead `yaml:"SourceArrowHead"`
+	Target          string          `yaml:"Target"`
+	TargetPosition  string          `yaml:"TargetPosition"`
+	TargetArrowHead types.ArrowHead `yaml:"TargetArrowHead"`
+	LineWidth       int             `yaml:"LineWidth"`
 }
 
 func main() {
@@ -234,7 +236,7 @@ func main() {
 		if lineWidth == 0 {
 			lineWidth = 2
 		}
-		link := new(types.Link).Init(&source, v.SourcePosition, &target, v.TargetPosition, lineWidth)
+		link := new(types.Link).Init(&source, v.SourcePosition, v.SourceArrowHead, &target, v.TargetPosition, v.TargetArrowHead, lineWidth)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}

@@ -1,0 +1,119 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - ArrowTitleStack
+        - ArrowNarrowStack
+        - ArrowDefaultStack
+        - ArrowWideStack
+
+    ArrowTitleStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ArrowTitle
+        - ArrowTitleOpen
+        - ArrowTitleDefault
+    ArrowTitle:
+      Type: AWS::Diagram::Resource
+      Title: Width\Type
+    ArrowTitleOpen:
+      Type: AWS::Diagram::Resource
+      Title: Open
+    ArrowTitleDefault:
+      Type: AWS::Diagram::Resource
+      Title: Default
+
+    ArrowNarrowStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ArrowNarrowTitle
+        - ArrowNarrowOpen
+        - ArrowNarrowDefault
+    ArrowNarrowTitle:
+      Type: AWS::Diagram::Resource
+      Title: Narrow
+    ArrowNarrowOpen:
+      Type: AWS::Diagram::Resource
+    ArrowNarrowDefault:
+      Type: AWS::Diagram::Resource
+
+    ArrowDefaultStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ArrowDefaultTitle
+        - ArrowDefaultOpen
+        - ArrowDefaultDefault
+    ArrowDefaultTitle:
+      Type: AWS::Diagram::Resource
+      Title: Default
+    ArrowDefaultOpen:
+      Type: AWS::Diagram::Resource
+    ArrowDefaultDefault:
+      Type: AWS::Diagram::Resource
+
+    ArrowWideStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ArrowWideTitle
+        - ArrowWideOpen
+        - ArrowWideDefault
+    ArrowWideTitle:
+      Type: AWS::Diagram::Resource
+      Title: Wide
+    ArrowWideOpen:
+      Type: AWS::Diagram::Resource
+    ArrowWideDefault:
+      Type: AWS::Diagram::Resource
+
+
+  Links:
+    - Source: ArrowNarrowTitle
+      SourcePosition: E
+      Target: ArrowNarrowOpen
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+        Width: Narrow
+    - Source: ArrowNarrowOpen
+      SourcePosition: E
+      Target: ArrowNarrowDefault
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Default
+        Width: Narrow
+    - Source: ArrowDefaultTitle
+      SourcePosition: E
+      Target: ArrowDefaultOpen
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+        Width: Default
+    - Source: ArrowDefaultOpen
+      SourcePosition: E
+      Target: ArrowDefaultDefault
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Default
+        Width: Default
+    - Source: ArrowWideTitle
+      SourcePosition: E
+      Target: ArrowWideOpen
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+        Width: Wide
+    - Source: ArrowWideOpen
+      SourcePosition: E
+      Target: ArrowWideDefault
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Default
+        Width: Wide
