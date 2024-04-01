@@ -18,6 +18,7 @@ type Definition struct {
 type DefinitionLabel struct {
 	Title string `yaml:"Title"`
 	Color string `yaml:"Color"`
+	Font  string `yaml:"Font"`
 }
 
 type DefinitionFill struct {

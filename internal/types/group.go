@@ -25,7 +25,8 @@ type Group struct {
 	borderColor color.RGBA
 	fillColor   color.RGBA
 	label       string
-	fontColor   color.RGBA
+	labelFont   string
+	labelColor  *color.RGBA
 	width       int
 	height      int
 	margin      Margin
@@ -45,7 +46,8 @@ func (g Group) Init() Node {
 	gr.borderColor = color.RGBA{0, 0, 0, 0}
 	gr.fillColor = color.RGBA{0, 0, 0, 0}
 	gr.label = ""
-	gr.fontColor = color.RGBA{0, 0, 0, 0}
+	gr.labelFont = ""
+	gr.labelColor = nil
 	gr.width = 320
 	gr.height = 190
 	gr.margin = Margin{20, 15, 20, 15}
@@ -97,9 +99,17 @@ func (g *Group) SetFillColor(fillColor color.RGBA) {
 	g.fillColor = fillColor
 }
 
-func (g *Group) SetLabel(label string, fontColor color.RGBA) {
-	g.label = label
-	g.fontColor = fontColor
+func (g *Group) SetLabel(label *string, labelColor *color.RGBA, labelFont *string) {
+
+	if label != nil {
+		g.label = *label
+	}
+	if labelColor != nil {
+		g.labelColor = labelColor
+	}
+	if labelFont != nil {
+		g.labelFont = *labelFont
+	}
 }
 
 func (g *Group) SetAlign(align string) {
@@ -226,7 +236,7 @@ func (g *Group) IsDrawn() bool {
 	return g.drawn
 }
 
-func (g *Group) Draw(img *image.RGBA) *image.RGBA {
+func (g *Group) Draw(img *image.RGBA, parent *Group) *image.RGBA {
 	if img == nil {
 		img = image.NewRGBA(g.bindings)
 	}
@@ -236,10 +246,10 @@ func (g *Group) Draw(img *image.RGBA) *image.RGBA {
 	rctSrc := g.iconImage.Bounds()
 	draw.CatmullRom.Scale(img, x, g.iconImage, rctSrc, draw.Over, nil)
 
-	g.drawLabel(img)
+	g.drawLabel(img, parent)
 
 	for _, subGroup := range g.children {
-		subGroup.Draw(img)
+		subGroup.Draw(img, g)
 	}
 	g.drawn = true
 	for _, v := range g.links {
@@ -273,11 +283,25 @@ func (g *Group) drawFrame(img *image.RGBA) {
 	}
 }
 
-func (g *Group) drawLabel(img *image.RGBA) {
+func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
 
 	p := g.bindings.Min.Add(g.iconBounds.Max)
 
-	f, err := os.Open(fontPath.Arial)
+	if g.labelFont == "" {
+		if parent != nil && parent.labelFont != "" {
+			g.labelFont = parent.labelFont
+		} else {
+			g.labelFont = fontPath.Arial
+		}
+	}
+	if g.labelColor == nil {
+		if parent != nil && parent.labelColor != nil {
+			g.labelColor = parent.labelColor
+		} else {
+			g.labelColor = &color.RGBA{0, 0, 0, 255}
+		}
+	}
+	f, err := os.Open(g.labelFont)
 	if err != nil {
 		panic(err)
 	}
@@ -312,7 +336,7 @@ func (g *Group) drawLabel(img *image.RGBA) {
 
 	d := &font.Drawer{
 		Dst:  img,
-		Src:  image.NewUniform(g.fontColor),
+		Src:  image.NewUniform(g.labelColor),
 		Face: face,
 		Dot:  point,
 	}
