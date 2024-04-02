@@ -21,7 +21,10 @@ import (
 
 func stringToColor(c string) color.RGBA {
 	var r, g, b, a uint8
-	fmt.Sscanf(c, "rgba(%d,%d,%d,%d)", &r, &g, &b, &a)
+	_, err := fmt.Sscanf(c, "rgba(%d,%d,%d,%d)", &r, &g, &b, &a)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return color.RGBA{r, g, b, a}
 }
 
@@ -43,14 +46,16 @@ type DefinitionFile struct {
 }
 
 type Resource struct {
-	Type      string   `yaml:"Type"`
-	Icon      string   `yaml:"Icon"`
-	Direction string   `yaml:"Direction"`
-	Preset    string   `yaml:"Preset"`
-	Align     string   `yaml:"Align"`
-	FillColor string   `yaml:"FillColor"`
-	Title     string   `yaml:"Title"`
-	Children  []string `yaml:"Children"`
+	Type       string   `yaml:"Type"`
+	Icon       string   `yaml:"Icon"`
+	Direction  string   `yaml:"Direction"`
+	Preset     string   `yaml:"Preset"`
+	Align      string   `yaml:"Align"`
+	FillColor  string   `yaml:"FillColor"`
+	Title      string   `yaml:"Title"`
+	TitleColor string   `yaml:"TitleColor"`
+	Font       string   `yaml:"Font"`
+	Children   []string `yaml:"Children"`
 }
 
 type Link struct {
@@ -151,7 +156,16 @@ func main() {
 				resources[k].SetBorderColor(stringToColor(border.Color))
 			}
 			if label := def.Label; label != nil {
-				resources[k].SetLabel(label.Title, stringToColor(label.Color))
+				if label.Title != "" {
+					resources[k].SetLabel(&label.Title, nil, nil)
+				}
+				if label.Color != "" {
+					c := stringToColor(label.Color)
+					resources[k].SetLabel(nil, &c, nil)
+				}
+				if label.Font != "" {
+					resources[k].SetLabel(nil, nil, &label.Font)
+				}
 			}
 			if icon := def.Icon; icon != nil {
 				if def.CacheFilePath == "" {
@@ -177,7 +191,17 @@ func main() {
 				resources[k].SetBorderColor(stringToColor(border.Color))
 			}
 			if label := def.Label; label != nil {
-				resources[k].SetLabel(label.Title, stringToColor(label.Color))
+				if label.Title != "" {
+					resources[k].SetLabel(&label.Title, nil, nil)
+				}
+				if label.Color != "" {
+					c := stringToColor(label.Color)
+					resources[k].SetLabel(nil, &c, nil)
+				}
+				if label.Font != "" {
+					resources[k].SetLabel(nil, nil, &label.Font)
+				}
+
 			}
 			if icon := def.Icon; icon != nil {
 				if def.CacheFilePath == "" {
@@ -190,7 +214,14 @@ func main() {
 			resources[k].LoadIcon(v.Icon)
 		}
 		if v.Title != "" {
-			resources[k].SetLabel(title, color.RGBA{0, 0, 0, 255})
+			resources[k].SetLabel(&title, nil, nil)
+		}
+		if v.TitleColor != "" {
+			c := stringToColor(v.TitleColor)
+			resources[k].SetLabel(nil, &c, nil)
+		}
+		if v.Font != "" {
+			resources[k].SetLabel(nil, nil, &v.Font)
 		}
 		if v.Align != "" {
 			resources[k].SetAlign(v.Align)
@@ -244,7 +275,7 @@ func main() {
 	log.Info("Drawing")
 	resources["Canvas"].Scale()
 	resources["Canvas"].ZeroAdjust()
-	img := resources["Canvas"].Draw(nil)
+	img := resources["Canvas"].Draw(nil, nil)
 
 	log.Infof("Save %s\n", *outputfile)
 	f, _ := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)

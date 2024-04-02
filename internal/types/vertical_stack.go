@@ -15,7 +15,7 @@ type VerticalStack struct {
 	borderColor color.RGBA
 	fillColor   color.RGBA
 	label       string
-	fontColor   color.RGBA
+	labelColor  color.RGBA
 	width       int
 	height      int
 	margin      Margin
@@ -32,7 +32,7 @@ func (h VerticalStack) Init() Node {
 	sr.borderColor = color.RGBA{0, 0, 0, 0}
 	sr.fillColor = color.RGBA{0, 0, 0, 0}
 	sr.label = ""
-	sr.fontColor = color.RGBA{0, 0, 0, 0}
+	sr.labelColor = &color.RGBA{0, 0, 0, 0}
 	sr.width = 320
 	sr.height = 190
 	sr.margin = Margin{0, 0, 0, 0}
