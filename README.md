@@ -3,9 +3,42 @@ This command line interface (CLI) tool enables drawing infrastructure diagrams f
 
 The CLI tool promotes code reuse, testing, integration, and automating the diagramming process. It allows managing diagrams with Git by writing human-readable YAML.
 
-![Example diagram](doc/static/example.png)
+<img src="doc/static/Introduction.png" width="800">
 
-(generated from [example of NAT Gateway](examples/vpc-natgw.yaml))
+(generated from [the example of NAT Gateway](examples/vpc-natgw.yaml))
+
+## Getting started
+
+### for Gopher
+```
+$ go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
+```
+
+### for macOS user
+In preparing.
+
+## Usage
+
+```
+awsdac <input filename> [flags]
+
+Flags:
+  -h, --help            help for awsdac
+  -o, --output string   Output file name (default "output.png")
+  -v, --verbose         Enable verbose logging
+```
+
+### Example
+
+```
+$ awsdac examples/alb-ec2.yaml
+```
+
+```
+$ awsdac privatelink.yaml -o custom-output.png
+```
+
+Example templates are [here](examples).
 
 ## Features
 - **Compliant with AWS architecture guidelines**  
@@ -21,23 +54,11 @@ Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI too
 - **Extensible**  
 Add definition files to create non-AWS diagrams as well.
 
-## Getting started
-### for macOS user
-In preparing.
-
-### for Gopher
-```
-# go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
-```
-
 ## Resource types
 See [doc/resource-types.md](doc/resource-types.md).
 
 ## Resource Link
 See [doc/links.md](doc/links.md).
-
-## Example usage
-See [examples templates](examples).
 
 ## Security
 
