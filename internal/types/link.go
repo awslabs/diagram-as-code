@@ -97,7 +97,7 @@ func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt imag
 	if arrowHead.Length == 0 {
 		arrowHead.Length = 10
 	}
-	log.Info(arrowHead.Width)
+	log.Infof("arrowHead.Length:\"%v\", arrowHead.Width:\"%v\"", arrowHead.Length, arrowHead.Width)
 	_a, _b, _c := l.getThreeSide(arrowHead.Width)
 	at1 := arrowPt.Sub(image.Point{
 		int(arrowHead.Length * (_a*dx - _c*dy) / (_b * length)),
