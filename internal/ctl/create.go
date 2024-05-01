@@ -264,6 +264,7 @@ func CreateDiagram(inputfile string, outputfile *string) {
 	img := resources["Canvas"].Draw(nil, nil)
 
 	log.Infof("Save %s\n", *outputfile)
+	fmt.Printf("[Completed] output image: %s\n", *outputfile)
 	f, _ := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
 	defer f.Close()
 	png.Encode(f, img)
