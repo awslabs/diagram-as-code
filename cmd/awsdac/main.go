@@ -18,7 +18,7 @@ func main() {
 	var outputFile string
 
 	var rootCmd = &cobra.Command{
-		Use:   "awsdac",
+		Use:   "awsdac <input filename>",
 		Short: "Diagram-as-code for AWS architecture.",
 		Long:  "This command line interface (CLI) tool enables drawing infrastructure diagrams for Amazon Web Services through YAML code.",
 		Args:  cobra.MaximumNArgs(1),
