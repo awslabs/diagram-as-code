@@ -16,7 +16,7 @@ import (
 func FetchFile(url string) (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Cannot get home directory: %v", err)
 	}
 
 	hashedUrl := md5.New()
@@ -28,7 +28,7 @@ func FetchFile(url string) (string, error) {
 
 		resp, err := http.Get(url)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Cannot get HTTP resource(%s): %v", url, err)
 		}
 		defer resp.Body.Close()
 
@@ -38,18 +38,18 @@ func FetchFile(url string) (string, error) {
 
 		err = os.MkdirAll(filepath.Dir(cacheFilePath), os.ModePerm)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Cannot create directory(%s): %v", filepath.Dir(cacheFilePath), err)
 		}
 
 		out, err := os.Create(cacheFilePath)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Cannot create file(%s): %v", cacheFilePath, err)
 		}
 		defer out.Close()
 
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Cannot copy: %v", err)
 		}
 	}
 	return cacheFilePath, nil
@@ -58,46 +58,46 @@ func FetchFile(url string) (string, error) {
 func ExtractZipFile(filePath string) (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Cannot get home directory: %v", err)
 	}
 
 	f, err := os.Open(filePath)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Cannot open file(%s): %v", filePath, err)
 	}
 	defer f.Close()
 
 	hashedContent := md5.New()
 	if _, err := io.Copy(hashedContent, f); err != nil {
-		return "", nil
+		return "", fmt.Errorf("Cannot create md5 hash: %v", err)
 	}
 	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedContent.Sum(nil), filepath.Base(filePath)))
 	if _, err := os.Stat(cacheFilePath); err != nil {
 
 		r, err := zip.OpenReader(filePath)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("Cannot open file(%s): %v", filePath, err)
 		}
 		for _, f := range r.File {
 			rc, err := f.Open()
 			if err != nil {
-				return "", err
+				return "", fmt.Errorf("Cannot open file(%s): %v", f.Name, err)
 			}
 
 			outputFilename := fmt.Sprintf("%s/%s", cacheFilePath, f.Name)
 
 			err = os.MkdirAll(filepath.Dir(outputFilename), os.ModePerm)
 			if err != nil {
-				return "", err
+				return "", fmt.Errorf("Cannot create directory(%s): %v", filepath.Dir(outputFilename), err)
 			}
 
 			fo, err := os.Create(outputFilename)
 			if err != nil {
-				return "", err
+				return "", fmt.Errorf("Cannot create file(%s): %v", outputFilename, err)
 			}
 			_, err = io.Copy(fo, rc)
 			if err != nil {
-				return "", err
+				return "", fmt.Errorf("Cannot copy: %v", err)
 			}
 			rc.Close()
 			fo.Close()

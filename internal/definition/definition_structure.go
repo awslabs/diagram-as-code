@@ -20,14 +20,14 @@ type DefinitionStructure struct {
 func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("Cannot open Definition File(%s): %v", filePath, err)
 	}
 
 	var b DefinitionStructure
 
 	err = yaml.Unmarshal([]byte(data), &b)
 	if err != nil {
-		return err
+		return fmt.Errorf("Cannot yaml.Unmarshal Definition File(%s): %v", filePath, err)
 	}
 
 	// Linking definitions
@@ -66,11 +66,11 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 				}
 				filePath, err := cache.FetchFile(v.ZipFile.Url)
 				if err != nil {
-					return err
+					return fmt.Errorf("Cannot FetchFile(%s): %v", v.ZipFile.Url, err)
 				}
 				v.CacheFilePath, err = cache.ExtractZipFile(filePath)
 				if err != nil {
-					return err
+					return fmt.Errorf("Cannot ExtractZipFile(%s): %v", filePath, err)
 				}
 
 			case "file":
@@ -82,12 +82,9 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 					break
 				}
 				filePath := fmt.Sprintf("%s/%s", b.Definitions[v.ZipFile.Source].CacheFilePath, strings.TrimSuffix(v.ZipFile.Path, "/"))
-				if err != nil {
-					return err
-				}
 				v.CacheFilePath, err = cache.ExtractZipFile(filePath)
 				if err != nil {
-					return err
+					return fmt.Errorf("Cannot ExtractZipFile(%s): %v", filePath, err)
 				}
 			}
 		case "Directory":
