@@ -61,6 +61,9 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 		case "Zip":
 			switch v.ZipFile.SourceType {
 			case "url":
+				if v.ZipFile.Url == "" {
+					return fmt.Errorf("Zip(url) needs ZipFile.Source")
+				}
 				filePath, err := cache.FetchFile(v.ZipFile.Url)
 				if err != nil {
 					return err
@@ -71,6 +74,9 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 				}
 
 			case "file":
+				if v.ZipFile.Source == "" {
+					return fmt.Errorf("Zip(file) needs ZipFile.Source")
+				}
 				if b.Definitions[v.ZipFile.Source].CacheFilePath == "" {
 					q = append(q, k)
 					break
@@ -89,20 +95,24 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 			if trimmedPath == "" {
 				return fmt.Errorf("Directory %s has only slash or empty path", q)
 			}
-			if b.Definitions[v.Directory.Source].CacheFilePath == "" {
-				q = append(q, k)
-				break
+			if v.Directory.Source != "" {
+				if b.Definitions[v.Directory.Source].CacheFilePath == "" {
+					q = append(q, k)
+					break
+				}
 			}
 			v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Directory.Source].CacheFilePath, trimmedPath)
 		case "Resource", "Preset", "Group":
 			if v.Icon.Path == "" {
 				break
 			}
-			if b.Definitions[v.Icon.Source].CacheFilePath == "" {
-				q = append(q, k)
-				break
+			if v.Icon.Source != "" {
+				if b.Definitions[v.Icon.Source].CacheFilePath == "" {
+					q = append(q, k)
+					break
+				}
+				v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Icon.Source].CacheFilePath, v.Icon.Path)
 			}
-			v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Icon.Source].CacheFilePath, v.Icon.Path)
 		}
 		q = q[1:]
 	}
