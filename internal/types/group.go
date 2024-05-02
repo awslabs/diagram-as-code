@@ -63,6 +63,7 @@ func (g *Group) LoadIcon(imageFilePath string) error {
 	if err != nil {
 		return err
 	}
+	defer imageFile.Close()
 	iconImage, _, err := image.Decode(imageFile)
 	if err != nil {
 		return err
