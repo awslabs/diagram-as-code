@@ -1,11 +1,17 @@
 Definitions:
-  aws_resource:
-    Type: Resource
-    Icon:
-      Source: aws_icons
-      Path: icons/resource.png
-  aws_icons:
+  Icons:
     Type: Zip
     ZipFile:
       SourceType: url
       Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/internal/definition/testdata/aws-icons.zip"
+  IconsDirectory:
+    Type: Directory
+    Directory:
+      Source: Icons
+      Path: "icons/"
+  IconResource:
+    Type: Resource
+    Icon:
+      Source: IconsDirectory
+      Path: resource.png
+
