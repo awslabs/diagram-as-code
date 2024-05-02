@@ -3,6 +3,8 @@
 
 package definition
 
+import "fmt"
+
 type Definition struct {
 	Type          string              `yaml:"Type"`
 	Icon          *DefinitionIcon     `yaml:"Icon"`
@@ -45,4 +47,33 @@ type DefinitionZipFile struct {
 	Source     string `yaml:"Source"`
 	Path       string `yaml:"Path"`
 	Url        string `yaml:"Url"`
+}
+
+func (d *Definition) String() string {
+	res := "Definition{\n"
+	if d.Type != "" {
+		res += d.Type
+	}
+	if d.Icon != nil {
+		res += fmt.Sprintf("  Icon: %v\n", d.Icon)
+	}
+	if d.Label != nil {
+		res += fmt.Sprintf("  Label: %v\n", d.Label)
+	}
+	if d.Fill != nil {
+		res += fmt.Sprintf("  Fill: %v\n", d.Fill)
+	}
+	if d.Border != nil {
+		res += fmt.Sprintf("  Border: %v\n", d.Border)
+	}
+	res += fmt.Sprintf("  Directory: %v\n", d.Directory)
+	res += fmt.Sprintf("  ZipFile: %v\n", d.ZipFile)
+	if d.Parent != nil {
+		res += fmt.Sprintf("  Parent: %v\n", d.Parent)
+	}
+	if d.CacheFilePath != "" {
+		res += d.CacheFilePath
+	}
+	res += "}\n"
+	return res
 }
