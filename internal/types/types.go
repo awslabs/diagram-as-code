@@ -32,7 +32,7 @@ type Node interface {
 	Scale()
 	GetBindings() image.Rectangle
 	GetMargin() Margin
-	LoadIcon(string)
+	LoadIcon(string) error
 	SetIconBounds(image.Rectangle)
 	SetBorderColor(color.RGBA)
 	SetFillColor(color.RGBA)

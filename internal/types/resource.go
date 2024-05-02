@@ -7,7 +7,6 @@ import (
 	"image"
 	"image/color"
 	"io/ioutil"
-	"log"
 	"os"
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
@@ -51,16 +50,17 @@ func (r Resource) Init() Node {
 	return &rr
 }
 
-func (r *Resource) LoadIcon(imageFilePath string) {
+func (r *Resource) LoadIcon(imageFilePath string) error {
 	imageFile, err := os.Open(imageFilePath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	iconImage, _, err := image.Decode(imageFile)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	r.iconImage = iconImage
+	return nil
 }
 
 func (r *Resource) SetIconBounds(bounds image.Rectangle) {
@@ -71,15 +71,15 @@ func (r *Resource) SetBindings(bindings image.Rectangle) {
 	r.bindings = bindings
 }
 
-func (r Resource) GetBindings() image.Rectangle {
+func (r *Resource) GetBindings() image.Rectangle {
 	return r.bindings
 }
 
-func (r Resource) GetMargin() Margin {
+func (r *Resource) GetMargin() Margin {
 	return r.margin
 }
 
-func (r Resource) GetPadding() Padding {
+func (r *Resource) GetPadding() Padding {
 	return r.padding
 }
 

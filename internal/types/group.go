@@ -58,17 +58,18 @@ func (g Group) Init() Node {
 	return &gr
 }
 
-func (g *Group) LoadIcon(imageFilePath string) {
+func (g *Group) LoadIcon(imageFilePath string) error {
 	imageFile, err := os.Open(imageFilePath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	iconImage, _, err := image.Decode(imageFile)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	g.iconBounds = image.Rect(0, 0, 64, 64)
 	g.iconImage = iconImage
+	return nil
 }
 
 func (g *Group) SetIconBounds(bounds image.Rectangle) {
