@@ -73,6 +73,7 @@ func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
 
 	// Generate diff-image from two images
 	diffFound := false
+	pixels_diff_numer := 0
 	img1b := img1.Bounds()
 	img3 := image.NewRGBA(img1b)
 	for x := 0; x < img1b.Max.X; x++ {
@@ -81,7 +82,7 @@ func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
 			px2 := img2.At(x, y)
 			img3.Set(x, y, subColor(px1.(color.NRGBA), px2.(color.NRGBA)))
 			if px1 != px2 {
-				diffFound = true
+				pixels_diff_numer++
 			}
 		}
 	}
@@ -93,8 +94,8 @@ func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
 	defer imageFile3.Close()
 	png.Encode(imageFile3, img3)
 
-	if diffFound {
-		return fmt.Errorf("Image mismatch. See diff-image.png")
+	if pixels_diff_numer > 0 {
+		return fmt.Errorf("Mismatch pixels on image %d of %d. See diff-image.png", pixels_diff_numer, img1b.Max.X*img1b.Max.Y)
 	}
 	fmt.Println("The generated image is an exact match")
 
