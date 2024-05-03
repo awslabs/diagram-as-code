@@ -119,7 +119,7 @@ func TestFunctionality(t *testing.T) {
 			if err != nil {
 				t.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputFilename), err)
 			}
-			ctl.CreateDiagram(yamlFilename, &tmpOutputFilename)
+			ctl.CreateDiagramFromYAML(yamlFilename, &tmpOutputFilename)
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			err := compareTwoImages(pngFilename, tmpOutputFilename)
 			if err != nil {
