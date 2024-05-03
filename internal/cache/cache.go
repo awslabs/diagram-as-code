@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func FetchFile(url string) (string, error) {
@@ -79,6 +80,9 @@ func ExtractZipFile(filePath string) (string, error) {
 			return "", fmt.Errorf("Cannot open file(%s): %v", filePath, err)
 		}
 		for _, f := range r.File {
+			if strings.HasSuffix(f.Name, "/") {
+				continue
+			}
 			rc, err := f.Open()
 			if err != nil {
 				return "", fmt.Errorf("Cannot open file(%s): %v", f.Name, err)
