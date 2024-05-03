@@ -6,7 +6,7 @@ on:
     branches:
       - main
 
-name: E2E test
+name: Functional test
 
 jobs:
   build:
@@ -30,9 +30,6 @@ jobs:
           sudo apt-get update
           echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
           sudo apt-get install -y ttf-mscorefonts-installer
-
-      - name: Unit tests
-        run: go test -v ./internal/...
 
       - name: Functional tests
         run: go test -v ./test/...
