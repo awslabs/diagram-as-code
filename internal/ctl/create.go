@@ -15,7 +15,6 @@ import (
 	"github.com/awslabs/diagram-as-code/internal/types"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/exp/maps"
-	"gopkg.in/yaml.v3"
 )
 
 func stringToColor(c string) color.RGBA {
@@ -81,39 +80,6 @@ func createDiagram(resources map[string]types.Node, outputfile *string) {
 	png.Encode(f, img)
 }
 
-func CreateDiagramFromYAML(inputfile string, outputfile *string) {
-
-	log.Infof("input file: %s\n", inputfile)
-	data, err := os.ReadFile(inputfile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var template TemplateStruct
-
-	err = yaml.Unmarshal([]byte(data), &template)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var ds definition.DefinitionStructure
-	var resources map[string]types.Node = make(map[string]types.Node)
-
-	log.Info("Load DefinitionFiles section")
-	loadDefinitionFiles(&template, &ds)
-
-	log.Info("Load Resources section")
-	loadResources(&template, ds, resources)
-
-	log.Info("Associate children with parent resources")
-	associateChildren(&template, resources)
-
-	log.Info("Add Links section")
-	loadLinks(&template, resources)
-
-	createDiagram(resources, outputfile)
-}
-
 func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure) {
 
 	// Load definition files
@@ -153,6 +119,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
 
 		switch v.Type {
+		case "":
+			log.Infof("%s does not have Type. Delete it from resources", k)
+			delete(resources, k)
 		case "AWS::Diagram::Canvas":
 			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
 			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
@@ -167,7 +136,8 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		default:
 			def, ok := ds.Definitions[v.Type]
 			if !ok {
-				log.Fatalf("Unknown type: %s\n", v.Type)
+				log.Warnf("Unknown type: %s\n", v.Type)
+				continue
 			}
 			if def.Type == "Resource" {
 				resources[k] = new(types.Resource).Init()
@@ -207,7 +177,8 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		default:
 			def, ok := ds.Definitions[v.Preset]
 			if !ok {
-				log.Fatalf("Unknown preset: %s\n", v.Preset)
+				log.Warnf("Unknown preset: %s\n", v.Type)
+				continue
 			}
 			if fill := def.Fill; fill != nil {
 				resources[k].SetFillColor(stringToColor(fill.Color))
@@ -263,15 +234,50 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 
 func associateChildren(template *TemplateStruct, resources map[string]types.Node) {
 
-	for k, v := range template.Resources {
+	for logicalId, v := range template.Resources {
 		for _, child := range v.Children {
 			_, ok := resources[child]
 			if !ok {
-				log.Warnf("Not found resource %s", child)
+				log.Infof("%s does not have parent resource", child)
 				continue
 			}
-			log.Infof("Add child(%s) on %s", child, k)
-			resources[k].AddChild(resources[child])
+			log.Infof("Add child(%s) on %s", child, logicalId)
+
+			resources[logicalId].AddChild(resources[child])
+		}
+	}
+}
+
+func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
+
+	for logicalId, v := range template.Resources {
+
+		def, ok := ds.Definitions[v.Type]
+
+		if v.Type == "" || !ok {
+			log.Infof("%s is not defined in CloudFormation template or definition file. Skip process", logicalId)
+			continue
+		}
+
+		if def.Type != "Group" {
+			log.Infof("%s does not have \"Group\" type. To have children, resources must have \"Group\" type.", logicalId)
+			continue
+		}
+
+		if _, ok = resources[logicalId]; !ok {
+			log.Infof("%s is not defined as a resource. Skip process", logicalId)
+			continue
+		}
+
+		for _, child := range v.Children {
+			_, ok := resources[child]
+			if !ok {
+				log.Infof("%s does not have parent resource", child)
+				continue
+			}
+			log.Infof("Add child(%s) on %s", child, logicalId)
+
+			resources[logicalId].AddChild(resources[child])
 		}
 	}
 }
@@ -281,14 +287,14 @@ func loadLinks(template *TemplateStruct, resources map[string]types.Node) {
 	for _, v := range template.Links {
 		_, ok := resources[v.Source]
 		if !ok {
-			log.Warnf("Not found resource %s", v.Source)
+			log.Warnf("Not found Source esource %s", v.Source)
 			continue
 		}
 		source := resources[v.Source]
 
 		_, ok = resources[v.Target]
 		if !ok {
-			log.Warnf("Not found resource %s", v.Target)
+			log.Warnf("Not found Target resource %s", v.Target)
 			continue
 		}
 		target := resources[v.Target]
