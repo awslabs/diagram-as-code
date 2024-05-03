@@ -37,6 +37,9 @@ jobs:
       - name: Functional tests
         run: go test -v ./test/...
 
+      - if: failure()
+        run: echo "Check artifacts https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
+
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
