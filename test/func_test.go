@@ -45,6 +45,7 @@ func subColor(px1, px2 color.NRGBA) color.RGBA {
 }
 
 func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
+	fmt.Printf("Compare images %s and %s\n", imageFilePath1, imageFilePath2)
 	imageFile1, err := os.Open(imageFilePath1)
 	if err != nil {
 		return fmt.Errorf("Cannot open imageFilePath1(%s): %v", imageFilePath1, err)
@@ -86,6 +87,10 @@ func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
 		}
 	}
 
+	err = os.MkdirAll(filepath.Dir(tmpOutputDiffFilename), os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputDiffFilename), err)
+	}
 	imageFile3, err := os.OpenFile(tmpOutputDiffFilename, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return fmt.Errorf("Cannot open ")
@@ -110,6 +115,10 @@ func TestFunctionality(t *testing.T) {
 	for _, file := range files {
 		if filepath.Ext(file.Name()) == ".yaml" {
 			yamlFilename := fmt.Sprintf("../examples/%s", file.Name())
+			err = os.MkdirAll(filepath.Dir(tmpOutputFilename), os.ModePerm)
+			if err != nil {
+				t.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputFilename), err)
+			}
 			ctl.CreateDiagram(yamlFilename, &tmpOutputFilename)
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			err := compareTwoImages(pngFilename, tmpOutputFilename)
