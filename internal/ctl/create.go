@@ -67,7 +67,21 @@ type Link struct {
 	LineWidth       int             `yaml:"LineWidth"`
 }
 
-func CreateDiagram(inputfile string, outputfile *string) {
+func createDiagram(resources map[string]types.Node, outputfile *string) {
+
+	log.Info("Drawing diagram...")
+	resources["Canvas"].Scale()
+	resources["Canvas"].ZeroAdjust()
+	img := resources["Canvas"].Draw(nil, nil)
+
+	log.Infof("Save %s\n", *outputfile)
+	fmt.Printf("[Completed] output image: %s\n", *outputfile)
+	f, _ := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
+	defer f.Close()
+	png.Encode(f, img)
+}
+
+func CreateDiagramFromYAML(inputfile string, outputfile *string) {
 
 	log.Infof("input file: %s\n", inputfile)
 	data, err := os.ReadFile(inputfile)
@@ -75,16 +89,35 @@ func CreateDiagram(inputfile string, outputfile *string) {
 		log.Fatal(err)
 	}
 
-	var b TemplateStruct
+	var template TemplateStruct
 
-	err = yaml.Unmarshal([]byte(data), &b)
+	err = yaml.Unmarshal([]byte(data), &template)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Load definition files
 	var ds definition.DefinitionStructure
-	for _, v := range b.Diagram.DefinitionFiles {
+	var resources map[string]types.Node = make(map[string]types.Node)
+
+	log.Info("Load DefinitionFiles section")
+	loadDefinitionFiles(&template, &ds)
+
+	log.Info("Load Resources section")
+	loadResources(&template, ds, resources)
+
+	log.Info("Associate children with parent resources")
+	associateChildren(&template, resources)
+
+	log.Info("Add Links section")
+	loadLinks(&template, resources)
+
+	createDiagram(resources, outputfile)
+}
+
+func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure) {
+
+	// Load definition files
+	for _, v := range template.Diagram.DefinitionFiles {
 		switch v.Type {
 		case "URL":
 			log.Infof("Fetch definition file from URL: %s\n", v.Url)
@@ -109,13 +142,16 @@ func CreateDiagram(inputfile string, outputfile *string) {
 		}
 	}
 
-	var resources map[string]types.Node = make(map[string]types.Node)
+}
+
+func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
+
 	resources["Canvas"] = new(types.Group).Init()
 
-	log.Info("Add resources")
-	for k, v := range b.Resources {
+	for k, v := range template.Resources {
 		title := v.Title
 		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
+
 		switch v.Type {
 		case "AWS::Diagram::Canvas":
 			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
@@ -163,11 +199,11 @@ func CreateDiagram(inputfile string, outputfile *string) {
 				resources[k].LoadIcon(def.CacheFilePath)
 			}
 		}
+
 		switch v.Preset {
 		case "BlankGroup":
 			resources[k].SetIconBounds(image.Rect(0, 0, 64, 64))
 		case "":
-			break
 		default:
 			def, ok := ds.Definitions[v.Preset]
 			if !ok {
@@ -222,8 +258,12 @@ func CreateDiagram(inputfile string, outputfile *string) {
 			resources[k].SetFillColor(stringToColor(v.FillColor))
 		}
 	}
-	log.Info("Add children")
-	for k, v := range b.Resources {
+
+}
+
+func associateChildren(template *TemplateStruct, resources map[string]types.Node) {
+
+	for k, v := range template.Resources {
 		for _, child := range v.Children {
 			_, ok := resources[child]
 			if !ok {
@@ -234,9 +274,11 @@ func CreateDiagram(inputfile string, outputfile *string) {
 			resources[k].AddChild(resources[child])
 		}
 	}
+}
 
-	log.Info("Add links")
-	for _, v := range b.Links {
+func loadLinks(template *TemplateStruct, resources map[string]types.Node) {
+
+	for _, v := range template.Links {
 		_, ok := resources[v.Source]
 		if !ok {
 			log.Warnf("Not found resource %s", v.Source)
@@ -261,14 +303,4 @@ func CreateDiagram(inputfile string, outputfile *string) {
 		resources[v.Target].AddLink(link)
 	}
 
-	log.Info("Drawing")
-	resources["Canvas"].Scale()
-	resources["Canvas"].ZeroAdjust()
-	img := resources["Canvas"].Draw(nil, nil)
-
-	log.Infof("Save %s\n", *outputfile)
-	fmt.Printf("[Completed] output image: %s\n", *outputfile)
-	f, _ := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
-	defer f.Close()
-	png.Encode(f, img)
 }
