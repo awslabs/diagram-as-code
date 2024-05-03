@@ -16,8 +16,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var tmpOutputFilename = "/tmp/output.png"
-var tmpOutputDiffFilename = "diff-image.png"
+var tmpOutputFilename = "/tmp/results/output.png"
+var tmpOutputDiffFilename = "/tmp/results/diff-image.png"
 
 func abs(x uint8) uint8 {
 	if x < 0 {
@@ -72,7 +72,6 @@ func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
 	fmt.Println("Bounds OK")
 
 	// Generate diff-image from two images
-	diffFound := false
 	pixels_diff_numer := 0
 	img1b := img1.Bounds()
 	img3 := image.NewRGBA(img1b)

@@ -36,3 +36,9 @@ jobs:
 
       - name: Functional tests
         run: go test ./test/...
+
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: upload results
+          path: /tmp/results/
