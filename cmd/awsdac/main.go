@@ -35,7 +35,7 @@ func main() {
 			}
 
 			inputFile := args[0]
-			ctl.CreateDiagram(inputFile, &outputFile)
+			ctl.CreateDiagramFromYAML(inputFile, &outputFile)
 
 		},
 	}
