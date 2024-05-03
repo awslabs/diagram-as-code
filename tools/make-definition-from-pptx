@@ -133,13 +133,14 @@ cat >> $output_path <<EOF
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
+      Path: "image26.png"
     Label:
       Title: "Subnet"
       Color: "rgba(0, 0, 0, 255)"
     Fill:
       Color: "rgba(0, 0, 0, 0)"
     Border:
-      Color: "rgba(0, 0, 0, 0)"
+      Color: "rgba(122, 161, 22, 255)"
 
   PrivateSubnet:
     Type: Preset
