@@ -63,7 +63,6 @@ func writeEtagCache(etagFilePath, etag_value string) error {
 }
 
 func FetchFile(url string) (string, error) {
-	log.WithField("prefix", "[internal/cache/cache.go]")
 	log.Infof("[internal/cache/cache.go] FetchFile %s", url)
 	homeDir, err := os.UserHomeDir()
 	if err != nil {

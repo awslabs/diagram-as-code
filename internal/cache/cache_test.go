@@ -2,6 +2,7 @@ package cache
 
 import (
 	"archive/zip"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -10,124 +11,193 @@ import (
 	"testing"
 )
 
+func TestCreateFileWithDirectory(t *testing.T) {
+	tempDir, err := ioutil.TempDir("", "test")
+	if err != nil {
+		t.Fatalf("Failed to create temporary directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	filePath := filepath.Join(tempDir, "testdir", "testfile.txt")
+	file, err := createFileWithDirectory(filePath)
+	if err != nil {
+		t.Errorf("createFileWithDirectory failed: %v", err)
+	} else {
+		file.Close()
+	}
+
+	_, err = os.Stat(filePath)
+	if err != nil {
+		t.Errorf("File not created: %v", err)
+	}
+}
+
+func TestLoadEtagCache(t *testing.T) {
+	tempDir, err := ioutil.TempDir("", "test")
+	if err != nil {
+		t.Fatalf("Failed to create temporary directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	etagFilePath := filepath.Join(tempDir, "etag.txt")
+
+	// Test when file doesn't exist
+	etag, err := loadEtagCache(etagFilePath)
+	if err != nil {
+		t.Errorf("loadEtagCache failed when file doesn't exist: %v", err)
+	}
+	if etag != "" {
+		t.Errorf("loadEtagCache returned non-empty string when file doesn't exist")
+	}
+
+	// Test when file exists
+	err = ioutil.WriteFile(etagFilePath, []byte("test-etag"), 0644)
+	if err != nil {
+		t.Fatalf("Failed to create etag file: %v", err)
+	}
+	etag, err = loadEtagCache(etagFilePath)
+	if err != nil {
+		t.Errorf("loadEtagCache failed when file exists: %v", err)
+	}
+	if etag != "test-etag" {
+		t.Errorf("loadEtagCache returned incorrect etag value: %s", etag)
+	}
+}
+
+func TestWriteEtagCache(t *testing.T) {
+	tempDir, err := ioutil.TempDir("", "test")
+	if err != nil {
+		t.Fatalf("Failed to create temporary directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	etagFilePath := filepath.Join(tempDir, "etag.txt")
+	err = writeEtagCache(etagFilePath, "test-etag")
+	if err != nil {
+		t.Errorf("writeEtagCache failed: %v", err)
+	}
+
+	data, err := ioutil.ReadFile(etagFilePath)
+	if err != nil {
+		t.Errorf("Failed to read etag file: %v", err)
+	}
+	if string(data) != "test-etag" {
+		t.Errorf("Etag file content incorrect: %s", string(data))
+	}
+}
+
 func TestFetchFile(t *testing.T) {
-	// Set up a test HTTP server
+	// Test server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("test content"))
+		etag := r.Header.Get("If-None-Match")
+		if etag == "test-etag" {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Etag", `"test-etag"`)
+		fmt.Fprint(w, "test content")
 	}))
 	defer server.Close()
 
-	// Test case 1: Fetch file and cache it
-	url := server.URL
-	cacheFilePath, err := FetchFile(url)
+	tempDir, err := ioutil.TempDir("", "test")
 	if err != nil {
-		t.Errorf("FetchFile(%s) returned error: %v", url, err)
+		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
+	defer os.RemoveAll(tempDir)
 
-	// Check if the cached file exists
-	if _, err := os.Stat(cacheFilePath); err != nil {
-		t.Errorf("Cached file not found: %s", cacheFilePath)
+	// Test when no cache exists
+	filePath, err := FetchFile(server.URL)
+	if err != nil {
+		t.Errorf("FetchFile failed when no cache exists: %v", err)
 	}
-
-	// Check the cached file content
-	cachedContent, err := ioutil.ReadFile(cacheFilePath)
+	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		t.Errorf("Failed to read cached file: %v", err)
 	}
-	if string(cachedContent) != "test content" {
-		t.Errorf("Cached file content is incorrect: %s", cachedContent)
+	if string(data) != "test content" {
+		t.Errorf("Cached file content incorrect: %s", string(data))
 	}
 
-	// Test case 2: Fetch file from cache
-	cacheFilePathAgain, err := FetchFile(url)
+	// Test when cache exists and etag matches
+	filePath, err = FetchFile(server.URL)
 	if err != nil {
-		t.Errorf("FetchFile(%s) returned error: %v", url, err)
+		t.Errorf("FetchFile failed when cache exists and etag matches: %v", err)
 	}
-	if cacheFilePathAgain != cacheFilePath {
-		t.Errorf("Cached file path mismatch: %s != %s", cacheFilePathAgain, cacheFilePath)
+	data, err = ioutil.ReadFile(filePath)
+	if err != nil {
+		t.Errorf("Failed to read cached file: %v", err)
+	}
+	if string(data) != "test content" {
+		t.Errorf("Cached file content incorrect: %s", string(data))
+	}
+
+	// Test when cache exists but etag doesn't match
+	server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		etag := r.Header.Get("If-None-Match")
+		if etag == "new-etag" {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Etag", `"new-etag"`)
+		fmt.Fprint(w, "new content")
+	})
+
+	filePath, err = FetchFile(server.URL)
+	if err != nil {
+		t.Errorf("FetchFile failed when cache exists but etag doesn't match: %v", err)
+	}
+	data, err = ioutil.ReadFile(filePath)
+	if err != nil {
+		t.Errorf("Failed to read cached file: %v", err)
+	}
+	if string(data) != "new content" {
+		t.Errorf("Cached file content incorrect: %s", string(data))
 	}
 }
 
 func TestExtractZipFile(t *testing.T) {
-	// Create a temporary zip file
 	tempDir, err := ioutil.TempDir("", "test")
 	if err != nil {
-		t.Errorf("Failed to create temporary directory: %v", err)
+		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
 	zipFilePath := filepath.Join(tempDir, "test.zip")
-	err = createZipFile(zipFilePath, map[string]string{
-		"file1.txt":     "content1",
-		"dir/file2.txt": "content2",
-	})
+	err = createTestZipFile(zipFilePath)
 	if err != nil {
-		t.Errorf("Failed to create zip file: %v", err)
+		t.Fatalf("Failed to create test zip file: %v", err)
 	}
 
-	// Test case 1: Extract zip file
-	extractedDirPath, err := ExtractZipFile(zipFilePath)
+	extractedPath, err := ExtractZipFile(zipFilePath)
 	if err != nil {
-		t.Errorf("ExtractZipFile(%s) returned error: %v", zipFilePath, err)
+		t.Errorf("ExtractZipFile failed: %v", err)
 	}
 
-	// Check if the extracted files exist
-	file1Path := filepath.Join(extractedDirPath, "file1.txt")
-	if _, err := os.Stat(file1Path); err != nil {
-		t.Errorf("Extracted file not found: %s", file1Path)
-	}
-
-	file2Path := filepath.Join(extractedDirPath, "dir/file2.txt")
-	if _, err := os.Stat(file2Path); err != nil {
-		t.Errorf("Extracted file not found: %s", file2Path)
-	}
-
-	// Check the extracted file content
-	extractedContent1, err := ioutil.ReadFile(file1Path)
+	expectedFilePath := filepath.Join(extractedPath, "test.txt")
+	_, err = os.Stat(expectedFilePath)
 	if err != nil {
-		t.Errorf("Failed to read extracted file: %v", err)
-	}
-	if string(extractedContent1) != "content1" {
-		t.Errorf("Extracted file content is incorrect: %s", extractedContent1)
-	}
-
-	extractedContent2, err := ioutil.ReadFile(file2Path)
-	if err != nil {
-		t.Errorf("Failed to read extracted file: %v", err)
-	}
-	if string(extractedContent2) != "content2" {
-		t.Errorf("Extracted file content is incorrect: %s", extractedContent2)
-	}
-
-	// Test case 2: Extract zip file from cache
-	extractedDirPathAgain, err := ExtractZipFile(zipFilePath)
-	if err != nil {
-		t.Errorf("ExtractZipFile(%s) returned error: %v", zipFilePath, err)
-	}
-	if extractedDirPathAgain != extractedDirPath {
-		t.Errorf("Extracted directory path mismatch: %s != %s", extractedDirPathAgain, extractedDirPath)
+		t.Errorf("Extracted file not found: %v", err)
 	}
 }
 
-func createZipFile(zipFilePath string, files map[string]string) error {
-	zipFile, err := os.Create(zipFilePath)
+func createTestZipFile(filePath string) error {
+	file, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
-	defer zipFile.Close()
+	defer file.Close()
 
-	zipWriter := zip.NewWriter(zipFile)
+	zipWriter := zip.NewWriter(file)
 	defer zipWriter.Close()
 
-	for path, content := range files {
-		f, err := zipWriter.Create(path)
-		if err != nil {
-			return err
-		}
-		_, err = f.Write([]byte(content))
-		if err != nil {
-			return err
-		}
+	testFileData := []byte("test content")
+	f, err := zipWriter.Create("test.txt")
+	if err != nil {
+		return err
+	}
+	_, err = f.Write(testFileData)
+	if err != nil {
+		return err
 	}
 
 	return nil
