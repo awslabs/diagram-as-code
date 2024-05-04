@@ -25,12 +25,10 @@ Definitions:
 
   "AWS::Diagram::Canvas":
     Type: Group
-    Icon:
-      Source: ArchitectureIconsPptxMedia
-      Path: "image928.png"
-    Label:
-      Title: "Canvas"
-      Color: "rgba(0, 0, 0, 255)"
+    Border:
+      Color: "rgba(0, 0, 0, 0)"
+    Fill:
+      Color: "rgba(255, 255, 255, 255)"
 
   AWS::Diagram::Cloud:
     Type: Group
@@ -4613,6 +4611,15 @@ Definitions:
       Path: "image1337.png"
     Label:
       Title: "AWS Client VPN"
+      Color: "rgba(0, 0, 0, 255)"
+
+  "Canvas":
+    Type: Preset
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image928.png"
+    Label:
+      Title: "Canvas"
       Color: "rgba(0, 0, 0, 255)"
 
   "Folder":
