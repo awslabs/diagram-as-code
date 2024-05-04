@@ -50,13 +50,14 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string) {
 		},
 	}
 
-	createTemplate(cfn_template, &template)
-
 	var ds definition.DefinitionStructure
 	var resources map[string]types.Node = make(map[string]types.Node)
 
 	log.Info("Load DefinitionFiles section")
 	loadDefinitionFiles(&template, &ds)
+
+	log.Info("Convert CloudFormation template to diagram structures")
+	convertTemplate(cfn_template, &template, ds)
 
 	log.Info("Load Resources section")
 	loadResources(&template, ds, resources)
@@ -67,7 +68,7 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string) {
 	createDiagram(resources, outputfile)
 }
 
-func createTemplate(cfn_template cft.Template, template *TemplateStruct) {
+func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds definition.DefinitionStructure) {
 
 	resources_cfn_template := cfn_template.Map()["Resources"]
 
@@ -90,9 +91,29 @@ func createTemplate(cfn_template cft.Template, template *TemplateStruct) {
 			resource := res.(map[string]interface{})
 
 			var findParent bool
-			for _, parent := range findRefs(resource, logicalId) {
+
+			//In CloudFormation templates, parameter names and resources are often related.
+			//However, a parameter is not a "parent resource" of its resource.
+			for _, related := range findRefs(resource, logicalId) {
+
+				related = strings.Split(related, ".")[0]
+				related_resource_type := template.Diagram.Resources[related].Type
+
+				//related_resource_type does not have "Type". This means it may be a Parameter value
+				if related_resource_type == "" {
+					continue
+				}
+
+				//related_resource_type can not have children resources due to the restrict of definition file.
+				def := ds.Definitions[related_resource_type]
+				if def.Type != "Group" {
+					log.Infof("%s does not have \"Group\" type. To have children, resources must have \"Group\" type.", related)
+					continue
+				}
+
+				//Find parent
 				findParent = true
-				parent = strings.Split(parent, ".")[0]
+				parent := related
 				parents := template.Diagram.Resources[parent]
 				parents.Children = append(parents.Children, logicalId)
 				template.Diagram.Resources[parent] = parents
