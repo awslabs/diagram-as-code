@@ -75,6 +75,13 @@ EOF
 echo -e "\n  # Groups\n" >> $output_path
 
 cat >> $output_path <<EOF
+  "AWS::Diagram::Canvas":
+    Type: Group
+    Border:
+      Color: "rgba(0, 0, 0, 0)"
+    Fill:
+      Color: "rgba(255, 255, 255, 255)"
+
   AWS::Diagram::Cloud:
     Type: Group
     Icon:
