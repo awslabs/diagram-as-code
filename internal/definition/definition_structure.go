@@ -100,15 +100,17 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 			}
 			v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Directory.Source].CacheFilePath, trimmedPath)
 		case "Resource", "Preset", "Group":
-			if v.Icon.Path == "" {
-				break
-			}
-			if v.Icon.Source != "" {
-				if b.Definitions[v.Icon.Source].CacheFilePath == "" {
-					q = append(q, k)
+			if v.Icon != nil {
+				if v.Icon.Path == "" {
 					break
 				}
-				v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Icon.Source].CacheFilePath, v.Icon.Path)
+				if v.Icon.Source != "" {
+					if b.Definitions[v.Icon.Source].CacheFilePath == "" {
+						q = append(q, k)
+						break
+					}
+					v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Icon.Source].CacheFilePath, v.Icon.Path)
+				}
 			}
 		}
 		q = q[1:]
