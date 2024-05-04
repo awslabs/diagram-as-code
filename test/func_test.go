@@ -119,7 +119,11 @@ func TestFunctionality(t *testing.T) {
 			if err != nil {
 				t.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputFilename), err)
 			}
-			ctl.CreateDiagramFromYAML(yamlFilename, &tmpOutputFilename)
+			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
+				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename)
+			} else {
+				ctl.CreateDiagramFromYAML(yamlFilename, &tmpOutputFilename)
+			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			err := compareTwoImages(pngFilename, tmpOutputFilename)
 			if err != nil {
