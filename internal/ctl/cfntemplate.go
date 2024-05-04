@@ -101,6 +101,7 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 				//related_resource_type does not have "Type". This means it may be a Parameter value
 				if related_resource_type == "" {
+					log.Infof("%s does not have \"Type\".", related)
 					continue
 				}
 
@@ -141,7 +142,10 @@ func findRefs(t map[string]interface{}, fromName string) []string {
 				refs = append(refs, v)
 			case []interface{}:
 				for _, d := range v {
-					refs = append(refs, d.(string))
+					//note: ECS Containers can have "DependsOn", but it should be ignored.
+					if dStr, ok := d.(string); ok {
+						refs = append(refs, dStr)
+					}
 				}
 			default:
 			}
