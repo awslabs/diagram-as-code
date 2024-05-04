@@ -122,9 +122,6 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		case "":
 			log.Infof("%s does not have Type. Delete it from resources", k)
 			delete(resources, k)
-		case "AWS::Diagram::Canvas":
-			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
-			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
 		case "AWS::Diagram::Group":
 			resources[k] = new(types.Group).Init()
 		case "AWS::Diagram::Resource":
