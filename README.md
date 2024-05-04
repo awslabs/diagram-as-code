@@ -9,7 +9,7 @@ The CLI tool promotes code reuse, testing, integration, and automating the diagr
 
 ## Getting started
 
-### for Gopher
+### for Gopher (go 1.21 or higher)
 ```
 $ go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
 ```
