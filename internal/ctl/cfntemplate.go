@@ -53,16 +53,19 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string) {
 	var ds definition.DefinitionStructure
 	var resources map[string]types.Node = make(map[string]types.Node)
 
-	log.Info("Load DefinitionFiles section")
+	log.Info("--- Load DefinitionFiles section ---")
 	loadDefinitionFiles(&template, &ds)
 
-	log.Info("Convert CloudFormation template to diagram structures")
+	log.Info("--- Convert CloudFormation template to diagram structures ---")
 	convertTemplate(cfn_template, &template, ds)
 
-	log.Info("Load Resources section")
+	log.Info("--- Ensuring a single parent for resources with multiple parents ---")
+	ensureSingleParent(&template)
+
+	log.Info("--- Load Resources section ---")
 	loadResources(&template, ds, resources)
 
-	log.Info("Associate children with parent resources")
+	log.Info("--- Associate children with parent resources ---")
 	associateCFnChildren(&template, ds, resources)
 
 	createDiagram(resources, outputfile)
@@ -125,6 +128,47 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 				parents := template.Diagram.Resources["AWSCloud"]
 				parents.Children = append(parents.Children, logicalId)
 				template.Diagram.Resources["AWSCloud"] = parents
+			}
+		}
+	}
+}
+
+func ensureSingleParent(template *TemplateStruct) {
+	for logicalId, resource := range template.Diagram.Resources {
+
+		if logicalId == "Canvas" || logicalId == "AWSCloud" {
+			continue
+		}
+
+		if len(resource.Children) > 1 {
+
+			for _, childID := range resource.Children {
+				child, ok := template.Diagram.Resources[childID]
+				if !ok {
+					continue
+				}
+				if len(child.Children) > 0 {
+					grandchildrenIds := make([]string, 0)
+
+					for _, grandchildID := range child.Children {
+						if contains(resource.Children, grandchildID) {
+							grandchildrenIds = append(grandchildrenIds, grandchildID)
+							log.Infof("Found grandchild %s in resource %s", grandchildID, logicalId)
+						}
+					}
+
+					newChildren := make([]string, 0, len(child.Children))
+					for _, id := range resource.Children {
+						if !contains(grandchildrenIds, id) {
+							newChildren = append(newChildren, id)
+						}
+					}
+
+					grandparent_resources := template.Diagram.Resources[logicalId]
+					grandparent_resources.Children = newChildren
+					template.Diagram.Resources[logicalId] = grandparent_resources
+					log.Infof("Updated resource %s children: %v", logicalId, newChildren)
+				}
 			}
 		}
 	}
@@ -214,4 +258,13 @@ func findTrees(value interface{}) []map[string]interface{} {
 	}
 
 	return trees
+}
+
+func contains(arr []string, data string) bool {
+	for _, v := range arr {
+		if v == data {
+			return true
+		}
+	}
+	return false
 }
