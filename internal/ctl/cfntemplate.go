@@ -114,10 +114,10 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 				//Find parent
 				findParent = true
-				parent := related
-				parents := template.Diagram.Resources[parent]
-				parents.Children = append(parents.Children, logicalId)
-				template.Diagram.Resources[parent] = parents
+				parent_logicalId := related
+				parent_resources := template.Diagram.Resources[parent_logicalId]
+				parent_resources.Children = append(parent_resources.Children, logicalId)
+				template.Diagram.Resources[parent_logicalId] = parent_resources
 			}
 
 			//If there is no parent resource, consider "AWSCloud" as the parent
