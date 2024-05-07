@@ -81,6 +81,8 @@ cat >> $output_path <<EOF
       Color: "rgba(0, 0, 0, 0)"
     Fill:
       Color: "rgba(255, 255, 255, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::Diagram::Cloud:
     Type: Group
@@ -94,6 +96,8 @@ cat >> $output_path <<EOF
     Label:
       Title: "AWS Cloud"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWSCloudNoLogo:
     Type: Preset
@@ -113,6 +117,8 @@ cat >> $output_path <<EOF
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image42.png"
+    CFn:
+      HasChildren: true
 
   AWS::AutoScaling::AutoScalingGroup:
     Type: Group
@@ -122,6 +128,8 @@ cat >> $output_path <<EOF
     Label:
       Title: "Auto Scaling Group"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::EC2::VPC:
     Type: Group
@@ -135,6 +143,8 @@ cat >> $output_path <<EOF
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(105, 59, 197, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::EC2::Subnet:
     Type: Group
@@ -148,6 +158,8 @@ cat >> $output_path <<EOF
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(122, 161, 22, 255)"
+    CFn:
+      HasChildren: true
 
   PrivateSubnet:
     Type: Preset
@@ -187,6 +199,8 @@ cat >> $output_path <<EOF
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(125, 137, 152, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::EC2::SpotFleet:
     Type: Group
@@ -200,6 +214,8 @@ cat >> $output_path <<EOF
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(237, 113, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::Diagram::Account:
     Type: Group
@@ -213,6 +229,9 @@ cat >> $output_path <<EOF
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(231, 21, 123, 255)"
+    CFn:
+      HasChildren: true
+
 EOF
 
 echo -e "\n  # Resource Types\n" >> $output_path
@@ -226,6 +245,8 @@ do
     label=$(echo "$name" | sed 's/([0-9])//g')
     image=${image_mappings["$name"]}
     [[ "$image" == "" ]] && echo "Not found $image" > /dev/stderr && continue
+    has_children="false"
+    [[ "$type" == "AWS::ECS::Cluster" ]] || [[ "$type" == "AWS::EKS::Cluster" ]] && has_children="true"
     (
         echo "  $type:"
         echo "    Type: Resource"
@@ -235,6 +256,8 @@ do
         echo "    Label:"
         echo "      Title: \"$label\""
         echo "      Color: \"rgba(0, 0, 0, 255)\""
+        echo "    CFn:"
+        echo "      HasChildren: $has_children"
         echo ""
     ) >> $output_path
 done < ./make-definition-from-pptx-mappings

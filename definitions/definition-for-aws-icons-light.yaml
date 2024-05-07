@@ -29,6 +29,8 @@ Definitions:
       Color: "rgba(0, 0, 0, 0)"
     Fill:
       Color: "rgba(255, 255, 255, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::Diagram::Cloud:
     Type: Group
@@ -42,6 +44,8 @@ Definitions:
     Label:
       Title: "AWS Cloud"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWSCloudNoLogo:
     Type: Preset
@@ -61,6 +65,8 @@ Definitions:
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image42.png"
+    CFn:
+      HasChildren: true
 
   AWS::AutoScaling::AutoScalingGroup:
     Type: Group
@@ -70,6 +76,8 @@ Definitions:
     Label:
       Title: "Auto Scaling Group"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::EC2::VPC:
     Type: Group
@@ -83,6 +91,8 @@ Definitions:
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(105, 59, 197, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::EC2::Subnet:
     Type: Group
@@ -96,6 +106,8 @@ Definitions:
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(122, 161, 22, 255)"
+    CFn:
+      HasChildren: true
 
   PrivateSubnet:
     Type: Preset
@@ -135,6 +147,8 @@ Definitions:
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(125, 137, 152, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::EC2::SpotFleet:
     Type: Group
@@ -148,6 +162,8 @@ Definitions:
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(237, 113, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::Diagram::Account:
     Type: Group
@@ -161,6 +177,9 @@ Definitions:
       Color: "rgba(0, 0, 0, 0)"
     Border:
       Color: "rgba(231, 21, 123, 255)"
+    CFn:
+      HasChildren: true
+
 
   # Resource Types
 
@@ -172,6 +191,8 @@ Definitions:
     Label:
       Title: "AWS Certificate Manager (ACM)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ACMPCA::Certificate:
     Type: Resource
@@ -181,6 +202,8 @@ Definitions:
     Label:
       Title: "AWS Certificate Manager (ACM)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ACMPCA::CertificateAuthority:
     Type: Resource
@@ -190,6 +213,8 @@ Definitions:
     Label:
       Title: "Certificate authority"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::APS:
     Type: Resource
@@ -199,6 +224,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Service for Prometheus"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::APS::Workspace:
     Type: Resource
@@ -208,6 +235,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Service for Prometheus"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ARCZonalShift:
     Type: Resource
@@ -217,6 +246,8 @@ Definitions:
     Label:
       Title: "Route 53 Application Recovery Controller"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ARCZonalShift::ZonalAutoshiftConfiguration:
     Type: Resource
@@ -226,6 +257,8 @@ Definitions:
     Label:
       Title: "Route 53 Application Recovery Controller"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AccessAnalyzer:
     Type: Resource
@@ -235,6 +268,8 @@ Definitions:
     Label:
       Title: "IAM Access Analyzer"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AccessAnalyzer::Analyzer:
     Type: Resource
@@ -244,6 +279,8 @@ Definitions:
     Label:
       Title: "IAM Access Analyzer"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AmazonMQ:
     Type: Resource
@@ -253,6 +290,8 @@ Definitions:
     Label:
       Title: "Amazon MQ"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AmazonMQ::Broker:
     Type: Resource
@@ -262,6 +301,8 @@ Definitions:
     Label:
       Title: "Broker"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Amplify:
     Type: Resource
@@ -271,6 +312,8 @@ Definitions:
     Label:
       Title: "AWS Amplify"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Amplify::App:
     Type: Resource
@@ -280,6 +323,8 @@ Definitions:
     Label:
       Title: "AWS Amplify"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AmplifyUIBuilder:
     Type: Resource
@@ -289,6 +334,8 @@ Definitions:
     Label:
       Title: "AWS Amplify"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ApiGateway:
     Type: Resource
@@ -298,6 +345,8 @@ Definitions:
     Label:
       Title: "Amazon API Gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ApiGatewayV2:
     Type: Resource
@@ -307,6 +356,8 @@ Definitions:
     Label:
       Title: "Amazon API Gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ApiGatewayV2::Api:
     Type: Resource
@@ -316,6 +367,8 @@ Definitions:
     Label:
       Title: "Amazon API Gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppConfig:
     Type: Resource
@@ -325,6 +378,8 @@ Definitions:
     Label:
       Title: "AWS AppConfig"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppConfig::Application:
     Type: Resource
@@ -334,6 +389,8 @@ Definitions:
     Label:
       Title: "AWS AppConfig"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppFlow:
     Type: Resource
@@ -343,6 +400,8 @@ Definitions:
     Label:
       Title: "Amazon AppFlow"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppFlow::Flow:
     Type: Resource
@@ -352,6 +411,8 @@ Definitions:
     Label:
       Title: "Amazon AppFlow"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppMesh:
     Type: Resource
@@ -361,6 +422,8 @@ Definitions:
     Label:
       Title: "AWS App Mesh"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppMesh::Mesh:
     Type: Resource
@@ -370,6 +433,8 @@ Definitions:
     Label:
       Title: "Mesh"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppMesh::VirtualGateway:
     Type: Resource
@@ -379,6 +444,8 @@ Definitions:
     Label:
       Title: "Virtual gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppMesh::VirtualNode:
     Type: Resource
@@ -388,6 +455,8 @@ Definitions:
     Label:
       Title: "Virtual node"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppMesh::VirtualRouter:
     Type: Resource
@@ -397,6 +466,8 @@ Definitions:
     Label:
       Title: "Virtual router"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppMesh::VirtualService:
     Type: Resource
@@ -406,6 +477,8 @@ Definitions:
     Label:
       Title: "Virtual service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppRunner:
     Type: Resource
@@ -415,6 +488,8 @@ Definitions:
     Label:
       Title: "AWS App Runner"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppRunner::Service:
     Type: Resource
@@ -424,6 +499,8 @@ Definitions:
     Label:
       Title: "AWS App Runner"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AppSync:
     Type: Resource
@@ -433,6 +510,8 @@ Definitions:
     Label:
       Title: "AWS AppSync"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ApplicationAutoScaling:
     Type: Resource
@@ -442,6 +521,8 @@ Definitions:
     Label:
       Title: "AWS Application Auto Scaling"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Athena:
     Type: Resource
@@ -451,6 +532,8 @@ Definitions:
     Label:
       Title: "Amazon Athena"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Athena::WorkGroup:
     Type: Resource
@@ -460,6 +543,8 @@ Definitions:
     Label:
       Title: "Amazon Athena"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AuditManager:
     Type: Resource
@@ -469,6 +554,8 @@ Definitions:
     Label:
       Title: "AWS Audit Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AuditManager::Assessment:
     Type: Resource
@@ -478,6 +565,8 @@ Definitions:
     Label:
       Title: "AWS Audit Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AutoScaling:
     Type: Resource
@@ -487,6 +576,8 @@ Definitions:
     Label:
       Title: "Amazon EC2 Auto Scaling"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AutoScalingPlans::ScalingPlan:
     Type: Resource
@@ -496,6 +587,8 @@ Definitions:
     Label:
       Title: "AWS Auto Scaling"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Backup:
     Type: Resource
@@ -505,6 +598,8 @@ Definitions:
     Label:
       Title: "AWS Backup"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Backup::BackupPlan:
     Type: Resource
@@ -514,6 +609,8 @@ Definitions:
     Label:
       Title: "Backup plan"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Backup::BackupVault:
     Type: Resource
@@ -523,6 +620,8 @@ Definitions:
     Label:
       Title: "Backup vault"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::BackupGateway:
     Type: Resource
@@ -532,6 +631,8 @@ Definitions:
     Label:
       Title: "AWS Backup"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::BackupGateway::Hypervisor:
     Type: Resource
@@ -541,6 +642,8 @@ Definitions:
     Label:
       Title: "AWS Backup"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Batch:
     Type: Resource
@@ -550,6 +653,8 @@ Definitions:
     Label:
       Title: "AWS Batch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Budgets:
     Type: Resource
@@ -559,6 +664,8 @@ Definitions:
     Label:
       Title: "AWS Budgets"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Budgets::Budget:
     Type: Resource
@@ -568,6 +675,8 @@ Definitions:
     Label:
       Title: "AWS Budgets"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CE:
     Type: Resource
@@ -577,6 +686,8 @@ Definitions:
     Label:
       Title: "AWS Cost Explorer"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CertificateManager:
     Type: Resource
@@ -586,6 +697,8 @@ Definitions:
     Label:
       Title: "AWS Certificate Manager (ACM)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Chatbot:
     Type: Resource
@@ -595,6 +708,8 @@ Definitions:
     Label:
       Title: "AWS Chatbot"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CleanRooms:
     Type: Resource
@@ -604,6 +719,8 @@ Definitions:
     Label:
       Title: "AWS Clean Rooms"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::AWS Cloud9:
     Type: Resource
@@ -613,6 +730,8 @@ Definitions:
     Label:
       Title: "AWS Cloud9"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Cloud9::EnvironmentEC2:
     Type: Resource
@@ -622,6 +741,8 @@ Definitions:
     Label:
       Title: "AWS Cloud9"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudFormation:
     Type: Resource
@@ -631,6 +752,8 @@ Definitions:
     Label:
       Title: "AWS CloudFormation"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudFront:
     Type: Resource
@@ -640,6 +763,8 @@ Definitions:
     Label:
       Title: "Amazon CloudFront"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudFront::Function:
     Type: Resource
@@ -649,6 +774,8 @@ Definitions:
     Label:
       Title: "Functions"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudFront::StreamingDistribution:
     Type: Resource
@@ -658,6 +785,8 @@ Definitions:
     Label:
       Title: "Streaming distribution"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudTrail:
     Type: Resource
@@ -667,6 +796,8 @@ Definitions:
     Label:
       Title: "AWS CloudTrail"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudTrail::Trail:
     Type: Resource
@@ -676,6 +807,8 @@ Definitions:
     Label:
       Title: "AWS CloudTrail"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudWatch:
     Type: Resource
@@ -685,6 +818,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudWatch::Alarm:
     Type: Resource
@@ -694,6 +829,8 @@ Definitions:
     Label:
       Title: "Alarm"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CloudWatch::InsightRule:
     Type: Resource
@@ -703,6 +840,8 @@ Definitions:
     Label:
       Title: "Rule"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeArtifact:
     Type: Resource
@@ -712,6 +851,8 @@ Definitions:
     Label:
       Title: "AWS CodeArtifact"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeBuild:
     Type: Resource
@@ -721,6 +862,8 @@ Definitions:
     Label:
       Title: "AWS CodeBuild"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeCommit:
     Type: Resource
@@ -730,6 +873,8 @@ Definitions:
     Label:
       Title: "AWS CodeCommit"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeCommit::Repository:
     Type: Resource
@@ -739,6 +884,8 @@ Definitions:
     Label:
       Title: "AWS CodeCommit"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeDeploy:
     Type: Resource
@@ -748,6 +895,8 @@ Definitions:
     Label:
       Title: "AWS CodeDeploy"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeDeploy::Application:
     Type: Resource
@@ -757,6 +906,8 @@ Definitions:
     Label:
       Title: "AWS CodeDeploy"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeGuruProfiler:
     Type: Resource
@@ -766,6 +917,8 @@ Definitions:
     Label:
       Title: "Amazon CodeGuru"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeGuruProfiler::ProfilingGroup:
     Type: Resource
@@ -775,6 +928,8 @@ Definitions:
     Label:
       Title: "Amazon CodeGuru"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeGuruReviewer::RepositoryAssociation:
     Type: Resource
@@ -784,6 +939,8 @@ Definitions:
     Label:
       Title: "Amazon CodeGuru"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodePipeline:
     Type: Resource
@@ -793,6 +950,8 @@ Definitions:
     Label:
       Title: "AWS CodePipeline"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodePipeline::Pipeline:
     Type: Resource
@@ -802,6 +961,8 @@ Definitions:
     Label:
       Title: "AWS CodePipeline"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeStar:
     Type: Resource
@@ -811,6 +972,8 @@ Definitions:
     Label:
       Title: "AWS CodeStar"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeStar::GitHubRepository:
     Type: Resource
@@ -820,6 +983,8 @@ Definitions:
     Label:
       Title: "AWS CodeStar"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CodeStarConnections:
     Type: Resource
@@ -829,6 +994,8 @@ Definitions:
     Label:
       Title: "AWS CodeStar"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Cognito:
     Type: Resource
@@ -838,6 +1005,8 @@ Definitions:
     Label:
       Title: "Amazon Cognito"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Cognito::IdentityPool:
     Type: Resource
@@ -847,6 +1016,8 @@ Definitions:
     Label:
       Title: "Amazon Cognito"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Cognito::UserPool:
     Type: Resource
@@ -856,6 +1027,8 @@ Definitions:
     Label:
       Title: "Amazon Cognito"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Comprehend:
     Type: Resource
@@ -865,6 +1038,8 @@ Definitions:
     Label:
       Title: "Amazon Comprehend"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Config:
     Type: Resource
@@ -874,6 +1049,8 @@ Definitions:
     Label:
       Title: "AWS Config"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Connect:
     Type: Resource
@@ -883,6 +1060,8 @@ Definitions:
     Label:
       Title: "Amazon Connect"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ControlTower:
     Type: Resource
@@ -892,6 +1071,8 @@ Definitions:
     Label:
       Title: "AWS Control Tower"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::CustomerProfiles:
     Type: Resource
@@ -901,6 +1082,8 @@ Definitions:
     Label:
       Title: "Amazon Connect"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DAX:
     Type: Resource
@@ -910,6 +1093,8 @@ Definitions:
     Label:
       Title: "Amazon DynamoDB"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DAX::Cluster:
     Type: Resource
@@ -919,6 +1104,8 @@ Definitions:
     Label:
       Title: "Amazon DynamoDB Accelerator (DAX)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DLM::LifecyclePolicy:
     Type: Resource
@@ -928,6 +1115,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic Block Store (Amazon EBS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DMS:
     Type: Resource
@@ -937,6 +1126,8 @@ Definitions:
     Label:
       Title: "AWS Database Migration Service (AWS DMS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataBrew:
     Type: Resource
@@ -946,6 +1137,8 @@ Definitions:
     Label:
       Title: "AWS Glue DataBrew"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataPipeline:
     Type: Resource
@@ -955,6 +1148,8 @@ Definitions:
     Label:
       Title: "AWS Data Pipeline"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataPipeline::Pipeline:
     Type: Resource
@@ -964,6 +1159,8 @@ Definitions:
     Label:
       Title: "AWS Data Pipeline"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataSync:
     Type: Resource
@@ -973,6 +1170,8 @@ Definitions:
     Label:
       Title: "AWS DataSync"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataSync::Agent:
     Type: Resource
@@ -982,6 +1181,8 @@ Definitions:
     Label:
       Title: "Agent"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataZone:
     Type: Resource
@@ -991,6 +1192,8 @@ Definitions:
     Label:
       Title: "Amazon DataZone"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DataZone::Project:
     Type: Resource
@@ -1000,6 +1203,8 @@ Definitions:
     Label:
       Title: "Data projects"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Detective:
     Type: Resource
@@ -1009,6 +1214,8 @@ Definitions:
     Label:
       Title: "Amazon Detective"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DevOpsGuru:
     Type: Resource
@@ -1018,6 +1225,8 @@ Definitions:
     Label:
       Title: "Amazon DevOps Guru"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DirectoryService:
     Type: Resource
@@ -1027,6 +1236,8 @@ Definitions:
     Label:
       Title: "AWS Directory Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DirectoryService::MicrosoftAD:
     Type: Resource
@@ -1036,6 +1247,8 @@ Definitions:
     Label:
       Title: "AWS Managed Microsoft AD"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DirectoryService::SimpleAD:
     Type: Resource
@@ -1045,6 +1258,8 @@ Definitions:
     Label:
       Title: "Simple AD"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DocDB:
     Type: Resource
@@ -1054,6 +1269,8 @@ Definitions:
     Label:
       Title: "Amazon DocumentDB (with MongoDB compatibility)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DocDB::DBCluster:
     Type: Resource
@@ -1063,6 +1280,8 @@ Definitions:
     Label:
       Title: "Amazon DocumentDB (with MongoDB compatibility)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DocDBElastic:
     Type: Resource
@@ -1072,6 +1291,8 @@ Definitions:
     Label:
       Title: "Amazon DocumentDB Elastic Clusters"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DocDBElastic::Cluster:
     Type: Resource
@@ -1081,6 +1302,8 @@ Definitions:
     Label:
       Title: "Amazon DocumentDB Elastic Clusters"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DynamoDB:
     Type: Resource
@@ -1090,6 +1313,8 @@ Definitions:
     Label:
       Title: "Amazon DynamoDB"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DynamoDB::GlobalTable:
     Type: Resource
@@ -1099,6 +1324,8 @@ Definitions:
     Label:
       Title: "Table"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::DynamoDB::Table:
     Type: Resource
@@ -1108,6 +1335,8 @@ Definitions:
     Label:
       Title: "Table"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2:
     Type: Resource
@@ -1117,6 +1346,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic Compute Cloud (Amazon EC2)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::CarrierGateway:
     Type: Resource
@@ -1126,6 +1357,8 @@ Definitions:
     Label:
       Title: "Carrier gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::ClientVpnEndpoint:
     Type: Resource
@@ -1135,6 +1368,8 @@ Definitions:
     Label:
       Title: "AWS Client VPN"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::CustomerGateway:
     Type: Resource
@@ -1144,6 +1379,8 @@ Definitions:
     Label:
       Title: "Customer gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::EIP:
     Type: Resource
@@ -1153,6 +1390,8 @@ Definitions:
     Label:
       Title: "Elastic IP address"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::FlowLog:
     Type: Resource
@@ -1162,6 +1401,8 @@ Definitions:
     Label:
       Title: "Flow logs"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::Instance:
     Type: Resource
@@ -1171,6 +1412,8 @@ Definitions:
     Label:
       Title: "Instance"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::InternetGateway:
     Type: Resource
@@ -1180,6 +1423,8 @@ Definitions:
     Label:
       Title: "Internet gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::NatGateway:
     Type: Resource
@@ -1189,6 +1434,8 @@ Definitions:
     Label:
       Title: "NAT gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::NetworkInterface:
     Type: Resource
@@ -1198,6 +1445,8 @@ Definitions:
     Label:
       Title: "Elastic network interface"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::RouteTable:
     Type: Resource
@@ -1207,6 +1456,8 @@ Definitions:
     Label:
       Title: "Route table"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::TrafficMirrorSession:
     Type: Resource
@@ -1216,6 +1467,8 @@ Definitions:
     Label:
       Title: "Traffic mirroring"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::TransitGateway:
     Type: Resource
@@ -1225,6 +1478,8 @@ Definitions:
     Label:
       Title: "AWS Transit Gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::TransitGatewayAttachment:
     Type: Resource
@@ -1234,6 +1489,8 @@ Definitions:
     Label:
       Title: "Attachment"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::VPCEndpoint:
     Type: Resource
@@ -1243,6 +1500,8 @@ Definitions:
     Label:
       Title: "Endpoints"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::VPCEndpointService:
     Type: Resource
@@ -1252,6 +1511,8 @@ Definitions:
     Label:
       Title: "AWS PrivateLink"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::VPCPeeringConnection:
     Type: Resource
@@ -1261,6 +1522,8 @@ Definitions:
     Label:
       Title: "Peering connection"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::VPNConnection:
     Type: Resource
@@ -1270,6 +1533,8 @@ Definitions:
     Label:
       Title: "VPN connection"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::VPNGateway:
     Type: Resource
@@ -1279,6 +1544,8 @@ Definitions:
     Label:
       Title: "VPN gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::VerifiedAccessEndpoint:
     Type: Resource
@@ -1288,6 +1555,8 @@ Definitions:
     Label:
       Title: "AWS Verified Access"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EC2::Volume:
     Type: Resource
@@ -1297,6 +1566,8 @@ Definitions:
     Label:
       Title: "Volume"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ECR:
     Type: Resource
@@ -1306,6 +1577,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic Container Registry (Amazon ECR)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ECS:
     Type: Resource
@@ -1315,6 +1588,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic Container Service (Amazon ECS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ECS::Cluster:
     Type: Resource
@@ -1324,6 +1599,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic Container Service (Amazon ECS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: true
 
   AWS::ECS::Service:
     Type: Resource
@@ -1333,6 +1610,8 @@ Definitions:
     Label:
       Title: "Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ECS::TaskDefinition:
     Type: Resource
@@ -1342,6 +1621,8 @@ Definitions:
     Label:
       Title: "Task"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EFS:
     Type: Resource
@@ -1351,6 +1632,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic File System (Amazon EFS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EKS:
     Type: Resource
@@ -1360,6 +1643,8 @@ Definitions:
     Label:
       Title: "Amazon Elastic Kubernetes Service (Amazon EKS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EMR:
     Type: Resource
@@ -1369,6 +1654,8 @@ Definitions:
     Label:
       Title: "Amazon EMR"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EMR::Cluster:
     Type: Resource
@@ -1378,6 +1665,8 @@ Definitions:
     Label:
       Title: "Cluster"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EMRContainers:
     Type: Resource
@@ -1387,6 +1676,8 @@ Definitions:
     Label:
       Title: "Amazon EMR"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EMRServerless:
     Type: Resource
@@ -1396,6 +1687,8 @@ Definitions:
     Label:
       Title: "Amazon EMR"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElastiCache:
     Type: Resource
@@ -1405,6 +1698,8 @@ Definitions:
     Label:
       Title: "Amazon ElastiCache"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElastiCache::CacheCluster:
     Type: Resource
@@ -1414,6 +1709,8 @@ Definitions:
     Label:
       Title: "Amazon ElastiCache"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElasticBeanstalk:
     Type: Resource
@@ -1423,6 +1720,8 @@ Definitions:
     Label:
       Title: "AWS Elastic Beanstalk"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElasticBeanstalk::Application:
     Type: Resource
@@ -1432,6 +1731,8 @@ Definitions:
     Label:
       Title: "AWS Elastic Beanstalk"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElasticLoadBalancing:
     Type: Resource
@@ -1441,6 +1742,8 @@ Definitions:
     Label:
       Title: "Elastic Load Balancing"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElasticLoadBalancing::LoadBalancer:
     Type: Resource
@@ -1450,6 +1753,8 @@ Definitions:
     Label:
       Title: "Elastic Load Balancing"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElasticLoadBalancingV2:
     Type: Resource
@@ -1459,6 +1764,8 @@ Definitions:
     Label:
       Title: "Elastic Load Balancing"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ElasticLoadBalancingV2::LoadBalancer:
     Type: Resource
@@ -1468,6 +1775,8 @@ Definitions:
     Label:
       Title: "Elastic Load Balancing"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Elasticsearch:
     Type: Resource
@@ -1477,6 +1786,8 @@ Definitions:
     Label:
       Title: "Amazon OpenSearch Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EntityResolution:
     Type: Resource
@@ -1486,6 +1797,8 @@ Definitions:
     Label:
       Title: "AWS Entity Resolution"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::EventSchemas:
     Type: Resource
@@ -1495,6 +1808,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Events:
     Type: Resource
@@ -1504,6 +1819,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Events::Rule:
     Type: Resource
@@ -1513,6 +1830,8 @@ Definitions:
     Label:
       Title: "Rule"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Evidently:
     Type: Resource
@@ -1522,6 +1841,8 @@ Definitions:
     Label:
       Title: "Evidently"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::FIS:
     Type: Resource
@@ -1531,6 +1852,8 @@ Definitions:
     Label:
       Title: "AWS Fault Injection Simulator"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::FIS::ExperimentTemplate:
     Type: Resource
@@ -1540,6 +1863,8 @@ Definitions:
     Label:
       Title: "AWS Fault Injection Simulator"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::FMS:
     Type: Resource
@@ -1549,6 +1874,8 @@ Definitions:
     Label:
       Title: "AWS Firewall Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::FSx:
     Type: Resource
@@ -1558,6 +1885,8 @@ Definitions:
     Label:
       Title: "Amazon FSx"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::FSx::FileSystem:
     Type: Resource
@@ -1567,6 +1896,8 @@ Definitions:
     Label:
       Title: "File system"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Forecast:
     Type: Resource
@@ -1576,6 +1907,8 @@ Definitions:
     Label:
       Title: "Amazon Forecast"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::GameLift:
     Type: Resource
@@ -1585,6 +1918,8 @@ Definitions:
     Label:
       Title: "Amazon GameLift"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::GlobalAccelerator:
     Type: Resource
@@ -1594,6 +1929,8 @@ Definitions:
     Label:
       Title: "AWS Global Accelerator"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::GlobalAccelerator::Accelerator:
     Type: Resource
@@ -1603,6 +1940,8 @@ Definitions:
     Label:
       Title: "AWS Global Accelerator"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Glue:
     Type: Resource
@@ -1612,6 +1951,8 @@ Definitions:
     Label:
       Title: "AWS Glue"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Glue::Crawler:
     Type: Resource
@@ -1621,6 +1962,8 @@ Definitions:
     Label:
       Title: "Crawler"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Grafana:
     Type: Resource
@@ -1630,6 +1973,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Grafana"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Grafana::Workspace:
     Type: Resource
@@ -1639,6 +1984,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Grafana"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Greengrass:
     Type: Resource
@@ -1648,6 +1995,8 @@ Definitions:
     Label:
       Title: "AWS IoT Greengrass"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::GreengrassV2:
     Type: Resource
@@ -1657,6 +2006,8 @@ Definitions:
     Label:
       Title: "AWS IoT Greengrass"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::GuardDuty:
     Type: Resource
@@ -1666,6 +2017,8 @@ Definitions:
     Label:
       Title: "Amazon GuardDuty"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IAM:
     Type: Resource
@@ -1675,6 +2028,8 @@ Definitions:
     Label:
       Title: "AWS Identity and Access Management (IAM)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IAM::Role:
     Type: Resource
@@ -1684,6 +2039,8 @@ Definitions:
     Label:
       Title: "Role"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IVS:
     Type: Resource
@@ -1693,6 +2050,8 @@ Definitions:
     Label:
       Title: "Amazon Interactive Video Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IVSChat:
     Type: Resource
@@ -1702,6 +2061,8 @@ Definitions:
     Label:
       Title: "Amazon Interactive Video Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ImageBuilder:
     Type: Resource
@@ -1711,6 +2072,8 @@ Definitions:
     Label:
       Title: "Amazon EC2 Image Builder"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Inspector:
     Type: Resource
@@ -1720,6 +2083,8 @@ Definitions:
     Label:
       Title: "Amazon Inspector"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::InspectorV2:
     Type: Resource
@@ -1729,6 +2094,8 @@ Definitions:
     Label:
       Title: "Amazon Inspector"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoT1Click:
     Type: Resource
@@ -1738,6 +2105,8 @@ Definitions:
     Label:
       Title: "AWS IoT 1-Click"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoT:
     Type: Resource
@@ -1747,6 +2116,8 @@ Definitions:
     Label:
       Title: "AWS IoT Core"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTAnalytics:
     Type: Resource
@@ -1756,6 +2127,8 @@ Definitions:
     Label:
       Title: "AWS IoT Analytics"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTAnalytics::Channel:
     Type: Resource
@@ -1765,6 +2138,8 @@ Definitions:
     Label:
       Title: "Channel"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTAnalytics::Dataset:
     Type: Resource
@@ -1774,6 +2149,8 @@ Definitions:
     Label:
       Title: "Dataset"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTAnalytics::Datastore:
     Type: Resource
@@ -1783,6 +2160,8 @@ Definitions:
     Label:
       Title: "Data store"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTAnalytics::Pipeline:
     Type: Resource
@@ -1792,6 +2171,8 @@ Definitions:
     Label:
       Title: "Pipeline"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTCoreDeviceAdvisor:
     Type: Resource
@@ -1801,6 +2182,8 @@ Definitions:
     Label:
       Title: "AWS IoT Core"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTCoreDeviceAdvisor::SuiteDefinition:
     Type: Resource
@@ -1810,6 +2193,8 @@ Definitions:
     Label:
       Title: "Device Advisor"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTEvents:
     Type: Resource
@@ -1819,6 +2204,8 @@ Definitions:
     Label:
       Title: "AWS IoT Events"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTFleetHub:
     Type: Resource
@@ -1828,6 +2215,8 @@ Definitions:
     Label:
       Title: "AWS IoT FleetWise"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTSiteWise:
     Type: Resource
@@ -1837,6 +2226,8 @@ Definitions:
     Label:
       Title: "AWS IoT SiteWise"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTSiteWise::Asset:
     Type: Resource
@@ -1846,6 +2237,8 @@ Definitions:
     Label:
       Title: "Asset"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTSiteWise::AssetModel:
     Type: Resource
@@ -1855,6 +2248,8 @@ Definitions:
     Label:
       Title: "Asset model"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTThingsGraph:
     Type: Resource
@@ -1864,6 +2259,8 @@ Definitions:
     Label:
       Title: "AWS IoT Things Graph"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::IoTTwinMaker:
     Type: Resource
@@ -1873,6 +2270,8 @@ Definitions:
     Label:
       Title: "AWS IoT TwinMaker"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::KMS:
     Type: Resource
@@ -1882,6 +2281,8 @@ Definitions:
     Label:
       Title: "AWS Key Management Service (AWS KMS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::KafkaConnect:
     Type: Resource
@@ -1891,6 +2292,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Streaming for Apache Kafka (Amazon MSK)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Kendra:
     Type: Resource
@@ -1900,6 +2303,8 @@ Definitions:
     Label:
       Title: "Amazon Kendra"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::KendraRanking:
     Type: Resource
@@ -1909,6 +2314,8 @@ Definitions:
     Label:
       Title: "Amazon Kendra"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Kinesis:
     Type: Resource
@@ -1918,6 +2325,8 @@ Definitions:
     Label:
       Title: "Amazon Kinesis"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Kinesis::Stream:
     Type: Resource
@@ -1927,6 +2336,8 @@ Definitions:
     Label:
       Title: "Amazon Kinesis Data Streams"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::KinesisFirehose:
     Type: Resource
@@ -1936,6 +2347,8 @@ Definitions:
     Label:
       Title: "Amazon Kinesis Data Firehose"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::KinesisVideo:
     Type: Resource
@@ -1945,6 +2358,8 @@ Definitions:
     Label:
       Title: "Amazon Kinesis Video Streams"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::LakeFormation:
     Type: Resource
@@ -1954,6 +2369,8 @@ Definitions:
     Label:
       Title: "AWS Lake Formation"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Lambda:
     Type: Resource
@@ -1963,6 +2380,8 @@ Definitions:
     Label:
       Title: "AWS Lambda"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Lambda::Function:
     Type: Resource
@@ -1972,6 +2391,8 @@ Definitions:
     Label:
       Title: "Lambda function"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Lex:
     Type: Resource
@@ -1981,6 +2402,8 @@ Definitions:
     Label:
       Title: "Amazon Lex"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::LicenseManager:
     Type: Resource
@@ -1990,6 +2413,8 @@ Definitions:
     Label:
       Title: "AWS License Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Lightsail:
     Type: Resource
@@ -1999,6 +2424,8 @@ Definitions:
     Label:
       Title: "Amazon Lightsail"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Location:
     Type: Resource
@@ -2008,6 +2435,8 @@ Definitions:
     Label:
       Title: "Amazon Location Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Logs:
     Type: Resource
@@ -2017,6 +2446,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::LookoutMetrics:
     Type: Resource
@@ -2026,6 +2457,8 @@ Definitions:
     Label:
       Title: "Amazon Lookout for Metrics"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::LookoutVision:
     Type: Resource
@@ -2035,6 +2468,8 @@ Definitions:
     Label:
       Title: "Amazon Lookout for Vision"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::M2:
     Type: Resource
@@ -2044,6 +2479,8 @@ Definitions:
     Label:
       Title: "AWS Mainframe Modernization"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MSK:
     Type: Resource
@@ -2053,6 +2490,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Streaming for Apache Kafka (Amazon MSK)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MWAA:
     Type: Resource
@@ -2062,6 +2501,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Workflows for Apache Airflow (Amazon MWAA)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Macie:
     Type: Resource
@@ -2071,6 +2512,8 @@ Definitions:
     Label:
       Title: "Amazon Macie"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ManagedBlockchain:
     Type: Resource
@@ -2080,6 +2523,8 @@ Definitions:
     Label:
       Title: "Amazon Managed Blockchain"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaConnect:
     Type: Resource
@@ -2089,6 +2534,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaConnect"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaConnect::Gateway:
     Type: Resource
@@ -2098,6 +2545,8 @@ Definitions:
     Label:
       Title: "MediaConnect Gateway"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaConvert:
     Type: Resource
@@ -2107,6 +2556,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaConvert"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaLive:
     Type: Resource
@@ -2116,6 +2567,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaLive"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaPackage:
     Type: Resource
@@ -2125,6 +2578,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaPackage"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaPackageV2:
     Type: Resource
@@ -2134,6 +2589,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaPackage"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaStore:
     Type: Resource
@@ -2143,6 +2600,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaStore"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MediaTailor:
     Type: Resource
@@ -2152,6 +2611,8 @@ Definitions:
     Label:
       Title: "AWS Elemental MediaTailor"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::MemoryDB:
     Type: Resource
@@ -2161,6 +2622,8 @@ Definitions:
     Label:
       Title: "Amazon MemoryDB for Redis"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Neptune:
     Type: Resource
@@ -2170,6 +2633,8 @@ Definitions:
     Label:
       Title: "Amazon Neptune"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::NeptuneGraph:
     Type: Resource
@@ -2179,6 +2644,8 @@ Definitions:
     Label:
       Title: "Amazon Neptune"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::NetworkFirewall:
     Type: Resource
@@ -2188,6 +2655,8 @@ Definitions:
     Label:
       Title: "AWS Network Firewall"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::NetworkManager:
     Type: Resource
@@ -2197,6 +2666,8 @@ Definitions:
     Label:
       Title: "AWS Cloud WAN"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::NetworkManager::CoreNetwork:
     Type: Resource
@@ -2206,6 +2677,8 @@ Definitions:
     Label:
       Title: "Core network edge"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::NetworkManager::TransitGatewayRouteTableAttachment:
     Type: Resource
@@ -2215,6 +2688,8 @@ Definitions:
     Label:
       Title: "Transit gateway route table attachment"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::NimbleStudio:
     Type: Resource
@@ -2224,6 +2699,8 @@ Definitions:
     Label:
       Title: "Amazon Nimble Studio"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OSIS:
     Type: Resource
@@ -2233,6 +2710,8 @@ Definitions:
     Label:
       Title: "Amazon OpenSearch Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Oam:
     Type: Resource
@@ -2242,6 +2721,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpenSearchServerless:
     Type: Resource
@@ -2251,6 +2732,8 @@ Definitions:
     Label:
       Title: "Amazon OpenSearch Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpenSearchService:
     Type: Resource
@@ -2260,6 +2743,8 @@ Definitions:
     Label:
       Title: "Amazon OpenSearch Service"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpsWorks:
     Type: Resource
@@ -2269,6 +2754,8 @@ Definitions:
     Label:
       Title: "AWS OpsWorks"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpsWorks::App:
     Type: Resource
@@ -2278,6 +2765,8 @@ Definitions:
     Label:
       Title: "Apps"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpsWorks::Instance:
     Type: Resource
@@ -2287,6 +2776,8 @@ Definitions:
     Label:
       Title: "Instances"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpsWorks::Layer:
     Type: Resource
@@ -2296,6 +2787,8 @@ Definitions:
     Label:
       Title: "Layers"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpsWorks::Stack:
     Type: Resource
@@ -2305,6 +2798,8 @@ Definitions:
     Label:
       Title: "Stack2"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::OpsWorksCM:
     Type: Resource
@@ -2314,6 +2809,8 @@ Definitions:
     Label:
       Title: "AWS OpsWorks"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Organizations:
     Type: Resource
@@ -2323,6 +2820,8 @@ Definitions:
     Label:
       Title: "AWS Organizations"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Organizations::Account:
     Type: Resource
@@ -2332,6 +2831,8 @@ Definitions:
     Label:
       Title: "Account"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Organizations::Organization:
     Type: Resource
@@ -2341,6 +2842,8 @@ Definitions:
     Label:
       Title: "AWS Organizations"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Organizations::OrganizationalUnit:
     Type: Resource
@@ -2350,6 +2853,8 @@ Definitions:
     Label:
       Title: "Organizational unit"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Personalize:
     Type: Resource
@@ -2359,6 +2864,8 @@ Definitions:
     Label:
       Title: "Amazon Personalize"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Pinpoint:
     Type: Resource
@@ -2368,6 +2875,8 @@ Definitions:
     Label:
       Title: "Amazon Pinpoint"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Pipes:
     Type: Resource
@@ -2377,6 +2886,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Pipes::Pipe:
     Type: Resource
@@ -2386,6 +2897,8 @@ Definitions:
     Label:
       Title: "Pipes"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Proton:
     Type: Resource
@@ -2395,6 +2908,8 @@ Definitions:
     Label:
       Title: "AWS Proton"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::QLDB:
     Type: Resource
@@ -2404,6 +2919,8 @@ Definitions:
     Label:
       Title: "Amazon Quantum Ledger Database (Amazon QLDB)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::QuickSight:
     Type: Resource
@@ -2413,6 +2930,8 @@ Definitions:
     Label:
       Title: "Amazon QuickSight"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RAM:
     Type: Resource
@@ -2422,6 +2941,8 @@ Definitions:
     Label:
       Title: "AWS Resource Access Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RDS:
     Type: Resource
@@ -2431,6 +2952,8 @@ Definitions:
     Label:
       Title: "Amazon Relational Database Service (Amazon RDS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RUM:
     Type: Resource
@@ -2440,6 +2963,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RUM::AppMonitor:
     Type: Resource
@@ -2449,6 +2974,8 @@ Definitions:
     Label:
       Title: "RUM"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Redshift:
     Type: Resource
@@ -2458,6 +2985,8 @@ Definitions:
     Label:
       Title: "Amazon Redshift"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RedshiftServerless:
     Type: Resource
@@ -2467,6 +2996,8 @@ Definitions:
     Label:
       Title: "Amazon Redshift"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RefactorSpaces:
     Type: Resource
@@ -2476,6 +3007,8 @@ Definitions:
     Label:
       Title: "AWS Migration Hub"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RefactorSpaces::Application:
     Type: Resource
@@ -2485,6 +3018,8 @@ Definitions:
     Label:
       Title: "Refactor Spaces applications"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RefactorSpaces::Environment:
     Type: Resource
@@ -2494,6 +3029,8 @@ Definitions:
     Label:
       Title: "Refactor Spaces environments"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RefactorSpaces::Service:
     Type: Resource
@@ -2503,6 +3040,8 @@ Definitions:
     Label:
       Title: "Refactor Spaces services"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Rekognition:
     Type: Resource
@@ -2512,6 +3051,8 @@ Definitions:
     Label:
       Title: "Amazon Rekognition"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ResilienceHub:
     Type: Resource
@@ -2521,6 +3062,8 @@ Definitions:
     Label:
       Title: "AWS Resilience Hub"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ResilienceHub::App:
     Type: Resource
@@ -2530,6 +3073,8 @@ Definitions:
     Label:
       Title: "AWS Resilience Hub"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ResourceExplorer2:
     Type: Resource
@@ -2539,6 +3084,8 @@ Definitions:
     Label:
       Title: "AWS Resource Explorer"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RoboMaker:
     Type: Resource
@@ -2548,6 +3095,8 @@ Definitions:
     Label:
       Title: "AWS RoboMaker"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RoboMaker::Fleet:
     Type: Resource
@@ -2557,6 +3106,8 @@ Definitions:
     Label:
       Title: "Fleet management"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RoboMaker::SimulationApplication:
     Type: Resource
@@ -2566,6 +3117,8 @@ Definitions:
     Label:
       Title: "Simulation"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::RolesAnywhere:
     Type: Resource
@@ -2575,6 +3128,8 @@ Definitions:
     Label:
       Title: "AWS Identity and Access Management (IAM)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Route53:
     Type: Resource
@@ -2584,6 +3139,8 @@ Definitions:
     Label:
       Title: "Amazon Route 53"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Route53::HostedZone:
     Type: Resource
@@ -2593,6 +3150,8 @@ Definitions:
     Label:
       Title: "Hosted zone"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Route53Resolver::FirewallRuleGroup:
     Type: Resource
@@ -2602,6 +3161,8 @@ Definitions:
     Label:
       Title: "Resolver DNS firewall"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Route53Resolver::ResolverEndpoint:
     Type: Resource
@@ -2611,6 +3172,8 @@ Definitions:
     Label:
       Title: "Resolver"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Route53Resolver::ResolverQueryLoggingConfig:
     Type: Resource
@@ -2620,6 +3183,8 @@ Definitions:
     Label:
       Title: "Resolver query logging"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3:
     Type: Resource
@@ -2629,6 +3194,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Storage Service (Amazon S3)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3::Bucket:
     Type: Resource
@@ -2638,6 +3205,8 @@ Definitions:
     Label:
       Title: "Bucket"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3::MultiRegionAccessPoint:
     Type: Resource
@@ -2647,6 +3216,8 @@ Definitions:
     Label:
       Title: "Access points"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3::StorageLens:
     Type: Resource
@@ -2656,6 +3227,8 @@ Definitions:
     Label:
       Title: "S3 Storage Lens"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3Express:
     Type: Resource
@@ -2665,6 +3238,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Storage Service (Amazon S3)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3ObjectLambda:
     Type: Resource
@@ -2674,6 +3249,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Storage Service (Amazon S3)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::S3Outposts:
     Type: Resource
@@ -2683,6 +3260,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Storage Service (Amazon S3)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SES:
     Type: Resource
@@ -2692,6 +3271,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Email Service (Amazon SES)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SNS:
     Type: Resource
@@ -2701,6 +3282,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Notification Service (Amazon SNS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SNS::Topic:
     Type: Resource
@@ -2710,6 +3293,8 @@ Definitions:
     Label:
       Title: "Topic"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SQS:
     Type: Resource
@@ -2719,6 +3304,8 @@ Definitions:
     Label:
       Title: "Amazon Simple Queue Service (Amazon SQS)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SQS::Queue:
     Type: Resource
@@ -2728,6 +3315,8 @@ Definitions:
     Label:
       Title: "Queue"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSM:
     Type: Resource
@@ -2737,6 +3326,8 @@ Definitions:
     Label:
       Title: "AWS Systems Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSM::Document:
     Type: Resource
@@ -2746,6 +3337,8 @@ Definitions:
     Label:
       Title: "Documents"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSM::MaintenanceWindow:
     Type: Resource
@@ -2755,6 +3348,8 @@ Definitions:
     Label:
       Title: "Maintenance Windows"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSM::Parameter:
     Type: Resource
@@ -2764,6 +3359,8 @@ Definitions:
     Label:
       Title: "Parameter Store"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSM::PatchBaseline:
     Type: Resource
@@ -2773,6 +3370,8 @@ Definitions:
     Label:
       Title: "Patch Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSMIncidents:
     Type: Resource
@@ -2782,6 +3381,8 @@ Definitions:
     Label:
       Title: "AWS Systems Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SSO:
     Type: Resource
@@ -2791,6 +3392,8 @@ Definitions:
     Label:
       Title: "AWS Identity and Access Management (IAM)"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SageMaker:
     Type: Resource
@@ -2800,6 +3403,8 @@ Definitions:
     Label:
       Title: "Amazon SageMaker"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SageMaker::Model:
     Type: Resource
@@ -2809,6 +3414,8 @@ Definitions:
     Label:
       Title: "Model"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SageMaker::NotebookInstance:
     Type: Resource
@@ -2818,6 +3425,8 @@ Definitions:
     Label:
       Title: "Notebook"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Scheduler:
     Type: Resource
@@ -2827,6 +3436,8 @@ Definitions:
     Label:
       Title: "Scheduler"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Scheduler::Schedule:
     Type: Resource
@@ -2836,6 +3447,8 @@ Definitions:
     Label:
       Title: "Scheduler"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SecretsManager:
     Type: Resource
@@ -2845,6 +3458,8 @@ Definitions:
     Label:
       Title: "AWS Secrets Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SecurityHub:
     Type: Resource
@@ -2854,6 +3469,8 @@ Definitions:
     Label:
       Title: "AWS Security Hub"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ServiceCatalog:
     Type: Resource
@@ -2863,6 +3480,8 @@ Definitions:
     Label:
       Title: "AWS Service Catalog"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ServiceCatalogAppRegistry:
     Type: Resource
@@ -2872,6 +3491,8 @@ Definitions:
     Label:
       Title: "AWS Service Catalog"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::ServiceDiscovery:
     Type: Resource
@@ -2881,6 +3502,8 @@ Definitions:
     Label:
       Title: "AWS Service Catalog"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Shield:
     Type: Resource
@@ -2890,6 +3513,8 @@ Definitions:
     Label:
       Title: "AWS Shield"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Signer:
     Type: Resource
@@ -2899,6 +3524,8 @@ Definitions:
     Label:
       Title: "AWS Signer"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::StepFunctions:
     Type: Resource
@@ -2908,6 +3535,8 @@ Definitions:
     Label:
       Title: "AWS Step Functions"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SupportApp:
     Type: Resource
@@ -2917,6 +3546,8 @@ Definitions:
     Label:
       Title: "AWS Support"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Synthetics:
     Type: Resource
@@ -2926,6 +3557,8 @@ Definitions:
     Label:
       Title: "Amazon CloudWatch"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Synthetics::Canary:
     Type: Resource
@@ -2935,6 +3568,8 @@ Definitions:
     Label:
       Title: "Synthetics"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::SystemsManagerSAP:
     Type: Resource
@@ -2944,6 +3579,8 @@ Definitions:
     Label:
       Title: "AWS Systems Manager"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Timestream:
     Type: Resource
@@ -2953,6 +3590,8 @@ Definitions:
     Label:
       Title: "Amazon Timestream"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Timestream::Database:
     Type: Resource
@@ -2962,6 +3601,8 @@ Definitions:
     Label:
       Title: "Amazon Timestream"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Transfer:
     Type: Resource
@@ -2971,6 +3612,8 @@ Definitions:
     Label:
       Title: "AWS Transfer Family"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::VerifiedPermissions:
     Type: Resource
@@ -2980,6 +3623,8 @@ Definitions:
     Label:
       Title: "Amazon Verified Permissions"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::VoiceID:
     Type: Resource
@@ -2989,6 +3634,8 @@ Definitions:
     Label:
       Title: "Amazon Connect"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::VpcLattice:
     Type: Resource
@@ -2998,6 +3645,8 @@ Definitions:
     Label:
       Title: "Amazon VPC Lattice"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::VpcLattice::Service:
     Type: Resource
@@ -3007,6 +3656,8 @@ Definitions:
     Label:
       Title: "Amazon VPC Lattice"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WAF:
     Type: Resource
@@ -3016,6 +3667,8 @@ Definitions:
     Label:
       Title: "AWS WAF"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WAF::WebACL:
     Type: Resource
@@ -3025,6 +3678,8 @@ Definitions:
     Label:
       Title: "Rule"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WAFRegional:
     Type: Resource
@@ -3034,6 +3689,8 @@ Definitions:
     Label:
       Title: "AWS WAF"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WAFRegional::WebACL:
     Type: Resource
@@ -3043,6 +3700,8 @@ Definitions:
     Label:
       Title: "Rule"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WAFv2:
     Type: Resource
@@ -3052,6 +3711,8 @@ Definitions:
     Label:
       Title: "AWS WAF"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WAFv2::WebACL:
     Type: Resource
@@ -3061,6 +3722,8 @@ Definitions:
     Label:
       Title: "Rule"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::Wisdom:
     Type: Resource
@@ -3070,6 +3733,8 @@ Definitions:
     Label:
       Title: "Amazon Connect"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WorkSpaces:
     Type: Resource
@@ -3079,6 +3744,8 @@ Definitions:
     Label:
       Title: "Amazon WorkSpaces Family"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::WorkSpacesWeb:
     Type: Resource
@@ -3088,6 +3755,8 @@ Definitions:
     Label:
       Title: "Amazon WorkSpaces Family"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
   AWS::XRay:
     Type: Resource
@@ -3097,6 +3766,8 @@ Definitions:
     Label:
       Title: "AWS X-Ray"
       Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
 
 
   # Presets
