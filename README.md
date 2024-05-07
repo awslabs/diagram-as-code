@@ -3,9 +3,9 @@ This command line interface (CLI) tool enables drawing infrastructure diagrams f
 
 The CLI tool promotes code reuse, testing, integration, and automating the diagramming process. It allows managing diagrams with Git by writing human-readable YAML.
 
-<img src="doc/static/Introduction.png" width="800">
+<img src="doc/static/introduction2.png" width="800">
 
-(generated from [the example of NAT Gateway](examples/vpc-natgw.yaml))
+(generated from [the example of PrivateLink](examples/privatelink.yaml))
 
 ## Getting started
 
