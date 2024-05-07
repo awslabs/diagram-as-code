@@ -13,6 +13,7 @@ type Definition struct {
 	Border        *DefinitionBorder   `yaml:"Border"`
 	Directory     DefinitionDirectory `yaml:"Directory"`
 	ZipFile       DefinitionZipFile   `yaml:"ZipFile"`
+	CFn           DefinitionCFn       `yaml:"CFn"`
 	Parent        *Definition
 	CacheFilePath string
 }
@@ -47,6 +48,10 @@ type DefinitionZipFile struct {
 	Source     string `yaml:"Source"`
 	Path       string `yaml:"Path"`
 	Url        string `yaml:"Url"`
+}
+
+type DefinitionCFn struct {
+	HasChildren bool `yaml:"HasChildren"`
 }
 
 func (d *Definition) String() string {
