@@ -167,6 +167,7 @@ func ensureSingleParent(template *TemplateStruct) {
 					grandparent_resources := template.Diagram.Resources[logicalId]
 					grandparent_resources.Children = newChildren
 					template.Diagram.Resources[logicalId] = grandparent_resources
+					resource.Children = newChildren
 					log.Infof("Updated resource %s children: %v", logicalId, newChildren)
 				}
 			}
