@@ -28,7 +28,7 @@ type Padding struct {
 type Node interface {
 	Init() Node
 	IsDrawn() bool
-	Draw(*image.RGBA, *Group) *image.RGBA
+	Draw(*image.RGBA, Node) *image.RGBA
 	Scale()
 	GetBindings() image.Rectangle
 	GetMargin() Margin
