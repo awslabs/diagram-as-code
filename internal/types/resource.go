@@ -271,11 +271,12 @@ func (r *Resource) Draw(img *image.RGBA, parent Node) *image.RGBA {
 	if img == nil {
 		img = image.NewRGBA(*r.bindings)
 	}
+
+	r.drawFrame(img)
+
 	rctSrc := r.iconImage.Bounds()
 	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
 	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
-
-	r.drawFrame(img)
 
 	if parent != nil {
 		r.drawLabel(img, parent.(*Resource), len(r.children) > 0)
