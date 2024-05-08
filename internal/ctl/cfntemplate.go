@@ -110,8 +110,8 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 				//related_resource_type can not have children resources due to the restrict of definition file.
 				def := ds.Definitions[related_resource_type]
-				if def.Type != "Group" {
-					log.Infof("%s does not have \"Group\" type. To have children, resources must have \"Group\" type.", related)
+				if !def.CFn.HasChildren {
+					log.Infof("%s cannot have children resource.", related)
 					continue
 				}
 
