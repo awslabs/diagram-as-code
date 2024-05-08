@@ -1,0 +1,40 @@
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Ref AvailabilityZone1
+      CidrBlock: !Ref Subnet1CIDER
+      MapPublicIpOnLaunch: false
+
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Ref AvailabilityZone2
+      CidrBlock: !Ref Subnet2CIDER
+      MapPublicIpOnLaunch: false
+
+  EC2Instance1:
+   Type: "AWS::EC2::Instance"
+   Properties:
+     InstanceType: "t3.small"
+     NetworkInterfaces:
+     - AssociatePublicIpAddress: true
+       DeviceIndex: "0"
+       SubnetId: !Ref Subnet1
+
+  EC2Instance2:
+   Type: "AWS::EC2::Instance"
+   Properties:
+     InstanceType: "t3.small"
+     NetworkInterfaces:
+     - AssociatePublicIpAddress: true
+       DeviceIndex: "0"
+       SubnetId: !Ref Subnet2
