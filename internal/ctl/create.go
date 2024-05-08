@@ -248,40 +248,6 @@ func associateChildren(template *TemplateStruct, resources map[string]types.Node
 	}
 }
 
-func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
-
-	for logicalId, v := range template.Resources {
-
-		def, ok := ds.Definitions[v.Type]
-
-		if v.Type == "" || !ok {
-			log.Infof("%s is not defined in CloudFormation template or definition file. Skip process", logicalId)
-			continue
-		}
-
-		if !def.CFn.HasChildren {
-			log.Infof("%s cannot have children resource.", logicalId)
-			continue
-		}
-
-		if _, ok = resources[logicalId]; !ok {
-			log.Infof("%s is not defined as a resource. Skip process", logicalId)
-			continue
-		}
-
-		for _, child := range v.Children {
-			_, ok := resources[child]
-			if !ok {
-				log.Infof("%s does not have parent resource", child)
-				continue
-			}
-			log.Infof("Add child(%s) on %s", child, logicalId)
-
-			resources[logicalId].AddChild(resources[child])
-		}
-	}
-}
-
 func loadLinks(template *TemplateStruct, resources map[string]types.Node) {
 
 	for _, v := range template.Links {
