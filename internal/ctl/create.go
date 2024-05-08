@@ -259,8 +259,8 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			continue
 		}
 
-		if def.Type != "Group" {
-			log.Infof("%s does not have \"Group\" type. To have children, resources must have \"Group\" type.", logicalId)
+		if !def.CFn.HasChildren {
+			log.Infof("%s cannot have children resource.", logicalId)
 			continue
 		}
 
