@@ -91,6 +91,10 @@ Diagram:
     VPC2PublicSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
+      Children:
+        - VPC2PublicSubnet2EmptyResource
+    VPC2PublicSubnet2EmptyResource:
+      Type: AWS::Diagram::Resource
     HorizontalStack2:
       Type: AWS::Diagram::HorizontalStack
       Align: bottom
