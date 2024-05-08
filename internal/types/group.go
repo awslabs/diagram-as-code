@@ -47,7 +47,7 @@ func (g Group) Init() Node {
 	gr.fillColor = color.RGBA{0, 0, 0, 0}
 	gr.label = ""
 	gr.labelFont = ""
-	gr.labelColor = nil
+	gr.labelColor = &color.RGBA{0, 0, 0, 0}
 	gr.width = 320
 	gr.height = 190
 	gr.margin = Margin{20, 15, 20, 15}
@@ -102,7 +102,6 @@ func (g *Group) SetFillColor(fillColor color.RGBA) {
 }
 
 func (g *Group) SetLabel(label *string, labelColor *color.RGBA, labelFont *string) {
-
 	if label != nil {
 		g.label = *label
 	}
@@ -238,26 +237,26 @@ func (g *Group) IsDrawn() bool {
 	return g.drawn
 }
 
-func (g *Group) Draw(img *image.RGBA, parent *Group) *image.RGBA {
+func (g *Group) Draw(img *image.RGBA, parent Node) *image.RGBA {
 	if img == nil {
 		img = image.NewRGBA(g.bindings)
 	}
-	g.drawFrame(img)
-
-	x := image.Rectangle{g.bindings.Min, g.bindings.Min.Add(image.Point{64, 64})}
 	rctSrc := g.iconImage.Bounds()
+	x := image.Rectangle{g.bindings.Min, g.bindings.Min.Add(image.Point{64, 64})}
 	draw.CatmullRom.Scale(img, x, g.iconImage, rctSrc, draw.Over, nil)
 
-	g.drawLabel(img, parent)
+	g.drawFrame(img)
+
+	g.drawLabel(img, parent.(*Group))
 
 	for _, subGroup := range g.children {
 		subGroup.Draw(img, g)
 	}
 	g.drawn = true
 	for _, v := range g.links {
-		target := *v.Target
 		source := *v.Source
-		if target.IsDrawn() && source.IsDrawn() {
+		target := *v.Target
+		if source.IsDrawn() && target.IsDrawn() {
 			v.Draw(img)
 		}
 	}
@@ -286,8 +285,6 @@ func (g *Group) drawFrame(img *image.RGBA) {
 }
 
 func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
-
-	p := g.bindings.Min.Add(g.iconBounds.Max)
 
 	if g.labelFont == "" {
 		if parent != nil && parent.labelFont != "" {
@@ -333,6 +330,8 @@ func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
 	b, _ := font.BoundString(face, g.label)
 	//w := b.Max.X - b.Min.X + fixed.I(1)
 	h := b.Max.Y - b.Min.Y + fixed.I(1)
+
+	p := g.bindings.Min.Add(g.iconBounds.Max)
 
 	point := fixed.Point26_6{fixed.I(p.X) + 1000, fixed.I(p.Y) + (64-h)/2}
 

@@ -14,6 +14,9 @@ func TestResource(t *testing.T) {
 	if !ok {
 		t.Errorf("Cannot convert Node to Resource")
 	}
+
+	// Test resource has not children
+	r.Scale()
 	if r.GetBindings() != image.Rect(0, 0, 64, 64) {
 		t.Errorf("Init: expected bindings to be (0, 0, 64, 64), got %v", r.GetBindings())
 	}
@@ -24,6 +27,25 @@ func TestResource(t *testing.T) {
 		t.Errorf("Init: expected padding to be (0, 0, 0, 0), got %v", r.GetPadding())
 	}
 	if r.IsDrawn() {
+		t.Error("Init: expected drawn to be false")
+	}
+
+	// Test resource has not children
+	r2i := new(Resource).Init()
+	r2, ok := r2i.(*Resource)
+	if !ok {
+		t.Errorf("Cannot convert Node to Resource")
+	}
+	r3 := new(Resource).Init()
+	r2.AddChild(r3)
+	r2.Scale()
+	if r2.GetMargin() != (Margin{20, 15, 20, 15}) {
+		t.Errorf("Init: expected margin to be (30, 100, 30, 100), got %v", r2.GetMargin())
+	}
+	if r2.GetPadding() != (Padding{20, 45, 20, 45}) {
+		t.Errorf("Init: expected padding to be (0, 0, 0, 0), got %v", r2.GetPadding())
+	}
+	if r2.IsDrawn() {
 		t.Error("Init: expected drawn to be false")
 	}
 

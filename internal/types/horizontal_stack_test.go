@@ -14,57 +14,49 @@ func TestHorizontalStackInit(t *testing.T) {
 	node := hs.Init()
 
 	// Check if the returned value is a Group
-	group, ok := node.(*Group)
+	resource, ok := node.(*Resource)
 	if !ok {
-		t.Errorf("Init() did not return a Group")
+		t.Errorf("Init() did not return a Resource")
 	}
 
 	// Check the properties of the initialized Group
-	if group.bindings != image.Rect(0, 0, 320, 190) {
-		t.Errorf("Incorrect bindings: %v", group.bindings)
+	if *resource.bindings != image.Rect(0, 0, 320, 190) {
+		t.Errorf("Incorrect bindings: %v", resource.bindings)
 	}
 
-	if group.iconBounds != image.Rect(0, 0, 0, 0) {
-		t.Errorf("Incorrect iconBounds: %v", group.iconBounds)
+	if resource.iconBounds != image.Rect(0, 0, 0, 0) {
+		t.Errorf("Incorrect iconBounds: %v", resource.iconBounds)
 	}
 
-	if group.borderColor != (color.RGBA{0, 0, 0, 0}) {
-		t.Errorf("Incorrect borderColor: %v", group.borderColor)
+	if resource.borderColor != (color.RGBA{0, 0, 0, 0}) {
+		t.Errorf("Incorrect borderColor: %v", resource.borderColor)
 	}
 
-	if group.fillColor != (color.RGBA{0, 0, 0, 0}) {
-		t.Errorf("Incorrect fillColor: %v", group.fillColor)
+	if resource.fillColor != (color.RGBA{0, 0, 0, 0}) {
+		t.Errorf("Incorrect fillColor: %v", resource.fillColor)
 	}
 
-	if group.label != "" {
-		t.Errorf("Incorrect label: %s", group.label)
+	if resource.label != "" {
+		t.Errorf("Incorrect label: %s", resource.label)
 	}
 
-	if *group.labelColor != (color.RGBA{0, 0, 0, 0}) {
-		t.Errorf("Incorrect labelColor: %v", group.labelColor)
+	if *resource.labelColor != (color.RGBA{0, 0, 0, 0}) {
+		t.Errorf("Incorrect labelColor: %v", resource.labelColor)
 	}
 
-	if group.width != 320 {
-		t.Errorf("Incorrect width: %d", group.width)
+	if *resource.margin != (Margin{0, 0, 0, 0}) {
+		t.Errorf("Incorrect margin: %v", resource.margin)
 	}
 
-	if group.height != 190 {
-		t.Errorf("Incorrect height: %d", group.height)
+	if *resource.padding != (Padding{0, 0, 0, 0}) {
+		t.Errorf("Incorrect padding: %v", resource.padding)
 	}
 
-	if group.margin != (Margin{0, 0, 0, 0}) {
-		t.Errorf("Incorrect margin: %v", group.margin)
+	if resource.direction != "horizontal" {
+		t.Errorf("Incorrect direction: %s", resource.direction)
 	}
 
-	if group.padding != (Padding{0, 0, 0, 0}) {
-		t.Errorf("Incorrect padding: %v", group.padding)
-	}
-
-	if group.direction != "horizontal" {
-		t.Errorf("Incorrect direction: %s", group.direction)
-	}
-
-	if group.align != "center" {
-		t.Errorf("Incorrect align: %s", group.align)
+	if resource.align != "center" {
+		t.Errorf("Incorrect align: %s", resource.align)
 	}
 }

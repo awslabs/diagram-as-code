@@ -112,7 +112,7 @@ func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStru
 
 func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
 
-	resources["Canvas"] = new(types.Group).Init()
+	resources["Canvas"] = new(types.Resource).Init()
 
 	for k, v := range template.Resources {
 		title := v.Title
@@ -126,7 +126,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
 			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
 		case "AWS::Diagram::Group":
-			resources[k] = new(types.Group).Init()
+			resources[k] = new(types.Resource).Init()
 		case "AWS::Diagram::Resource":
 			resources[k] = new(types.Resource).Init()
 		case "AWS::Diagram::VerticalStack":
@@ -142,7 +142,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			if def.Type == "Resource" {
 				resources[k] = new(types.Resource).Init()
 			} else if def.Type == "Group" {
-				resources[k] = new(types.Group).Init()
+				resources[k] = new(types.Resource).Init()
 			}
 			if fill := def.Fill; fill != nil {
 				resources[k].SetFillColor(stringToColor(fill.Color))
