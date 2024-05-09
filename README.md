@@ -23,6 +23,7 @@ In preparing.
 awsdac <input filename> [flags]
 
 Flags:
+      --cfn-template    [beta] Create diagram from CloudFormation template
   -h, --help            help for awsdac
   -o, --output string   Output file name (default "output.png")
   -v, --verbose         Enable verbose logging
@@ -39,6 +40,24 @@ $ awsdac privatelink.yaml -o custom-output.png
 ```
 
 Example templates are [here](examples).
+
+### [Beta] Create a diagram from CloudFormation template
+
+`--cfn-template` option allows you to generate diagrams from CloudFormation templates, providing a visual representation of the resources.
+The tool can generate diagrams even if the CloudFormation template is not in a perfect format, enabling you to visualize the resources before actually creating the CloudFormation stack. This means you don't have to strictly adhere to the CloudFormation syntax constraints.
+
+> **NOTE:** The functionality of generating diagrams from CloudFormation templates is currently in beta. It sometimes works correctly, but we are aware of several known issues where the tool might not produce accurate results. We are actively working on improving the tool and fixing these issues.
+
+```
+$ awsdac examples/vpc-subnet-ec2-cfn.yaml --cfn-template
+```
+(generated from [the example of VPC,Subnet,EC2](examples/vpc-subnet-ec2-cfn.yaml))
+
+<img src="examples/vpc-subnet-ec2-cfn.png" width="500">
+
+There are some patterns where the tool may not work as expected. You can find a list of known issues and their status on the [issue tracker](https://github.com/awslabs/diagram-as-code/labels/cfn-template%20feature).
+
+Your feedback and issue reports are appreciated, as they will help enhance the tool's performance and accuracy.
 
 ## Features
 - **Compliant with AWS architecture guidelines**  
