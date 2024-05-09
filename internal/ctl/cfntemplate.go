@@ -6,6 +6,7 @@ package ctl
 
 import (
 	"fmt"
+	"image/color"
 	"regexp"
 	"strings"
 
@@ -210,6 +211,11 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			log.Infof("Add child(%s) on %s", child, logicalId)
 
 			resources[logicalId].AddChild(resources[child])
+
+			if def.Border == nil {
+				resources[logicalId].SetBorderColor(color.RGBA{0, 0, 0, 255})
+				resources[logicalId].SetFillColor(color.RGBA{0, 0, 0, 0})
+			}
 		}
 	}
 }
