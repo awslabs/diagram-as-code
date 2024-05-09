@@ -173,6 +173,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		switch v.Preset {
 		case "BlankGroup":
 			resources[k].SetIconBounds(image.Rect(0, 0, 64, 64))
+			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
 		case "":
 		default:
 			def, ok := ds.Definitions[v.Preset]

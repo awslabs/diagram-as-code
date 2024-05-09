@@ -22,7 +22,7 @@ type Resource struct {
 	bindings    *image.Rectangle
 	iconImage   image.Image
 	iconBounds  image.Rectangle
-	borderColor color.RGBA
+	borderColor *color.RGBA
 	fillColor   color.RGBA
 	label       string
 	labelFont   string
@@ -42,16 +42,18 @@ var defaultResourceValues = map[bool]Resource{
 			image.Point{0, 0},
 			image.Point{64, 64},
 		},
-		margin:  &Margin{30, 100, 30, 100},
-		padding: &Padding{0, 0, 0, 0},
+		margin:      &Margin{30, 100, 30, 100},
+		padding:     &Padding{0, 0, 0, 0},
+		borderColor: &color.RGBA{0, 0, 0, 0},
 	},
 	true: { // resource has children and show as Group
 		bindings: &image.Rectangle{
 			image.Point{0, 0},
 			image.Point{320, 190},
 		},
-		margin:  &Margin{20, 15, 20, 15},
-		padding: &Padding{20, 45, 20, 45},
+		margin:      &Margin{20, 15, 20, 15},
+		padding:     &Padding{20, 45, 20, 45},
+		borderColor: &color.RGBA{0, 0, 0, 255},
 	},
 }
 
@@ -60,7 +62,7 @@ func (r Resource) Init() Node {
 	rr.bindings = nil
 	rr.iconImage = image.NewRGBA(image.Rect(0, 0, 0, 0))
 	rr.iconBounds = image.Rect(0, 0, 0, 0)
-	rr.borderColor = color.RGBA{0, 0, 0, 0}
+	rr.borderColor = nil
 	rr.fillColor = color.RGBA{0, 0, 0, 0}
 	rr.label = ""
 	rr.labelFont = ""
@@ -109,7 +111,7 @@ func (r *Resource) GetPadding() Padding {
 }
 
 func (r *Resource) SetBorderColor(borderColor color.RGBA) {
-	r.borderColor = borderColor
+	r.borderColor = &borderColor
 }
 
 func (r *Resource) SetFillColor(fillColor color.RGBA) {
@@ -169,6 +171,9 @@ func (r *Resource) Scale() {
 	}
 	if r.padding == nil {
 		r.padding = defaultResourceValues[hasChildren].padding
+	}
+	if r.borderColor == nil {
+		r.borderColor = defaultResourceValues[hasChildren].borderColor
 	}
 
 	w := r.padding.Left + r.padding.Right
