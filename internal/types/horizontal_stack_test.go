@@ -28,7 +28,7 @@ func TestHorizontalStackInit(t *testing.T) {
 		t.Errorf("Incorrect iconBounds: %v", resource.iconBounds)
 	}
 
-	if resource.borderColor != (color.RGBA{0, 0, 0, 0}) {
+	if *resource.borderColor != (color.RGBA{0, 0, 0, 0}) {
 		t.Errorf("Incorrect borderColor: %v", resource.borderColor)
 	}
 
