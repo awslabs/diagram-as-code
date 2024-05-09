@@ -30,7 +30,7 @@ func (v HorizontalStack) Init() Node {
 	}
 	sr.iconImage = image.NewRGBA(v.bindings)
 	sr.iconBounds = image.Rect(0, 0, 0, 0)
-	sr.borderColor = color.RGBA{0, 0, 0, 0}
+	sr.borderColor = &color.RGBA{0, 0, 0, 0}
 	sr.fillColor = color.RGBA{0, 0, 0, 0}
 	sr.label = ""
 	sr.labelColor = &color.RGBA{0, 0, 0, 0}
