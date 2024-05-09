@@ -77,7 +77,7 @@ func TestResource(t *testing.T) {
 	// Test SetBorderColor
 	borderColor := color.RGBA{255, 0, 0, 255}
 	r.SetBorderColor(borderColor)
-	if r.borderColor != borderColor {
+	if *r.borderColor != borderColor {
 		t.Errorf("SetBorderColor: expected borderColor to be %v, got %v", borderColor, r.borderColor)
 	}
 
