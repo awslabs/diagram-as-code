@@ -49,7 +49,7 @@ func main() {
 
 	rootCmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "output.png", "Output file name")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
-	rootCmd.PersistentFlags().BoolVarP(&cfntemplate, "cfn-template", "", false, "Create diagram from CloudFormation template")
+	rootCmd.PersistentFlags().BoolVarP(&cfntemplate, "cfn-template", "", false, "[beta] Create diagram from CloudFormation template")
 
 	rootCmd.Execute()
 }
