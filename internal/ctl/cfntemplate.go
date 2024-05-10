@@ -183,11 +183,12 @@ func ensureSingleParent(template *TemplateStruct) {
 
 func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
 
-	for logicalId, v := range template.Resources {
+	for logicalId, resource := range template.Resources {
 
-		def, ok := ds.Definitions[v.Type]
 
-		if v.Type == "" || !ok {
+		def, ok := ds.Definitions[resource.Type]
+
+		if resource.Type == "" || !ok {
 			log.Infof("%s is not defined in CloudFormation template or definition file. Skip process", logicalId)
 			continue
 		}
@@ -202,7 +203,7 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			continue
 		}
 
-		for _, child := range v.Children {
+		for _, child := range resource.Children {
 			_, ok := resources[child]
 			if !ok {
 				log.Infof("%s does not have parent resource", child)
