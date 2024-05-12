@@ -6,7 +6,10 @@ package ctl
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"image/color"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -17,38 +20,38 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string) {
+var template = TemplateStruct{
+	Diagram: Diagram{
+		DefinitionFiles: []DefinitionFile{
+			{
+				Type: "URL",
+				Url:  "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml",
+			},
+		},
+		Resources: map[string]Resource{
+			"Canvas": {
+				Type: "AWS::Diagram::Canvas",
+				Children: []string{
+					"AWSCloud",
+				},
+			},
+			"AWSCloud": {
+				Type:     "AWS::Diagram::Cloud",
+				Preset:   "AWSCloudNoLogo",
+				Align:    "center",
+				Children: []string{},
+			},
+		},
+		Links: []Link{},
+	},
+}
+
+func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateYaml bool) {
 
 	log.Infof("input file: %s\n", inputfile)
 	cfn_template, err := parse.File(inputfile)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	var template = TemplateStruct{
-		Diagram: Diagram{
-			DefinitionFiles: []DefinitionFile{
-				{
-					Type: "URL",
-					Url:  "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml",
-				},
-			},
-			Resources: map[string]Resource{
-				"Canvas": {
-					Type: "AWS::Diagram::Canvas",
-					Children: []string{
-						"AWSCloud",
-					},
-				},
-				"AWSCloud": {
-					Type:     "AWS::Diagram::Cloud",
-					Preset:   "AWSCloudNoLogo",
-					Align:    "center",
-					Children: []string{},
-				},
-			},
-			Links: []Link{},
-		},
 	}
 
 	var ds definition.DefinitionStructure
@@ -68,6 +71,11 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string) {
 
 	log.Info("--- Associate children with parent resources ---")
 	associateCFnChildren(&template, ds, resources)
+
+	if generateYaml {
+		log.Info("--- Generate yaml file from CloudFormation template ---")
+		go generateYamlFromCFnTemplate(&template, *outputfile)
+	}
 
 	createDiagram(resources, outputfile)
 }
@@ -185,7 +193,6 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 
 	for logicalId, resource := range template.Resources {
 
-
 		def, ok := ds.Definitions[resource.Type]
 
 		if resource.Type == "" || !ok {
@@ -203,6 +210,8 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			continue
 		}
 
+		newChildren := make([]string, 0)
+
 		for _, child := range resource.Children {
 			_, ok := resources[child]
 			if !ok {
@@ -217,8 +226,35 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 				resources[logicalId].SetBorderColor(color.RGBA{0, 0, 0, 255})
 				resources[logicalId].SetFillColor(color.RGBA{0, 0, 0, 0})
 			}
+
+			// Update yaml template for providing
+			newChildren = append(newChildren, child)
+			template_resource := template.Diagram.Resources[logicalId]
+			template_resource.Children = newChildren
+			template.Diagram.Resources[logicalId] = template_resource
+
 		}
 	}
+}
+
+func generateYamlFromCFnTemplate(template *TemplateStruct, outputfile string) {
+
+	yamlData, err := yaml.Marshal(template)
+	if err != nil {
+		fmt.Printf("Error while marshaling data: %v", err)
+		return
+	}
+
+	outputBase := strings.TrimSuffix(outputfile, filepath.Ext(outputfile))
+	outputYamlFile := outputBase + ".yaml"
+
+	err = os.WriteFile(outputYamlFile, yamlData, 0644)
+	if err != nil {
+		fmt.Printf("Error while writing to file: %v", err)
+		return
+	}
+
+	fmt.Printf("[Completed] Data written to %s\n", outputYamlFile)
 }
 
 func findRefs(t map[string]interface{}, fromName string) []string {
