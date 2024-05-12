@@ -27,6 +27,7 @@ Flags:
   -h, --help            help for awsdac
   -o, --output string   Output file name (default "output.png")
   -v, --verbose         Enable verbose logging
+      --yaml            [beta] Generate YAML file from CloudFormation template
 ```
 
 ### Example
@@ -56,8 +57,21 @@ $ awsdac examples/vpc-subnet-ec2-cfn.yaml --cfn-template
 <img src="examples/vpc-subnet-ec2-cfn.png" width="500">
 
 There are some patterns where the tool may not work as expected. You can find a list of known issues and their status on the [issue tracker](https://github.com/awslabs/diagram-as-code/labels/cfn-template%20feature).
-
 Your feedback and issue reports are appreciated, as they will help enhance the tool's performance and accuracy.
+
+#### Use "--yaml" option
+
+```
+$ awsdac examples/vpc-subnet-ec2-cfn.yaml --cfn-template --yaml
+```
+CloudFormation templates have various dependencies, and there is no simple parent-child relationship between resources. As a result, generating the desired diagram directly from the existing CloudFormation template formats can be challenging at this stage.
+We considered utilizing Metadata or comments within the CloudFormation templates to include additional information. However, this approach would make the templates excessively long, and CloudFormation templates are primarily intended for resource creation and management rather than diagram generation. Additionally, combining different lifecycle components into a single CloudFormation template could make it difficult to manage and maintain.
+
+Therefore, instead of directly generating diagrams from CloudFormation templates, you can create a separate YAML file from CloudFormation template and customize this YAML file.
+This customized YAML file can then be used as input for `awsdac` to generate the desired architecture diagrams. By decoupling the diagram generation process from the CloudFormation template structure, this approach offers greater flexibility and customization while leveraging the specialized strengths of `awsdac`.
+```
+CloudFormation template --[awsdac]--> yaml template --[user custom]--> your desired diagram :)
+```
 
 ## Features
 - **Compliant with AWS architecture guidelines**  
