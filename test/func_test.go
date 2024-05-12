@@ -120,7 +120,7 @@ func TestFunctionality(t *testing.T) {
 				t.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputFilename), err)
 			}
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
-				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename)
+				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true)
 			} else {
 				ctl.CreateDiagramFromYAML(yamlFilename, &tmpOutputFilename)
 			}
