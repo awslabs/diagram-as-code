@@ -17,7 +17,7 @@ func main() {
 	var outputFile string
 	var verbose bool
 	var cfnTemplate bool
-	var generateYaml bool
+	var generateDacFile bool
 
 	var rootCmd = &cobra.Command{
 		Use:   "awsdac <input filename>",
@@ -40,7 +40,7 @@ func main() {
 			inputFile := args[0]
 
 			if cfnTemplate {
-				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateYaml)
+				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile)
 			} else {
 				ctl.CreateDiagramFromYAML(inputFile, &outputFile)
 			}
@@ -51,7 +51,7 @@ func main() {
 	rootCmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "output.png", "Output file name")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 	rootCmd.PersistentFlags().BoolVarP(&cfnTemplate, "cfn-template", "", false, "[beta] Create diagram from CloudFormation template")
-	rootCmd.PersistentFlags().BoolVarP(&generateYaml, "yaml", "", false, "[beta] Generate YAML file from CloudFormation template")
+	rootCmd.PersistentFlags().BoolVarP(&generateDacFile, "dac-file", "d", false, "[beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template")
 
 	rootCmd.Execute()
 }

@@ -46,7 +46,7 @@ var template = TemplateStruct{
 	},
 }
 
-func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateYaml bool) {
+func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateDacFile bool) {
 
 	log.Infof("input file: %s\n", inputfile)
 	cfn_template, err := parse.File(inputfile)
@@ -72,9 +72,9 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	log.Info("--- Associate children with parent resources ---")
 	associateCFnChildren(&template, ds, resources)
 
-	if generateYaml {
-		log.Info("--- Generate yaml file from CloudFormation template ---")
-		go generateYamlFromCFnTemplate(&template, *outputfile)
+	if generateDacFile {
+		log.Info("--- Generate dac file from CloudFormation template ---")
+		go generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
 	createDiagram(resources, outputfile)
@@ -237,7 +237,7 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 	}
 }
 
-func generateYamlFromCFnTemplate(template *TemplateStruct, outputfile string) {
+func generateDacFileFromCFnTemplate(template *TemplateStruct, outputfile string) {
 
 	yamlData, err := yaml.Marshal(template)
 	if err != nil {
@@ -254,7 +254,7 @@ func generateYamlFromCFnTemplate(template *TemplateStruct, outputfile string) {
 		return
 	}
 
-	fmt.Printf("[Completed] Data written to %s\n", outputYamlFile)
+	fmt.Printf("[Completed] dac (diagram-as-code) data written to %s\n", outputYamlFile)
 }
 
 func findRefs(t map[string]interface{}, fromName string) []string {
