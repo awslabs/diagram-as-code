@@ -23,8 +23,9 @@ jobs:
       - id: check-diff
         run: |
           diffs=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep -e "_test.go" -e "\.md" -e "\.github/" -e "examples/" -e "definitions/")
+          echo "$diffs"
           echo "REVIEW_REQUIRED_FILES=\"$diffs\"" >> "$GITHUB_OUTPUT"
-          [[ "$(echo -n \"$diffs\" | wc -l)" == "0" ]]
+          [[ "$(echo -n \"$diffs\" | wc -l | awk '{print $1}')" == "0" ]]
 
       - if: failure()
         uses: actions/github-script@v6
