@@ -11,7 +11,8 @@ jobs:
   build:
     name: Test
     runs-on: ubuntu-22.04
-    permissions: write-all
+    permissions:
+      pull-requests: write
     defaults:
       run:
         shell: bash
