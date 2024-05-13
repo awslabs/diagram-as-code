@@ -11,8 +11,6 @@ jobs:
   build:
     name: Test
     runs-on: ubuntu-22.04
-    permissions:
-      pull-requests: write
     defaults:
       run:
         shell: bash
@@ -34,6 +32,8 @@ jobs:
 
       - if: failure()
         uses: actions/github-script@v6
+        permissions:
+          pull-requests: write
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
