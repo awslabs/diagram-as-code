@@ -20,4 +20,4 @@ jobs:
       - run: git fetch origin ${{ github.base_ref }} --depth=1
 
       - id: diff
-        run: git diff --name-only origin/${{ github.base_ref }} HEAD
+        run: git diff --name-only origin/${{ github.base_ref }} HEAD | grep -e "_test.go" -e "\.md" -e "\.github/" -e "examples/"
