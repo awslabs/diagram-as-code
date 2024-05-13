@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    branches:
+      - main
+
+name: Functional test
+
+jobs:
+  build:
+    name: Test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/checkout@v3
+      - run: git fetch origin ${{ github.base_ref }} --depth=1
+
+      - id: diff
+        run: git diff --name-only origin/${{ github.base_ref }} HEAD
