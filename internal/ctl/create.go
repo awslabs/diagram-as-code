@@ -68,13 +68,13 @@ type Link struct {
 
 func createDiagram(resources map[string]types.Node, outputfile *string) {
 
-	log.Info("Drawing diagram...")
+	log.Info("--- Draw diagram ---")
 	resources["Canvas"].Scale()
 	resources["Canvas"].ZeroAdjust()
 	img := resources["Canvas"].Draw(nil, nil)
 
 	log.Infof("Save %s\n", *outputfile)
-	fmt.Printf("[Completed] output image: %s\n", *outputfile)
+	fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", *outputfile)
 	f, _ := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
 	defer f.Close()
 	png.Encode(f, img)
