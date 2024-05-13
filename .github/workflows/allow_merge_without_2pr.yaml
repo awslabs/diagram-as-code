@@ -3,12 +3,13 @@ on:
     branches:
       - main
 
-name: Functional test
+name: Allow merge without 2pr
 
 jobs:
   build:
     name: Test
     runs-on: ubuntu-22.04
+    permissions: write-all
     defaults:
       run:
         shell: bash
@@ -21,7 +22,7 @@ jobs:
 
       - id: check-diff
         run: |
-          diffs=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep -e "_test.go" -e "\.md" -e "\.github/" -e "examples/" -e "definitions/)
+          diffs=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep -e "_test.go" -e "\.md" -e "\.github/" -e "examples/" -e "definitions/")
           echo "REVIEW_REQUIRED_FILES=\"$diffs\"" >> "$GITHUB_OUTPUT"
           [[ "$(echo -n "$diffs" | wc -l)" == "0" ]]
 
