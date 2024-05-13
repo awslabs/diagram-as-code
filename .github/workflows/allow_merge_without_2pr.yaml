@@ -2,6 +2,8 @@ on:
   pull_request:
     branches:
       - main
+  pull_request_review:
+    types: [submitted]
 
 name: Allow merge without approval
 
@@ -22,6 +24,7 @@ jobs:
 
       - name: Checks if files can be merged without approval.
         id: check-diff
+        if: github.event.review.state != 'approved'
         run: |
           diffs=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep -e "_test.go" -e "\.md" -e "\.github/" -e "examples/" -e "definitions/")
           echo "$diffs"
@@ -31,6 +34,7 @@ jobs:
       - if: failure()
         uses: actions/github-script@v6
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
