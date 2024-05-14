@@ -4,6 +4,8 @@
 package ctl
 
 import (
+	"io"
+	"net/http"
 	"os"
 
 	"github.com/awslabs/diagram-as-code/internal/definition"
@@ -14,17 +16,38 @@ import (
 
 func CreateDiagramFromYAML(inputfile string, outputfile *string) {
 
-	log.Infof("input file: %s\n", inputfile)
-	data, err := os.ReadFile(inputfile)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Infof("input file path: %s\n", inputfile)
 
 	var template TemplateStruct
 
-	err = yaml.Unmarshal([]byte(data), &template)
-	if err != nil {
-		log.Fatal(err)
+	if IsURL(inputfile) {
+		// URL from remote
+		resp, err := http.Get(inputfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		data, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = yaml.Unmarshal(data, &template)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	} else {
+		// Local file
+		data, err := os.ReadFile(inputfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = yaml.Unmarshal([]byte(data), &template)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	var ds definition.DefinitionStructure
