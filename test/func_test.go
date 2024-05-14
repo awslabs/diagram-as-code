@@ -122,7 +122,7 @@ func TestFunctionality(t *testing.T) {
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
 				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true)
 			} else {
-				ctl.CreateDiagramFromYAML(yamlFilename, &tmpOutputFilename)
+				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename)
 			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			err := compareTwoImages(pngFilename, tmpOutputFilename)

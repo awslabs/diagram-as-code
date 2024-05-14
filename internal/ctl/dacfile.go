@@ -14,7 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func CreateDiagramFromYAML(inputfile string, outputfile *string) {
+func CreateDiagramFromDacFile(inputfile string, outputfile *string) {
 
 	log.Infof("input file path: %s\n", inputfile)
 
