@@ -9,6 +9,7 @@ import (
 	"image/color"
 	"image/png"
 	"os"
+	"strings"
 
 	"github.com/awslabs/diagram-as-code/internal/cache"
 	"github.com/awslabs/diagram-as-code/internal/definition"
@@ -276,4 +277,11 @@ func loadLinks(template *TemplateStruct, resources map[string]types.Node) {
 		resources[v.Target].AddLink(link)
 	}
 
+}
+
+func IsURL(str string) bool {
+	if strings.HasPrefix(str, "http://") || strings.HasPrefix(str, "https://") {
+		return true
+	}
+	return false
 }
