@@ -42,7 +42,7 @@ func main() {
 			if cfnTemplate {
 				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile)
 			} else {
-				ctl.CreateDiagramFromYAML(inputFile, &outputFile)
+				ctl.CreateDiagramFromDacFile(inputFile, &outputFile)
 			}
 
 		},
