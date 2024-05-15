@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"image/color"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -48,10 +49,30 @@ var template = TemplateStruct{
 
 func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateDacFile bool) {
 
-	log.Infof("input file: %s\n", inputfile)
-	cfn_template, err := parse.File(inputfile)
-	if err != nil {
-		log.Fatal(err)
+	log.Infof("input file path: %s\n", inputfile)
+
+	var cfn_template cft.Template
+
+	if IsURL(inputfile) {
+		// URL from remote
+		resp, err := http.Get(inputfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		cfn_template, err = parse.Reader(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	} else {
+		// Local file
+		var err error
+		cfn_template, err = parse.File(inputfile)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	var ds definition.DefinitionStructure
