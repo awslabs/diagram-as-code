@@ -41,6 +41,7 @@ $ awsdac privatelink.yaml -o custom-output.png
 ```
 
 Example templates are [here](examples).
+Check out the [Introduction Guide](doc/introduction.md) as well for additional information.
 
 ### [Beta] Create a diagram from CloudFormation template
 
