@@ -7,6 +7,8 @@ The CLI tool promotes code reuse, testing, integration, and automating the diagr
 
 (generated from [the example of PrivateLink](examples/privatelink.yaml))
 
+![CLI Usage animation](doc/static/command_demo.gif)
+
 ## Getting started
 
 ### for Gopher (go 1.21 or higher)
