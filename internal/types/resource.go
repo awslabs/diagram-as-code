@@ -343,6 +343,9 @@ func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
 			r.labelColor = &color.RGBA{0, 0, 0, 255}
 		}
 	}
+	if r.labelFont == "" {
+		panic("Specified fonts are not installed.")
+	}
 	f, err := os.Open(r.labelFont)
 	if err != nil {
 		panic(err)
