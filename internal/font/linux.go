@@ -6,4 +6,7 @@
 
 package font
 
-var Paths = []string{"/usr/share/fonts/truetype/msttcorefonts/Arial.ttf"}
+var Paths = []string{
+	"/usr/share/fonts/truetype/msttcorefonts/Arial.ttf",
+	"/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+}
