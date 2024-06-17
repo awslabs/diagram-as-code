@@ -306,7 +306,7 @@ func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
 			g.labelColor = &color.RGBA{0, 0, 0, 255}
 		}
 	}
-	if r.labelFont == "" {
+	if g.labelFont == "" {
 		panic("Specified fonts are not installed.")
 	}
 	f, err := os.Open(g.labelFont)
