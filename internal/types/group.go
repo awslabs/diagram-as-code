@@ -4,6 +4,7 @@
 package types
 
 import (
+	"errors"
 	"image"
 	"image/color"
 	"io/ioutil"
@@ -290,7 +291,11 @@ func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
 		if parent != nil && parent.labelFont != "" {
 			g.labelFont = parent.labelFont
 		} else {
-			g.labelFont = fontPath.Arial
+			for _, x := range fontPath.Paths {
+				if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
+					g.labelFont = x
+				}
+			}
 		}
 	}
 	if g.labelColor == nil {
