@@ -332,6 +332,7 @@ func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
 			for _, x := range fontPath.Paths {
 				if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
 					r.labelFont = x
+					break
 				}
 			}
 		}

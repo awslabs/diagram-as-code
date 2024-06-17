@@ -294,6 +294,7 @@ func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
 			for _, x := range fontPath.Paths {
 				if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
 					g.labelFont = x
+					break
 				}
 			}
 		}
@@ -304,6 +305,9 @@ func (g *Group) drawLabel(img *image.RGBA, parent *Group) {
 		} else {
 			g.labelColor = &color.RGBA{0, 0, 0, 255}
 		}
+	}
+	if r.labelFont == "" {
+		panic("Specified fonts are not installed.")
 	}
 	f, err := os.Open(g.labelFont)
 	if err != nil {
