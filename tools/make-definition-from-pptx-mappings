@@ -220,7 +220,7 @@ AWS::CodeArtifact::PackageGroup
 AWS::CodeArtifact::Repository
 AWS::CodeBuild,AWS CodeBuild
 AWS::CodeBuild::Fleet
-AWS::CodeBuild::Project
+AWS::CodeBuild::Project,AWS CodeBuild
 AWS::CodeBuild::ReportGroup
 AWS::CodeBuild::SourceCredential
 AWS::CodeCommit,AWS CodeCommit
