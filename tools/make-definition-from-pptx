@@ -246,7 +246,7 @@ do
     image=${image_mappings["$name"]}
     [[ "$image" == "" ]] && echo "Not found $image" > /dev/stderr && continue
     has_children="false"
-    [[ "$type" == "AWS::ECS::Cluster" ]] || [[ "$type" == "AWS::EKS::Cluster" ]] && has_children="true"
+    [[ "$type" == "AWS::ECS::Cluster" ]] || [[ "$type" == "AWS::EKS::Cluster" ]] || [[ "$type" == "AWS::CodePipeline::Pipeline" ]] && has_children="true"
     (
         echo "  $type:"
         echo "    Type: Resource"
