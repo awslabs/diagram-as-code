@@ -50,7 +50,8 @@ To use the pre-defined resource definitions from the awsdac GitHub repository, s
 If you want to customize the resource definitions locally, you can specify a local file path instead:
 ```
     DefinitionFiles:
-      - LocalFile: "<your definition file path (e.g. ~/Desktop/your-custom-definition.yaml)>"
+      - Type: LocalFile
+        LocalFile: "<your definition file path (e.g. ~/Desktop/your-custom-definition.yaml)>"
 ```
 
 ### Resources section
