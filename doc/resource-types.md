@@ -27,18 +27,8 @@ Diagram:
 
 ### AWS::Diagram::Group [DEPRECATED]
 
-An essential resource type that indicates that it is a group of resources. The following attributes are defined for the group, and it is possible to customize the decoration with these attributes.
-`AWS::Diagram::Group` resources are often used implicitly, but it is also possible to create custom groups explicitly.
-
-| Attribute | Type     | Default Value   | Description                                                             |
-| --------- | -------- | --------------- | ----------------------------------------------------------------------- |
-| Icon      | string   | ` `             | Icon file                                                               |
-| Direction | string   | `horizontal`    | vertical: `left`,`center`,`right` horizontal: `top`, `center`, `bottom` |
-| Preset    | string   | ` `             | Override resource attributes from preset                                |
-| Align     | string   | `center`        | `vertical`, `horizontal`                                                |
-| FillColor | string   | `rgba(0,0,0,0)` |                                                                         |
-| Title     | string   | ` `             |                                                                         |
-| Children  | []string | `[]`            |                                                                         |
+~~An essential resource type that indicates that it is a group of resources. The following attributes are defined for the group, and it is possible to customize the decoration with these attributes.~~
+~~`AWS::Diagram::Group` resources are often used implicitly, but it is also possible to create custom groups explicitly.~~
 
 ### AWS::Diagram::Resource
 
