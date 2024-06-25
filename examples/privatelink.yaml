@@ -56,7 +56,7 @@ Diagram:
       Preset: Network Load Balancer
 
     PrivateLinkGroup:
-      Type: AWS::Diagram::Group
+      Type: AWS::Diagram::Resource
       Preset: BlankGroup
       Children:
         - PrivateLink

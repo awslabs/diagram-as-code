@@ -141,7 +141,7 @@ Diagram:
     IGW1:
       Type: AWS::EC2::InternetGateway
     Empty1:
-      Type: AWS::Diagram::Group
+      Type: AWS::Diagram::Resource
     # VPC3
     VPC3:
       Type: AWS::EC2::VPC
@@ -200,7 +200,7 @@ Diagram:
       Type: AWS::EC2::VPCEndpoint
       Title: "Firewall Endpoint"
     Empty2:
-      Type: AWS::Diagram::Group
+      Type: AWS::Diagram::Resource
     IGW2:
       Type: AWS::EC2::InternetGateway
 
