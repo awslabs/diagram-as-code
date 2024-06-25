@@ -126,8 +126,6 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		case "AWS::Diagram::Canvas":
 			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
 			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
-		case "AWS::Diagram::Group":
-			resources[k] = new(types.Resource).Init()
 		case "AWS::Diagram::Resource":
 			resources[k] = new(types.Resource).Init()
 		case "AWS::Diagram::VerticalStack":
