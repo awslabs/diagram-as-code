@@ -17,7 +17,9 @@ $ go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
 ```
 
 ### for macOS user
-In preparing.
+```
+$ brew install awsdac
+```
 
 ## Usage
 
