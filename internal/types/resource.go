@@ -33,7 +33,7 @@ type Resource struct {
 	direction   string
 	align       string
 	links       []*Link
-	children    []Node
+	children    []*Resource
 	drawn       bool
 }
 
@@ -58,7 +58,7 @@ var defaultResourceValues = map[bool]Resource{
 	},
 }
 
-func (r Resource) Init() Node {
+func (r *Resource) Init() *Resource {
 	rr := Resource{}
 	rr.bindings = nil
 	rr.iconImage = image.NewRGBA(image.Rect(0, 0, 0, 0))
@@ -146,13 +146,13 @@ func (r *Resource) AddLink(link *Link) {
 func (r *Resource) AddParent() {
 }
 
-func (r *Resource) AddChild(child Node) {
+func (r *Resource) AddChild(child *Resource) {
 	r.children = append(r.children, child)
 }
 
 func (r *Resource) Scale() {
 	log.Infof("Scale %s", r.label)
-	var prev Node
+	var prev *Resource
 	b := image.Rectangle{
 		image.Point{
 			math.MaxInt,
@@ -250,6 +250,9 @@ func (r *Resource) Scale() {
 }
 
 func (r *Resource) Translation(dx, dy int) {
+	if r.bindings == nil {
+		panic("The resource has no binding.")
+	}
 	r.bindings = &image.Rectangle{
 		image.Point{
 			r.bindings.Min.X + dx,
@@ -273,7 +276,7 @@ func (r *Resource) IsDrawn() bool {
 	return r.drawn
 }
 
-func (r *Resource) Draw(img *image.RGBA, parent Node) *image.RGBA {
+func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 	if img == nil {
 		img = image.NewRGBA(*r.bindings)
 	}
@@ -285,7 +288,7 @@ func (r *Resource) Draw(img *image.RGBA, parent Node) *image.RGBA {
 	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
 
 	if parent != nil {
-		r.drawLabel(img, parent.(*Resource), len(r.children) > 0)
+		r.drawLabel(img, parent, len(r.children) > 0)
 	}
 
 	for _, subResource := range r.children {

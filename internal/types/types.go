@@ -25,26 +25,6 @@ type Padding struct {
 	Left   int
 }
 
-type Node interface {
-	Init() Node
-	IsDrawn() bool
-	Draw(*image.RGBA, Node) *image.RGBA
-	Scale()
-	GetBindings() image.Rectangle
-	GetMargin() Margin
-	LoadIcon(string) error
-	SetIconBounds(image.Rectangle)
-	SetBorderColor(color.RGBA)
-	SetFillColor(color.RGBA)
-	SetLabel(*string, *color.RGBA, *string)
-	SetAlign(string)
-	SetDirection(string)
-	AddLink(*Link)
-	AddChild(Node)
-	Translation(int, int)
-	ZeroAdjust()
-}
-
 func _max(a, b uint32) uint32 {
 	if a > b {
 		return a

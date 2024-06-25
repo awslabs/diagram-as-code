@@ -12,10 +12,10 @@ import (
 )
 
 type Link struct {
-	Source          *Node
+	Source          *Resource
 	SourcePosition  string
 	SourceArrowHead ArrowHead
-	Target          *Node
+	Target          *Resource
 	TargetPosition  string
 	TargetArrowHead ArrowHead
 	LineWidth       int
@@ -29,7 +29,7 @@ type ArrowHead struct {
 	Width  string  `yaml:"Width"`
 }
 
-func (l Link) Init(source *Node, sourcePosition string, sourceArrowHead ArrowHead, target *Node, targetPosition string, targetArrowHead ArrowHead, lineWidth int) *Link {
+func (l Link) Init(source *Resource, sourcePosition string, sourceArrowHead ArrowHead, target *Resource, targetPosition string, targetArrowHead ArrowHead, lineWidth int) *Link {
 	gl := Link{}
 	gl.Source = source
 	gl.SourcePosition = sourcePosition

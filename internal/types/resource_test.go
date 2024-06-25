@@ -9,11 +9,7 @@ import (
 
 func TestResource(t *testing.T) {
 	// Test Init
-	ri := new(Resource).Init()
-	r, ok := ri.(*Resource)
-	if !ok {
-		t.Errorf("Cannot convert Node to Resource")
-	}
+	r := new(Resource).Init()
 
 	// Test resource has not children
 	r.Scale()
@@ -31,11 +27,7 @@ func TestResource(t *testing.T) {
 	}
 
 	// Test resource has not children
-	r2i := new(Resource).Init()
-	r2, ok := r2i.(*Resource)
-	if !ok {
-		t.Errorf("Cannot convert Node to Resource")
-	}
+	r2 := new(Resource).Init()
 	r3 := new(Resource).Init()
 	r2.AddChild(r3)
 	r2.Scale()
