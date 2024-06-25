@@ -19,10 +19,10 @@ type VerticalStack struct {
 	margin      Margin
 	padding     Padding
 	//parents *Stack
-	children []Node
+	children []*Resource
 }
 
-func (h VerticalStack) Init() Node {
+func (h VerticalStack) Init() *Resource {
 	sr := Resource{}
 	sr.bindings = &image.Rectangle{
 		image.Point{0, 0},

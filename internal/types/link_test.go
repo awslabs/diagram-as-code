@@ -8,14 +8,14 @@ import (
 )
 
 func TestLinkInit(t *testing.T) {
-	source := new(Group).Init()
-	target := new(Group).Init()
+	source := new(Resource).Init()
+	target := new(Resource).Init()
 	sourceArrowHead := ArrowHead{Type: "Default", Length: 10, Width: "Default"}
 	targetArrowHead := ArrowHead{Type: "Open", Length: 15, Width: "Wide"}
 
-	link := Link{}.Init(&source, "Top", sourceArrowHead, &target, "Bottom", targetArrowHead, 2)
+	link := Link{}.Init(source, "Top", sourceArrowHead, target, "Bottom", targetArrowHead, 2)
 
-	if link.Source != &source {
+	if link.Source != source {
 		t.Errorf("Expected source node to be %v, got %v", source, link.Source)
 	}
 	if link.SourcePosition != "Top" {
@@ -24,7 +24,7 @@ func TestLinkInit(t *testing.T) {
 	if link.SourceArrowHead != sourceArrowHead {
 		t.Errorf("Expected source arrow head to be %v, got %v", sourceArrowHead, link.SourceArrowHead)
 	}
-	if link.Target != &target {
+	if link.Target != target {
 		t.Errorf("Expected target node to be %v, got %v", target, link.Target)
 	}
 	if link.TargetPosition != "Bottom" {

@@ -67,7 +67,7 @@ type Link struct {
 	LineWidth       int             `yaml:"LineWidth"`
 }
 
-func createDiagram(resources map[string]types.Node, outputfile *string) {
+func createDiagram(resources map[string]*types.Resource, outputfile *string) {
 
 	log.Info("--- Draw diagram ---")
 	resources["Canvas"].Scale()
@@ -111,7 +111,7 @@ func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStru
 
 }
 
-func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
+func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) {
 
 	resources["Canvas"] = new(types.Resource).Init()
 
@@ -232,7 +232,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 
 }
 
-func associateChildren(template *TemplateStruct, resources map[string]types.Node) {
+func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) {
 
 	for logicalId, v := range template.Resources {
 		for _, child := range v.Children {
@@ -248,7 +248,7 @@ func associateChildren(template *TemplateStruct, resources map[string]types.Node
 	}
 }
 
-func loadLinks(template *TemplateStruct, resources map[string]types.Node) {
+func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 
 	for _, v := range template.Links {
 		_, ok := resources[v.Source]
@@ -270,7 +270,7 @@ func loadLinks(template *TemplateStruct, resources map[string]types.Node) {
 		if lineWidth == 0 {
 			lineWidth = 2
 		}
-		link := new(types.Link).Init(&source, v.SourcePosition, v.SourceArrowHead, &target, v.TargetPosition, v.TargetArrowHead, lineWidth)
+		link := new(types.Link).Init(source, v.SourcePosition, v.SourceArrowHead, target, v.TargetPosition, v.TargetArrowHead, lineWidth)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}

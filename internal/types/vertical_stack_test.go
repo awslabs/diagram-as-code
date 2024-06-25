@@ -11,13 +11,7 @@ func TestVerticalStackInit(t *testing.T) {
 	hs := VerticalStack{}
 
 	// Initialize the VerticalStack
-	node := hs.Init()
-
-	// Check if the returned value is a Group
-	resource, ok := node.(*Resource)
-	if !ok {
-		t.Errorf("Init() did not return a Group")
-	}
+	resource := hs.Init()
 
 	// Check the properties of the initialized Group
 	if *resource.bindings != image.Rect(0, 0, 320, 190) {

@@ -76,7 +76,7 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	}
 
 	var ds definition.DefinitionStructure
-	var resources map[string]types.Node = make(map[string]types.Node)
+	var resources map[string]*types.Resource = make(map[string]*types.Resource)
 
 	log.Info("--- Load DefinitionFiles section ---")
 	loadDefinitionFiles(&template, &ds)
@@ -210,7 +210,7 @@ func ensureSingleParent(template *TemplateStruct) {
 	}
 }
 
-func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]types.Node) {
+func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) {
 
 	for logicalId, resource := range template.Resources {
 

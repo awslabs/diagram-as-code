@@ -51,7 +51,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string) {
 	}
 
 	var ds definition.DefinitionStructure
-	var resources map[string]types.Node = make(map[string]types.Node)
+	var resources map[string]*types.Resource = make(map[string]*types.Resource)
 
 	log.Info("Load DefinitionFiles section")
 	loadDefinitionFiles(&template, &ds)

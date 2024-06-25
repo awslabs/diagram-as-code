@@ -11,13 +11,7 @@ func TestHorizontalStackInit(t *testing.T) {
 	hs := HorizontalStack{}
 
 	// Initialize the HorizontalStack
-	node := hs.Init()
-
-	// Check if the returned value is a Group
-	resource, ok := node.(*Resource)
-	if !ok {
-		t.Errorf("Init() did not return a Resource")
-	}
+	resource := hs.Init()
 
 	// Check the properties of the initialized Group
 	if *resource.bindings != image.Rect(0, 0, 320, 190) {
