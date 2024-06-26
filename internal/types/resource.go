@@ -37,25 +37,28 @@ type Resource struct {
 	drawn       bool
 }
 
-var defaultResourceValues = map[bool]Resource{
-	false: { // resource has not children and show as Resource
-		bindings: &image.Rectangle{
-			image.Point{0, 0},
-			image.Point{64, 64},
-		},
-		margin:      &Margin{30, 100, 30, 100},
-		padding:     &Padding{0, 0, 0, 0},
-		borderColor: &color.RGBA{0, 0, 0, 0},
-	},
-	true: { // resource has children and show as Group
-		bindings: &image.Rectangle{
-			image.Point{0, 0},
-			image.Point{320, 190},
-		},
-		margin:      &Margin{20, 15, 20, 15},
-		padding:     &Padding{20, 45, 20, 45},
-		borderColor: &color.RGBA{0, 0, 0, 255},
-	},
+func defaultResourceValues(hasChild bool) Resource {
+	if hasChild {
+		return Resource{ // resource has children and show as Group
+			bindings: &image.Rectangle{
+				image.Point{0, 0},
+				image.Point{320, 190},
+			},
+			margin:      &Margin{20, 15, 20, 15},
+			padding:     &Padding{20, 45, 20, 45},
+			borderColor: &color.RGBA{0, 0, 0, 255},
+		}
+	} else {
+		return Resource{ // resource has not children and show as Resource
+			bindings: &image.Rectangle{
+				image.Point{0, 0},
+				image.Point{64, 64},
+			},
+			margin:      &Margin{30, 100, 30, 100},
+			padding:     &Padding{0, 0, 0, 0},
+			borderColor: &color.RGBA{0, 0, 0, 0},
+		}
+	}
 }
 
 func (r *Resource) Init() *Resource {
@@ -219,16 +222,16 @@ func (r *Resource) Scale(parent *Resource) {
 	}
 	hasChildren := len(r.children) != 0
 	if r.bindings == nil {
-		r.bindings = defaultResourceValues[hasChildren].bindings
+		r.bindings = defaultResourceValues(hasChildren).bindings
 	}
 	if r.margin == nil {
-		r.margin = defaultResourceValues[hasChildren].margin
+		r.margin = defaultResourceValues(hasChildren).margin
 	}
 	if r.padding == nil {
-		r.padding = defaultResourceValues[hasChildren].padding
+		r.padding = defaultResourceValues(hasChildren).padding
 	}
 	if r.borderColor == nil {
-		r.borderColor = defaultResourceValues[hasChildren].borderColor
+		r.borderColor = defaultResourceValues(hasChildren).borderColor
 	}
 
 	w := r.padding.Left + r.padding.Right
