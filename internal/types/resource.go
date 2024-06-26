@@ -150,7 +150,61 @@ func (r *Resource) AddChild(child *Resource) {
 	r.children = append(r.children, child)
 }
 
-func (r *Resource) Scale() {
+func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
+	if r.labelFont == "" {
+		if parent != nil && parent.labelFont != "" {
+			r.labelFont = parent.labelFont
+		} else {
+			for _, x := range fontPath.Paths {
+				if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
+					r.labelFont = x
+					break
+				}
+			}
+		}
+	}
+	if r.labelColor == nil {
+		if parent != nil && parent.labelColor != nil {
+			r.labelColor = parent.labelColor
+		} else {
+			r.labelColor = &color.RGBA{0, 0, 0, 255}
+		}
+	}
+	if r.labelFont == "" {
+		panic("Specified fonts are not installed.")
+	}
+	f, err := os.Open(r.labelFont)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	ttfBytes, err := ioutil.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+
+	ft, err := truetype.Parse(ttfBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	opt := truetype.Options{
+		Size:              24,
+		DPI:               0,
+		Hinting:           0,
+		GlyphCacheEntries: 0,
+		SubPixelsX:        0,
+		SubPixelsY:        0,
+	}
+	if hasChild {
+		opt.Size = 30
+	}
+
+	return truetype.NewFace(ft, &opt)
+}
+
+func (r *Resource) Scale(parent *Resource) {
 	log.Infof("Scale %s", r.label)
 	var prev *Resource
 	b := image.Rectangle{
@@ -180,7 +234,7 @@ func (r *Resource) Scale() {
 	w := r.padding.Left + r.padding.Right
 	h := r.padding.Top + r.padding.Bottom
 	for _, subResource := range r.children {
-		subResource.Scale()
+		subResource.Scale(parent)
 		bindings := subResource.GetBindings()
 		margin := subResource.GetMargin()
 		if r.direction == "horizontal" {
@@ -327,58 +381,7 @@ func (r *Resource) drawFrame(img *image.RGBA) {
 }
 
 func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
-
-	if r.labelFont == "" {
-		if parent != nil && parent.labelFont != "" {
-			r.labelFont = parent.labelFont
-		} else {
-			for _, x := range fontPath.Paths {
-				if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
-					r.labelFont = x
-					break
-				}
-			}
-		}
-	}
-	if r.labelColor == nil {
-		if parent != nil && parent.labelColor != nil {
-			r.labelColor = parent.labelColor
-		} else {
-			r.labelColor = &color.RGBA{0, 0, 0, 255}
-		}
-	}
-	if r.labelFont == "" {
-		panic("Specified fonts are not installed.")
-	}
-	f, err := os.Open(r.labelFont)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	ttfBytes, err := ioutil.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-
-	ft, err := truetype.Parse(ttfBytes)
-	if err != nil {
-		panic(err)
-	}
-
-	opt := truetype.Options{
-		Size:              24,
-		DPI:               0,
-		Hinting:           0,
-		GlyphCacheEntries: 0,
-		SubPixelsX:        0,
-		SubPixelsY:        0,
-	}
-	if hasChild {
-		opt.Size = 30
-	}
-
-	face := truetype.NewFace(ft, &opt)
+	face := r.prepareFontFace(hasChild, parent)
 
 	b, _ := font.BoundString(face, r.label)
 	w := b.Max.X - b.Min.X + fixed.I(1)
