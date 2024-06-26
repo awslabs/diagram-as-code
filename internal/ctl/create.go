@@ -70,7 +70,7 @@ type Link struct {
 func createDiagram(resources map[string]*types.Resource, outputfile *string) {
 
 	log.Info("--- Draw diagram ---")
-	resources["Canvas"].Scale()
+	resources["Canvas"].Scale(nil)
 	resources["Canvas"].ZeroAdjust()
 	img := resources["Canvas"].Draw(nil, nil)
 
