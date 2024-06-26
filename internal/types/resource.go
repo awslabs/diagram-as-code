@@ -90,6 +90,8 @@ func (r *Resource) LoadIcon(imageFilePath string) error {
 		return err
 	}
 	r.iconBounds = image.Rect(0, 0, 64, 64)
+	_b := image.Rect(0, 0, 64, 64)
+	r.bindings = &_b
 	r.iconImage = iconImage
 	return nil
 }
