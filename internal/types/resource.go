@@ -19,6 +19,8 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
+const DEBUG_LAYOUT = false
+
 type Resource struct {
 	bindings    *image.Rectangle
 	iconImage   image.Image
@@ -340,7 +342,13 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 		img = image.NewRGBA(*r.bindings)
 	}
 
+	if DEBUG_LAYOUT {
+		r.drawMargin(img)
+	}
 	r.drawFrame(img)
+	if DEBUG_LAYOUT {
+		r.drawPadding(img)
+	}
 
 	rctSrc := r.iconImage.Bounds()
 	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
@@ -379,8 +387,48 @@ func (r *Resource) drawFrame(img *image.RGBA) {
 			} else {
 				// Set background
 				img.Set(x, y, _blend_color(c, r.fillColor))
+				if DEBUG_LAYOUT {
+					img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
+				}
 				//img.Set(x, y, fill_color)
 			}
+		}
+	}
+}
+
+func (r *Resource) drawPadding(img *image.RGBA) {
+	x1 := r.bindings.Min.X
+	x2 := r.bindings.Max.X
+	y1 := r.bindings.Min.Y
+	y2 := r.bindings.Max.Y
+	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
+		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
+			c := img.At(x, y)
+			img.Set(x, y, _blend_color(c, color.RGBA{0, 255, 0, 127}))
+		}
+	}
+	x1 = r.bindings.Min.X + r.padding.Left
+	x2 = r.bindings.Max.X - r.padding.Right
+	y1 = r.bindings.Min.Y + r.padding.Top
+	y2 = r.bindings.Max.Y - r.padding.Bottom
+	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
+		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
+			c := img.At(x, y)
+			img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
+		}
+	}
+
+}
+
+func (r *Resource) drawMargin(img *image.RGBA) {
+	x1 := r.bindings.Min.X - r.margin.Left
+	x2 := r.bindings.Max.X + r.margin.Right
+	y1 := r.bindings.Min.Y - r.margin.Top
+	y2 := r.bindings.Max.Y + r.margin.Bottom
+	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
+		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
+			c := img.At(x, y)
+			img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 0, 255}))
 		}
 	}
 }
