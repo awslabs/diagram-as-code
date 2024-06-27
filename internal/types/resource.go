@@ -225,17 +225,48 @@ func (r *Resource) Scale(parent *Resource) {
 		},
 	}
 	hasChildren := len(r.children) != 0
+	fontFace := r.prepareFontFace(hasChildren, parent)
+	textBindings, _ := font.BoundString(fontFace, r.label)
+	textWidth := textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
+	textHeight := textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
 	if r.bindings == nil {
 		r.bindings = defaultResourceValues(hasChildren).bindings
 	}
 	if r.margin == nil {
 		r.margin = defaultResourceValues(hasChildren).margin
+		// Expand bindings to fit text size
+		if !hasChildren {
+			// Resource (no child)
+			r.margin.Bottom += textHeight
+			_m := (textWidth - r.iconBounds.Dx()) / 2
+			r.margin.Left = maxInt(r.margin.Left, _m)
+			r.margin.Right = maxInt(r.margin.Right, _m)
+		}
 	}
 	if r.padding == nil {
 		r.padding = defaultResourceValues(hasChildren).padding
 	}
 	if r.borderColor == nil {
 		r.borderColor = defaultResourceValues(hasChildren).borderColor
+	}
+
+	// Expand bindings to fit text size
+	if hasChildren && r.direction == "vertical" {
+		// Group (has child)
+		prev = &Resource{
+			margin: &Margin{},
+			bindings: &image.Rectangle{
+				Min: image.Point{
+					0,
+					0,
+				},
+				Max: image.Point{
+					textWidth + r.iconBounds.Dx() + 30,
+					0,
+				},
+			},
+		}
+		b = *prev.bindings
 	}
 
 	for _, subResource := range r.children {
@@ -293,6 +324,15 @@ func (r *Resource) Scale(parent *Resource) {
 		b.Max.X = maxInt(b.Max.X, bindings.Max.X+margin.Right+r.padding.Right)
 		b.Max.Y = maxInt(b.Max.Y, bindings.Max.Y+margin.Bottom+r.padding.Bottom)
 		prev = subResource
+	}
+	// Expand bindings to fit text size
+	if hasChildren && r.direction == "horizontal" {
+		// Group (has child)
+		if textWidth+r.iconBounds.Dx()+30 > b.Dx() {
+			_dx := b.Dx()
+			b.Min.X -= (textWidth + r.iconBounds.Dx() + 30 - _dx) / 2
+			b.Max.X += (textWidth + r.iconBounds.Dx() + 30 - _dx) / 2
+		}
 	}
 	if b.Min.X != math.MaxInt {
 		r.SetBindings(b)
