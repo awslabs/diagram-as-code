@@ -12,7 +12,7 @@ func TestResource(t *testing.T) {
 	r := new(Resource).Init()
 
 	// Test resource has not children
-	r.Scale()
+	r.Scale(nil)
 	if r.GetBindings() != image.Rect(0, 0, 64, 64) {
 		t.Errorf("Init: expected bindings to be (0, 0, 64, 64), got %v", r.GetBindings())
 	}
@@ -30,7 +30,7 @@ func TestResource(t *testing.T) {
 	r2 := new(Resource).Init()
 	r3 := new(Resource).Init()
 	r2.AddChild(r3)
-	r2.Scale()
+	r2.Scale(nil)
 	if r2.GetMargin() != (Margin{20, 15, 20, 15}) {
 		t.Errorf("Init: expected margin to be (30, 100, 30, 100), got %v", r2.GetMargin())
 	}
