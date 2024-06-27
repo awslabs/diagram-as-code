@@ -238,19 +238,10 @@ func (r *Resource) Scale(parent *Resource) {
 		r.borderColor = defaultResourceValues(hasChildren).borderColor
 	}
 
-	w := r.padding.Left + r.padding.Right
-	h := r.padding.Top + r.padding.Bottom
 	for _, subResource := range r.children {
 		subResource.Scale(parent)
 		bindings := subResource.GetBindings()
 		margin := subResource.GetMargin()
-		if r.direction == "horizontal" {
-			w += bindings.Dx() + margin.Left + margin.Right
-			h = maxInt(h, bindings.Dy()+margin.Top+margin.Bottom)
-		} else {
-			w = maxInt(w, bindings.Dx()+margin.Left+margin.Right)
-			h += bindings.Dy() + margin.Top + margin.Bottom
-		}
 		if prev != nil {
 			prevBindings := prev.GetBindings()
 			prevMargin := prev.GetMargin()
@@ -303,8 +294,6 @@ func (r *Resource) Scale(parent *Resource) {
 		b.Max.Y = maxInt(b.Max.Y, bindings.Max.Y+margin.Bottom+r.padding.Bottom)
 		prev = subResource
 	}
-	b.Max.X = maxInt(b.Max.X, b.Min.X+w)
-	b.Max.Y = maxInt(b.Max.Y, b.Min.Y+h)
 	if b.Min.X != math.MaxInt {
 		r.SetBindings(b)
 	}
