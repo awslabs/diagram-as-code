@@ -2020,6 +2020,61 @@ Definitions:
     CFn:
       HasChildren: false
 
+  AWS::IAM::AccessKey:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1447.png"
+    Label:
+      Title: "Long-term security credential"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::GroupPolicy:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1437.png"
+    Label:
+      Title: "Permissions"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::InstanceProfile:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1437.png"
+    Label:
+      Title: "Permissions"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::ManagedPolicy:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1437.png"
+    Label:
+      Title: "Permissions"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::Policy:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1437.png"
+    Label:
+      Title: "Permissions"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
   AWS::IAM::Role:
     Type: Resource
     Icon:
@@ -2027,6 +2082,39 @@ Definitions:
       Path: "image1441.png"
     Label:
       Title: "Role"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::RolePolicy:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1437.png"
+    Label:
+      Title: "Permissions"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::User:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image124.png"
+    Label:
+      Title: "User"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::IAM::UserPolicy:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1437.png"
+    Label:
+      Title: "Permissions"
       Color: "rgba(0, 0, 0, 255)"
     CFn:
       HasChildren: false
@@ -2922,6 +3010,28 @@ Definitions:
     CFn:
       HasChildren: false
 
+  AWS::RDS::DBCluster:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image609.png"
+    Label:
+      Title: "Amazon Aurora"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::RDS::DBInstance:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image675.png"
+    Label:
+      Title: "Amazon RDS instance"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
   AWS::RUM:
     Type: Resource
     Icon:
@@ -3154,6 +3264,17 @@ Definitions:
       HasChildren: false
 
   AWS::S3:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1621.png"
+    Label:
+      Title: "Amazon Simple Storage Service (Amazon S3)"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::S3::Bucket:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
@@ -3407,6 +3528,17 @@ Definitions:
       HasChildren: false
 
   AWS::SecretsManager:
+    Type: Resource
+    Icon:
+      Source: ArchitectureIconsPptxMedia
+      Path: "image1463.png"
+    Label:
+      Title: "AWS Secrets Manager"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: false
+
+  AWS::SecretsManager::Secret:
     Type: Resource
     Icon:
       Source: ArchitectureIconsPptxMedia
