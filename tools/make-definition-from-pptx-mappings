@@ -637,20 +637,20 @@ AWS::GuardDuty::Master
 AWS::GuardDuty::Member
 AWS::GuardDuty::ThreatIntelSet
 AWS::IAM,AWS Identity and Access Management (IAM)
-AWS::IAM::AccessKey
+AWS::IAM::AccessKey,Long-term security credential
 AWS::IAM::Group
-AWS::IAM::GroupPolicy
-AWS::IAM::InstanceProfile
-AWS::IAM::ManagedPolicy
+AWS::IAM::GroupPolicy,Permissions(2)
+AWS::IAM::InstanceProfile,Permissions(2)
+AWS::IAM::ManagedPolicy,Permissions(2)
 AWS::IAM::OIDCProvider
-AWS::IAM::Policy
+AWS::IAM::Policy,Permissions(2)
 AWS::IAM::Role,Role
-AWS::IAM::RolePolicy
+AWS::IAM::RolePolicy,Permissions(2)
 AWS::IAM::SAMLProvider
 AWS::IAM::ServerCertificate
 AWS::IAM::ServiceLinkedRole
-AWS::IAM::User
-AWS::IAM::UserPolicy
+AWS::IAM::User,User
+AWS::IAM::UserPolicy,Permissions(2) 
 AWS::IAM::UserToGroupAddition
 AWS::IAM::VirtualMFADevice
 AWS::IVS,Amazon Interactive Video Service
@@ -1034,9 +1034,9 @@ AWS::RAM::Permission
 AWS::RAM::ResourceShare
 AWS::RDS,Amazon Relational Database Service (Amazon RDS)
 AWS::RDS::CustomDBEngineVersion
-AWS::RDS::DBCluster
+AWS::RDS::DBCluster,Amazon Aurora
 AWS::RDS::DBClusterParameterGroup
-AWS::RDS::DBInstance
+AWS::RDS::DBInstance,Amazon RDS instance
 AWS::RDS::DBParameterGroup
 AWS::RDS::DBProxy
 AWS::RDS::DBProxyEndpoint
@@ -1115,7 +1115,7 @@ AWS::S3::AccessGrant
 AWS::S3::AccessGrantsInstance
 AWS::S3::AccessGrantsLocation
 AWS::S3::AccessPoint
-AWS::S3::Bucket,Bucket
+AWS::S3::Bucket,Amazon Simple Storage Service (Amazon S3)
 AWS::S3::BucketPolicy
 AWS::S3::MultiRegionAccessPoint,Access points
 AWS::S3::MultiRegionAccessPointPolicy
@@ -1211,7 +1211,7 @@ AWS::Scheduler::ScheduleGroup
 AWS::SecretsManager,AWS Secrets Manager
 AWS::SecretsManager::ResourcePolicy
 AWS::SecretsManager::RotationSchedule
-AWS::SecretsManager::Secret
+AWS::SecretsManager::Secret,AWS Secrets Manager
 AWS::SecretsManager::SecretTargetAttachment
 AWS::SecurityHub,AWS Security Hub
 AWS::SecurityHub::AutomationRule
