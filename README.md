@@ -3,9 +3,10 @@ This command line interface (CLI) tool enables drawing infrastructure diagrams f
 
 The CLI tool promotes code reuse, testing, integration, and automating the diagramming process. It allows managing diagrams with Git by writing human-readable YAML.
 
-<img src="doc/static/introduction2.png" width="800">
+Example templates are [here](examples).
+Check out the [Introduction Guide](doc/introduction.md) as well for additional information.
 
-(generated from [the example of PrivateLink](examples/privatelink.yaml))
+<img src="doc/static/introduction2.png" width="800">
 
 ![CLI Usage animation](doc/static/command_demo.gif)
 
@@ -43,9 +44,6 @@ $ awsdac examples/alb-ec2.yaml
 ```
 $ awsdac privatelink.yaml -o custom-output.png
 ```
-
-Example templates are [here](examples).
-Check out the [Introduction Guide](doc/introduction.md) as well for additional information.
 
 ### [Beta] Create a diagram from CloudFormation template
 
