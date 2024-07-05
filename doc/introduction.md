@@ -9,6 +9,9 @@
     - [Links section](#links-section)
   - [\[Beta\] Create Diagrams from CloudFormation template](#beta-create-diagrams-from-cloudformation-template)
     - [Create DAC files from CloudFormation template](#create-dac-files-from-cloudformation-template)
+  - [Tips](#tips)
+    - [How to Change default icons](#how-to-change-default-icons)
+    - [How to Change default titles](#how-to-change-default-titles)
 
 
 ## How to Install
@@ -216,3 +219,76 @@ Diagram:
     Links: []
 ```
 The DAC file obtained can be customized according to your needs by commenting out or removing unnecessary parameters within the file. This allows you to tailor the configuration to your specific requirements.
+
+## Tips
+
+### How to Change default icons
+
+You can set the "Preset" parameter in DAC file and search values from the [definition file](https://github.com/awslabs/diagram-as-code/blob/main/definitions/definition-for-aws-icons-light.yaml).
+
+Ex)
+
+Default
+```
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - S3
+    S3:
+      Type: AWS::S3::Bucket
+```
+
+<p align="center">
+<img src="static/S3default.png" width="450">
+</p>
+
+Set "Preset" parameter and "Bucket with objects" value
+```diff
+Diagram:
+  ...
+
+  Resources:
+    ...
+    S3:
+      Type: AWS::S3::Bucket
++     Preset: "Bucket with objects"
+```
+
+<p align="center">
+<img src="static/S3withPreset.png" width="450">
+</p>
+
+### How to Change default titles
+
+You can set the "Title" parameter in DAC file.
+
+Ex)
+```diff
+Diagram:
+  ...
+
+  Resources:
+    ...
+    S3:
+      Type: AWS::S3::Bucket
++     Preset: "Bucket with objects"
++     Title: "S3 (image data bucket)" 
+```
+
+<p align="center">
+<img src="static/S3withTitle.png" width="450">
+</p>
