@@ -1,4 +1,5 @@
-#!/bin/zsh
+#!/bin/bash
+echo "# Service Icons"
 echo "| Resource Type | Icon title |"
 echo "| --- | --- |"
 cat ./make-definition-from-pptx-mappings | cut -d',' -f1 | cut -d':' -f1,2,3 | sort | uniq | while read line
@@ -8,3 +9,15 @@ do
   echo "$title\` |"
   [[ $? != 0 ]] && echo "$line"
 done
+
+echo "# Resource Icons"
+echo "| Resource Type | Icon title |"
+echo "| --- | --- |"
+cat ./make-definition-from-pptx-mappings | grep  "[A-z0-9]*::[A-z0-9]*::[A-z0-9]*" | cut -d',' -f1 | sort | uniq | while read line
+do
+  echo -n "| \`$line\` | \`"
+  title=$(cat ./make-definition-from-pptx-mappings | grep "$line," | cut -d',' -f2 | tr -d '[:cntrl:]')
+  echo "$title\` |"
+  [[ $? != 0 ]] && echo "$line"
+done
+exit 0
