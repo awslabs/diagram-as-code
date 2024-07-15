@@ -1,0 +1,38 @@
+name: sync wiki
+
+on:
+  push:
+    branches: main
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Checkout wiki
+        uses: actions/checkout@v3
+        with:
+          repository: "${{ github.repository }}.wiki"
+          path: .wiki
+
+      - name: Update wiki pages
+        run: (cd tools && ./generate-md-table-from-mappings) > .wiki/CloudFormation-Resource-Type-Compatibility.md
+
+      - name: Staging the changes
+        working-directory: .wiki
+        id: staging
+        run: |
+          git add .
+          echo "CHANGES=$(git diff --staged --name-only | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Publish wiki
+        working-directory: .wiki
+        if: steps.staging.outputs.CHANGES > 0
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "Automatic updates via GitHub action[.github/workflows/wiki_sync.yaml]"
+          git push
