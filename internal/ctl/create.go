@@ -117,8 +117,8 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 
 	for k, v := range template.Resources {
 		title := v.Title
-		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
 
+		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
 		switch v.Type {
 		case "":
 			log.Infof("%s does not have Type. Delete it from resources", k)
@@ -135,8 +135,20 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		default:
 			def, ok := ds.Definitions[v.Type]
 			if !ok {
-				log.Warnf("Unknown type: %s\n", v.Type)
-				continue
+				newType := fallbackToServiceIcon(v.Type)
+				_, check := ds.Definitions[newType]
+				if !check {
+					log.Warnf("Type %s is not defined in the DAC definition file. It cannot be fall backed to service icon. Ignore this type.\n", v.Type)
+					continue
+				}
+				log.Warnf("Type %s is not defined in the DAC definition file. It's fall backed to its service icon (Type %s).\n", v.Type, newType)
+				def = ds.Definitions[newType]
+
+				// Change the title to indicate the original resource type for fallback icons.
+				if title == "" {
+					v.Title = v.Type
+					title = v.Type
+				}
 			}
 			if def.Type == "Resource" {
 				resources[k] = new(types.Resource).Init()
@@ -230,6 +242,14 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 	}
 
+}
+
+func fallbackToServiceIcon(inputType string) string {
+
+	parts := strings.SplitN(inputType, "::", 3)
+	possibleServiceType := strings.Join(parts[:2], "::")
+
+	return possibleServiceType
 }
 
 func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) {
