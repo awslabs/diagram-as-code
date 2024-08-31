@@ -225,10 +225,14 @@ func (r *Resource) Scale(parent *Resource) {
 		},
 	}
 	hasChildren := len(r.children) != 0
-	fontFace := r.prepareFontFace(hasChildren, parent)
-	textBindings, _ := font.BoundString(fontFace, r.label)
-	textWidth := textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
-	textHeight := textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+	textWidth := 0
+	textHeight := 0
+	if r.label != "" {
+		fontFace := r.prepareFontFace(hasChildren, parent)
+		textBindings, _ := font.BoundString(fontFace, r.label)
+		textWidth = textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
+		textHeight = textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+	}
 	if r.bindings == nil {
 		r.bindings = defaultResourceValues(hasChildren).bindings
 	}
