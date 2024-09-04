@@ -72,7 +72,7 @@ func (r *Resource) Init() *Resource {
 	rr.fillColor = color.RGBA{0, 0, 0, 0}
 	rr.label = ""
 	rr.labelFont = ""
-	rr.labelColor = &color.RGBA{0, 0, 0, 0}
+	rr.labelColor = &color.RGBA{0, 0, 0, 255}
 	rr.margin = nil
 	rr.padding = nil
 	rr.direction = "horizontal"
