@@ -65,6 +65,9 @@ Definitions:
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image42.png"
+    Label:
+      Title: "Region"
+      Color: "rgba(0, 0, 0, 255)"
     CFn:
       HasChildren: true
 

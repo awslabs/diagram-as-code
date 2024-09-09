@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var version = "dev"
+
 func main() {
 
 	var outputFile string
@@ -20,10 +22,11 @@ func main() {
 	var generateDacFile bool
 
 	var rootCmd = &cobra.Command{
-		Use:   "awsdac <input filename>",
-		Short: "Diagram-as-code for AWS architecture.",
-		Long:  "This command line interface (CLI) tool enables drawing infrastructure diagrams for Amazon Web Services through YAML code.",
-		Args:  cobra.MaximumNArgs(1),
+		Use:     "awsdac <input filename>",
+		Version: version,
+		Short:   "Diagram-as-code for AWS architecture.",
+		Long:    "This command line interface (CLI) tool enables drawing infrastructure diagrams for Amazon Web Services through YAML code.",
+		Args:    cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 
 			if len(args) == 0 {
