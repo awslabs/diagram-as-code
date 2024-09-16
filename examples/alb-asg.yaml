@@ -1,0 +1,72 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - VPC
+        - IGW
+    # VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - VPCPublicStack
+        - ALB
+    VPCPublicStack:
+      Type: AWS::AutoScaling::AutoScalingGroup
+      Children:
+        - VPCPublicSubnet1Instance
+        - VPCPublicSubnet2Instance
+    VPCPublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+    VPCPublicSubnet2Instance:
+      Type: AWS::EC2::Instance
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    IGW:
+      Type: AWS::EC2::InternetGateway
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+  Links:
+    - Source: ALB
+      SourcePosition: NNW
+      Target: VPCPublicSubnet1Instance
+      TargetPosition: SSE
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNE
+      Target: VPCPublicSubnet2Instance
+      TargetPosition: SSW
+      TargetArrowHead:
+        Type: Open
+    - Source: IGW
+      SourcePosition: N
+      Target: ALB
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: User
+      SourcePosition: N
+      Target: IGW
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
