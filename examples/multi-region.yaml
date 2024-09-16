@@ -1,0 +1,163 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - Regions
+    Regions:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - OregonRegion
+        - VirginiaRegion
+
+    #
+    # Oregon Region
+    #
+    OregonRegion:
+      Type: AWS::Region
+      Direction: vertical
+      Children:
+        - OregonVPC
+        - OregonIGW
+    OregonVPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Title: VPC (us-west-2)
+      Children:
+        - OregonVPCPublicStack
+        - OregonALB
+    OregonVPCPublicStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - OregonVPCPublicSubnet1
+        - OregonVPCPublicSubnet2
+    OregonVPCPublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - OregonVPCPublicSubnet1Instance
+    OregonVPCPublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+    OregonVPCPublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - OregonVPCPublicSubnet2Instance
+    OregonVPCPublicSubnet2Instance:
+      Type: AWS::EC2::Instance
+    OregonALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    OregonIGW:
+      Type: AWS::EC2::InternetGateway
+
+    #
+    # Virginia Region
+    #
+    VirginiaRegion:
+      Type: AWS::Region
+      Direction: vertical
+      Children:
+        - VirginiaVPC
+        - VirginiaIGW
+    VirginiaVPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Title: VPC (us-east-1)
+      Children:
+        - VirginiaVPCPublicStack
+        - VirginiaALB
+    VirginiaVPCPublicStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - VirginiaVPCPublicSubnet1
+        - VirginiaVPCPublicSubnet2
+    VirginiaVPCPublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VirginiaVPCPublicSubnet1Instance
+    VirginiaVPCPublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+    VirginiaVPCPublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VirginiaVPCPublicSubnet2Instance
+    VirginiaVPCPublicSubnet2Instance:
+      Type: AWS::EC2::Instance
+    VirginiaALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    VirginiaIGW:
+      Type: AWS::EC2::InternetGateway
+
+
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+  Links:
+    - Source: OregonALB
+      SourcePosition: NNW
+      Target: OregonVPCPublicSubnet1Instance
+      TargetPosition: SSE
+      TargetArrowHead:
+        Type: Open
+    - Source: OregonALB
+      SourcePosition: NNE
+      Target: OregonVPCPublicSubnet2Instance
+      TargetPosition: SSW
+      TargetArrowHead:
+        Type: Open
+    - Source: OregonIGW
+      SourcePosition: N
+      Target: OregonALB
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: User
+      SourcePosition: N
+      Target: OregonIGW
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: VirginiaALB
+      SourcePosition: NNW
+      Target: VirginiaVPCPublicSubnet1Instance
+      TargetPosition: SSE
+      TargetArrowHead:
+        Type: Open
+    - Source: VirginiaALB
+      SourcePosition: NNE
+      Target: VirginiaVPCPublicSubnet2Instance
+      TargetPosition: SSW
+      TargetArrowHead:
+        Type: Open
+    - Source: VirginiaIGW
+      SourcePosition: N
+      Target: VirginiaALB
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: User
+      SourcePosition: N
+      Target: VirginiaIGW
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open

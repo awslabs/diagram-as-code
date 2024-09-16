@@ -10,6 +10,11 @@
 ![alb-ec2.png](alb-ec2.png)
 (generated from [alb-ec2.yaml](alb-ec2.yaml))
 
+## Multi-region redundancy
+
+![multi-region.png](multi-region.png)
+(generated from [multi-region.yaml](multi-region.yaml))
+
 ## PrivateLink between VPCs
 
 ![privatelink.png](privatelink.png)

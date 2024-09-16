@@ -30,6 +30,7 @@ type DefinitionFill struct {
 
 type DefinitionBorder struct {
 	Color string `yaml:"Color"`
+	Type  string `yaml:"Type"`
 }
 
 // [TODO] make interface

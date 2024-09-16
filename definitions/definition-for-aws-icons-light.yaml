@@ -65,6 +65,9 @@ Definitions:
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image42.png"
+    Border:
+      Type: "dashed"
+      Color: "rgba(0, 164, 166, 255)"
     Label:
       Title: "Region"
       Color: "rgba(0, 0, 0, 255)"
@@ -76,6 +79,9 @@ Definitions:
     Icon:
       Source: ArchitectureIconsPptxMedia
       Path: "image21.png"
+    Border:
+      Type: "dashed"
+      Color: "rgba(237, 113, 0, 255)"
     Label:
       Title: "Auto Scaling Group"
       Color: "rgba(0, 0, 0, 255)"

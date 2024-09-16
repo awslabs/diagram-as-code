@@ -160,6 +160,14 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 			if border := def.Border; border != nil {
 				resources[k].SetBorderColor(stringToColor(border.Color))
+				switch border.Type {
+				case "straight":
+					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+				case "dashed":
+					resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
+				default:
+					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+				}
 			}
 			if label := def.Label; label != nil {
 				if label.Title != "" {
