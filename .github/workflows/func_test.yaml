@@ -39,7 +39,7 @@ jobs:
       - if: failure()
         run: echo "Check artifacts https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4.4.0
         if: failure()
         with:
           name: upload results
