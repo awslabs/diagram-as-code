@@ -99,19 +99,19 @@ func TestCalcPosition(t *testing.T) {
 		expected image.Point
 		err      bool
 	}{
-		{"center", image.Rect(0, 0, 100, 100), "N", image.Point{50, 0}, false},
-		{"invalid position", image.Rect(0, 0, 100, 100), "INVALID", image.Point{0, 0}, true},
+		{"center", image.Rect(0, 0, 100, 100), WINDROSE_N, image.Point{50, 0}, false},
+		{"invalid position", image.Rect(0, 0, 100, 100), -1, image.Point{0, 0}, true},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			result, err := calcPosition(tc.bindings, tc.position)
 			if err != nil && !tc.err {
-				t.Errorf("calcPosition(%v, %s) returned unexpected error: %v", tc.bindings, tc.position, err)
+				t.Errorf("calcPosition(%v, %d) returned unexpected error: %v", tc.bindings, tc.position, err)
 			} else if err == nil && tc.err {
-				t.Errorf("calcPosition(%v, %s) did not return expected error", tc.bindings, tc.position)
+				t.Errorf("calcPosition(%v, %d) did not return expected error", tc.bindings, tc.position)
 			} else if result != tc.expected {
-				t.Errorf("calcPosition(%v, %s) = %v; expected %v", tc.bindings, tc.position, result, tc.expected)
+				t.Errorf("calcPosition(%v, %d) = %v; expected %v", tc.bindings, tc.position, result, tc.expected)
 			}
 		})
 	}
