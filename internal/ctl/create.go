@@ -301,7 +301,15 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 		if lineWidth == 0 {
 			lineWidth = 2
 		}
-		link := new(types.Link).Init(source, v.SourcePosition, v.SourceArrowHead, target, v.TargetPosition, v.TargetArrowHead, lineWidth)
+		sourcePosition, err := types.ConvertWindrose(v.SourcePosition)
+		if err != nil {
+			panic(err)
+		}
+		targetPosition, err := types.ConvertWindrose(v.TargetPosition)
+		if err != nil {
+			panic(err)
+		}
+		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}

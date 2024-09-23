@@ -11,6 +11,65 @@ import (
 
 const WIDTH = 2
 
+type Windrose int
+
+const (
+	WINDROSE_N Windrose = iota
+	WINDROSE_NNE
+	WINDROSE_NE
+	WINDROSE_ENE
+	WINDROSE_E
+	WINDROSE_ESE
+	WINDROSE_SE
+	WINDROSE_SSE
+	WINDROSE_S
+	WINDROSE_SSW
+	WINDROSE_SW
+	WINDROSE_WSW
+	WINDROSE_W
+	WINDROSE_WNW
+	WINDROSE_NW
+	WINDROSE_NNW
+)
+
+func ConvertWindrose(position string) (Windrose, error) {
+	switch position {
+	case "N":
+		return WINDROSE_N, nil
+	case "NNE":
+		return WINDROSE_NNE, nil
+	case "NE":
+		return WINDROSE_NE, nil
+	case "ENE":
+		return WINDROSE_ENE, nil
+	case "E":
+		return WINDROSE_E, nil
+	case "ESE":
+		return WINDROSE_ESE, nil
+	case "SE":
+		return WINDROSE_SE, nil
+	case "SSE":
+		return WINDROSE_SSE, nil
+	case "S":
+		return WINDROSE_S, nil
+	case "SSW":
+		return WINDROSE_SSW, nil
+	case "SW":
+		return WINDROSE_SW, nil
+	case "WSW":
+		return WINDROSE_WSW, nil
+	case "W":
+		return WINDROSE_W, nil
+	case "WNW":
+		return WINDROSE_WNW, nil
+	case "NW":
+		return WINDROSE_NW, nil
+	case "NNW":
+		return WINDROSE_NNW, nil
+	}
+	return 0, fmt.Errorf("Unknown position: %s", position)
+}
+
 type Margin struct {
 	Top    int
 	Right  int
@@ -68,7 +127,7 @@ func _blend_color(c1 color.Color, c2 color.Color) color.Color {
 	return color.RGBA{r, g, b, a}
 }
 
-func calcPosition(bindings image.Rectangle, position string) (image.Point, error) {
+func calcPosition(bindings image.Rectangle, position Windrose) (image.Point, error) {
 	x := bindings.Min.X
 	y := bindings.Min.Y
 	dx := bindings.Dx()
@@ -78,37 +137,37 @@ func calcPosition(bindings image.Rectangle, position string) (image.Point, error
 	ty := [5]int{y, y + dy/4, y + dy/2, y + dy/2 + dy/4, y + dy}
 
 	switch position {
-	case "N":
+	case WINDROSE_N:
 		return image.Point{tx[2], ty[0]}, nil
-	case "NNE":
+	case WINDROSE_NNE:
 		return image.Point{tx[3], ty[0]}, nil
-	case "NE":
+	case WINDROSE_NE:
 		return image.Point{tx[4], ty[0]}, nil
-	case "ENE":
+	case WINDROSE_ENE:
 		return image.Point{tx[4], ty[1]}, nil
-	case "E":
+	case WINDROSE_E:
 		return image.Point{tx[4], ty[2]}, nil
-	case "ESE":
+	case WINDROSE_ESE:
 		return image.Point{tx[4], ty[3]}, nil
-	case "SE":
+	case WINDROSE_SE:
 		return image.Point{tx[4], ty[4]}, nil
-	case "SSE":
+	case WINDROSE_SSE:
 		return image.Point{tx[3], ty[4]}, nil
-	case "S":
+	case WINDROSE_S:
 		return image.Point{tx[2], ty[4]}, nil
-	case "SSW":
+	case WINDROSE_SSW:
 		return image.Point{tx[1], ty[4]}, nil
-	case "SW":
+	case WINDROSE_SW:
 		return image.Point{tx[0], ty[4]}, nil
-	case "WSW":
+	case WINDROSE_WSW:
 		return image.Point{tx[0], ty[3]}, nil
-	case "W":
+	case WINDROSE_W:
 		return image.Point{tx[0], ty[2]}, nil
-	case "WNW":
+	case WINDROSE_WNW:
 		return image.Point{tx[0], ty[1]}, nil
-	case "NW":
+	case WINDROSE_NW:
 		return image.Point{tx[0], ty[0]}, nil
-	case "NNW":
+	case WINDROSE_NNW:
 		return image.Point{tx[1], ty[0]}, nil
 	}
 	return image.Point{tx[0], ty[0]}, fmt.Errorf("Unknown position: %s", position)
