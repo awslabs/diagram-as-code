@@ -16,8 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var tmpOutputFilename = "/tmp/results/output.png"
-var tmpOutputDiffFilename = "/tmp/results/diff-image.png"
+var tmpOutputDir = "/tmp/results"
 
 func abs(x uint8) uint8 {
 	if x < 0 {
@@ -44,7 +43,7 @@ func subColor(px1, px2 color.NRGBA) color.RGBA {
 	}
 }
 
-func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
+func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename string) error {
 	fmt.Printf("Compare images %s and %s\n", imageFilePath1, imageFilePath2)
 	imageFile1, err := os.Open(imageFilePath1)
 	if err != nil {
@@ -87,18 +86,20 @@ func compareTwoImages(imageFilePath1, imageFilePath2 string) error {
 		}
 	}
 
-	err = os.MkdirAll(filepath.Dir(tmpOutputDiffFilename), os.ModePerm)
-	if err != nil {
-		return fmt.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputDiffFilename), err)
-	}
-	imageFile3, err := os.OpenFile(tmpOutputDiffFilename, os.O_WRONLY|os.O_CREATE, 0600)
-	if err != nil {
-		return fmt.Errorf("Cannot open ")
-	}
-	defer imageFile3.Close()
-	png.Encode(imageFile3, img3)
-
 	if pixels_diff_numer > 0 {
+		err = os.MkdirAll(tmpOutputDir, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("Cannot create directory(%s): %v", tmpOutputDir, err)
+		}
+
+		imageFile3, err := os.OpenFile(tmpOutputDiffFilename, os.O_WRONLY|os.O_CREATE, 0600)
+		if err != nil {
+			return fmt.Errorf("Cannot open ")
+		}
+		defer imageFile3.Close()
+
+		png.Encode(imageFile3, img3)
+
 		return fmt.Errorf("Mismatch pixels on image %d of %d. See diff-image.png", pixels_diff_numer, img1b.Max.X*img1b.Max.Y)
 	}
 	fmt.Println("The generated image is an exact match")
@@ -112,24 +113,31 @@ func TestFunctionality(t *testing.T) {
 	if err != nil {
 		t.Errorf("Cannot open examples directory, %v", err)
 	}
+	var mismatchErrs []error
 	for _, file := range files {
 		if filepath.Ext(file.Name()) == ".yaml" {
 			yamlFilename := fmt.Sprintf("../examples/%s", file.Name())
-			err = os.MkdirAll(filepath.Dir(tmpOutputFilename), os.ModePerm)
+			err = os.MkdirAll(tmpOutputDir, os.ModePerm)
 			if err != nil {
-				t.Errorf("Cannot create directory(%s): %v", filepath.Dir(tmpOutputFilename), err)
+				t.Errorf("Cannot create directory(%s): %v", tmpOutputDir, err)
 			}
+			tmpOutputFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", ".png", 1))
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
 				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true)
 			} else {
 				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename)
 			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
-			err := compareTwoImages(pngFilename, tmpOutputFilename)
+			tmpOutputDiffFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", "-diff.png", 1))
+			err := compareTwoImages(pngFilename, tmpOutputFilename, tmpOutputDiffFilename)
 			if err != nil {
-				t.Errorf("Image mismatch: %v", err)
-				break
+				fmt.Printf("Image mismatch from %s: %s\n", yamlFilename, err)
+				mismatchErrs = append(mismatchErrs, err)
+				continue
 			}
 		}
+	}
+	if len(mismatchErrs) != 0 {
+		t.Errorf("Found %d errors, failed to functional test", len(mismatchErrs))
 	}
 }

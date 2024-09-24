@@ -12,6 +12,9 @@ jobs:
   build:
     name: Test
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      pull-requests: write
     defaults:
       run:
         shell: bash
@@ -32,9 +35,13 @@ jobs:
           sudo apt-get install -y ttf-mscorefonts-installer
 
       - name: Functional tests
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           find ./examples/ -name *.yaml | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
           go test -v ./test/...
+          gh pr comment "${PR_NUMBER}" -b "Failed functional test.\nCheck out generated diffs https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
 
       - if: failure()
         run: echo "Check artifacts https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
