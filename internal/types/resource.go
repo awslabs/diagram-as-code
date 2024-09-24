@@ -23,7 +23,6 @@ const DEBUG_LAYOUT = false
 
 type BORDER_TYPE int
 
-// iotaを用いて連番を生成する
 const (
 	BORDER_TYPE_STRAIGHT BORDER_TYPE = iota
 	BORDER_TYPE_DASHED
@@ -39,6 +38,7 @@ type Resource struct {
 	label       string
 	labelFont   string
 	labelColor  *color.RGBA
+	headerAlign string // left(default) / center / right
 	margin      *Margin
 	padding     *Padding
 	direction   string
@@ -83,6 +83,7 @@ func (r *Resource) Init() *Resource {
 	rr.label = ""
 	rr.labelFont = ""
 	rr.labelColor = &color.RGBA{0, 0, 0, 255}
+	rr.headerAlign = "left"
 	rr.margin = nil
 	rr.padding = nil
 	rr.direction = "horizontal"
@@ -106,6 +107,10 @@ func (r *Resource) LoadIcon(imageFilePath string) error {
 	r.bindings = &_b
 	r.iconImage = iconImage
 	return nil
+}
+
+func (r *Resource) SetHeaderAlign(align string) {
+	r.headerAlign = align
 }
 
 func (r *Resource) SetIconBounds(bounds image.Rectangle) {
@@ -338,7 +343,11 @@ func (r *Resource) Scale(parent *Resource) {
 		}
 		bindings = subResource.GetBindings()
 		b.Min.X = minInt(b.Min.X, bindings.Min.X-margin.Left-r.padding.Left)
-		b.Min.Y = minInt(b.Min.Y, bindings.Min.Y-margin.Top-r.iconBounds.Dy()-r.padding.Top)
+		headerHeight := maxInt(r.iconBounds.Dy(), textHeight)
+		if r.headerAlign == "center" {
+			headerHeight = r.iconBounds.Dy() + textHeight
+		}
+		b.Min.Y = minInt(b.Min.Y, bindings.Min.Y-margin.Top-headerHeight-r.padding.Top)
 		b.Max.X = maxInt(b.Max.X, bindings.Max.X+margin.Right+r.padding.Right)
 		b.Max.Y = maxInt(b.Max.Y, bindings.Max.Y+margin.Bottom+r.padding.Bottom)
 		prev = subResource
@@ -399,6 +408,15 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 
 	rctSrc := r.iconImage.Bounds()
 	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
+	switch r.headerAlign {
+	case "left":
+	case "center":
+		x.Min = x.Min.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
+		x.Max = x.Max.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
+	case "right":
+		x.Min = x.Min.Add(image.Point{r.bindings.Dx() - 64, 0})
+		x.Max = x.Max.Add(image.Point{r.bindings.Dx() - 64, 0})
+	}
 	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
 
 	if parent != nil {
@@ -489,16 +507,40 @@ func (r *Resource) drawMargin(img *image.RGBA) {
 func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
 	face := r.prepareFontFace(hasChild, parent)
 
-	b, _ := font.BoundString(face, r.label)
-	w := b.Max.X - b.Min.X + fixed.I(1)
-	h := b.Max.Y - b.Min.Y + fixed.I(1)
+	textBindings, _ := font.BoundString(face, r.label)
+
+	textWidth := textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
+	textHeight := textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+	w := textBindings.Max.X - textBindings.Min.X + fixed.I(1)
+	h := textBindings.Max.Y - textBindings.Min.Y + fixed.I(1)
 
 	p := r.bindings.Min.Add(image.Point{0, r.iconBounds.Max.Y})
 
 	point := fixed.Point26_6{fixed.I(p.X) - (w-fixed.I(r.bindings.Dx()))/2, fixed.I(p.Y+10) + h}
 	if hasChild {
-		p = r.bindings.Min.Add(r.iconBounds.Max)
-		point = fixed.Point26_6{fixed.I(p.X) + 1000, fixed.I(p.Y) + (64-h)/2}
+		iconHeight := r.iconBounds.Max.Y
+		if iconHeight == 0 {
+			iconHeight = 64
+		}
+		padding := maxInt((iconHeight-textHeight)/2, 0)
+		switch r.headerAlign {
+		case "left":
+			p = r.bindings.Min.Add(image.Point{
+				r.iconBounds.Max.X + padding,
+				iconHeight - padding,
+			})
+		case "center":
+			p = r.bindings.Min.Add(image.Point{
+				(r.bindings.Dx() - textWidth) / 2,
+				r.iconBounds.Dy() + iconHeight - padding,
+			})
+		case "right":
+			p = r.bindings.Min.Add(image.Point{
+				r.iconBounds.Dx() - r.bindings.Dx() - r.iconBounds.Dx() - padding,
+				iconHeight - padding,
+			})
+		}
+		point = fixed.Point26_6{fixed.I(p.X), fixed.I(p.Y)}
 	}
 
 	d := &font.Drawer{
