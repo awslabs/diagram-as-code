@@ -11,6 +11,7 @@ type Definition struct {
 	Label         *DefinitionLabel    `yaml:"Label"`
 	Fill          *DefinitionFill     `yaml:"Fill"`
 	Border        *DefinitionBorder   `yaml:"Border"`
+	HeaderAlign   string              `yaml:"HeaderAlign"`
 	Directory     DefinitionDirectory `yaml:"Directory"`
 	ZipFile       DefinitionZipFile   `yaml:"ZipFile"`
 	CFn           DefinitionCFn       `yaml:"CFn"`
