@@ -35,6 +35,7 @@ jobs:
       - name: Functional tests
         env:
           PR_NUMBER: ${{ github.event.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           find ./examples/ -name *.yaml | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
           go test -v ./test/...
