@@ -1,4 +1,4 @@
-name: sync wiki
+name: Automatically update CloudFormation Resource Types compatibility in Wiki
 
 on:
   push:
