@@ -181,6 +181,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 					resources[k].SetLabel(nil, nil, &label.Font)
 				}
 			}
+			if headerAlign := def.HeaderAlign; headerAlign != "" {
+				resources[k].SetHeaderAlign(headerAlign)
+			}
 			if icon := def.Icon; icon != nil {
 				if def.CacheFilePath == "" {
 					break
