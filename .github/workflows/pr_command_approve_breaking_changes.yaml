@@ -1,0 +1,62 @@
+name: sync wiki
+
+on: issue_comment
+
+permissions:
+  contents: write
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+    if: (github.event.issue.pull_request != null) && startsWith(github.event.comment.body, "/approve-breaking-changes-regenerate-example-images")
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Check the reason
+        run: |
+          reason=$(echo "${{ github.event.comment.body }}" | awk '{print $2}')
+          if [[ "$reason" == ]]; then
+              gh pr comment "${PR_NUMBER}" -b "No reason given, failed to regenerate example images. Use command syntax `/approve-breaking-changes-regenerate-example-images <REASON>`"
+              exit 1
+          fi
+
+      - name: Setup Go 1.21.x
+        uses: actions/setup-go@v5
+        with:
+          # Semantic version range syntax or exact version of Go
+          go-version: '1.21.x'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+          sudo apt-get install -y ttf-mscorefonts-installer
+
+      - name: Build
+        run: |
+          go build -buildvcs=false -ldflags="-w" ./cmd/awsdac
+
+      - name: Overwrite example images
+        run: |
+          find examples -type f -name "*.yaml" | while read yamlFile
+          do
+            pngFile=$(echo "$yamlFile" | sed 's/.yaml/.png/g')
+            if [[ "$yamlFile" =~ "*-cfn.yaml" ]]; then
+              ./awsdac --cfn-template "$yamlFile" -o "$pngFile"
+            else
+              ./awsdac "$yamlFile" -o "$pngFile"
+            fi
+          done
+          git add .
+          echo "CHANGES=$(git diff --staged --name-only | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Push
+        if: steps.staging.outputs.CHANGES > 0
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "bot: Overwrite example images by manual approval\n\nBREAKING CHNAGES: examples/*.png\n\nRefs: #${PR_NUMBER}"
+          git push
+          gh pr comment "${PR_NUMBER}" -b "Completed to overwrite ${{ steps.staging.outputs.CHANGES }} example images."
