@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 jobs:
-  update-wiki:
+  regenerate-images:
     runs-on: ubuntu-latest
     if: (github.event.issue.pull_request != null) && startsWith(github.event.comment.body, '/approve-breaking-changes-regenerate-example-images')
 
@@ -15,12 +15,16 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check the reason
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           reason=$(echo "${{ github.event.comment.body }}" | awk '{print $2}')
-          if [[ "$reason" == ]]; then
+          if [[ "$reason" == "" ]]; then
               gh pr comment "${PR_NUMBER}" -b "No reason given, failed to regenerate example images. Use command syntax `/approve-breaking-changes-regenerate-example-images <REASON>`"
               exit 1
           fi
+          gh pr comment "${PR_NUMBER}" -b "Regenerating example images..."
 
       - name: Setup Go 1.21.x
         uses: actions/setup-go@v5
@@ -54,6 +58,9 @@ jobs:
 
       - name: Push
         if: steps.staging.outputs.CHANGES > 0
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
