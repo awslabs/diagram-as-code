@@ -37,7 +37,7 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          find ./examples/ -name "*.yaml" | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
+          find ./examples/ -name '*.yaml' | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
           go test -v ./test/... || gh pr comment "${PR_NUMBER}" -b "Failed functional test.  Check out generated diffs https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts  For maintainers: To approve breaking changes, use command `/approve-breaking-changes-regenerate-example-images <REASON>"
 
       - if: failure()
