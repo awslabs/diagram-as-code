@@ -42,6 +42,7 @@ jobs:
 
       - name: Overwrite example images
         run: |
+          find ./examples/ -name *.yaml | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
           find examples -type f -name "*.yaml" | while read yamlFile
           do
             pngFile=$(echo "$yamlFile" | sed 's/.yaml/.png/g')
@@ -51,10 +52,10 @@ jobs:
               ./awsdac "$yamlFile" -o "$pngFile"
             fi
           done
-          git add .
+          git add ./examples/*.png
           echo "CHANGES=$(git diff --staged --name-only | wc -l)" >> $GITHUB_OUTPUT
 
-      - name: Push
+      - name: Push changes
         if: steps.staging.outputs.CHANGES > 0
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
