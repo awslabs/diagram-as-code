@@ -16,7 +16,7 @@ jobs:
 
       - name: Check the reason
         env:
-          PR_NUMBER: ${{ github.event.number }}
+          PR_NUMBER: ${{ github.event.issue.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           reason=$(echo "${{ github.event.comment.body }}" | awk '{print $2}')
@@ -59,7 +59,7 @@ jobs:
       - name: Push
         if: steps.staging.outputs.CHANGES > 0
         env:
-          PR_NUMBER: ${{ github.event.number }}
+          PR_NUMBER: ${{ github.event.issue.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name github-actions
