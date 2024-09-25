@@ -2,12 +2,10 @@ name: Regenerate example images
 
 on: issue_comment
 
-permissions:
-  contents: write
-
 jobs:
   regenerate-images:
     runs-on: ubuntu-latest
+    permissions: write-all
     if: (github.event.issue.pull_request != null) && startsWith(github.event.comment.body, '/approve-breaking-changes-regenerate-example-images')
 
     steps:
