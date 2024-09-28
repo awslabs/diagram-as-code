@@ -2,7 +2,9 @@ on:
   push:
     branches:
       - main
-  pull_request_target:
+  pull_request:
+    branches:
+      - main
 
 name: Functional test
 
@@ -10,15 +12,12 @@ jobs:
   build:
     name: Test
     runs-on: ubuntu-22.04
-    permissions: write-all
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+        uses: actions/checkout@v2
 
       - name: Setup Go 1.21.x
         uses: actions/setup-go@v5
@@ -34,16 +33,11 @@ jobs:
 
       - name: Functional tests
         run: |
-          find ./examples/ -name '*.yaml' | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
+          find ./examples/ -name *.yaml | xargs -I_ yq -i '.Diagram.DefinitionFiles[0].Type="LocalFile" | del(.Diagram.DefinitionFiles[0].Url) | .Diagram.DefinitionFiles[0].LocalFile="../definitions/definition-for-aws-icons-light.yaml"' _
           go test -v ./test/...
 
       - if: failure()
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr comment "${PR_NUMBER}" -b "Failed functional test.  Check out generated diffs https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts  For maintainers: To approve breaking changes, use command \`/approve-breaking-changes-regenerate-example-images <REASON>\`"
-          echo "Check artifacts https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
+        run: echo "Check artifacts https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
 
       - uses: actions/upload-artifact@v4.4.0
         if: failure()
