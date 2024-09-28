@@ -15,10 +15,19 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/github-script@v6
+        id: pr
         with:
-          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+          script: |
+            const { data: pullRequest } = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            return pullRequest
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{fromJSON(steps.pr.outputs.result).merge_commit_sha}}
 
       - name: Setup Go 1.21.x
         uses: actions/setup-go@v5
