@@ -6,7 +6,7 @@ Definitions:
     Type: Zip
     ZipFile:
       SourceType: url
-      Url: "https://d1.awsstatic.com/webteam/architecture-icons/q2-2024/AWS-Architecture-Icons-Deck_For-Light-BG_06072024.pptx.e4b849d39e2f4fd38a851a420dcbf8cefc817e23.zip"
+      Url: "https://d1.awsstatic.com/webteam/architecture-icons/q2-2024/AWS-Architecture-Icon-Decks.pptx.d6671530ea426cd7ff7fb00423bccb120bfc69df.zip"
 
   ArchitectureIconsPptx:
     Type: Zip
