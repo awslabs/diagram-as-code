@@ -1,7 +1,7 @@
 #!/bin/bash
 # For MacOS user, Associative arrays cannot be used in bash with MacOS. Install newly bash from homebrew `brew install bash` and use `/usr/local/bin/bash ./make-definition-from-pptx`
 
-url=$(curl -s "https://aws.amazon.com/architecture/icons/" | pup 'a:contains("Download PPTx for Light Backgrounds") attr{href}')
+url=$(curl -s "https://aws.amazon.com/architecture/icons/" | pup 'script:contains("Microsoft PPTx toolkits") text{}' | jq -r '.data.items[].fields.button1DropdownItems' | pup 'a:contains("Microsoft PPTx toolkits") attr{href}')
 wget $url -O /tmp/AWS-Architecture-Icons-Deck_For-Light-BG.pptx.zip
 unzip -o /tmp/AWS-Architecture-Icons-Deck_For-Light-BG.pptx -d /tmp/aws-pptx/
 pptx_file=$(basename /tmp/aws-pptx/AWS-Architecture-Icons-Deck_For-Light-BG*.pptx)
