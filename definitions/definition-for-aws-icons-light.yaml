@@ -95,6 +95,7 @@ Definitions:
     Border:
       Type: "dashed"
       Color: "rgba(237, 113, 0, 255)"
+    HeaderAlign: center
     Label:
       Title: "Auto Scaling Group"
       Color: "rgba(0, 0, 0, 255)"
