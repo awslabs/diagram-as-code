@@ -126,6 +126,19 @@ cat >> $output_path <<EOF
     CFn:
       HasChildren: true
 
+  AWS::EC2::AvailabilityZone:
+    Type: Group
+    Border:
+      Type: "dashed"
+      Color: "rgba(0, 164, 166, 255)"
+    HeaderAlign: center
+    Label:
+      Title: "Availability Zone"
+      Color: "rgba(0, 0, 0, 255)"
+    CFn:
+      HasChildren: true
+
+
   AWS::AutoScaling::AutoScalingGroup:
     Type: Group
     Icon:
