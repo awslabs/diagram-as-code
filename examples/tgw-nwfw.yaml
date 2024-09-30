@@ -29,16 +29,19 @@ Diagram:
     # VPC1
     VPC1:
       Type: AWS::EC2::VPC
+      Direction: vertical
       Title: "VPC1 (10.0.0.0/16)"
       Children:
-        - VPC1PublicStack
-        - VPC1TransitStack
+        - VPC1AvailabilityZone1
+        - VPC1AvailabilityZone2
 
-    VPC1PublicStack:
-      Type: AWS::Diagram::VerticalStack
+    VPC1AvailabilityZone1:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: horizontal
+      Title: Availability Zone 1
       Children:
         - VPC1PublicSubnet1
-        - VPC1PublicSubnet2
+        - VPC1TransitSubnet1
     VPC1PublicSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
@@ -46,19 +49,6 @@ Diagram:
         - VPC1PublicSubnet1Instance
     VPC1PublicSubnet1Instance:
       Type: AWS::EC2::Instance
-    VPC1PublicSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - VPC1PublicSubnet2Instance
-    VPC1PublicSubnet2Instance:
-      Type: AWS::EC2::Instance
-
-    VPC1TransitStack:
-      Type: AWS::Diagram::VerticalStack
-      Children:
-        - VPC1TransitSubnet1
-        - VPC1TransitSubnet2
     VPC1TransitSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -67,6 +57,21 @@ Diagram:
     VPC1TransitSubnet1Eni:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
+
+    VPC1AvailabilityZone2:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: horizontal
+      Title: Availability Zone 2
+      Children:
+        - VPC1PublicSubnet2
+        - VPC1TransitSubnet2
+    VPC1PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPC1PublicSubnet2Instance
+    VPC1PublicSubnet2Instance:
+      Type: AWS::EC2::Instance
     VPC1TransitSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -84,15 +89,18 @@ Diagram:
     VPC2:
       Type: AWS::EC2::VPC
       Title: "VPC2 (10.1.0.0/16)"
+      Direction: vertical
       Children:
-        - VPC2TransitStack
-        - VPC2PublicStack
+        - VPC2AvailabilityZone1
+        - VPC2AvailabilityZone2
 
-    VPC2TransitStack:
-      Type: AWS::Diagram::VerticalStack
+    VPC2AvailabilityZone1:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: horizontal
+      Title: Availability Zone 1
       Children:
         - VPC2TransitSubnet1
-        - VPC2TransitSubnet2
+        - VPC2PublicSubnet1
     VPC2TransitSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -101,6 +109,28 @@ Diagram:
     VPC2TransitSubnet1Eni:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
+    VPC2PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPC2PublicSubnet1Instance
+    VPC2PublicSubnet1Instance:
+      Type: AWS::EC2::Instance
+
+    VPC2AvailabilityZone2:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: horizontal
+      Title: Availability Zone 2
+      Children:
+        - VPC2TransitSubnet2
+        - VPC2PublicSubnet2
+    VPC2PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - VPC2PublicSubnet2Instance
+    VPC2PublicSubnet2Instance:
+      Type: AWS::EC2::Instance
     VPC2TransitSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -110,25 +140,8 @@ Diagram:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
 
-    VPC2PublicStack:
-      Type: AWS::Diagram::VerticalStack
-      Children:
-        - VPC2PublicSubnet1
-        - VPC2PublicSubnet2
-    VPC2PublicSubnet1:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - VPC2PublicSubnet1Instance
-    VPC2PublicSubnet1Instance:
-      Type: AWS::EC2::Instance
-    VPC2PublicSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - VPC2PublicSubnet2Instance
-    VPC2PublicSubnet2Instance:
-      Type: AWS::EC2::Instance
+
+
     HorizontalStack2:
       Type: AWS::Diagram::HorizontalStack
       Align: bottom
@@ -145,18 +158,19 @@ Diagram:
     # VPC3
     VPC3:
       Type: AWS::EC2::VPC
-      Direction: vertical
+      Direction: horizontal
       Align: center
       Title: "VPC3 (10.2.0.0/16)"
       Children:
-        - VPC3TransitStack
-        - VPC3FirewallStack
-
-    VPC3TransitStack:
-      Type: AWS::Diagram::HorizontalStack
+        - VPC3AvailabilityZone1
+        - VPC3AvailabilityZone2
+    VPC3AvailabilityZone1:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: vertical
+      Title: Availability Zone 1
       Children:
         - VPC3TransitSubnet1
-        - VPC3TransitSubnet2
+        - VPC3FirewallSubnet1
     VPC3TransitSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -165,20 +179,6 @@ Diagram:
     VPC3TransitSubnet1Eni:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
-    VPC3TransitSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPC3TransitSubnet2Eni
-    VPC3TransitSubnet2Eni:
-      Type: AWS::EC2::NetworkInterface
-      Title: "TGW ENI"
-
-    VPC3FirewallStack:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - VPC3FirewallSubnet1
-        - VPC3FirewallSubnet2
     VPC3FirewallSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -189,6 +189,22 @@ Diagram:
     VPC3FirewallSubnet1Vpce:
       Type: AWS::EC2::VPCEndpoint
       Title: "Firewall Endpoint"
+
+    VPC3AvailabilityZone2:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: vertical
+      Title: Availability Zone 2
+      Children:
+        - VPC3TransitSubnet2
+        - VPC3FirewallSubnet2
+    VPC3TransitSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - VPC3TransitSubnet2Eni
+    VPC3TransitSubnet2Eni:
+      Type: AWS::EC2::NetworkInterface
+      Title: "TGW ENI"
     VPC3FirewallSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
