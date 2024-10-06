@@ -170,5 +170,5 @@ func calcPosition(bindings image.Rectangle, position Windrose) (image.Point, err
 	case WINDROSE_NNW:
 		return image.Point{tx[1], ty[0]}, nil
 	}
-	return image.Point{tx[0], ty[0]}, fmt.Errorf("Unknown position: %s", position)
+	return image.Point{tx[0], ty[0]}, fmt.Errorf("Unknown position: %d", position)
 }
