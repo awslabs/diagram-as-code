@@ -64,6 +64,7 @@ type Link struct {
 	Target          string          `yaml:"Target"`
 	TargetPosition  string          `yaml:"TargetPosition"`
 	TargetArrowHead types.ArrowHead `yaml:"TargetArrowHead"`
+	Type            string          `yaml:"Type"`
 	LineWidth       int             `yaml:"LineWidth"`
 }
 
@@ -310,6 +311,7 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 			panic(err)
 		}
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth)
+		link.SetType(v.Type)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}

@@ -18,6 +18,7 @@ type Link struct {
 	Target          *Resource
 	TargetPosition  Windrose
 	TargetArrowHead ArrowHead
+	Type            string
 	LineWidth       int
 	drawn           bool
 	lineColor       color.RGBA
@@ -37,10 +38,15 @@ func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead Ar
 	gl.Target = target
 	gl.TargetPosition = targetPosition
 	gl.TargetArrowHead = targetArrowHead
+	gl.Type = ""
 	gl.LineWidth = lineWidth
 	gl.drawn = false
 	gl.lineColor = color.RGBA{0, 0, 0, 255}
 	return &gl
+}
+
+func (l *Link) SetType(s string) {
+	l.Type = s
 }
 
 func (l *Link) drawNeighborsDot(img *image.RGBA, x, y float64) {
@@ -136,10 +142,66 @@ func (l *Link) Draw(img *image.RGBA) {
 	sourcePt, _ := calcPosition(source.GetBindings(), l.SourcePosition)
 	targetPt, _ := calcPosition(target.GetBindings(), l.TargetPosition)
 
-	l.drawLine(img, sourcePt, targetPt)
+	if l.Type == "" || l.Type == "straight" {
+		l.drawLine(img, sourcePt, targetPt)
+		l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
+		l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+	} else if l.Type == "orthogonal" {
+		controlPts := []image.Point{}
 
-	l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
-	l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+		// Convert 4-wind rose
+		sourceFourWindrose := ((l.SourcePosition + 2) % 16) / 4
+		targetFourWindrose := ((l.TargetPosition + 2) % 16) / 4
+		// 0...vertical, 1...horizontal
+		sourceDirection := sourceFourWindrose % 2
+		targetDirection := targetFourWindrose % 2
+		if sourceDirection != targetDirection {
+			// orthogonal vector (default control point: 1)
+			if sourceDirection == 1 && targetDirection == 0 {
+				controlPts = append(controlPts, image.Point{targetPt.X, sourcePt.Y})
+			} else {
+				controlPts = append(controlPts, image.Point{sourcePt.X, targetPt.Y})
+			}
+		} else {
+			if sourceFourWindrose == targetFourWindrose {
+				// same vector (default control point: 4)
+				dx := [4]int{0, 1, 0, -1}
+				dy := [4]int{-1, 0, 1, 0}
+				ptX := (max(sourcePt.X*dx[sourceFourWindrose], targetPt.X*dx[sourceFourWindrose]) + 64) * dx[sourceFourWindrose]
+				ptY := (max(sourcePt.Y*dy[sourceFourWindrose], targetPt.Y*dy[sourceFourWindrose]) + 64) * dy[sourceFourWindrose]
+				if sourceDirection == 0 && targetDirection == 0 {
+					controlPts = append(controlPts, image.Point{sourcePt.X, ptY})
+					controlPts = append(controlPts, image.Point{targetPt.X, ptY})
+				}
+				if sourceDirection == 1 && targetDirection == 1 {
+					controlPts = append(controlPts, image.Point{ptX, sourcePt.Y})
+					controlPts = append(controlPts, image.Point{ptX, targetPt.Y})
+				}
+			} else {
+				// inverse vector (default control point: 2)
+				if sourceDirection == 1 && targetDirection == 1 {
+					controlPts = append(controlPts, image.Point{(sourcePt.X + targetPt.X) / 2, sourcePt.Y})
+					controlPts = append(controlPts, image.Point{(sourcePt.X + targetPt.X) / 2, targetPt.Y})
+				} else {
+					controlPts = append(controlPts, image.Point{sourcePt.X, (sourcePt.Y + targetPt.Y) / 2})
+					controlPts = append(controlPts, image.Point{targetPt.X, (sourcePt.Y + targetPt.Y) / 2})
+				}
+			}
+		}
+		if len(controlPts) >= 1 {
+			l.drawLine(img, sourcePt, controlPts[0])
+			l.drawArrowHead(img, sourcePt, controlPts[0], l.SourceArrowHead)
+			for i := 0; i < len(controlPts)-1; i++ {
+				l.drawLine(img, controlPts[i], controlPts[i+1])
+			}
+			l.drawLine(img, controlPts[len(controlPts)-1], targetPt)
+			l.drawArrowHead(img, targetPt, controlPts[len(controlPts)-1], l.TargetArrowHead)
 
+		} else {
+			l.drawLine(img, sourcePt, targetPt)
+			l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
+			l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+		}
+	}
 	l.drawn = true
 }
