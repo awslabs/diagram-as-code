@@ -115,19 +115,53 @@ Diagram:
       SourcePosition: W
       Target: VPC2Endpoint
       TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
     - Source: VPC2Endpoint
       SourcePosition: W
       Target: PrivateLink
       TargetPosition: E
+      TargetArrowHead:
+        Type: Open
     - Source: PrivateLink
       SourcePosition: W
       Target: NLB1
       TargetPosition: E
+      TargetArrowHead:
+        Type: Open
     - Source: NLB1
-      SourcePosition: W
+      SourcePosition: N
       Target: VPC1PublicSubnet1Instance
       TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
     - Source: NLB1
-      SourcePosition: W
+      SourcePosition: S
       Target: VPC1PublicSubnet2Instance
       TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: User
+      SourcePosition: W
+      Target: VPC1PublicSubnet1Instance
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: User
+      SourcePosition: W
+      Target: VPC1PublicSubnet2Instance
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: User
+      SourcePosition: E
+      Target: VPC2PublicSubnet1Instance
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal

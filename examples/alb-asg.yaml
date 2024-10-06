@@ -49,24 +49,28 @@ Diagram:
     - Source: ALB
       SourcePosition: NNW
       Target: VPCPublicSubnet1Instance
-      TargetPosition: SSE
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: ALB
       SourcePosition: NNE
       Target: VPCPublicSubnet2Instance
-      TargetPosition: SSW
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: IGW
       SourcePosition: N
       Target: ALB
       TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: User
       SourcePosition: N
       Target: IGW
       TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
