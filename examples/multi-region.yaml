@@ -31,13 +31,14 @@ Diagram:
     OregonRegion:
       Type: AWS::Region
       Direction: vertical
+      Title: us-west-2
       Children:
         - OregonVPC
         - OregonIGW
     OregonVPC:
       Type: AWS::EC2::VPC
       Direction: vertical
-      Title: VPC (us-west-2)
+      Title: VPC
       Children:
         - OregonVPCPublicStack
         - OregonALB
@@ -72,13 +73,14 @@ Diagram:
     VirginiaRegion:
       Type: AWS::Region
       Direction: vertical
+      Title: us-east-1
       Children:
         - VirginiaVPC
         - VirginiaIGW
     VirginiaVPC:
       Type: AWS::EC2::VPC
       Direction: vertical
-      Title: VPC (us-east-1)
+      Title: VPC
       Children:
         - VirginiaVPCPublicStack
         - VirginiaALB
@@ -114,17 +116,19 @@ Diagram:
 
   Links:
     - Source: OregonALB
-      SourcePosition: NNW
+      SourcePosition: W
       Target: OregonVPCPublicSubnet1Instance
-      TargetPosition: SSE
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: OregonALB
-      SourcePosition: NNE
+      SourcePosition: E
       Target: OregonVPCPublicSubnet2Instance
-      TargetPosition: SSW
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: OregonIGW
       SourcePosition: N
       Target: OregonALB
@@ -132,23 +136,26 @@ Diagram:
       TargetArrowHead:
         Type: Open
     - Source: User
-      SourcePosition: N
+      SourcePosition: W
       Target: OregonIGW
       TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: VirginiaALB
-      SourcePosition: NNW
+      SourcePosition: W
       Target: VirginiaVPCPublicSubnet1Instance
-      TargetPosition: SSE
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: VirginiaALB
-      SourcePosition: NNE
+      SourcePosition: E
       Target: VirginiaVPCPublicSubnet2Instance
-      TargetPosition: SSW
+      TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
     - Source: VirginiaIGW
       SourcePosition: N
       Target: VirginiaALB
@@ -156,8 +163,9 @@ Diagram:
       TargetArrowHead:
         Type: Open
     - Source: User
-      SourcePosition: N
+      SourcePosition: E
       Target: VirginiaIGW
       TargetPosition: S
       TargetArrowHead:
         Type: Open
+      Type: orthogonal
