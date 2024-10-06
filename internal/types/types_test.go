@@ -95,7 +95,7 @@ func TestCalcPosition(t *testing.T) {
 	testCases := []struct {
 		name     string
 		bindings image.Rectangle
-		position string
+		position Windrose
 		expected image.Point
 		err      bool
 	}{

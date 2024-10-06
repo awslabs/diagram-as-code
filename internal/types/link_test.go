@@ -13,13 +13,13 @@ func TestLinkInit(t *testing.T) {
 	sourceArrowHead := ArrowHead{Type: "Default", Length: 10, Width: "Default"}
 	targetArrowHead := ArrowHead{Type: "Open", Length: 15, Width: "Wide"}
 
-	link := Link{}.Init(source, "Top", sourceArrowHead, target, "Bottom", targetArrowHead, 2)
+	link := Link{}.Init(source, WINDROSE_N, sourceArrowHead, target, WINDROSE_S, targetArrowHead, 2)
 
 	if link.Source != source {
 		t.Errorf("Expected source node to be %v, got %v", source, link.Source)
 	}
-	if link.SourcePosition != "Top" {
-		t.Errorf("Expected source position to be 'Top', got %s", link.SourcePosition)
+	if link.SourcePosition != WINDROSE_N {
+		t.Errorf("Expected source position to be 'Top', got %d", link.SourcePosition)
 	}
 	if link.SourceArrowHead != sourceArrowHead {
 		t.Errorf("Expected source arrow head to be %v, got %v", sourceArrowHead, link.SourceArrowHead)
@@ -27,8 +27,8 @@ func TestLinkInit(t *testing.T) {
 	if link.Target != target {
 		t.Errorf("Expected target node to be %v, got %v", target, link.Target)
 	}
-	if link.TargetPosition != "Bottom" {
-		t.Errorf("Expected target position to be 'Bottom', got %s", link.TargetPosition)
+	if link.TargetPosition != WINDROSE_S {
+		t.Errorf("Expected target position to be 'Bottom', got %d", link.TargetPosition)
 	}
 	if link.TargetArrowHead != targetArrowHead {
 		t.Errorf("Expected target arrow head to be %v, got %v", targetArrowHead, link.TargetArrowHead)
