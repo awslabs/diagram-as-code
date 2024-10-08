@@ -34,7 +34,6 @@ Diagram:
       Title: us-west-2
       Children:
         - OregonVPC
-        - OregonIGW
     OregonVPC:
       Type: AWS::EC2::VPC
       Direction: vertical
@@ -42,6 +41,9 @@ Diagram:
       Children:
         - OregonVPCPublicStack
         - OregonALB
+      BorderChildren:
+        - Position: S
+          Resource: OregonIGW
     OregonVPCPublicStack:
       Type: AWS::Diagram::HorizontalStack
       Children:
@@ -76,7 +78,6 @@ Diagram:
       Title: us-east-1
       Children:
         - VirginiaVPC
-        - VirginiaIGW
     VirginiaVPC:
       Type: AWS::EC2::VPC
       Direction: vertical
@@ -84,6 +85,9 @@ Diagram:
       Children:
         - VirginiaVPCPublicStack
         - VirginiaALB
+      BorderChildren:
+        - Position: S
+          Resource: VirginiaIGW
     VirginiaVPCPublicStack:
       Type: AWS::Diagram::HorizontalStack
       Children:
