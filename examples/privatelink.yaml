@@ -17,7 +17,6 @@ Diagram:
       Align: center
       Children:
         - HorizontalStack1
-        - HorizontalStack2
     HorizontalStack1:
       Type: AWS::Diagram::HorizontalStack
       Children:
@@ -31,6 +30,9 @@ Diagram:
       Children:
         - VPC1PublicStack
         - NLB1
+      BorderChildren:
+        - Position: W
+          Resource: IGW1
 
     VPC1PublicStack:
       Type: AWS::Diagram::VerticalStack
@@ -72,6 +74,9 @@ Diagram:
       Children:
         - VPC2Endpoint
         - VPC2PublicStack
+      BorderChildren:
+        - Position: E
+          Resource: IGW2
 
     VPC2Endpoint:
       Type: AWS::EC2::VPCEndpoint
@@ -95,12 +100,6 @@ Diagram:
         - VPC2PublicSubnet2EmptyResource
     VPC2PublicSubnet2EmptyResource:
       Type: AWS::Diagram::Resource
-    HorizontalStack2:
-      Type: AWS::Diagram::HorizontalStack
-      Align: bottom
-      Children:
-        - IGW1
-        - IGW2
     IGW1:
       Type: AWS::EC2::InternetGateway
     IGW2:
@@ -144,23 +143,37 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
-    - Source: User
-      SourcePosition: W
+    - Source: IGW1
+      SourcePosition: E
       Target: VPC1PublicSubnet1Instance
       TargetPosition: W
       TargetArrowHead:
         Type: Open
       Type: orthogonal
-    - Source: User
-      SourcePosition: W
+    - Source: IGW1
+      SourcePosition: E
       Target: VPC1PublicSubnet2Instance
       TargetPosition: W
       TargetArrowHead:
         Type: Open
       Type: orthogonal
     - Source: User
-      SourcePosition: E
+      SourcePosition: W
+      Target: IGW1
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: IGW2
+      SourcePosition: W
       Target: VPC2PublicSubnet1Instance
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: User
+      SourcePosition: E
+      Target: IGW2
       TargetPosition: E
       TargetArrowHead:
         Type: Open

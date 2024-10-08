@@ -19,7 +19,6 @@ Diagram:
       Align: center
       Children:
         - VPC
-        - IGW
     # VPC
     VPC:
       Type: AWS::EC2::VPC
@@ -27,6 +26,9 @@ Diagram:
       Children:
         - VPCPublicStack
         - ALB
+      BorderChildren:
+        - Position: S
+          Resource: IGW
     VPCPublicStack:
       Type: AWS::Diagram::HorizontalStack
       Children:

@@ -34,6 +34,11 @@ Diagram:
       Children:
         - VPC1AvailabilityZone1
         - VPC1AvailabilityZone2
+      BorderChildren:
+        - Position: E
+          Resource: VPC1TGWAttach
+        - Position: W
+          Resource: VPC1IGW
 
     VPC1AvailabilityZone1:
       Type: AWS::EC2::AvailabilityZone
@@ -80,6 +85,11 @@ Diagram:
     VPC1TransitSubnet2Eni:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
+    VPC1TGWAttach:
+      Type: AWS::EC2::TransitGatewayAttachment
+    VPC1IGW:
+      Type: AWS::EC2::InternetGateway
+
 
     # Transit Gateway
     TransitGateway:
@@ -93,7 +103,11 @@ Diagram:
       Children:
         - VPC2AvailabilityZone1
         - VPC2AvailabilityZone2
-
+      BorderChildren:
+        - Position: W
+          Resource: VPC2TGWAttach
+        - Position: E
+          Resource: VPC2IGW
     VPC2AvailabilityZone1:
       Type: AWS::EC2::AvailabilityZone
       Direction: horizontal
@@ -139,22 +153,17 @@ Diagram:
     VPC2TransitSubnet2Eni:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
-
+    VPC2TGWAttach:
+      Type: AWS::EC2::TransitGatewayAttachment
+    VPC2IGW:
+      Type: AWS::EC2::InternetGateway
 
 
     HorizontalStack2:
       Type: AWS::Diagram::HorizontalStack
       Align: bottom
       Children:
-        - IGW1
-        - Empty1
         - VPC3
-        - Empty2
-        - IGW2
-    IGW1:
-      Type: AWS::EC2::InternetGateway
-    Empty1:
-      Type: AWS::Diagram::Resource
     # VPC3
     VPC3:
       Type: AWS::EC2::VPC
@@ -164,6 +173,9 @@ Diagram:
       Children:
         - VPC3AvailabilityZone1
         - VPC3AvailabilityZone2
+      BorderChildren:
+        - Position: N
+          Resource: VPC3TGWAttach
     VPC3AvailabilityZone1:
       Type: AWS::EC2::AvailabilityZone
       Direction: vertical
@@ -215,10 +227,8 @@ Diagram:
     VPC3FirewallSubnet2Vpce:
       Type: AWS::EC2::VPCEndpoint
       Title: "Firewall Endpoint"
-    Empty2:
-      Type: AWS::Diagram::Resource
-    IGW2:
-      Type: AWS::EC2::InternetGateway
+    VPC3TGWAttach:
+      Type: AWS::EC2::TransitGatewayAttachment
 
     User:
       Type: AWS::Diagram::Resource
@@ -227,15 +237,15 @@ Diagram:
   Links:
     - Source: TransitGateway
       SourcePosition: W
-      Target: VPC1
+      Target: VPC1TGWAttach
       TargetPosition: E
       LinkType: double
     - Source: TransitGateway
       SourcePosition: E
-      Target: VPC2
+      Target: VPC2TGWAttach
       TargetPosition: W
       LinkType: double
     - Source: TransitGateway
       SourcePosition: S
-      Target: VPC3
+      Target: VPC3TGWAttach
       TargetPosition: N
