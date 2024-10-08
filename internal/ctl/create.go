@@ -45,16 +45,22 @@ type DefinitionFile struct {
 }
 
 type Resource struct {
-	Type       string   `yaml:"Type"`
-	Icon       string   `yaml:"Icon"`
-	Direction  string   `yaml:"Direction"`
-	Preset     string   `yaml:"Preset"`
-	Align      string   `yaml:"Align"`
-	FillColor  string   `yaml:"FillColor"`
-	Title      string   `yaml:"Title"`
-	TitleColor string   `yaml:"TitleColor"`
-	Font       string   `yaml:"Font"`
-	Children   []string `yaml:"Children"`
+	Type           string        `yaml:"Type"`
+	Icon           string        `yaml:"Icon"`
+	Direction      string        `yaml:"Direction"`
+	Preset         string        `yaml:"Preset"`
+	Align          string        `yaml:"Align"`
+	FillColor      string        `yaml:"FillColor"`
+	Title          string        `yaml:"Title"`
+	TitleColor     string        `yaml:"TitleColor"`
+	Font           string        `yaml:"Font"`
+	Children       []string      `yaml:"Children"`
+	BorderChildren []BorderChild `yaml:"BorderChildren"`
+}
+
+type BorderChild struct {
+	Position string `yaml:"Position"`
+	Resource string `yaml:"Resource"`
 }
 
 type Link struct {
@@ -276,6 +282,24 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 			log.Infof("Add child(%s) on %s", child, logicalId)
 
 			resources[logicalId].AddChild(resources[child])
+		}
+		for _, borderChild := range v.BorderChildren {
+			_, ok := resources[borderChild.Resource]
+			if !ok {
+				log.Infof("%s does not have parent resource", borderChild.Resource)
+				continue
+			}
+			log.Infof("Add BorderChild(%s) on %s", borderChild.Resource, logicalId)
+
+			position, err := types.ConvertWindrose(borderChild.Position)
+			if err != nil {
+				panic(err)
+			}
+			bc := types.BorderChild{
+				Position: position,
+				Resource: resources[borderChild.Resource],
+			}
+			resources[logicalId].AddBorderChild(&bc)
 		}
 	}
 }
