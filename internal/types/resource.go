@@ -29,23 +29,29 @@ const (
 )
 
 type Resource struct {
-	bindings    *image.Rectangle
-	iconImage   image.Image
-	iconBounds  image.Rectangle
-	borderColor *color.RGBA
-	borderType  BORDER_TYPE
-	fillColor   color.RGBA
-	label       string
-	labelFont   string
-	labelColor  *color.RGBA
-	headerAlign string // left(default) / center / right
-	margin      *Margin
-	padding     *Padding
-	direction   string
-	align       string
-	links       []*Link
-	children    []*Resource
-	drawn       bool
+	bindings       *image.Rectangle
+	iconImage      image.Image
+	iconBounds     image.Rectangle
+	borderColor    *color.RGBA
+	borderType     BORDER_TYPE
+	fillColor      color.RGBA
+	label          string
+	labelFont      string
+	labelColor     *color.RGBA
+	headerAlign    string // left(default) / center / right
+	margin         *Margin
+	padding        *Padding
+	direction      string
+	align          string
+	links          []*Link
+	children       []*Resource
+	borderChildren []*BorderChild
+	drawn          bool
+}
+
+type BorderChild struct {
+	Position Windrose
+	Resource *Resource
 }
 
 func defaultResourceValues(hasChild bool) Resource {
@@ -173,7 +179,16 @@ func (r *Resource) AddParent() {
 }
 
 func (r *Resource) AddChild(child *Resource) {
+	// [TODO] check whether the parent is border children
 	r.children = append(r.children, child)
+}
+
+func (r *Resource) AddBorderChild(borderChild *BorderChild) {
+	hasChild := len(borderChild.Resource.children) != 0
+	if hasChild {
+		panic("Couldn't add Group to Border Childlen")
+	}
+	r.borderChildren = append(r.borderChildren, borderChild)
 }
 
 func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
@@ -244,6 +259,7 @@ func (r *Resource) Scale(parent *Resource) {
 		},
 	}
 	hasChildren := len(r.children) != 0
+	hasBorderChildren := len(r.borderChildren) != 0
 	textWidth := 0
 	textHeight := 0
 	if r.label != "" {
@@ -265,9 +281,49 @@ func (r *Resource) Scale(parent *Resource) {
 			r.margin.Left = maxInt(r.margin.Left, _m)
 			r.margin.Right = maxInt(r.margin.Right, _m)
 		}
+		if hasChildren && hasBorderChildren {
+			addMargin := Margin{}
+			_m := defaultResourceValues(false)
+			for _, x := range r.borderChildren {
+				switch x.Position / 4 {
+				case 0:
+					addMargin.Top = _m.margin.Top * 2
+				case 1:
+					addMargin.Right = _m.margin.Right
+				case 2:
+					addMargin.Bottom = _m.margin.Bottom * 2
+				case 3:
+					addMargin.Left = _m.margin.Left
+				}
+			}
+			r.margin.Top += addMargin.Top
+			r.margin.Right += addMargin.Right
+			r.margin.Bottom += addMargin.Bottom
+			r.margin.Left += addMargin.Left
+		}
 	}
 	if r.padding == nil {
 		r.padding = defaultResourceValues(hasChildren).padding
+		if hasChildren && hasBorderChildren {
+			addPadding := Padding{}
+			_m := defaultResourceValues(true)
+			for _, x := range r.borderChildren {
+				switch x.Position / 4 {
+				case 0:
+					addPadding.Top = _m.padding.Top * 2
+				case 1:
+					addPadding.Right = _m.padding.Right * 2
+				case 2:
+					addPadding.Bottom = _m.padding.Bottom * 2
+				case 3:
+					addPadding.Left = _m.padding.Left * 2
+				}
+			}
+			r.padding.Top += addPadding.Top
+			r.padding.Right += addPadding.Right
+			r.padding.Bottom += addPadding.Bottom
+			r.padding.Left += addPadding.Left
+		}
 	}
 	if r.borderColor == nil {
 		r.borderColor = defaultResourceValues(hasChildren).borderColor
@@ -364,6 +420,18 @@ func (r *Resource) Scale(parent *Resource) {
 	if b.Min.X != math.MaxInt {
 		r.SetBindings(b)
 	}
+	for _, borderChild := range r.borderChildren {
+		pt, err := calcPosition(r.GetBindings(), borderChild.Position)
+		if err != nil {
+			panic(err)
+		}
+		borderChild.Resource.Scale(parent) // to initialize default values
+		bindings := borderChild.Resource.GetBindings()
+		borderChild.Resource.Translation(
+			pt.X-(bindings.Min.X+bindings.Max.X)/2,
+			pt.Y-(bindings.Min.Y+bindings.Max.Y)/2,
+		)
+	}
 }
 
 func (r *Resource) Translation(dx, dy int) {
@@ -383,6 +451,10 @@ func (r *Resource) Translation(dx, dy int) {
 	for _, subResource := range r.children {
 		subResource.Translation(dx, dy)
 	}
+	for _, borderChild := range r.borderChildren {
+		borderChild.Resource.Translation(dx, dy)
+	}
+
 }
 
 func (r *Resource) ZeroAdjust() {
@@ -425,6 +497,9 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 
 	for _, subResource := range r.children {
 		subResource.Draw(img, r)
+	}
+	for _, borderResource := range r.borderChildren {
+		borderResource.Resource.Draw(img, r)
 	}
 	r.drawn = true
 	for _, v := range r.links {
