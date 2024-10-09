@@ -1,0 +1,45 @@
+on:
+  pull_request:
+    branches:
+      - main
+  pull_request_review:
+    types: [submitted]
+
+name: Allow merge without approval
+
+jobs:
+  build:
+    name: Test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/checkout@v3
+      - run: git fetch origin ${{ github.base_ref }} --depth=1
+
+      - name: Checks if files can be merged without approval.
+        id: check-diff
+        if: github.event.review.state != 'approved'
+        run: |
+          diffs=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep -e "_test.go" -e "\.md" -e "\.github/" -e "examples/" -e "definitions/")
+          echo "$diffs"
+          echo "REVIEW_REQUIRED_FILES=\"$diffs\"" >> "$GITHUB_OUTPUT"
+          [[ "$diffs" == "" ]]
+
+      - if: failure()
+        uses: actions/github-script@v6
+        permissions:
+          pull-requests: write
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '[Review Required]\n{{ steps.check-diff.outputs.REVIEW_REQUIRED_FILES }}'
+            })
