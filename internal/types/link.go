@@ -30,7 +30,7 @@ type ArrowHead struct {
 	Width  string  `yaml:"Width"`
 }
 
-func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead ArrowHead, target *Resource, targetPosition Windrose, targetArrowHead ArrowHead, lineWidth int) *Link {
+func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead ArrowHead, target *Resource, targetPosition Windrose, targetArrowHead ArrowHead, lineWidth int, lineColor color.RGBA) *Link {
 	gl := Link{}
 	gl.Source = source
 	gl.SourcePosition = sourcePosition
@@ -41,7 +41,7 @@ func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead Ar
 	gl.Type = ""
 	gl.LineWidth = lineWidth
 	gl.drawn = false
-	gl.lineColor = color.RGBA{0, 0, 0, 255}
+	gl.lineColor = lineColor
 	return &gl
 }
 

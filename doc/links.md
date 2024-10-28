@@ -23,6 +23,8 @@ Diagrams:
       SourcePosition: NNE # (required)
       Target: PublicSubnet2Instance # (required)
       TargetPosition: S # (required)
+      LineWidth: 1 # (optional)
+      LineColor: 'rgba(255,255,255,255)' # (optional)
 ```
 
 ### Arrow head
