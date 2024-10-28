@@ -72,6 +72,7 @@ type Link struct {
 	TargetArrowHead types.ArrowHead `yaml:"TargetArrowHead"`
 	Type            string          `yaml:"Type"`
 	LineWidth       int             `yaml:"LineWidth"`
+	LineColor       string          `yaml:"LineColor"`
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string) {
@@ -326,6 +327,12 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 		if lineWidth == 0 {
 			lineWidth = 2
 		}
+
+		lineColor := color.RGBA{0, 0, 0, 255}
+		if v.LineColor != "" {
+			lineColor = stringToColor(v.LineColor)
+		}
+
 		sourcePosition, err := types.ConvertWindrose(v.SourcePosition)
 		if err != nil {
 			panic(err)
@@ -334,7 +341,7 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 		if err != nil {
 			panic(err)
 		}
-		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth)
+		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
 		link.SetType(v.Type)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)

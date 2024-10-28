@@ -13,7 +13,7 @@ func TestLinkInit(t *testing.T) {
 	sourceArrowHead := ArrowHead{Type: "Default", Length: 10, Width: "Default"}
 	targetArrowHead := ArrowHead{Type: "Open", Length: 15, Width: "Wide"}
 
-	link := Link{}.Init(source, WINDROSE_N, sourceArrowHead, target, WINDROSE_S, targetArrowHead, 2)
+	link := Link{}.Init(source, WINDROSE_N, sourceArrowHead, target, WINDROSE_S, targetArrowHead, 2, color.RGBA{255, 255, 255, 255})
 
 	if link.Source != source {
 		t.Errorf("Expected source node to be %v, got %v", source, link.Source)
@@ -39,8 +39,8 @@ func TestLinkInit(t *testing.T) {
 	if link.drawn {
 		t.Error("Expected link to be not drawn initially")
 	}
-	if link.lineColor != (color.RGBA{0, 0, 0, 255}) {
-		t.Errorf("Expected line color to be black, got %v", link.lineColor)
+	if link.lineColor != (color.RGBA{255, 255, 255, 255}) {
+		t.Errorf("Expected line color to be white, got %v", link.lineColor)
 	}
 }
 
