@@ -164,6 +164,7 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      LineColor: 'rgba(0,125,125,255)'
     - Source: IGW2
       SourcePosition: W
       Target: VPC2PublicSubnet1Instance
@@ -178,3 +179,4 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      LineColor: 'rgba(0,125,125,255)'
