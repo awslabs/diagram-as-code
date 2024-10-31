@@ -29,6 +29,27 @@ func createFileWithDirectory(filePath string) (*os.File, error) {
 	return out, nil
 }
 
+func writeFile(outputFilename string, fi *zip.File) error {
+	rc, err := fi.Open()
+	if err != nil {
+		return fmt.Errorf("Cannot open file: %v", err)
+	}
+	defer rc.Close()
+
+
+	fo, err := createFileWithDirectory(outputFilename)
+	if err != nil {
+		return fmt.Errorf("Cannot create file with directory: %v", err)
+	}
+	defer fo.Close()
+
+	_, err = io.Copy(fo, rc)
+	if err != nil {
+		return fmt.Errorf("Cannot copy: %v", err)
+	}
+	return nil
+}
+
 func loadEtagCache(etagFilePath string) (string, error) {
 	// Check Etag file
 	if _, err := os.Stat(etagFilePath); err == nil {
@@ -177,23 +198,11 @@ func ExtractZipFile(filePath string) (string, error) {
 			if strings.HasSuffix(f.Name, "/") {
 				continue
 			}
-			rc, err := f.Open()
-			if err != nil {
-				return "", fmt.Errorf("Cannot open file(%s): %v", f.Name, err)
-			}
-			defer rc.Close()
-
 			outputFilename := fmt.Sprintf("%s/%s", cacheFilePath, f.Name)
 
-			fo, err := createFileWithDirectory(outputFilename)
+			err := writeFile(outputFilename, f)
 			if err != nil {
-				return "", fmt.Errorf("Cannot create file with directory: %v", err)
-			}
-			defer fo.Close()
-
-			_, err = io.Copy(fo, rc)
-			if err != nil {
-				return "", fmt.Errorf("Cannot copy: %v", err)
+				return "", fmt.Errorf("Cannot write file(%s): %v", f.Name, err)
 			}
 		}
 
