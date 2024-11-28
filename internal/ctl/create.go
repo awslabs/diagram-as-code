@@ -281,7 +281,7 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 		for _, child := range v.Children {
 			_, ok := resources[child]
 			if !ok {
-				log.Infof("%s does not have parent resource", child)
+				log.Warnf("Child `%s` was not found, ignoring it.", child)
 				continue
 			}
 			log.Infof("Add child(%s) on %s", child, logicalId)
@@ -291,7 +291,7 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 		for _, borderChild := range v.BorderChildren {
 			_, ok := resources[borderChild.Resource]
 			if !ok {
-				log.Infof("%s does not have parent resource", borderChild.Resource)
+				log.Warnf("Child `%s` was not found, ignoring it.", borderChild.Resource)
 				continue
 			}
 			log.Infof("Add BorderChild(%s) on %s", borderChild.Resource, logicalId)
