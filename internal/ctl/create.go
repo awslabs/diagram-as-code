@@ -208,7 +208,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		default:
 			def, ok := ds.Definitions[v.Preset]
 			if !ok {
-				log.Warnf("Unknown preset: %s\n", v.Type)
+				log.Warnf("Unknown preset %s on %s\n", v.Preset, v.Type)
 				continue
 			}
 			if fill := def.Fill; fill != nil {
