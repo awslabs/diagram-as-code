@@ -180,6 +180,9 @@ func (r *Resource) AddParent() {
 
 func (r *Resource) AddChild(child *Resource) {
 	// [TODO] check whether the parent is border children
+	if child == nil {
+		log.Fatalf("Unknown child. Please see debug logs with -v flag.")
+	}
 	r.children = append(r.children, child)
 }
 
