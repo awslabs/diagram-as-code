@@ -274,6 +274,10 @@ func fallbackToServiceIcon(inputType string) string {
 func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) {
 
 	for logicalId, v := range template.Resources {
+		_, ok := resources[logicalId]
+		if !ok {
+			log.Fatalf("Unknown resource %s\n", logicalId)
+		}
 		for _, child := range v.Children {
 			_, ok := resources[child]
 			if !ok {
