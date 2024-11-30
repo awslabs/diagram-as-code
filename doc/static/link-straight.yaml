@@ -1,0 +1,43 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - StraightTopStack
+        - StraightBottomStack
+
+    StraightTopStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - StraightEmpty1
+        - StraightBucket
+    StraightEmpty1:
+      Type: AWS::Diagram::Resource
+    StraightBucket:
+      Type: AWS::S3::Bucket
+      Title: "Bucket"
+
+    StraightBottomStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - StraightLambda
+        - StraightEmpty2
+    StraightLambda:
+      Type: AWS::Lambda::Function
+    StraightEmpty2:
+      Type: AWS::Diagram::Resource
+
+  Links:
+    - Source: StraightLambda
+      SourcePosition: N
+      Target: StraightBucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
