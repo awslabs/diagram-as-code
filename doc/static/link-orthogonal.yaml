@@ -1,0 +1,111 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: horizontal
+      Children:
+        - Orthogonal1Stack
+        - Orthogonal2Stack
+        - Orthogonal3Stack
+
+    Orthogonal1Stack:
+      Type: AWS::Diagram::Resource
+      Direction: vertical
+      Children:
+        - Orthogonal1TopStack
+        - Orthogonal1BottomStack
+      Title: orthogonal (single-arm)
+
+    Orthogonal1TopStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Orthogonal1Empty1
+        - Orthogonal1Bucket
+    Orthogonal1Empty1:
+      Type: AWS::Diagram::Resource
+    Orthogonal1Bucket:
+      Type: AWS::S3::Bucket
+      Title: "Bucket"
+
+    Orthogonal1BottomStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Orthogonal1Lambda
+        - Orthogonal1Empty2
+    Orthogonal1Lambda:
+      Type: AWS::Lambda::Function
+    Orthogonal1Empty2:
+      Type: AWS::Diagram::Resource
+
+    Orthogonal2Stack:
+      Type: AWS::Diagram::Resource
+      Direction: vertical
+      Children:
+        - Orthogonal2TopStack
+        - Orthogonal2BottomStack
+      Title: orthogonal (double-arm)
+
+    Orthogonal2TopStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Orthogonal2Empty1
+        - Orthogonal2Bucket
+    Orthogonal2Empty1:
+      Type: AWS::Diagram::Resource
+    Orthogonal2Bucket:
+      Type: AWS::S3::Bucket
+      Title: "Bucket"
+
+    Orthogonal2BottomStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Orthogonal2Lambda
+        - Orthogonal2Empty2
+    Orthogonal2Lambda:
+      Type: AWS::Lambda::Function
+    Orthogonal2Empty2:
+      Type: AWS::Diagram::Resource
+
+    Orthogonal3Stack:
+      Type: AWS::Diagram::Resource
+      Direction: vertical
+      Children:
+        - Orthogonal3Bucket
+        - Orthogonal3Lambda
+      Title: orthogonal (double-arm)
+
+    Orthogonal3Bucket:
+      Type: AWS::S3::Bucket
+      Title: "Bucket"
+
+    Orthogonal3Lambda:
+      Type: AWS::Lambda::Function
+
+  Links:
+    - Source: Orthogonal1Lambda
+      SourcePosition: N
+      Target: Orthogonal1Bucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: Orthogonal2Lambda
+      SourcePosition: E
+      Target: Orthogonal2Bucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: Orthogonal3Lambda
+      SourcePosition: E
+      Target: Orthogonal3Bucket
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal

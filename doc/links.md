@@ -27,6 +27,53 @@ Diagrams:
       LineColor: 'rgba(255,255,255,255)' # (optional)
 ```
 
+### Link type
+
+#### Straight
+![straight link](static/link-straight.png)
+```
+  Links:
+    - Source: StraightLambda
+      SourcePosition: N
+      Target: StraightBucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+```
+
+#### Orthogonal
+![orthogonal link](static/link-orthogonal.png)
+```
+  Links:
+      # Orthogonal (single-arm)
+    - Source: Orthogonal1Lambda
+      SourcePosition: N
+      Target: Orthogonal1Bucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+
+      # Orthogonal (double-arm)
+    - Source: Orthogonal2Lambda
+      SourcePosition: E
+      Target: Orthogonal2Bucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+
+      # Orthogonal (double-arm)
+    - Source: Orthogonal3Lambda
+      SourcePosition: E
+      Target: Orthogonal3Bucket
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+```
+
+
 ### Arrow head
 
 Arrows add context and meaning to a diagram by indicating the direction of flow.
