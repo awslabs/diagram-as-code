@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
+	"strings"
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
 	"github.com/golang/freetype/truetype"
@@ -585,47 +586,54 @@ func (r *Resource) drawMargin(img *image.RGBA) {
 func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
 	face := r.prepareFontFace(hasChild, parent)
 
-	textBindings, _ := font.BoundString(face, r.label)
+	texts := strings.Split(r.label, "\n")
+	lineOffset := 0
 
-	textWidth := textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
-	textHeight := textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
-	w := textBindings.Max.X - textBindings.Min.X + fixed.I(1)
-	h := textBindings.Max.Y - textBindings.Min.Y + fixed.I(1)
+	for _, line := range texts {
+		textBindings, _ := font.BoundString(face, line)
 
-	p := r.bindings.Min.Add(image.Point{0, r.iconBounds.Max.Y})
+		textWidth := textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
+		textHeight := textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
 
-	point := fixed.Point26_6{fixed.I(p.X) - (w-fixed.I(r.bindings.Dx()))/2, fixed.I(p.Y+10) + h}
-	if hasChild {
-		iconHeight := r.iconBounds.Max.Y
-		if iconHeight == 0 {
-			iconHeight = 64
+		w := textBindings.Max.X - textBindings.Min.X + fixed.I(1)
+		h := textBindings.Max.Y - textBindings.Min.Y + fixed.I(1) + fixed.I(lineOffset)
+
+		p := r.bindings.Min.Add(image.Point{0, r.iconBounds.Max.Y})
+
+		point := fixed.Point26_6{fixed.I(p.X) - (w-fixed.I(r.bindings.Dx()))/2, fixed.I(p.Y+10) + h}
+		if hasChild {
+			iconHeight := r.iconBounds.Max.Y
+			if iconHeight == 0 {
+				iconHeight = 64
+			}
+			padding := maxInt((iconHeight-textHeight)/2, 0)
+			switch r.headerAlign {
+			case "left":
+				p = r.bindings.Min.Add(image.Point{
+					r.iconBounds.Max.X + padding,
+					iconHeight - padding + lineOffset,
+				})
+			case "center":
+				p = r.bindings.Min.Add(image.Point{
+					(r.bindings.Dx() - textWidth) / 2,
+					r.iconBounds.Dy() + iconHeight - padding + lineOffset,
+				})
+			case "right":
+				p = r.bindings.Min.Add(image.Point{
+					r.iconBounds.Dx() - r.bindings.Dx() - r.iconBounds.Dx() - padding,
+					iconHeight - padding + lineOffset,
+				})
+			}
+			point = fixed.Point26_6{fixed.I(p.X), fixed.I(p.Y)}
 		}
-		padding := maxInt((iconHeight-textHeight)/2, 0)
-		switch r.headerAlign {
-		case "left":
-			p = r.bindings.Min.Add(image.Point{
-				r.iconBounds.Max.X + padding,
-				iconHeight - padding,
-			})
-		case "center":
-			p = r.bindings.Min.Add(image.Point{
-				(r.bindings.Dx() - textWidth) / 2,
-				r.iconBounds.Dy() + iconHeight - padding,
-			})
-		case "right":
-			p = r.bindings.Min.Add(image.Point{
-				r.iconBounds.Dx() - r.bindings.Dx() - r.iconBounds.Dx() - padding,
-				iconHeight - padding,
-			})
-		}
-		point = fixed.Point26_6{fixed.I(p.X), fixed.I(p.Y)}
-	}
 
-	d := &font.Drawer{
-		Dst:  img,
-		Src:  image.NewUniform(r.labelColor),
-		Face: face,
-		Dot:  point,
+		d := &font.Drawer{
+			Dst:  img,
+			Src:  image.NewUniform(r.labelColor),
+			Face: face,
+			Dot:  point,
+		}
+		d.DrawString(line)
+		lineOffset += textHeight + 10
 	}
-	d.DrawString(r.label)
 }
