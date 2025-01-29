@@ -268,9 +268,12 @@ func (r *Resource) Scale(parent *Resource) {
 	textHeight := 0
 	if r.label != "" {
 		fontFace := r.prepareFontFace(hasChildren, parent)
-		textBindings, _ := font.BoundString(fontFace, r.label)
-		textWidth = textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
-		textHeight = textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+		texts := strings.Split(r.label, "\n")
+		for _, line := range texts {
+			textBindings, _ := font.BoundString(fontFace, line)
+			textWidth = max(textWidth, textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil())
+			textHeight += textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+		}
 	}
 	if r.bindings == nil {
 		r.bindings = defaultResourceValues(hasChildren).bindings
