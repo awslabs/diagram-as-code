@@ -27,12 +27,26 @@ func main() {
 		Short:   "Diagram-as-code for AWS architecture.",
 		Long:    "This command line interface (CLI) tool enables drawing infrastructure diagrams for Amazon Web Services through YAML code.",
 		Args:    cobra.MaximumNArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 
 			if len(args) == 0 {
-				fmt.Println("Error: This tool requires an input file to run. Please provide a file path.")
+				error_message := "awsdac: This tool requires an input file to run. Please provide a file path.\n"
+				fmt.Println(error_message)
+				cmd.Help()
+
 				os.Exit(1)
 			}
+
+			inputFile := args[0]
+			if _, err := os.Stat(inputFile); os.IsNotExist(err) {
+				fmt.Printf("awsdac: Input file '%s' does not exist.\n", inputFile)
+				os.Exit(1)
+			}
+
+			return nil
+
+		},
+		Run: func(cmd *cobra.Command, args []string) {
 
 			if verbose {
 				log.SetLevel(log.InfoLevel)
