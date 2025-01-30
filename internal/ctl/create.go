@@ -73,6 +73,7 @@ type Link struct {
 	Type            string          `yaml:"Type"`
 	LineWidth       int             `yaml:"LineWidth"`
 	LineColor       string          `yaml:"LineColor"`
+	LineStyle       string          `yaml:"LineStyle"`
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string) {
@@ -347,6 +348,7 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 		}
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
 		link.SetType(v.Type)
+		link.SetLineStyle(v.LineStyle)
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}
