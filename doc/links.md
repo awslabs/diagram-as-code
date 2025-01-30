@@ -25,6 +25,7 @@ Diagrams:
       TargetPosition: S # (required)
       LineWidth: 1 # (optional)
       LineColor: 'rgba(255,255,255,255)' # (optional)
+      LineStyle: `normal|dashed` (optional)
 ```
 
 ### Link type

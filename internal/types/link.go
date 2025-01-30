@@ -20,6 +20,7 @@ type Link struct {
 	TargetArrowHead ArrowHead
 	Type            string
 	LineWidth       int
+	LineStyle       string
 	drawn           bool
 	lineColor       color.RGBA
 }
@@ -40,6 +41,7 @@ func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead Ar
 	gl.TargetArrowHead = targetArrowHead
 	gl.Type = ""
 	gl.LineWidth = lineWidth
+	gl.LineStyle = "normal"
 	gl.drawn = false
 	gl.lineColor = lineColor
 	return &gl
@@ -47,6 +49,10 @@ func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead Ar
 
 func (l *Link) SetType(s string) {
 	l.Type = s
+}
+
+func (l *Link) SetLineStyle (s string) {
+	l.LineStyle = s
 }
 
 func (l *Link) drawNeighborsDot(img *image.RGBA, x, y float64) {
@@ -75,6 +81,9 @@ func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Po
 		x := float64(sourcePt.X) + dx/length*float64(i)
 		y := float64(sourcePt.Y) + dy/length*float64(i)
 
+		if l.LineStyle=="dashed" && i%9 > 5 {
+			continue
+		}
 		for j := 0; j < l.LineWidth; j++ {
 			u := float64(j) - float64(l.LineWidth-1)/2
 			wx := dy / length * u
