@@ -39,7 +39,7 @@ jobs:
         run: |
           name="awsdac-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
           mkdir -p "dist/${name}"
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/awsdac
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/awsdac
           cp LICENSE README.md "dist/${name}"
           zip -9 -r "dist/${name}.zip" "dist/${name}"
 
