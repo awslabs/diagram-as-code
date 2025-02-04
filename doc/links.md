@@ -13,15 +13,10 @@ Diagrams:
   Resources:
     ALB: ...
     PublicSubnet1Instance: ...
-    PublicSubnet2Instance: ...
   Links:
     - Source: ALB # (required)
-      SourcePosition: NNW # (required)
-      Target: PublicSubnet1Instance # (required)
-      TargetPosition: S # (required)
-    - Source: ALB # (required)
       SourcePosition: NNE # (required)
-      Target: PublicSubnet2Instance # (required)
+      Target: PublicSubnet1Instance # (required)
       TargetPosition: S # (required)
       LineWidth: 1 # (optional)
       LineColor: 'rgba(255,255,255,255)' # (optional)
@@ -96,3 +91,38 @@ Arrows add context and meaning to a diagram by indicating the direction of flow.
         Width: Default #  (optional) Narrow/Default/Wide default="Default"
         Length: 2 # (optional) default=2
 ```
+
+### Link Labels
+
+Link Labels add labels along the link
+
+```
+  Links:
+    - Source: ALB # (required)
+      SourcePosition: NNE # (required)
+      Target: PublicSubnet1Instance # (required)
+      TargetPosition: S # (required)
+      Labels: (optional)
+        SourceLeft: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on SourceLeft, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        SourceRight: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on SourceRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        TargetLeft: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on TargetLeft, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        TargetRight: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on TargetRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+```
+
+

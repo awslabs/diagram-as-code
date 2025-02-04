@@ -4,11 +4,26 @@
 package types
 
 import (
+	"errors"
 	"image"
 	"image/color"
+	"io/ioutil"
 	"math"
+	"os"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
+
+	fontPath "github.com/awslabs/diagram-as-code/internal/font"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font"
+	"golang.org/x/image/math/fixed"
+)
+
+type LINK_LABEL_TYPE int
+const (
+	LINK_LABEL_TYPE_HORIZONTAL LINK_LABEL_TYPE = iota
+	// [TODO] LINK_LABEL_TYPE_ALONG_PATH
 )
 
 type Link struct {
@@ -21,8 +36,23 @@ type Link struct {
 	Type            string
 	LineWidth       int
 	LineStyle       string
+	Labels		LinkLabels
 	drawn           bool
 	lineColor       color.RGBA
+}
+
+type LinkLabels struct {
+	SourceRight  *LinkLabel
+	SourceLeft   *LinkLabel
+	TargetRight  *LinkLabel
+	TargetLeft   *LinkLabel
+}
+
+type LinkLabel struct {
+	Type  LINK_LABEL_TYPE
+	Title string
+	Color *color.RGBA
+	Font  string
 }
 
 type ArrowHead struct {
@@ -93,6 +123,160 @@ func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Po
 	}
 }
 
+func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) font.Face {
+        if label.Font == "" {
+                if parent1 != nil && parent1.labelFont != "" {
+                        label.Font = parent1.labelFont
+		} else if parent2 != nil && parent2.labelFont != "" {
+                        label.Font = parent2.labelFont
+                } else {
+                        for _, x := range fontPath.Paths {
+                                if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
+                                        label.Font = x
+                                        break
+                                }
+                        }
+                }
+        }
+        if label.Color == nil {
+                if parent1 != nil && parent1.labelColor != nil {
+                        label.Color = parent1.labelColor
+                } else if parent2 != nil && parent2.labelFont != "" {
+			label.Color = parent2.labelColor
+		} else {
+                        label.Color = &color.RGBA{0, 0, 0, 255}
+                }
+        }
+        if label.Font == "" {
+                panic("Specified fonts are not installed.")
+        }
+        f, err := os.Open(label.Font)
+        if err != nil {
+                panic(err)
+        }
+        defer f.Close()
+
+        ttfBytes, err := ioutil.ReadAll(f)
+        if err != nil {
+                panic(err)
+        }
+
+        ft, err := truetype.Parse(ttfBytes)
+        if err != nil {
+                panic(err)
+        }
+
+        opt := truetype.Options{
+                Size:              24,
+                DPI:               0,
+                Hinting:           0,
+                GlyphCacheEntries: 0,
+                SubPixelsX:        0,
+                SubPixelsY:        0,
+        }
+
+        return truetype.NewFace(ft, &opt)
+}
+
+func (l *Link) computeLabelPos(tx, ty, dx, dy, lx, ly float64) (float64, float64) {
+	// Compute the dot product of the unit vectors
+	dot_product := tx*dx + ty*dy
+	// If the angle is 90 degrees or more (dot product <= 0), set a to (0,0)
+	if dot_product > 0 {
+		// Compute scalar α
+		numerator := ly*dx - lx*dy
+		denominator := tx*dy - ty*dx
+		// Check for division by zero
+		if denominator != 0 {
+			alpha := numerator / denominator
+			// Compute vector a
+			return alpha * tx, alpha * ty
+		}
+	}
+	return 0.0, 0.0
+}
+
+func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource, sourcePt, targetPt image.Point, side string, label *LinkLabel) {
+	if label == nil {
+		return
+	}
+	_dx := float64(targetPt.X - sourcePt.X)
+	_dy := float64(targetPt.Y - sourcePt.Y)
+	length := math.Sqrt(math.Pow(_dx, 2) + math.Pow(_dy, 2))
+	dx := _dx/length
+	dy := _dy/length
+	fourWindrose := ((pos + 2) % 16) / 4
+	isCorner := ((pos + 2) % 16) % 4 == 0
+
+	_tx := [4]float64{1.0, 0.0, -1.0, 0.0}
+	_ty := [4]float64{0.0, 1.0, 0.0, -1.0}
+
+	if isCorner && side == "Left" {
+		fourWindrose = (fourWindrose + 3) % 4
+	}
+
+	
+	tx := _tx[fourWindrose]
+	ty := _ty[fourWindrose]
+	if side == "Left" {
+		tx = _tx[fourWindrose]*-1
+		ty = _ty[fourWindrose]*-1
+	}
+	// calculate text box size
+	textWidth := 0
+        textHeight := 0
+	fontFace := l.prepareFontFace(label, source, target)
+	texts := strings.Split(label.Title, "\n")
+	for _, line := range texts {
+		textBindings, _ := font.BoundString(fontFace, line)
+		textWidth = max(textWidth, textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil())
+		textHeight += textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+	}
+
+	// label vector
+	ldx := _tx[(fourWindrose+3)%4]*float64(textWidth)
+	ldy := _ty[(fourWindrose+3)%4]*float64(textHeight)
+
+	// calculate the base of a right triangle
+	px, py := l.computeLabelPos(tx, ty, dx, dy, ldx, ldy)
+
+	// Unit vector for sliding textbox 
+	ltx := [4]float64{0.0, 0.0, -1.0, -1.0}
+        lty := [4]float64{0.0, 1.0, 1.0, 0.0}
+	
+	// calculate buffer
+	mx := float64(tx) + dx
+	my := float64(ty) + dy
+	mag := math.Sqrt(mx*mx + my*my)
+	if mag == 0 {
+		panic("Error: zero length")
+	}
+	bx := float64(mx) / mag * 5
+	by := float64(my) / mag * 5
+		
+	lx := float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[fourWindrose]
+	ly := float64(sourcePt.Y) + py + by + float64(textHeight)*lty[fourWindrose]
+
+	if side == "Left" {
+		lx = float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[(fourWindrose+3)%4]
+		ly = float64(sourcePt.Y) + py + by + float64(textHeight)*lty[(fourWindrose+3)%4]
+	}
+
+	lineOffset := fixed.I(0)
+	for _, line := range texts {
+		textBindings, _ := font.BoundString(fontFace, line)
+		point := fixed.Point26_6{fixed.I(int(lx)) , fixed.I(int(ly)) + lineOffset}
+		d := &font.Drawer{
+			Dst:  img,
+			Src:  image.NewUniform(label.Color),
+			Face: fontFace,
+			Dot:  point,
+		}
+		d.DrawString(line)
+		lineOffset += lineOffset + textBindings.Max.Y - textBindings.Min.Y
+	}
+}
+
 func (l *Link) getThreeSide(t string) (float64, float64, float64) {
 	switch t {
 	case "Narrow":
@@ -155,6 +339,10 @@ func (l *Link) Draw(img *image.RGBA) {
 		l.drawLine(img, sourcePt, targetPt)
 		l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
 		l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+		l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight)
+		l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft)
+		l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight)
+		l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft)
 	} else if l.Type == "orthogonal" {
 		controlPts := []image.Point{}
 
@@ -200,16 +388,23 @@ func (l *Link) Draw(img *image.RGBA) {
 		if len(controlPts) >= 1 {
 			l.drawLine(img, sourcePt, controlPts[0])
 			l.drawArrowHead(img, sourcePt, controlPts[0], l.SourceArrowHead)
+			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Right", l.Labels.SourceRight)
+			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Left", l.Labels.SourceLeft)
 			for i := 0; i < len(controlPts)-1; i++ {
 				l.drawLine(img, controlPts[i], controlPts[i+1])
 			}
 			l.drawLine(img, controlPts[len(controlPts)-1], targetPt)
 			l.drawArrowHead(img, targetPt, controlPts[len(controlPts)-1], l.TargetArrowHead)
-
+			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Left", l.Labels.TargetRight)
+			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Right", l.Labels.TargetLeft)
 		} else {
 			l.drawLine(img, sourcePt, targetPt)
 			l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
 			l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight)
+			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft)
+			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight)
+			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft)
 		}
 	}
 	l.drawn = true
