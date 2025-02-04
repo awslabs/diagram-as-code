@@ -23,10 +23,15 @@ import (
 const DEBUG_LAYOUT = false
 
 type BORDER_TYPE int
-
 const (
 	BORDER_TYPE_STRAIGHT BORDER_TYPE = iota
 	BORDER_TYPE_DASHED
+)
+
+type ICON_FILL_TYPE int
+const (
+	ICON_FILL_TYPE_NONE ICON_FILL_TYPE = iota
+	ICON_FILL_TYPE_RECT
 )
 
 type Resource struct {
@@ -47,7 +52,13 @@ type Resource struct {
 	links          []*Link
 	children       []*Resource
 	borderChildren []*BorderChild
+	iconfill       ResourceIconFill
 	drawn          bool
+}
+
+type ResourceIconFill struct {
+	Type           ICON_FILL_TYPE // none(default) / rect
+	Color          color.RGBA
 }
 
 type BorderChild struct {
@@ -84,6 +95,10 @@ func (r *Resource) Init() *Resource {
 	rr.bindings = nil
 	rr.iconImage = image.NewRGBA(image.Rect(0, 0, 0, 0))
 	rr.iconBounds = image.Rect(0, 0, 0, 0)
+	rr.iconfill = ResourceIconFill {
+		Type: ICON_FILL_TYPE_NONE,
+		Color: color.RGBA{255, 255, 255, 255},
+	}
 	rr.borderColor = nil
 	rr.borderType = BORDER_TYPE_STRAIGHT
 	rr.fillColor = color.RGBA{0, 0, 0, 0}
@@ -170,6 +185,13 @@ func (r *Resource) SetAlign(align string) {
 
 func (r *Resource) SetDirection(direction string) {
 	r.direction = direction
+}
+
+func (r *Resource) SetIconFill(t ICON_FILL_TYPE, color *color.RGBA) {
+	r.iconfill.Type = t
+	if color != nil {
+		r.iconfill.Color = *color
+	}
 }
 
 func (r *Resource) AddLink(link *Link) {
@@ -495,6 +517,14 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 	case "right":
 		x.Min = x.Min.Add(image.Point{r.bindings.Dx() - 64, 0})
 		x.Max = x.Max.Add(image.Point{r.bindings.Dx() - 64, 0})
+	}
+	if r.iconfill.Type == ICON_FILL_TYPE_RECT {
+		for _x := x.Min.X; _x < x.Max.X; _x++ {
+			for _y := x.Min.Y; _y < x.Max.Y; _y++ {
+				c := img.At(_x, _y)
+				img.Set(_x, _y, _blend_color(c, r.iconfill.Color))
+			}
+		}
 	}
 	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
 
