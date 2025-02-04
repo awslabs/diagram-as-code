@@ -53,6 +53,8 @@ Diagram:
       Preset: Application Load Balancer
     IGW:
       Type: AWS::EC2::InternetGateway
+      IconFill:
+        Type: rect
     User:
       Type: AWS::Diagram::Resource
       Preset: User

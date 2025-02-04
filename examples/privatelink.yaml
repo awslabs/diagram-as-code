@@ -102,8 +102,13 @@ Diagram:
       Type: AWS::Diagram::Resource
     IGW1:
       Type: AWS::EC2::InternetGateway
+      IconFill:
+        Type: rect
+
     IGW2:
       Type: AWS::EC2::InternetGateway
+      IconFill:
+        Type: rect
 
     User:
       Type: AWS::Diagram::Resource
