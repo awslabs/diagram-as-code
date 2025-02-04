@@ -68,6 +68,8 @@ Diagram:
       Preset: Application Load Balancer
     OregonIGW:
       Type: AWS::EC2::InternetGateway
+      IconFill:
+        Type: rect
 
     #
     # Virginia Region
@@ -112,7 +114,8 @@ Diagram:
       Preset: Application Load Balancer
     VirginiaIGW:
       Type: AWS::EC2::InternetGateway
-
+      IconFill:
+        Type: rect
 
     User:
       Type: AWS::Diagram::Resource

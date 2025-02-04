@@ -87,9 +87,12 @@ Diagram:
       Title: "TGW ENI"
     VPC1TGWAttach:
       Type: AWS::EC2::TransitGatewayAttachment
+      IconFill:
+        Type: rect
     VPC1IGW:
       Type: AWS::EC2::InternetGateway
-
+      IconFill:
+        Type: rect
 
     # Transit Gateway
     TransitGateway:
@@ -155,9 +158,12 @@ Diagram:
       Title: "TGW ENI"
     VPC2TGWAttach:
       Type: AWS::EC2::TransitGatewayAttachment
+      IconFill:
+        Type: rect
     VPC2IGW:
       Type: AWS::EC2::InternetGateway
-
+      IconFill:
+        Type: rect
 
     HorizontalStack2:
       Type: AWS::Diagram::HorizontalStack
@@ -229,7 +235,8 @@ Diagram:
       Title: "Firewall Endpoint"
     VPC3TGWAttach:
       Type: AWS::EC2::TransitGatewayAttachment
-
+      IconFill:
+        Type: rect
     User:
       Type: AWS::Diagram::Resource
       Preset: "User"
