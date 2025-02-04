@@ -80,6 +80,21 @@ type Link struct {
 	LineWidth       int             `yaml:"LineWidth"`
 	LineColor       string          `yaml:"LineColor"`
 	LineStyle       string          `yaml:"LineStyle"`
+	Labels          LinkLabels      `yaml:"Labels"`
+}
+
+type LinkLabels struct {
+	SourceRight *LinkLabel `yaml:"SourceRight"`
+	SourceLeft  *LinkLabel `yaml:"SourceLeft"`
+	TargetRight *LinkLabel `yaml:"TargetRight"`
+	TargetLeft  *LinkLabel `yaml:"TargetLeft"`
+}
+
+type LinkLabel struct {
+	Type  *string `yaml:"Type"`
+	Title string `yaml:"Title"`
+	Color *string `yaml:"Color"`
+	Font  *string `yaml:"Font"`
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string) {
@@ -331,6 +346,29 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 	}
 }
 
+func convertLabel(label *LinkLabel) *types.LinkLabel {
+	r := &types.LinkLabel{}
+	if label.Type != nil {
+		switch *label.Type {
+		case "horizontal":
+			r.Type = types.LINK_LABEL_TYPE_HORIZONTAL
+		default: 
+			r.Type = types.LINK_LABEL_TYPE_HORIZONTAL
+		}  
+	} else {
+		r.Type = types.LINK_LABEL_TYPE_HORIZONTAL
+	}
+	r.Title = label.Title
+	if label.Color != nil {
+		c := stringToColor(*label.Color)
+		r.Color = &c
+	}
+	if label.Font != nil {
+		r.Font = *label.Font
+	}
+	return r
+}
+
 func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 
 	for _, v := range template.Links {
@@ -370,6 +408,18 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
 		link.SetType(v.Type)
 		link.SetLineStyle(v.LineStyle)
+		if v.Labels.SourceRight != nil {
+			link.Labels.SourceRight = convertLabel(v.Labels.SourceRight)
+		}
+		if v.Labels.SourceLeft != nil {
+			link.Labels.SourceLeft = convertLabel(v.Labels.SourceLeft)
+		}
+		if v.Labels.TargetRight != nil {
+			link.Labels.TargetRight = convertLabel(v.Labels.TargetRight)
+		}
+		if v.Labels.TargetLeft != nil {
+			link.Labels.TargetLeft = convertLabel(v.Labels.TargetLeft)
+		}
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}
