@@ -57,6 +57,9 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      Labels:
+        SourceLeft:
+          Title: "HTTP:80"
     - Source: ALB
       SourcePosition: NNE
       Target: VPCPublicSubnet2Instance
@@ -64,6 +67,9 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      Labels:
+        SourceRight:
+          Title: "HTTP:80"
     - Source: IGW
       SourcePosition: N
       Target: ALB
@@ -71,6 +77,11 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      Labels:
+        SourceLeft:
+          Title: "HTTP:80"
+        SourceRight:
+          Title: "HTTPS:443"
     - Source: User
       SourcePosition: N
       Target: IGW

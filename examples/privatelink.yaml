@@ -155,6 +155,7 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      LineColor: 'rgba(0,125,125,255)'
     - Source: IGW1
       SourcePosition: E
       Target: VPC1PublicSubnet2Instance
@@ -162,6 +163,7 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      LineColor: 'rgba(0,125,125,255)'
     - Source: User
       SourcePosition: W
       Target: IGW1
@@ -170,6 +172,10 @@ Diagram:
         Type: Open
       Type: orthogonal
       LineColor: 'rgba(0,125,125,255)'
+      Labels:
+        SourceRight:
+          Title: "SSH access"
+          Color: 'rgba(0,125,125,255)'
     - Source: IGW2
       SourcePosition: W
       Target: VPC2PublicSubnet1Instance
@@ -177,6 +183,7 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+      LineColor: 'rgba(0,125,125,255)'
     - Source: User
       SourcePosition: E
       Target: IGW2
@@ -185,3 +192,7 @@ Diagram:
         Type: Open
       Type: orthogonal
       LineColor: 'rgba(0,125,125,255)'
+      Labels:
+        SourceLeft:
+          Title: "SSH access"
+          Color: 'rgba(0,125,125,255)'

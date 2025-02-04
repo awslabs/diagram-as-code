@@ -1,0 +1,386 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Children:
+        - Vertical1
+        - VerticalEmpty1
+        - Vertical2
+        - VerticalEmpty2
+        - Vertical3
+    Vertical1:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - Account1
+        - HorizontalEmpty1
+        - Account2
+        - HorizontalEmpty2
+        - Account3
+    VerticalEmpty1:
+      Type: AWS::Diagram::Resource
+    Vertical2:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - Account4
+        - HorizontalEmpty3
+        - Account5
+        - HorizontalEmpty4
+        - Account6
+    VerticalEmpty2:
+      Type: AWS::Diagram::Resource
+    Vertical3:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - Account7
+        - HorizontalEmpty5
+        - Account8
+        - HorizontalEmpty6
+        - Account9
+
+    Account1:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account1Empty
+    Account1Empty:
+      Type: AWS::Diagram::Resource
+
+    Account2:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account2Empty
+    Account2Empty:
+      Type: AWS::Diagram::Resource
+
+    Account3:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account3Empty
+    Account3Empty:
+      Type: AWS::Diagram::Resource
+
+    Account4:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account4Empty
+    Account4Empty:
+      Type: AWS::Diagram::Resource
+
+    Account5:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account5Empty
+    Account5Empty:
+      Type: AWS::Diagram::Resource
+
+    Account6:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account6Empty
+    Account6Empty:
+      Type: AWS::Diagram::Resource
+
+    Account7:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account7Empty
+    Account7Empty:
+      Type: AWS::Diagram::Resource
+
+    Account8:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account8Empty
+    Account8Empty:
+      Type: AWS::Diagram::Resource
+
+    Account9:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Children:
+        - Account9Empty
+    Account9Empty:
+      Type: AWS::Diagram::Resource
+
+    HorizontalEmpty1:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty2:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty3:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty4:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty5:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty6:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty7:
+      Type: AWS::Diagram::Resource
+    HorizontalEmpty8:
+      Type: AWS::Diagram::Resource
+
+
+
+
+
+
+
+
+
+  Links:
+    - Source: Account1
+      SourcePosition: SE
+      Target: Account5
+      TargetPosition: NW
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account2
+      SourcePosition: E
+      Target: Account5
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account3
+      SourcePosition: NE
+      Target: Account5
+      TargetPosition: SW
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account4
+      SourcePosition: S
+      Target: Account5
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account6
+      SourcePosition: N
+      Target: Account5
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account7
+      SourcePosition: SW
+      Target: Account5
+      TargetPosition: NE
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account8
+      SourcePosition: W
+      Target: Account5
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account9
+      SourcePosition: NW
+      Target: Account5
+      TargetPosition: SE
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+
+    - Source: Account4
+      SourcePosition: SSW
+      Target: Account2
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account6
+      SourcePosition: NNW
+      Target: Account2
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account4
+      SourcePosition: SSE
+      Target: Account8
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account6
+      SourcePosition: NNE
+      Target: Account8
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+
+    - Source: Account2
+      SourcePosition: ENE
+      Target: Account4
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account2
+      SourcePosition: ESE
+      Target: Account6
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account8
+      SourcePosition: WNW
+      Target: Account4
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+    - Source: Account8
+      SourcePosition: WSW
+      Target: Account6
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "srcL"
+        SourceRight:
+          Title: "srcR"
+        TargetLeft:
+          Title: "tgL"
+        TargetRight:
+          Title: "tgR"
+
