@@ -45,17 +45,23 @@ type DefinitionFile struct {
 }
 
 type Resource struct {
-	Type           string        `yaml:"Type"`
-	Icon           string        `yaml:"Icon"`
-	Direction      string        `yaml:"Direction"`
-	Preset         string        `yaml:"Preset"`
-	Align          string        `yaml:"Align"`
-	FillColor      string        `yaml:"FillColor"`
-	Title          string        `yaml:"Title"`
-	TitleColor     string        `yaml:"TitleColor"`
-	Font           string        `yaml:"Font"`
-	Children       []string      `yaml:"Children"`
-	BorderChildren []BorderChild `yaml:"BorderChildren"`
+	Type           string           `yaml:"Type"`
+	Icon           string           `yaml:"Icon"`
+	IconFill       *ResourceIconFill `yaml:"IconFill"`
+	Direction      string           `yaml:"Direction"`
+	Preset         string           `yaml:"Preset"`
+	Align          string           `yaml:"Align"`
+	FillColor      string           `yaml:"FillColor"`
+	Title          string           `yaml:"Title"`
+	TitleColor     string           `yaml:"TitleColor"`
+	Font           string           `yaml:"Font"`
+	Children       []string         `yaml:"Children"`
+	BorderChildren []BorderChild    `yaml:"BorderChildren"`
+}
+
+type ResourceIconFill struct {
+	Type *string `yaml:"Type"`
+	Color *string `yaml:"Color"`
 }
 
 type BorderChild struct {
@@ -240,6 +246,21 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 		if v.Icon != "" {
 			resources[k].LoadIcon(v.Icon)
+		}
+		if v.IconFill != nil {
+			switch *v.IconFill.Type {
+			case "none":
+				resources[k].SetIconFill(types.ICON_FILL_TYPE_NONE, nil)
+			case "rect":
+				if v.IconFill.Color != nil {
+					c := stringToColor(*v.IconFill.Color)
+					resources[k].SetIconFill(types.ICON_FILL_TYPE_RECT, &c)
+				} else {
+					resources[k].SetIconFill(types.ICON_FILL_TYPE_RECT, nil)
+				}
+			default:
+				resources[k].SetIconFill(types.ICON_FILL_TYPE_NONE, nil)
+			}
 		}
 		if v.Title != "" {
 			resources[k].SetLabel(&title, nil, nil)
