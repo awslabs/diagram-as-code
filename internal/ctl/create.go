@@ -218,7 +218,10 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if def.CacheFilePath == "" {
 					break
 				}
-				resources[k].LoadIcon(def.CacheFilePath)
+				err := resources[k].LoadIcon(def.CacheFilePath)
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 
@@ -256,11 +259,17 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if def.CacheFilePath == "" {
 					continue
 				}
-				resources[k].LoadIcon(def.CacheFilePath)
+				err := resources[k].LoadIcon(def.CacheFilePath)
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 		if v.Icon != "" {
-			resources[k].LoadIcon(v.Icon)
+			err := resources[k].LoadIcon(v.Icon)
+			if err != nil {
+				panic(err)
+			}
 		}
 		if v.IconFill != nil {
 			switch *v.IconFill.Type {
