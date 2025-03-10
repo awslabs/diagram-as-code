@@ -5,8 +5,6 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	_ "image/png"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,26 +16,27 @@ import (
 
 var tmpOutputDir = "/tmp/results"
 
-func abs(x uint8) uint8 {
-	if x < 0 {
-		return -x
+func abs(x, y uint8) uint8 {
+	d := int(x) - int(y)
+	if d < 0 {
+		return uint8(-d)
 	}
-	return x
+	return uint8(d)
 }
 
 func subColor(px1, px2 color.NRGBA) color.RGBA {
 	if px1.A == px2.A {
 		return color.RGBA{
-			abs(px1.R - px2.R),
-			abs(px1.G - px2.G),
-			abs(px1.B - px2.B),
+			abs(px1.R, px2.R),
+			abs(px1.G, px2.G),
+			abs(px1.B, px2.B),
 			255,
 		}
 	} else {
 		return color.RGBA{
-			abs(px1.A - px2.A),
-			abs(px1.A - px2.A),
-			abs(px1.A - px2.A),
+			abs(px1.A, px2.A),
+			abs(px1.A, px2.A),
+			abs(px1.A, px2.A),
 			255,
 		}
 	}
@@ -109,7 +108,7 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 
 func TestFunctionality(t *testing.T) {
 	log.SetLevel(log.WarnLevel)
-	files, err := ioutil.ReadDir("../examples")
+	files, err := os.ReadDir("../examples")
 	if err != nil {
 		t.Errorf("Cannot open examples directory, %v", err)
 	}

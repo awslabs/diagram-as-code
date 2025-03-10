@@ -3,7 +3,6 @@ package cache
 import (
 	"archive/zip"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -12,7 +11,7 @@ import (
 )
 
 func TestCreateFileWithDirectory(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "test")
+	tempDir, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
@@ -33,7 +32,7 @@ func TestCreateFileWithDirectory(t *testing.T) {
 }
 
 func TestLoadEtagCache(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "test")
+	tempDir, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
@@ -51,7 +50,7 @@ func TestLoadEtagCache(t *testing.T) {
 	}
 
 	// Test when file exists
-	err = ioutil.WriteFile(etagFilePath, []byte("test-etag"), 0644)
+	err = os.WriteFile(etagFilePath, []byte("test-etag"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create etag file: %v", err)
 	}
@@ -65,7 +64,7 @@ func TestLoadEtagCache(t *testing.T) {
 }
 
 func TestWriteEtagCache(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "test")
+	tempDir, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
@@ -77,7 +76,7 @@ func TestWriteEtagCache(t *testing.T) {
 		t.Errorf("writeEtagCache failed: %v", err)
 	}
 
-	data, err := ioutil.ReadFile(etagFilePath)
+	data, err := os.ReadFile(etagFilePath)
 	if err != nil {
 		t.Errorf("Failed to read etag file: %v", err)
 	}
@@ -99,7 +98,7 @@ func TestFetchFile(t *testing.T) {
 	}))
 	defer server.Close()
 
-	tempDir, err := ioutil.TempDir("", "test")
+	tempDir, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
@@ -110,7 +109,7 @@ func TestFetchFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("FetchFile failed when no cache exists: %v", err)
 	}
-	data, err := ioutil.ReadFile(filePath)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		t.Errorf("Failed to read cached file: %v", err)
 	}
@@ -123,7 +122,7 @@ func TestFetchFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("FetchFile failed when cache exists and etag matches: %v", err)
 	}
-	data, err = ioutil.ReadFile(filePath)
+	data, err = os.ReadFile(filePath)
 	if err != nil {
 		t.Errorf("Failed to read cached file: %v", err)
 	}
@@ -146,7 +145,7 @@ func TestFetchFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("FetchFile failed when cache exists but etag doesn't match: %v", err)
 	}
-	data, err = ioutil.ReadFile(filePath)
+	data, err = os.ReadFile(filePath)
 	if err != nil {
 		t.Errorf("Failed to read cached file: %v", err)
 	}
@@ -156,7 +155,7 @@ func TestFetchFile(t *testing.T) {
 }
 
 func TestExtractZipFile(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "test")
+	tempDir, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}

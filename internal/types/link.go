@@ -7,8 +7,8 @@ import (
 	"errors"
 	"image"
 	"image/color"
-	"io/ioutil"
 	"math"
+	"io"
 	"os"
 	"strings"
 
@@ -156,7 +156,7 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) fon
         }
         defer f.Close()
 
-        ttfBytes, err := ioutil.ReadAll(f)
+        ttfBytes, err := io.ReadAll(f)
         if err != nil {
                 panic(err)
         }
