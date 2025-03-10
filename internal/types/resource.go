@@ -7,7 +7,7 @@ import (
 	"errors"
 	"image"
 	"image/color"
-	"io/ioutil"
+	"io"
 	"math"
 	"os"
 	"strings"
@@ -246,7 +246,7 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
 	}
 	defer f.Close()
 
-	ttfBytes, err := ioutil.ReadAll(f)
+	ttfBytes, err := io.ReadAll(f)
 	if err != nil {
 		panic(err)
 	}

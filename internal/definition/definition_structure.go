@@ -20,18 +20,18 @@ type DefinitionStructure struct {
 func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("Cannot open Definition File(%s): %v", filePath, err)
+		return fmt.Errorf("cannot open Definition File(%s): %v", filePath, err)
 	}
 
 	var b DefinitionStructure
 
 	err = yaml.Unmarshal([]byte(data), &b)
 	if err != nil {
-		return fmt.Errorf("Cannot yaml.Unmarshal Definition File(%s): %v", filePath, err)
+		return fmt.Errorf("cannot yaml.Unmarshal Definition File(%s): %v", filePath, err)
 	}
 
 	// Linking definitions
-	for k, _ := range b.Definitions {
+	for k := range b.Definitions {
 		v := b.Definitions[k]
 		src := func() string {
 			switch v.Type {
@@ -51,7 +51,7 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 
 	// Downdload files and extract ZIP
 	q := []string{}
-	for k, _ := range b.Definitions {
+	for k := range b.Definitions {
 		q = append(q, k)
 	}
 	for len(q) > 0 {
@@ -66,11 +66,11 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 				}
 				filePath, err := cache.FetchFile(v.ZipFile.Url)
 				if err != nil {
-					return fmt.Errorf("Cannot FetchFile(%s): %v", v.ZipFile.Url, err)
+					return fmt.Errorf("cannot FetchFile(%s): %v", v.ZipFile.Url, err)
 				}
 				v.CacheFilePath, err = cache.ExtractZipFile(filePath)
 				if err != nil {
-					return fmt.Errorf("Cannot ExtractZipFile(%s): %v", filePath, err)
+					return fmt.Errorf("cannot ExtractZipFile(%s): %v", filePath, err)
 				}
 
 			case "file":
@@ -87,12 +87,13 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 				}
 				v.CacheFilePath, err = cache.ExtractZipFile(filePath)
 				if err != nil {
-					return fmt.Errorf("Cannot ExtractZipFile(%s): %v", filePath, err)
+					return fmt.Errorf("cannot ExtractZipFile(%s): %v", filePath, err)
 				}
 			}
 		case "Directory":
 			trimmedPath := strings.TrimSuffix(v.Directory.Path, "/")
 			if trimmedPath == "" {
+				//lint:ignore ST1005 Directory is a proper noun, so will ignore capitalization rule.
 				return fmt.Errorf("Directory %s has only slash or empty path", q)
 			}
 			if v.Directory.Source != "" {
