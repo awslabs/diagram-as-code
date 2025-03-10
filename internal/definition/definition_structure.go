@@ -62,7 +62,7 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 			switch v.ZipFile.SourceType {
 			case "url":
 				if v.ZipFile.Url == "" {
-					return fmt.Errorf("Zip(url) needs ZipFile.Source")
+					return fmt.Errorf("Zip(url) needs ZipFile.URL")
 				}
 				filePath, err := cache.FetchFile(v.ZipFile.Url)
 				if err != nil {
@@ -74,14 +74,17 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 				}
 
 			case "file":
+				filePath := ""
 				if v.ZipFile.Source == "" {
-					return fmt.Errorf("Zip(file) needs ZipFile.Source")
+					//return fmt.Errorf("Zip(file) needs ZipFile.Source")
+					filePath = strings.TrimSuffix(v.ZipFile.Path, "/")
+				} else {
+					if b.Definitions[v.ZipFile.Source].CacheFilePath == "" {
+						q = append(q, k)
+						break
+					}
+					filePath = fmt.Sprintf("%s/%s", b.Definitions[v.ZipFile.Source].CacheFilePath, strings.TrimSuffix(v.ZipFile.Path, "/"))
 				}
-				if b.Definitions[v.ZipFile.Source].CacheFilePath == "" {
-					q = append(q, k)
-					break
-				}
-				filePath := fmt.Sprintf("%s/%s", b.Definitions[v.ZipFile.Source].CacheFilePath, strings.TrimSuffix(v.ZipFile.Path, "/"))
 				v.CacheFilePath, err = cache.ExtractZipFile(filePath)
 				if err != nil {
 					return fmt.Errorf("Cannot ExtractZipFile(%s): %v", filePath, err)
