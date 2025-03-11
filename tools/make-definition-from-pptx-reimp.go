@@ -619,7 +619,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image7.png"
+      Path: "image10.png"
     Border:
       Color: "rgba(0, 0, 0, 255)"
     Fill:
@@ -634,7 +634,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Preset
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image40.png"
+      Path: "image43.png"
     Border:
       Color: "rgba(0, 0, 0, 255)"
     Fill:
@@ -647,7 +647,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image42.png"
+      Path: "image45.png"
     Border:
       Type: "dashed"
       Color: "rgba(0, 164, 166, 255)"
@@ -673,7 +673,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image21.png"
+      Path: "image24.png"
     Border:
       Type: "dashed"
       Color: "rgba(237, 113, 0, 255)"
@@ -688,7 +688,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image15.png"
+      Path: "image18.png"
     Label:
       Title: "VPC"
       Color: "rgba(0, 0, 0, 255)"
@@ -703,7 +703,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image26.png"
+      Path: "image29.png"
     Label:
       Title: "Subnet"
       Color: "rgba(0, 0, 0, 255)"
@@ -718,7 +718,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Preset
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image44.png"
+      Path: "image47.png"
     Label:
       Title: "Private Subnet"
       Color: "rgba(0, 0, 0, 255)"
@@ -731,7 +731,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Preset
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image26.png"
+      Path: "image29.png"
     Label:
       Title: "Public Subnet"
       Color: "rgba(0, 0, 0, 255)"
@@ -744,7 +744,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image48.png"
+      Path: "image51.png"
     Label:
       Title: "Corporate data center"
       Color: "rgba(29, 137, 0, 255)"
@@ -759,7 +759,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image52.png"
+      Path: "image55.png"
     Label:
       Title: "Spot fleet"
       Color: "rgba(29, 137, 0, 255)"
@@ -774,7 +774,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     Type: Group
     Icon:
       Source: ArchitectureIconsPptxMedia
-      Path: "image54.png"
+      Path: "image57.png"
     Label:
       Title: "AWS account"
       Color: "rgba(29, 137, 0, 255)"
