@@ -6,8 +6,8 @@ AWS::ACMPCA::Permission
 AWS::APS,Amazon Managed Service for Prometheus
 AWS::APS::RuleGroupsNamespace
 AWS::APS::Workspace,Amazon Managed Service for Prometheus
-AWS::ARCZonalShift,Route 53 Application Recovery Controller
-AWS::ARCZonalShift::ZonalAutoshiftConfiguration,Route 53 Application Recovery Controller
+AWS::ARCZonalShift,Amazon Application Recovery Controller
+AWS::ARCZonalShift::ZonalAutoshiftConfiguration,Amazon Application Recovery Controller
 AWS::AccessAnalyzer,IAM Access Analyzer
 AWS::AccessAnalyzer::Analyzer,IAM Access Analyzer
 AWS::AmazonMQ,Amazon MQ
