@@ -41,14 +41,14 @@ Diagram:
         - VPC1PublicSubnet2
     VPC1PublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC1PublicSubnet1Instance
     VPC1PublicSubnet1Instance:
       Type: AWS::EC2::Instance
     VPC1PublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC1PublicSubnet2Instance
     VPC1PublicSubnet2Instance:
@@ -88,14 +88,14 @@ Diagram:
         - VPC2PublicSubnet2
     VPC2PublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC2PublicSubnet1Instance
     VPC2PublicSubnet1Instance:
       Type: AWS::EC2::Instance
     VPC2PublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC2PublicSubnet2EmptyResource
     VPC2PublicSubnet2EmptyResource:

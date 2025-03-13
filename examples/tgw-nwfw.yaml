@@ -49,14 +49,14 @@ Diagram:
         - VPC1TransitSubnet1
     VPC1PublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC1PublicSubnet1Instance
     VPC1PublicSubnet1Instance:
       Type: AWS::EC2::Instance
     VPC1TransitSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPC1TransitSubnet1Eni
     VPC1TransitSubnet1Eni:
@@ -72,14 +72,14 @@ Diagram:
         - VPC1TransitSubnet2
     VPC1PublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC1PublicSubnet2Instance
     VPC1PublicSubnet2Instance:
       Type: AWS::EC2::Instance
     VPC1TransitSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPC1TransitSubnet2Eni
     VPC1TransitSubnet2Eni:
@@ -120,7 +120,7 @@ Diagram:
         - VPC2PublicSubnet1
     VPC2TransitSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPC2TransitSubnet1Eni
     VPC2TransitSubnet1Eni:
@@ -128,7 +128,7 @@ Diagram:
       Title: "TGW ENI"
     VPC2PublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC2PublicSubnet1Instance
     VPC2PublicSubnet1Instance:
@@ -143,14 +143,14 @@ Diagram:
         - VPC2PublicSubnet2
     VPC2PublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPC2PublicSubnet2Instance
     VPC2PublicSubnet2Instance:
       Type: AWS::EC2::Instance
     VPC2TransitSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPC2TransitSubnet2Eni
     VPC2TransitSubnet2Eni:
@@ -191,7 +191,7 @@ Diagram:
         - VPC3FirewallSubnet1
     VPC3TransitSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPC3TransitSubnet1Eni
     VPC3TransitSubnet1Eni:
@@ -199,7 +199,7 @@ Diagram:
       Title: "TGW ENI"
     VPC3FirewallSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Title: "Firewall Subnet"
       FillColor: "rgba(150,115,166,75)"
       Children:
@@ -217,7 +217,7 @@ Diagram:
         - VPC3FirewallSubnet2
     VPC3TransitSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPC3TransitSubnet2Eni
     VPC3TransitSubnet2Eni:
@@ -225,7 +225,7 @@ Diagram:
       Title: "TGW ENI"
     VPC3FirewallSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Title: "Firewall Subnet"
       FillColor: "rgba(150,115,166,75)"
       Children:

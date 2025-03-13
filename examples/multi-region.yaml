@@ -51,14 +51,14 @@ Diagram:
         - OregonVPCPublicSubnet2
     OregonVPCPublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - OregonVPCPublicSubnet1Instance
     OregonVPCPublicSubnet1Instance:
       Type: AWS::EC2::Instance
     OregonVPCPublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - OregonVPCPublicSubnet2Instance
     OregonVPCPublicSubnet2Instance:
@@ -97,14 +97,14 @@ Diagram:
         - VirginiaVPCPublicSubnet2
     VirginiaVPCPublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VirginiaVPCPublicSubnet1Instance
     VirginiaVPCPublicSubnet1Instance:
       Type: AWS::EC2::Instance
     VirginiaVPCPublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VirginiaVPCPublicSubnet2Instance
     VirginiaVPCPublicSubnet2Instance:

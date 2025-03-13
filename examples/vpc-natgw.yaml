@@ -34,14 +34,14 @@ Diagram:
         - VPCPublicSubnet2
     VPCPublicSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPCPublicSubnet1NatGateway
     VPCPublicSubnet1NatGateway:
       Type: AWS::EC2::NatGateway
     VPCPublicSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
+      Preset: Public subnet
       Children:
         - VPCPublicSubnet2NatGateway
     VPCPublicSubnet2NatGateway:
@@ -54,14 +54,14 @@ Diagram:
         - VPCPrivateSubnet2
     VPCPrivateSubnet1:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPCPrivateSubnet1Instance
     VPCPrivateSubnet1Instance:
       Type: AWS::EC2::Instance
     VPCPrivateSubnet2:
       Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
+      Preset: Private subnet
       Children:
         - VPCPrivateSubnet2Instance
     VPCPrivateSubnet2Instance:
