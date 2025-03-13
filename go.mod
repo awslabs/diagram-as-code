@@ -1,8 +1,8 @@
 module github.com/awslabs/diagram-as-code
 
-go 1.21
+go 1.23.0
 
-toolchain go1.21.0
+toolchain go1.24.1
 
 require (
 	github.com/aws-cloudformation/rain v1.8.6
@@ -11,6 +11,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
 	golang.org/x/image v0.18.0
+	golang.org/x/net v0.37.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -21,6 +22,6 @@ require (
 	github.com/nathan-fiscaletti/consolesize-go v0.0.0-20220204101620-317176b6684d // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/term v0.19.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/term v0.30.0 // indirect
 )
