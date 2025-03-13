@@ -14,40 +14,44 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func getTemplate(inputfile string) ([]byte, error) {
+	if IsURL(inputfile) {
+		// URL from remote
+		resp, err := http.Get(inputfile)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		data, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return data, nil
+	} else {
+		// Local file
+		data, err := os.ReadFile(inputfile)
+		if err != nil {
+			return nil, err
+		}
+		return data, nil
+	}
+}
+
 func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefFile string) {
 
 	log.Infof("input file path: %s\n", inputfile)
 
 	var template TemplateStruct
 
-	if IsURL(inputfile) {
-		// URL from remote
-		resp, err := http.Get(inputfile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-
-		data, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = yaml.Unmarshal(data, &template)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-	} else {
-		// Local file
-		data, err := os.ReadFile(inputfile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = yaml.Unmarshal([]byte(data), &template)
-		if err != nil {
-			log.Fatal(err)
-		}
+	var data []byte
+	data, err := getTemplate(inputfile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = yaml.Unmarshal(data, &template)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	var ds definition.DefinitionStructure
