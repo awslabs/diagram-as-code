@@ -4,9 +4,11 @@
 package ctl
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"os"
+	tmpl "text/template"
 
 	"github.com/awslabs/diagram-as-code/internal/definition"
 	"github.com/awslabs/diagram-as-code/internal/types"
@@ -15,6 +17,9 @@ import (
 )
 
 func getTemplate(inputfile string) ([]byte, error) {
+	var data []byte
+	var err error
+
 	if IsURL(inputfile) {
 		// URL from remote
 		resp, err := http.Get(inputfile)
@@ -23,19 +28,34 @@ func getTemplate(inputfile string) ([]byte, error) {
 		}
 		defer resp.Body.Close()
 
-		data, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return data, nil
+		data, err = io.ReadAll(resp.Body)
 	} else {
 		// Local file
-		data, err := os.ReadFile(inputfile)
-		if err != nil {
-			return nil, err
-		}
-		return data, nil
+		data, err = os.ReadFile(inputfile)
 	}
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func processTemplate(templateData []byte) ([]byte, error) {
+	// Create a new template
+	tmpl, err := tmpl.New("dacfile").Funcs(funcMap).Parse(string(templateData))
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a buffer to store the processed template
+	var processed bytes.Buffer
+
+	// Execute the template with the provided variables
+	err = tmpl.Execute(&processed, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return processed.Bytes(), nil
 }
 
 func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefFile string) {
@@ -44,12 +64,20 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefF
 
 	var template TemplateStruct
 
-	var data []byte
+	// Get the template content
 	data, err := getTemplate(inputfile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = yaml.Unmarshal(data, &template)
+
+	// Process the template with variables
+	processedData, err := processTemplate(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Unmarshal the processed YAML
+	err = yaml.Unmarshal(processedData, &template)
 	if err != nil {
 		log.Fatal(err)
 	}
