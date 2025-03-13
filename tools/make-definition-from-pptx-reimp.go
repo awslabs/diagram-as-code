@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -539,8 +540,16 @@ func generateYAML(url string, imageMappings map[string]string) error {
 	// Write Main and related sections
 	writeInitialDefinitions(f, url)
 
+	// Get all keys and sort them
+	mappingsKeys := make([]string, 0, len(imageMappings))
+	for k := range imageMappings {
+		mappingsKeys = append(mappingsKeys, k)
+	}
+	sort.Strings(mappingsKeys)
+
 	// Write Preset type definitions (with quotes)
-	for name, imagePath := range imageMappings {
+	for _, name := range mappingsKeys {
+		imagePath := imageMappings[name]
 		// Remove any (number) from the display title but keep the original name as the key
 		displayName := regexp.MustCompile(`\([0-9]\)`).ReplaceAllString(name, "")
 		displayName = strings.TrimSpace(displayName) // Remove any extra spaces
