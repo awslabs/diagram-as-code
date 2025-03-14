@@ -41,35 +41,41 @@ Diagram:
       Type: AWS::Diagram::Resource
       Preset: "User"
 
-{{/* VPC iteration */}}
-{{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
+    {{/* VPC iteration */}}
+    {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
     # {{$vpc_identifier}}
     {{$vpc_identifier}}:
       Type: AWS::EC2::VPC
       Direction: {{if lt $i 2}} vertical {{else}} horizontal {{end}}
-      Title: "{{$vpc_identifier}} (10.0.0.0/16)"
+      Title: "{{$vpc_identifier}} (10.{{$i}}.0.0/16)"
       Children:
         - {{$vpc_identifier}}AvailabilityZone1
         - {{$vpc_identifier}}AvailabilityZone2
       BorderChildren:
-        - Position: {{printf "%s" (index (mkarr "E" "W" "N") $i)}}
+        - Position: {{index (mkarr "E" "W" "N") $i}}
           Resource: {{$vpc_identifier}}TGWAttach
       {{if lt $i 2}}
-        - Position: {{printf "%s" (index (mkarr "W" "E" "S") $i)}}
+        - Position: {{index (mkarr "W" "E" "S") $i}}
           Resource: {{$vpc_identifier}}IGW
       {{end}}
 
-{{/* Availability Zones iteration */}}
-{{- range $j := seq 2}}{{$az := (add $j 1)}}
+    {{/* Availability Zones iteration */}}
+    {{- range $j := seq 2}}{{$az := (add $j 1)}}
     {{$vpc_identifier}}AvailabilityZone{{$az}}:
       Type: AWS::EC2::AvailabilityZone
       Direction: {{if lt $i 2}} horizontal {{else}} vertical {{end}}
       Title: Availability Zone {{$az}}
       Children:
-        - {{if eq $i 0}}{{$vpc_identifier}}PublicSubnet{{$az}}{{end}}
+        {{if eq $i 0}}
+        - {{$vpc_identifier}}PublicSubnet{{$az}}
+        {{end}}
         - {{$vpc_identifier}}TransitSubnet{{$az}}
-        - {{if eq $i 1}}{{$vpc_identifier}}PublicSubnet{{$az}}{{end}}
-        - {{if eq $i 2}}{{$vpc_identifier}}FirewallSubnet{{$az}}{{end}}
+        {{if eq $i 1}}
+        - {{$vpc_identifier}}PublicSubnet{{$az}}
+        {{end}}
+        {{if eq $i 2}}
+        - {{$vpc_identifier}}FirewallSubnet{{$az}}
+        {{end}}
 
     {{/* Public Subnet (VPC1~2) */}}
     {{if lt $i 2}}
@@ -107,7 +113,7 @@ Diagram:
       Title: "Firewall Endpoint"
     {{end}}
  
-{{end}}
+    {{end}}
 
     {{$vpc_identifier}}TGWAttach:
       Type: AWS::EC2::TransitGatewayAttachment
@@ -119,14 +125,14 @@ Diagram:
       IconFill:
         Type: rect
     {{end}}
-{{end}}
+    {{end}}
 
   Links:
-{{/* VPC iteration */}}
-{{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
+    {{/* VPC iteration */}}
+    {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
     - Source: TransitGateway
-      SourcePosition: {{printf "%s" (index (mkarr "W" "E" "S") $i)}}
+      SourcePosition: {{index (mkarr "W" "E" "S") $i}}
       Target: {{$vpc_identifier}}TGWAttach
-      TargetPosition: {{printf "%s" (index (mkarr "E" "W" "N") $i)}}
+      TargetPosition: {{index (mkarr "E" "W" "N") $i}}
       LinkType: double
-{{end}}
+    {{end}}

@@ -43,6 +43,7 @@ func processTemplate(templateData []byte) ([]byte, error) {
 	// Create a new template
 	tmpl, err := tmpl.New("dacfile").Funcs(funcMap).Parse(string(templateData))
 	if err != nil {
+		log.Infof("%v", tmpl)
 		return nil, err
 	}
 
@@ -71,6 +72,9 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string) {
 
 	// Process the template with variables
 	processedData, err := processTemplate(data)
+	if processedData != nil {
+		log.Infof("processed template: \n%s", string(processedData))
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
