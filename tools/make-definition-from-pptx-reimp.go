@@ -561,7 +561,16 @@ func generateYAML(url string, imageMappings map[string]string) error {
 		fmt.Fprintf(f, "      Path: %q\n", imagePath)
 		fmt.Fprintln(f, "    Label:")
 		fmt.Fprintf(f, "      Title: %q\n", displayName) // Use the clean display name here
-		fmt.Fprintln(f, "      Color: \"rgba(0, 0, 0, 255)\"\n")
+		fmt.Fprintln(f, "      Color: \"rgba(0, 0, 0, 255)\"")
+		switch name {
+		case "Public subnet":
+			fmt.Fprintln(f, "    Border:")
+			fmt.Fprintln(f, "      Color: \"rgba(122, 161, 22, 255)\"")
+		case "Private subnet":
+			fmt.Fprintln(f, "    Border:")
+			fmt.Fprintln(f, "      Color: \"rgba(0, 164, 166, 255)\"")
+		}
+		fmt.Fprintf(f, "\n")
 	}
 
 	// Read and process mappings file
@@ -749,6 +758,16 @@ func writeInitialDefinitions(f *os.File, url string) {
     Border:
       Color: "rgba(122, 161, 22, 255)"
 
+  "Generic group":
+    Type: Preset
+    Border:
+      Type: "dashed"
+      Color: "rgba(125, 137, 152, 255)"
+    HeaderAlign: center
+    Label:
+      Title: "Generic group"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Diagram::DataCenter:
     Type: Group
     Icon:
@@ -756,7 +775,7 @@ func writeInitialDefinitions(f *os.File, url string) {
       Path: "image51.png"
     Label:
       Title: "Corporate data center"
-      Color: "rgba(29, 137, 0, 255)"
+      Color: "rgba(0, 0, 0, 255)"
     Fill:
       Color: "rgba(0, 0, 0, 0)"
     Border:
