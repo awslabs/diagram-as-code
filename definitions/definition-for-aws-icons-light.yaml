@@ -154,6 +154,16 @@ Definitions:
     Border:
       Color: "rgba(122, 161, 22, 255)"
 
+  "Generic group":
+    Type: Preset
+    Border:
+      Type: "dashed"
+      Color: "rgba(125, 137, 152, 255)"
+    HeaderAlign: center
+    Label:
+      Title: "Generic group"
+      Color: "rgba(0, 0, 0, 255)"
+
   AWS::Diagram::DataCenter:
     Type: Group
     Icon:
@@ -161,7 +171,7 @@ Definitions:
       Path: "image51.png"
     Label:
       Title: "Corporate data center"
-      Color: "rgba(29, 137, 0, 255)"
+      Color: "rgba(0, 0, 0, 255)"
     Fill:
       Color: "rgba(0, 0, 0, 0)"
     Border:
@@ -6389,6 +6399,8 @@ Definitions:
     Label:
       Title: "Private subnet"
       Color: "rgba(0, 0, 0, 255)"
+    Border:
+      Color: "rgba(0, 164, 166, 255)"
 
   "Programming language":
     Type: Preset
@@ -6425,6 +6437,8 @@ Definitions:
     Label:
       Title: "Public subnet"
       Color: "rgba(0, 0, 0, 255)"
+    Border:
+      Color: "rgba(122, 161, 22, 255)"
 
   "PyTorch on AWS":
     Type: Preset
