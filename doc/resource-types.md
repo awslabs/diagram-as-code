@@ -35,16 +35,18 @@ Diagram:
 An essential resource type that represents a single resource or group. The following attributes are defined for the resource, and it is possible to customize the decoration with these attributes.
 `AWS::Diagram::Resource` type are used implicitly from other predefined types, but you can specify `AWS::Diagram::Resource` explicitly and create custom resources.
 
-| Attribute | Type     | Default Value                              | Description                                                             |
-| --------- | -------- | ------------------------------------------ | ----------------------------------------------------------------------- |
-| Icon      | string   | ` `                                        | Icon file path                                                          |
-| IconFill  | IconFill | `Type: none, Color: rgba(255,255,255,255)` | Filling icon background                                                 |
-| Direction | string   | `horizontal`                               | vertical: `left`,`center`,`right` horizontal: `top`, `center`, `bottom` |
-| Preset    | string   | ` `                                        | Override resource attributes from preset                                |
-| Align     | string   | `center`                                   | `vertical`, `horizontal`                                                |
-| FillColor | string   | `rgba(0,0,0,0)`                            |                                                                         |
-| Title     | string   | ` `                                        |                                                                         |
-| Children  | []string | `[]`                                       |                                                                         |
+| Attribute   | Type     | Default Value                              | Description                                                             |
+| ----------- | -------- | ------------------------------------------ | ----------------------------------------------------------------------- |
+| Icon        | string   | ` `                                        | Icon file path                                                          |
+| IconFill    | IconFill | `Type: none, Color: rgba(255,255,255,255)` | Filling icon background                                                 |
+| Direction   | string   | `horizontal`                               | vertical: `left`,`center`,`right` horizontal: `top`, `center`, `bottom` |
+| Preset      | string   | ` `                                        | Override resource attributes from preset                                |
+| Align       | string   | `center`                                   | `vertical`, `horizontal`                                                |
+| FillColor   | string   | `rgba(0,0,0,0)`                            | Only group.                                                             |
+| BorderColor | string   | `rgba(0,0,0,0)`                            |                                                                         |
+| Title       | string   | ` `                                        |                                                                         |
+| HeaderAlign | string   | `left`                                     | Only group. You can align icon and title to left/center/right.          |
+| Children    | []string | `[]`                                       |                                                                         |
 
 #### Single resource
 

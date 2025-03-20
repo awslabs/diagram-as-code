@@ -51,11 +51,13 @@ type Resource struct {
 	Direction      string           `yaml:"Direction"`
 	Preset         string           `yaml:"Preset"`
 	Align          string           `yaml:"Align"`
+	HeaderAlign    string           `yaml:"HeaderAlign"`
 	FillColor      string           `yaml:"FillColor"`
 	Title          string           `yaml:"Title"`
 	TitleColor     string           `yaml:"TitleColor"`
 	Font           string           `yaml:"Font"`
 	Children       []string         `yaml:"Children"`
+	BorderColor    string           `yaml:"BorderColor"`
 	BorderChildren []BorderChild    `yaml:"BorderChildren"`
 }
 
@@ -241,6 +243,14 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 			if border := def.Border; border != nil {
 				resources[k].SetBorderColor(stringToColor(border.Color))
+				switch border.Type {
+				case "straight":
+					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+				case "dashed":
+					resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
+				default:
+					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+				}
 			}
 			if label := def.Label; label != nil {
 				if label.Title != "" {
@@ -253,7 +263,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if label.Font != "" {
 					resources[k].SetLabel(nil, nil, &label.Font)
 				}
-
+			}
+			if headerAlign := def.HeaderAlign; headerAlign != "" {
+				resources[k].SetHeaderAlign(headerAlign)
 			}
 			if icon := def.Icon; icon != nil {
 				if def.CacheFilePath == "" {
@@ -293,6 +305,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			c := stringToColor(v.TitleColor)
 			resources[k].SetLabel(nil, &c, nil)
 		}
+		if v.HeaderAlign != "" {
+			resources[k].SetHeaderAlign(v.HeaderAlign)
+		}
 		if v.Font != "" {
 			resources[k].SetLabel(nil, nil, &v.Font)
 		}
@@ -304,6 +319,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 		if v.FillColor != "" {
 			resources[k].SetFillColor(stringToColor(v.FillColor))
+		}
+		if v.BorderColor != "" {
+			resources[k].SetBorderColor(stringToColor(v.BorderColor))
 		}
 	}
 
