@@ -36,7 +36,9 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 		src := func() string {
 			switch v.Type {
 			case "Resource", "Preset":
-				return v.Icon.Source
+				if v.Icon != nil {
+					return v.Icon.Source
+				}
 			case "Directory":
 				return v.Directory.Source
 			case "Zip":
@@ -44,8 +46,10 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 			}
 			return ""
 		}()
-		sourceDefinition := b.Definitions[src]
-		v.Parent = sourceDefinition
+		if src != "" {
+			sourceDefinition := b.Definitions[src]
+			v.Parent = sourceDefinition
+		}
 		b.Definitions[k] = v
 	}
 
