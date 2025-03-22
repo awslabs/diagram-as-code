@@ -66,7 +66,7 @@ type BorderChild struct {
 	Resource *Resource
 }
 
-func defaultResourceValues(hasChild bool) Resource {
+func defaultResourceValues(hasChild bool,setIcon bool) Resource {
 	if hasChild {
 		return Resource{ // resource has children and show as Group
 			bindings: &image.Rectangle{
@@ -78,14 +78,26 @@ func defaultResourceValues(hasChild bool) Resource {
 			borderColor: &color.RGBA{0, 0, 0, 255},
 		}
 	} else {
-		return Resource{ // resource has not children and show as Resource
-			bindings: &image.Rectangle{
-				image.Point{0, 0},
-				image.Point{64, 64},
-			},
-			margin:      &Margin{30, 100, 30, 100},
-			padding:     &Padding{0, 0, 0, 0},
-			borderColor: &color.RGBA{0, 0, 0, 0},
+		if setIcon {
+			return Resource{ // resource has not children and show as Resource
+				bindings: &image.Rectangle{
+					image.Point{0, 0},
+					image.Point{64, 64},
+				},
+				margin:      &Margin{30, 100, 30, 100},
+				padding:     &Padding{0, 0, 0, 0},
+				borderColor: &color.RGBA{0, 0, 0, 0},
+			}
+		} else {
+			return Resource{ // resource has not children and icon, show as TextBox
+				bindings: &image.Rectangle{
+					image.Point{0, 0},
+					image.Point{0, 0},
+				},
+				margin:      &Margin{0, 0, 0, 0},
+				padding:     &Padding{0, 0, 0, 0},
+				borderColor: &color.RGBA{0, 0, 0, 0},
+			}
 		}
 	}
 }
@@ -286,25 +298,29 @@ func (r *Resource) Scale(parent *Resource) {
 	}
 	hasChildren := len(r.children) != 0
 	hasBorderChildren := len(r.borderChildren) != 0
+	hasIcon := r.iconImage.Bounds().Max.X != 0
+	log.Infof("hasIcon: %t\n", hasIcon)
 	textWidth := 0
 	textHeight := 0
 	if r.label != "" {
+		textHeight = 10
 		fontFace := r.prepareFontFace(hasChildren, parent)
 		texts := strings.Split(r.label, "\n")
 		for _, line := range texts {
 			textBindings, _ := font.BoundString(fontFace, line)
-			textWidth = max(textWidth, textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil())
-			textHeight += textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+			textWidth = max(textWidth, textBindings.Max.X.Floor() - textBindings.Min.X.Ceil() + 20)
+			textHeight += textBindings.Max.Y.Floor() - textBindings.Min.Y.Ceil() + 10
 		}
 	}
 	if r.bindings == nil {
-		r.bindings = defaultResourceValues(hasChildren).bindings
+		r.bindings = defaultResourceValues(hasChildren, hasIcon).bindings
 	}
 	if r.margin == nil {
-		r.margin = defaultResourceValues(hasChildren).margin
+		r.margin = defaultResourceValues(hasChildren, hasIcon).margin
 		// Expand bindings to fit text size
 		if !hasChildren {
 			// Resource (no child)
+			log.Infof("textHeight: %d\n", textHeight)
 			r.margin.Bottom += textHeight
 			_m := (textWidth - r.iconBounds.Dx()) / 2
 			r.margin.Left = maxInt(r.margin.Left, _m)
@@ -312,7 +328,7 @@ func (r *Resource) Scale(parent *Resource) {
 		}
 		if hasChildren && hasBorderChildren {
 			addMargin := Margin{}
-			_m := defaultResourceValues(false)
+			_m := defaultResourceValues(false, hasIcon)
 			for _, x := range r.borderChildren {
 				switch x.Position / 4 {
 				case 0:
@@ -332,10 +348,10 @@ func (r *Resource) Scale(parent *Resource) {
 		}
 	}
 	if r.padding == nil {
-		r.padding = defaultResourceValues(hasChildren).padding
+		r.padding = defaultResourceValues(hasChildren, hasIcon).padding
 		if hasChildren && hasBorderChildren {
 			addPadding := Padding{}
-			_m := defaultResourceValues(true)
+			_m := defaultResourceValues(true, hasIcon)
 			for _, x := range r.borderChildren {
 				switch x.Position / 4 {
 				case 0:
@@ -355,7 +371,7 @@ func (r *Resource) Scale(parent *Resource) {
 		}
 	}
 	if r.borderColor == nil {
-		r.borderColor = defaultResourceValues(hasChildren).borderColor
+		r.borderColor = defaultResourceValues(hasChildren, hasIcon).borderColor
 	}
 
 	// Expand bindings to fit text size
@@ -528,8 +544,9 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 	}
 	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
 
+	hasIcon := r.iconImage.Bounds().Max.X != 0
 	if parent != nil {
-		r.drawLabel(img, parent, len(r.children) > 0)
+		r.drawLabel(img, parent, len(r.children) > 0, hasIcon)
 	}
 
 	for _, subResource := range r.children {
@@ -616,7 +633,7 @@ func (r *Resource) drawMargin(img *image.RGBA) {
 	}
 }
 
-func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
+func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild, hasIcon bool) {
 	face := r.prepareFontFace(hasChild, parent)
 
 	texts := strings.Split(r.label, "\n")
@@ -625,11 +642,11 @@ func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild bool) {
 	for _, line := range texts {
 		textBindings, _ := font.BoundString(face, line)
 
-		textWidth := textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil()
-		textHeight := textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
+		textWidth := textBindings.Max.X.Floor() - textBindings.Min.X.Ceil()
+		textHeight := textBindings.Max.Y.Floor() - textBindings.Min.Y.Ceil()
 
-		w := textBindings.Max.X - textBindings.Min.X + fixed.I(1)
-		h := textBindings.Max.Y - textBindings.Min.Y + fixed.I(1) + fixed.I(lineOffset)
+		w := textBindings.Max.X - textBindings.Min.X
+		h := textBindings.Max.Y - textBindings.Min.Y + fixed.I(lineOffset)
 
 		p := r.bindings.Min.Add(image.Point{0, r.iconBounds.Max.Y})
 
