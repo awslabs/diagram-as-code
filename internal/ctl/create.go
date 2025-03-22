@@ -164,8 +164,6 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			resources[k] = new(types.VerticalStack).Init()
 		case "AWS::Diagram::HorizontalStack":
 			resources[k] = new(types.HorizontalStack).Init()
-		case "AWS::Diagram::TextBox":
-			resources[k] = new(types.Resource).Init()
 		default:
 			def, ok := ds.Definitions[v.Type]
 			if !ok {
