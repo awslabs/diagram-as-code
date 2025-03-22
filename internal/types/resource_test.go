@@ -13,11 +13,11 @@ func TestResource(t *testing.T) {
 
 	// Test resource has not children
 	r.Scale(nil)
-	if r.GetBindings() != image.Rect(0, 0, 64, 64) {
-		t.Errorf("Init: expected bindings to be (0, 0, 64, 64), got %v", r.GetBindings())
+	if r.GetBindings() != image.Rect(0, 0, 0, 0) {
+		t.Errorf("Init: expected bindings to be (0, 0, 0, 0), got %v", r.GetBindings())
 	}
-	if r.GetMargin() != (Margin{30, 100, 30, 100}) {
-		t.Errorf("Init: expected margin to be (30, 100, 30, 100), got %v", r.GetMargin())
+	if r.GetMargin() != (Margin{0, 0, 0, 0}) {
+		t.Errorf("Init: expected margin to be (0, 0, 0, 0), got %v", r.GetMargin())
 	}
 	if r.GetPadding() != (Padding{0, 0, 0, 0}) {
 		t.Errorf("Init: expected padding to be (0, 0, 0, 0), got %v", r.GetPadding())

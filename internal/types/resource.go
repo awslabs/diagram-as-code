@@ -20,7 +20,7 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-const DEBUG_LAYOUT = true
+const DEBUG_LAYOUT = false
 
 type BORDER_TYPE int
 const (
@@ -299,7 +299,7 @@ func (r *Resource) Scale(parent *Resource) {
 	hasChildren := len(r.children) != 0
 	hasBorderChildren := len(r.borderChildren) != 0
 	hasIcon := r.iconImage.Bounds().Max.X != 0
-	log.Infof("hasIcon: %d\n", hasIcon)
+	log.Infof("hasIcon: %t\n", hasIcon)
 	textWidth := 0
 	textHeight := 0
 	if r.label != "" {
