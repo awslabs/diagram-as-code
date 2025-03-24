@@ -38,9 +38,12 @@ func main() {
 			}
 
 			inputFile := args[0]
-			if _, err := os.Stat(inputFile); os.IsNotExist(err) {
-				fmt.Printf("awsdac: Input file '%s' does not exist.\n", inputFile)
-				os.Exit(1)
+			if !ctl.IsURL(inputFile) {
+
+				if _, err := os.Stat(inputFile); os.IsNotExist(err) {
+					fmt.Printf("awsdac: Input file '%s' does not exist.\n", inputFile)
+					os.Exit(1)
+				}
 			}
 
 			return nil
