@@ -20,6 +20,7 @@ func main() {
 	var verbose bool
 	var cfnTemplate bool
 	var generateDacFile bool
+	var overrideDefFile string
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -62,7 +63,7 @@ func main() {
 			if cfnTemplate {
 				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile)
 			} else {
-				ctl.CreateDiagramFromDacFile(inputFile, &outputFile)
+				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, overrideDefFile)
 			}
 
 		},
@@ -72,6 +73,8 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 	rootCmd.PersistentFlags().BoolVarP(&cfnTemplate, "cfn-template", "c", false, "[beta] Create diagram from CloudFormation template")
 	rootCmd.PersistentFlags().BoolVarP(&generateDacFile, "dac-file", "d", false, "[beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template")
+	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
+
 
 	rootCmd.Execute()
 }
