@@ -14,7 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func CreateDiagramFromDacFile(inputfile string, outputfile *string) {
+func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefFile string) {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -54,7 +54,28 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string) {
 	var resources map[string]*types.Resource = make(map[string]*types.Resource)
 
 	log.Info("Load DefinitionFiles section")
-	loadDefinitionFiles(&template, &ds)
+	if overrideDefFile != "" {
+		var overrideDefTemplate TemplateStruct
+		if IsURL(overrideDefFile) {
+			log.Infof("As given overrideDefFile, use %s as URL instead of %v", overrideDefFile, &template.DefinitionFiles)
+			var defFile = DefinitionFile{
+				Type: "URL",
+				Url: overrideDefFile,
+			}
+			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+		} else {
+			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", overrideDefFile, &template.DefinitionFiles)
+			var defFile = DefinitionFile{
+				Type: "LocalFile",
+				LocalFile: overrideDefFile,
+			}
+			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+		}
+		loadDefinitionFiles(&overrideDefTemplate, &ds)
+		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
+	} else {
+		loadDefinitionFiles(&template, &ds)
+	}
 
 	log.Info("Load Resources section")
 	loadResources(&template, ds, resources)
