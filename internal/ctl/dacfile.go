@@ -59,7 +59,7 @@ func processTemplate(templateData []byte) ([]byte, error) {
 	return processed.Bytes(), nil
 }
 
-func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefFile string) {
+func CreateDiagramFromDacFile(inputfile string, outputfile *string, isGoTemplate bool, overrideDefFile string) {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -72,17 +72,25 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefF
 	}
 
 	// Process the template with variables
-	processedData, err := processTemplate(data)
-	if processedData != nil {
-		log.Infof("processed template: \n%s", string(processedData))
-	}
-	if err != nil {
-		log.Fatal(err)
+	var processedData []byte
+	if isGoTemplate {
+		processedData, err = processTemplate(data)
+		if processedData != nil {
+			log.Infof("processed template: \n%s", string(processedData))
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		processedData = data
 	}
 
 	// Unmarshal the processed YAML
 	err = yaml.Unmarshal(processedData, &template)
 	if err != nil {
+		if ! isGoTemplate {
+			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
+		}
 		log.Fatal(err)
 	}
 
