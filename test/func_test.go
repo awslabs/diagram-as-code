@@ -124,7 +124,8 @@ func TestFunctionality(t *testing.T) {
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
 				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true)
 			} else {
-				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, "../definitions/definition-for-aws-icons-light.yaml")
+				isGoTemplate := strings.HasSuffix(file.Name(), "-tmpl.yaml")
+				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, isGoTemplate, "../definitions/definition-for-aws-icons-light.yaml")
 			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			tmpOutputDiffFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", "-diff.png", 1))
