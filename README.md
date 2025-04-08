@@ -25,14 +25,18 @@ $ brew install awsdac
 ## Usage
 
 ```
-awsdac <input filename> [flags]
+Usage:
+  awsdac <input filename> [flags]
 
 Flags:
-  -c, --cfn-template    [beta] Create diagram from CloudFormation template
-  -d, --dac-file        [beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template
-  -h, --help            help for awsdac
-  -o, --output string   Output file name (default "output.png")
-  -v, --verbose         Enable verbose logging
+  -c, --cfn-template               [beta] Create diagram from CloudFormation template
+  -d, --dac-file                   [beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template
+  -h, --help                       help for awsdac
+  -o, --output string              Output file name (default "output.png")
+      --override-def-file string   For testing purpose, override DefinitionFiles to another url/local file
+  -t, --template                   Processes the input file as a template according to text/template.
+  -v, --verbose                    Enable verbose logging
+      --version                    version for awsdac
 ```
 
 ### Example

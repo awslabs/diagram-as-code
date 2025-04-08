@@ -4,9 +4,11 @@
 package ctl
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"os"
+	tmpl "text/template"
 
 	"github.com/awslabs/diagram-as-code/internal/definition"
 	"github.com/awslabs/diagram-as-code/internal/types"
@@ -14,40 +16,82 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func CreateDiagramFromDacFile(inputfile string, outputfile *string, overrideDefFile string) {
-
-	log.Infof("input file path: %s\n", inputfile)
-
-	var template TemplateStruct
+func getTemplate(inputfile string) ([]byte, error) {
+	var data []byte
+	var err error
 
 	if IsURL(inputfile) {
 		// URL from remote
 		resp, err := http.Get(inputfile)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		defer resp.Body.Close()
 
-		data, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = yaml.Unmarshal(data, &template)
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		data, err = io.ReadAll(resp.Body)
 	} else {
 		// Local file
-		data, err := os.ReadFile(inputfile)
+		data, err = os.ReadFile(inputfile)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func processTemplate(templateData []byte) ([]byte, error) {
+	// Create a new template
+	tmpl, err := tmpl.New("dacfile").Funcs(funcMap).Parse(string(templateData))
+	if err != nil {
+		log.Infof("%v", tmpl)
+		return nil, err
+	}
+
+	// Create a buffer to store the processed template
+	var processed bytes.Buffer
+
+	// Execute the template with the provided variables
+	err = tmpl.Execute(&processed, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return processed.Bytes(), nil
+}
+
+func CreateDiagramFromDacFile(inputfile string, outputfile *string, isGoTemplate bool, overrideDefFile string) {
+
+	log.Infof("input file path: %s\n", inputfile)
+
+	var template TemplateStruct
+
+	// Get the template content
+	data, err := getTemplate(inputfile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Process the template with variables
+	var processedData []byte
+	if isGoTemplate {
+		processedData, err = processTemplate(data)
+		if processedData != nil {
+			log.Infof("processed template: \n%s", string(processedData))
+		}
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = yaml.Unmarshal([]byte(data), &template)
-		if err != nil {
-			log.Fatal(err)
+	} else {
+		processedData = data
+	}
+
+	// Unmarshal the processed YAML
+	err = yaml.Unmarshal(processedData, &template)
+	if err != nil {
+		if ! isGoTemplate {
+			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
 		}
+		log.Fatal(err)
 	}
 
 	var ds definition.DefinitionStructure

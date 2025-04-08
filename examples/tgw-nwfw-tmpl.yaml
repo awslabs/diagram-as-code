@@ -1,0 +1,138 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+    #- Type: LocalFile
+    #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Align: center
+      Children:
+        - HorizontalStack1
+        - HorizontalStack2
+
+    HorizontalStack1:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - VPC1
+        - TransitGateway
+        - VPC2
+
+    TransitGateway:
+      Type: AWS::EC2::TransitGateway
+
+    HorizontalStack2:
+      Type: AWS::Diagram::HorizontalStack
+      Align: bottom
+      Children:
+        - VPC3
+
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: "User"
+
+    {{/* VPC iteration */}}
+    {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
+    # {{$vpc_identifier}}
+    {{$vpc_identifier}}:
+      Type: AWS::EC2::VPC
+      Direction: {{if lt $i 2}} vertical {{else}} horizontal {{end}}
+      Title: "{{$vpc_identifier}} (10.{{$i}}.0.0/16)"
+      Children:
+        - {{$vpc_identifier}}AvailabilityZone1
+        - {{$vpc_identifier}}AvailabilityZone2
+      BorderChildren:
+        - Position: {{index (mkarr "E" "W" "N") $i}}
+          Resource: {{$vpc_identifier}}TGWAttach
+      {{if lt $i 2}}
+        - Position: {{index (mkarr "W" "E" "S") $i}}
+          Resource: {{$vpc_identifier}}IGW
+      {{end}}
+
+    {{/* Availability Zones iteration */}}
+    {{- range $j := seq 2}}{{$az := (add $j 1)}}
+    {{$vpc_identifier}}AvailabilityZone{{$az}}:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: {{if lt $i 2}} horizontal {{else}} vertical {{end}}
+      Title: Availability Zone {{$az}}
+      Children:
+        {{if eq $i 0}}
+        - {{$vpc_identifier}}PublicSubnet{{$az}}
+        {{end}}
+        - {{$vpc_identifier}}TransitSubnet{{$az}}
+        {{if eq $i 1}}
+        - {{$vpc_identifier}}PublicSubnet{{$az}}
+        {{end}}
+        {{if eq $i 2}}
+        - {{$vpc_identifier}}FirewallSubnet{{$az}}
+        {{end}}
+
+    {{/* Public Subnet (VPC1~2) */}}
+    {{if lt $i 2}}
+    {{$vpc_identifier}}PublicSubnet{{$az}}:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - {{$vpc_identifier}}PublicSubnet{{$az}}Instance
+
+    {{$vpc_identifier}}PublicSubnet{{$az}}Instance:
+      Type: AWS::EC2::Instance
+    {{end}}
+
+    {{/* Transit Subnet (VPC1~3) */}}
+    {{$vpc_identifier}}TransitSubnet{{$az}}:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - {{$vpc_identifier}}TransitSubnet{{$az}}Eni
+    {{$vpc_identifier}}TransitSubnet{{$az}}Eni:
+      Type: AWS::EC2::NetworkInterface
+      Title: "TGW ENI"
+
+    {{/* Firewall Subnet (VPC3) */}}
+    {{if eq $i 2}}
+    {{$vpc_identifier}}FirewallSubnet{{$az}}:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Firewall Subnet"
+      FillColor: "rgba(150,115,166,75)"
+      Children:
+        - {{$vpc_identifier}}FirewallSubnet{{$az}}Vpce
+    {{$vpc_identifier}}FirewallSubnet{{$az}}Vpce:
+      Type: AWS::EC2::VPCEndpoint
+      Title: "Firewall Endpoint"
+    {{end}}
+ 
+    {{end}}
+
+    {{$vpc_identifier}}TGWAttach:
+      Type: AWS::EC2::TransitGatewayAttachment
+      IconFill:
+        Type: rect
+    {{if lt $i 2}}
+    {{$vpc_identifier}}IGW:
+      Type: AWS::EC2::InternetGateway
+      IconFill:
+        Type: rect
+    {{end}}
+    {{end}}
+
+  Links:
+    {{/* VPC iteration */}}
+    {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
+    - Source: TransitGateway
+      SourcePosition: {{index (mkarr "W" "E" "S") $i}}
+      Target: {{$vpc_identifier}}TGWAttach
+      TargetPosition: {{index (mkarr "E" "W" "N") $i}}
+      LinkType: double
+    {{end}}
