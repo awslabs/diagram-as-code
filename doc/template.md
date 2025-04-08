@@ -1,6 +1,7 @@
 # Templating
 awsdac supports the Go standard [text/template](https://pkg.go.dev/text/template) package. To process templates in this format, enable the -t (--template) flag in awsdac command.
 When this flag is enabled, awsdac first expands the strings in the file as a template, and then processes it as a YAML file. Therefore, to create a template, you need to be aware of the expanded YAML format, so it is a slightly advanced feature. However, text/template allows repetition, variable expansion, and conditional branching, which can compress lines of code and we can provide more flexibility in custom functions.
+To use templating, run `awsdac -t <template>`
 
 ## Custom functions
 awsdac defines the following custom functions. The custom functions are defined in [custom-func.go](https://github.com/awslabs/diagram-as-code/blob/main/internal/ctl/custom-func.go).
