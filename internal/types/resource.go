@@ -5,6 +5,7 @@ package types
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"io"
@@ -283,8 +284,17 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
 	return truetype.NewFace(ft, &opt)
 }
 
-func (r *Resource) Scale(parent *Resource) {
+func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	log.Infof("Scale %s", r.label)
+
+	if visited == nil {
+		visited = make(map[*Resource]bool)
+	}
+	if visited[r] {
+		return fmt.Errorf("Cycle detected in resource tree at %s", r.label)
+	}
+	visited[r] = true
+
 	var prev *Resource
 	b := image.Rectangle{
 		image.Point{
@@ -394,7 +404,11 @@ func (r *Resource) Scale(parent *Resource) {
 	}
 
 	for _, subResource := range r.children {
-		subResource.Scale(parent)
+		err := subResource.Scale(parent, visited)
+		if err != nil {
+			return err
+		}
+
 		bindings := subResource.GetBindings()
 		margin := subResource.GetMargin()
 		if prev != nil {
@@ -470,13 +484,17 @@ func (r *Resource) Scale(parent *Resource) {
 		if err != nil {
 			panic(err)
 		}
-		borderChild.Resource.Scale(parent) // to initialize default values
+		err = borderChild.Resource.Scale(parent, visited) // to initialize default values
+		if err != nil {
+			return err
+		}
 		bindings := borderChild.Resource.GetBindings()
 		borderChild.Resource.Translation(
 			pt.X-(bindings.Min.X+bindings.Max.X)/2,
 			pt.Y-(bindings.Min.Y+bindings.Max.Y)/2,
 		)
 	}
+	return nil
 }
 
 func (r *Resource) Translation(dx, dy int) {

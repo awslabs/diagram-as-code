@@ -102,7 +102,10 @@ type LinkLabel struct {
 func createDiagram(resources map[string]*types.Resource, outputfile *string) {
 
 	log.Info("--- Draw diagram ---")
-	resources["Canvas"].Scale(nil)
+	err := resources["Canvas"].Scale(nil, nil)
+	if err != nil {
+		log.Fatalf("Error scaling diagram: %v", err)
+	}
 	resources["Canvas"].ZeroAdjust()
 	img := resources["Canvas"].Draw(nil, nil)
 
