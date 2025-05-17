@@ -121,11 +121,14 @@ func TestFunctionality(t *testing.T) {
 				t.Errorf("Cannot create directory(%s): %v", tmpOutputDir, err)
 			}
 			tmpOutputFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", ".png", 1))
+			opts := ctl.CreateOptions {
+				IsGoTemplate:  strings.HasSuffix(file.Name(), "-tmpl.yaml"),
+				OverrideDefFile: "../definitions/definition-for-aws-icons-light.yaml",
+			}
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
-				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true)
+				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts)
 			} else {
-				isGoTemplate := strings.HasSuffix(file.Name(), "-tmpl.yaml")
-				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, isGoTemplate, "../definitions/definition-for-aws-icons-light.yaml")
+				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, &opts)
 			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			tmpOutputDiffFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", "-diff.png", 1))
