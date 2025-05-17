@@ -99,6 +99,11 @@ type LinkLabel struct {
 	Font  *string `yaml:"Font"`
 }
 
+type CreateOptions struct {
+	IsGoTemplate bool
+	OverrideDefFile string
+}
+
 func createDiagram(resources map[string]*types.Resource, outputfile *string) {
 
 	log.Info("--- Draw diagram ---")
@@ -462,3 +467,5 @@ func IsURL(str string) bool {
 	}
 	return false
 }
+
+

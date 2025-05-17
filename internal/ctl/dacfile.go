@@ -59,7 +59,7 @@ func processTemplate(templateData []byte) ([]byte, error) {
 	return processed.Bytes(), nil
 }
 
-func CreateDiagramFromDacFile(inputfile string, outputfile *string, isGoTemplate bool, overrideDefFile string) {
+func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -73,7 +73,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, isGoTemplate
 
 	// Process the template with variables
 	var processedData []byte
-	if isGoTemplate {
+	if opts.IsGoTemplate {
 		processedData, err = processTemplate(data)
 		if processedData != nil {
 			log.Infof("processed template: \n%s", string(processedData))
@@ -88,7 +88,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, isGoTemplate
 	// Unmarshal the processed YAML
 	err = yaml.Unmarshal(processedData, &template)
 	if err != nil {
-		if ! isGoTemplate {
+		if ! opts.IsGoTemplate {
 			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
 		}
 		log.Fatal(err)
@@ -98,20 +98,20 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, isGoTemplate
 	var resources map[string]*types.Resource = make(map[string]*types.Resource)
 
 	log.Info("Load DefinitionFiles section")
-	if overrideDefFile != "" {
+	if opts.OverrideDefFile != "" {
 		var overrideDefTemplate TemplateStruct
-		if IsURL(overrideDefFile) {
-			log.Infof("As given overrideDefFile, use %s as URL instead of %v", overrideDefFile, &template.DefinitionFiles)
+		if IsURL(opts.OverrideDefFile) {
+			log.Infof("As given overrideDefFile, use %s as URL instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
 			var defFile = DefinitionFile{
 				Type: "URL",
-				Url: overrideDefFile,
+				Url: opts.OverrideDefFile,
 			}
 			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
 		} else {
-			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", overrideDefFile, &template.DefinitionFiles)
+			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
 			var defFile = DefinitionFile{
 				Type: "LocalFile",
-				LocalFile: overrideDefFile,
+				LocalFile: opts.OverrideDefFile,
 			}
 			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
 		}

@@ -64,7 +64,11 @@ func main() {
 			if cfnTemplate {
 				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile)
 			} else {
-				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, isGoTemplate, overrideDefFile)
+				opts := ctl.CreateOptions{
+					IsGoTemplate: isGoTemplate,
+					OverrideDefFile: overrideDefFile,
+				}
+				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts)
 			}
 
 		},
