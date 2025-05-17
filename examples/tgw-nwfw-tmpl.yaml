@@ -134,5 +134,5 @@ Diagram:
       SourcePosition: {{index (mkarr "W" "E" "S") $i}}
       Target: {{$vpc_identifier}}TGWAttach
       TargetPosition: {{index (mkarr "E" "W" "N") $i}}
-      LinkType: double
+      #LinkType: double # future support
     {{end}}
