@@ -10,7 +10,6 @@ import (
 	"os"
 	tmpl "text/template"
 
-	"golang.org/x/exp/slices"
 	"github.com/awslabs/diagram-as-code/internal/definition"
 	"github.com/awslabs/diagram-as-code/internal/types"
 	log "github.com/sirupsen/logrus"
@@ -87,11 +86,9 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	}
 
 	// Unmarshal the processed YAML
-	dec := yaml.NewDecoder(bytes.NewReader(processedData))
-	dec.KnownFields(true)
-	err = dec.Decode(&template)
+	err = yaml.Unmarshal(processedData, &template)
 	if err != nil {
-    if ! opts.IsGoTemplate && slices.Contains(processedData, '{') {
+		if ! opts.IsGoTemplate && slices.Contains(processedData, '{') {
 			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
 		}
 		log.Fatal(err)
