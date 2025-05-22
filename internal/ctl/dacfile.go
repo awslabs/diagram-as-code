@@ -10,6 +10,7 @@ import (
 	"os"
 	tmpl "text/template"
 
+	"golang.org/x/exp/slices"
 	"github.com/awslabs/diagram-as-code/internal/definition"
 	"github.com/awslabs/diagram-as-code/internal/types"
 	log "github.com/sirupsen/logrus"
