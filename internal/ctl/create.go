@@ -156,8 +156,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 	resources["Canvas"] = new(types.Resource).Init()
 
 	for k, v := range template.Resources {
-		title := v.Title
-
+		// Override order: Definition{Resource Type -> Preset} -> Template
 		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
 		switch v.Type {
 		case "":
@@ -185,9 +184,8 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				def = ds.Definitions[newType]
 
 				// Change the title to indicate the original resource type for fallback icons.
-				if title == "" {
-					v.Title = v.Type
-					title = v.Type
+				if v.Title == "" {
+					resources[k].SetLabel(&v.Type, nil, nil)
 				}
 			}
 			if def.Type == "Resource" {
@@ -244,7 +242,6 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			def, ok := ds.Definitions[v.Preset]
 			if !ok {
 				log.Warnf("Unknown preset %s on %s\n", v.Preset, v.Type)
-				continue
 			}
 			if fill := def.Fill; fill != nil {
 				resources[k].SetFillColor(stringToColor(fill.Color))
@@ -276,12 +273,11 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				resources[k].SetHeaderAlign(headerAlign)
 			}
 			if icon := def.Icon; icon != nil {
-				if def.CacheFilePath == "" {
-					continue
-				}
-				err := resources[k].LoadIcon(def.CacheFilePath)
-				if err != nil {
-					panic(err)
+				if def.CacheFilePath != "" {
+					err := resources[k].LoadIcon(def.CacheFilePath)
+					if err != nil {
+						panic(err)
+					}
 				}
 			}
 		}
@@ -307,7 +303,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 		}
 		if v.Title != "" {
-			resources[k].SetLabel(&title, nil, nil)
+			resources[k].SetLabel(&v.Title, nil, nil)
 		}
 		if v.TitleColor != "" {
 			c := stringToColor(v.TitleColor)
@@ -352,13 +348,12 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 		}
 		for _, child := range v.Children {
 			_, ok := resources[child]
-			if !ok {
+			if ok {
+				log.Infof("Add child(%s) on %s", child, logicalId)
+				resources[logicalId].AddChild(resources[child])
+			} else {
 				log.Warnf("Child `%s` was not found, ignoring it.", child)
-				continue
 			}
-			log.Infof("Add child(%s) on %s", child, logicalId)
-
-			resources[logicalId].AddChild(resources[child])
 		}
 		for _, borderChild := range v.BorderChildren {
 			_, ok := resources[borderChild.Resource]
