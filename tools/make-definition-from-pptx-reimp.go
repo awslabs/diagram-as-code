@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -906,104 +905,46 @@ func processZipFile(url string) (map[string]string, error) {
 }
 
 func getPPTXUrl() (string, error) {
-	fmt.Println("Fetching AWS architecture icons page...")
+	// Fetch the AWS Architecture Icons page
 	resp, err := http.Get("https://aws.amazon.com/architecture/icons/")
 	if err != nil {
-		return "", fmt.Errorf("failed to fetch page: %v", err)
+		return "", fmt.Errorf("failed to fetch AWS Architecture Icons page: %v", err)
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("Reading response body...")
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	fmt.Println("Parsing HTML...")
-	doc, err := html.Parse(bytes.NewReader(body))
+	// Parse the HTML
+	doc, err := html.Parse(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse HTML: %v", err)
 	}
 
-	// Find all script tags with type="application/json"
-	var jsonScripts []string
-	var findJsonScripts func(*html.Node)
-	findJsonScripts = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "script" {
-			for _, attr := range n.Attr {
-				if attr.Key == "type" && attr.Val == "application/json" {
-					if n.FirstChild != nil {
-						jsonScripts = append(jsonScripts, n.FirstChild.Data)
-					}
-				}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			findJsonScripts(c)
-		}
-	}
-	findJsonScripts(doc)
-
-	fmt.Printf("Found %d script tags with type='application/json'\n", len(jsonScripts))
-
-	for i, jsonContent := range jsonScripts {
-		fmt.Printf("\nTrying to parse JSON script %d...\n", i+1)
-
-		var jsonData JsonStructure
-		if err := json.Unmarshal([]byte(jsonContent), &jsonData); err != nil {
-			fmt.Printf("Script %d: JSON parsing failed: %v\n", i+1, err)
-			continue
-		}
-
-		// Check if this JSON has the structure we're looking for
-		if len(jsonData.Data.Items) == 0 {
-			fmt.Printf("Script %d: No items found in data\n", i+1)
-			continue
-		}
-
-		fmt.Printf("Script %d: Successfully parsed JSON with %d items\n", i+1, len(jsonData.Data.Items))
-
-		// Parse the HTML in button1DropdownItems
-		for _, item := range jsonData.Data.Items {
-			htmlContent := item.Fields.Button1DropdownItems
-			doc, err := html.Parse(strings.NewReader(htmlContent))
-			if err != nil {
-				fmt.Printf("Failed to parse HTML content: %v\n", err)
-				continue
-			}
-
-			// Find the link with "Microsoft PPTx toolkits" text
-			var findLink func(*html.Node) string
-			findLink = func(n *html.Node) string {
-				if n.Type == html.ElementNode && n.Data == "a" {
-					// Check if this link contains the text we're looking for
-					for c := n.FirstChild; c != nil; c = c.NextSibling {
-						if c.Type == html.TextNode && strings.TrimSpace(c.Data) == "Microsoft PPTx toolkits" {
-							// Get the href attribute
-							for _, attr := range n.Attr {
-								if attr.Key == "href" {
-									return attr.Val
-								}
-							}
-						}
-					}
-				}
-				for c := n.FirstChild; c != nil; c = c.NextSibling {
-					if result := findLink(c); result != "" {
-						return result
-					}
-				}
-				return ""
-			}
-
-			if url := findLink(doc); url != "" {
-				fmt.Println("Found Microsoft PPTx toolkits URL!")
-				return url, nil
-			}
-		}
-
-		fmt.Printf("Script %d: No Microsoft PPTx toolkits URL found\n", i+1)
+	// Find the download URL by looking for links containing the pattern
+	url := findDownloadUrl(doc)
+	if url == "" {
+		return "", fmt.Errorf("could not find download URL on the page")
 	}
 
-	return "", fmt.Errorf("PPTx toolkit URL not found in any script tag")
+	fmt.Printf("Found download URL: %s\n", url)
+	return url, nil
+}
+
+// findDownloadUrl searches for the download URL in the HTML document
+func findDownloadUrl(n *html.Node) string {
+	// Check if this node is an anchor tag with the right href
+	if n.Type == html.ElementNode && n.Data == "a" {
+		for _, attr := range n.Attr {
+			if attr.Key == "href" && strings.Contains(attr.Val, "https://d1.awsstatic.com/webteam/architecture-icons/") {
+				return attr.Val
+			}
+		}
+	}
+
+	// Recursively search in child nodes
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if url := findDownloadUrl(c); url != "" {
+			return url
+		}
+	}
+
+	return ""
 }
