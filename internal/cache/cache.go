@@ -102,7 +102,8 @@ func FetchFile(url string) (string, error) {
 	log.Infof("[internal/cache/cache.go] FetchFile %s", url)
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("cannot get home directory: %v", err)
+		log.Infof("cannot get home directory: %v", err)
+		homeDir = os.TempDir()
 	}
 
 	hashedUrl := md5.New()
@@ -199,7 +200,8 @@ func FetchFile(url string) (string, error) {
 func ExtractZipFile(filePath string) (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("cannot get home directory: %v", err)
+		log.Infof("cannot get home directory: %v", err)
+		homeDir = os.TempDir()
 	}
 
 	f, err := os.Open(filePath)
