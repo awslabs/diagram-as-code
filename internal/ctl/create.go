@@ -160,8 +160,8 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
 		switch v.Type {
 		case "":
-			log.Infof("%s does not have Type. Delete it from resources", k)
-			delete(resources, k)
+			log.Warnf("%s does not have Type field. Skipping this resource.", k)
+			continue
 		case "AWS::Diagram::Canvas":
 			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
 			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
