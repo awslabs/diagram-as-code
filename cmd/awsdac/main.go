@@ -15,8 +15,8 @@ import (
 var version = "dev"
 
 func main() {
-	// Added comment to trigger CI
-	var   outputFile   string
+
+	var outputFile string
 	var verbose bool
 	var cfnTemplate bool
 	var generateDacFile bool
