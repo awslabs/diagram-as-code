@@ -35,7 +35,6 @@ func writeFile(outputFilename string, fi *zip.File) error {
 	}
 	defer rc.Close()
 
-
 	fo, err := createFileWithDirectory(outputFilename)
 	if err != nil {
 		return fmt.Errorf("cannot create file with directory: %v", err)

@@ -45,24 +45,24 @@ type DefinitionFile struct {
 }
 
 type Resource struct {
-	Type           string           `yaml:"Type"`
-	Icon           string           `yaml:"Icon"`
+	Type           string            `yaml:"Type"`
+	Icon           string            `yaml:"Icon"`
 	IconFill       *ResourceIconFill `yaml:"IconFill"`
-	Direction      string           `yaml:"Direction"`
-	Preset         string           `yaml:"Preset"`
-	Align          string           `yaml:"Align"`
-	HeaderAlign    string           `yaml:"HeaderAlign"`
-	FillColor      string           `yaml:"FillColor"`
-	Title          string           `yaml:"Title"`
-	TitleColor     string           `yaml:"TitleColor"`
-	Font           string           `yaml:"Font"`
-	Children       []string         `yaml:"Children"`
-	BorderColor    string           `yaml:"BorderColor"`
-	BorderChildren []BorderChild    `yaml:"BorderChildren"`
+	Direction      string            `yaml:"Direction"`
+	Preset         string            `yaml:"Preset"`
+	Align          string            `yaml:"Align"`
+	HeaderAlign    string            `yaml:"HeaderAlign"`
+	FillColor      string            `yaml:"FillColor"`
+	Title          string            `yaml:"Title"`
+	TitleColor     string            `yaml:"TitleColor"`
+	Font           string            `yaml:"Font"`
+	Children       []string          `yaml:"Children"`
+	BorderColor    string            `yaml:"BorderColor"`
+	BorderChildren []BorderChild     `yaml:"BorderChildren"`
 }
 
 type ResourceIconFill struct {
-	Type *string `yaml:"Type"`
+	Type  *string `yaml:"Type"`
 	Color *string `yaml:"Color"`
 }
 
@@ -94,13 +94,13 @@ type LinkLabels struct {
 
 type LinkLabel struct {
 	Type  *string `yaml:"Type"`
-	Title string `yaml:"Title"`
+	Title string  `yaml:"Title"`
 	Color *string `yaml:"Color"`
 	Font  *string `yaml:"Font"`
 }
 
 type CreateOptions struct {
-	IsGoTemplate bool
+	IsGoTemplate    bool
 	OverrideDefFile string
 }
 
@@ -382,9 +382,9 @@ func convertLabel(label *LinkLabel) *types.LinkLabel {
 		switch *label.Type {
 		case "horizontal":
 			r.Type = types.LINK_LABEL_TYPE_HORIZONTAL
-		default: 
+		default:
 			r.Type = types.LINK_LABEL_TYPE_HORIZONTAL
-		}  
+		}
 	} else {
 		r.Type = types.LINK_LABEL_TYPE_HORIZONTAL
 	}
@@ -462,5 +462,3 @@ func IsURL(str string) bool {
 	}
 	return false
 }
-
-

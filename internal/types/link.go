@@ -7,8 +7,8 @@ import (
 	"errors"
 	"image"
 	"image/color"
-	"math"
 	"io"
+	"math"
 	"os"
 	"strings"
 
@@ -21,6 +21,7 @@ import (
 )
 
 type LINK_LABEL_TYPE int
+
 const (
 	LINK_LABEL_TYPE_HORIZONTAL LINK_LABEL_TYPE = iota
 	// [TODO] LINK_LABEL_TYPE_ALONG_PATH
@@ -36,16 +37,16 @@ type Link struct {
 	Type            string
 	LineWidth       int
 	LineStyle       string
-	Labels		LinkLabels
+	Labels          LinkLabels
 	drawn           bool
 	lineColor       color.RGBA
 }
 
 type LinkLabels struct {
-	SourceRight  *LinkLabel
-	SourceLeft   *LinkLabel
-	TargetRight  *LinkLabel
-	TargetLeft   *LinkLabel
+	SourceRight *LinkLabel
+	SourceLeft  *LinkLabel
+	TargetRight *LinkLabel
+	TargetLeft  *LinkLabel
 }
 
 type LinkLabel struct {
@@ -81,7 +82,7 @@ func (l *Link) SetType(s string) {
 	l.Type = s
 }
 
-func (l *Link) SetLineStyle (s string) {
+func (l *Link) SetLineStyle(s string) {
 	l.LineStyle = s
 }
 
@@ -111,7 +112,7 @@ func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Po
 		x := float64(sourcePt.X) + dx/length*float64(i)
 		y := float64(sourcePt.Y) + dy/length*float64(i)
 
-		if l.LineStyle=="dashed" && i%9 > 5 {
+		if l.LineStyle == "dashed" && i%9 > 5 {
 			continue
 		}
 		for j := 0; j < l.LineWidth; j++ {
@@ -124,58 +125,58 @@ func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Po
 }
 
 func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) font.Face {
-        if label.Font == "" {
-                if parent1 != nil && parent1.labelFont != "" {
-                        label.Font = parent1.labelFont
+	if label.Font == "" {
+		if parent1 != nil && parent1.labelFont != "" {
+			label.Font = parent1.labelFont
 		} else if parent2 != nil && parent2.labelFont != "" {
-                        label.Font = parent2.labelFont
-                } else {
-                        for _, x := range fontPath.Paths {
-                                if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
-                                        label.Font = x
-                                        break
-                                }
-                        }
-                }
-        }
-        if label.Color == nil {
-                if parent1 != nil && parent1.labelColor != nil {
-                        label.Color = parent1.labelColor
-                } else if parent2 != nil && parent2.labelFont != "" {
+			label.Font = parent2.labelFont
+		} else {
+			for _, x := range fontPath.Paths {
+				if _, err := os.Stat(x); !errors.Is(err, os.ErrNotExist) {
+					label.Font = x
+					break
+				}
+			}
+		}
+	}
+	if label.Color == nil {
+		if parent1 != nil && parent1.labelColor != nil {
+			label.Color = parent1.labelColor
+		} else if parent2 != nil && parent2.labelFont != "" {
 			label.Color = parent2.labelColor
 		} else {
-                        label.Color = &color.RGBA{0, 0, 0, 255}
-                }
-        }
-        if label.Font == "" {
-                panic("Specified fonts are not installed.")
-        }
-        f, err := os.Open(label.Font)
-        if err != nil {
-                panic(err)
-        }
-        defer f.Close()
+			label.Color = &color.RGBA{0, 0, 0, 255}
+		}
+	}
+	if label.Font == "" {
+		panic("Specified fonts are not installed.")
+	}
+	f, err := os.Open(label.Font)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 
-        ttfBytes, err := io.ReadAll(f)
-        if err != nil {
-                panic(err)
-        }
+	ttfBytes, err := io.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
 
-        ft, err := truetype.Parse(ttfBytes)
-        if err != nil {
-                panic(err)
-        }
+	ft, err := truetype.Parse(ttfBytes)
+	if err != nil {
+		panic(err)
+	}
 
-        opt := truetype.Options{
-                Size:              24,
-                DPI:               0,
-                Hinting:           0,
-                GlyphCacheEntries: 0,
-                SubPixelsX:        0,
-                SubPixelsY:        0,
-        }
+	opt := truetype.Options{
+		Size:              24,
+		DPI:               0,
+		Hinting:           0,
+		GlyphCacheEntries: 0,
+		SubPixelsX:        0,
+		SubPixelsY:        0,
+	}
 
-        return truetype.NewFace(ft, &opt)
+	return truetype.NewFace(ft, &opt)
 }
 
 func (l *Link) computeLabelPos(tx, ty, dx, dy, lx, ly float64) (float64, float64) {
@@ -203,10 +204,10 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	_dx := float64(targetPt.X - sourcePt.X)
 	_dy := float64(targetPt.Y - sourcePt.Y)
 	length := math.Sqrt(math.Pow(_dx, 2) + math.Pow(_dy, 2))
-	dx := _dx/length
-	dy := _dy/length
+	dx := _dx / length
+	dy := _dy / length
 	fourWindrose := ((pos + 2) % 16) / 4
-	isCorner := ((pos + 2) % 16) % 4 == 0
+	isCorner := ((pos+2)%16)%4 == 0
 
 	_tx := [4]float64{1.0, 0.0, -1.0, 0.0}
 	_ty := [4]float64{0.0, 1.0, 0.0, -1.0}
@@ -215,35 +216,34 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 		fourWindrose = (fourWindrose + 3) % 4
 	}
 
-	
 	tx := _tx[fourWindrose]
 	ty := _ty[fourWindrose]
 	if side == "Left" {
-		tx = _tx[fourWindrose]*-1
-		ty = _ty[fourWindrose]*-1
+		tx = _tx[fourWindrose] * -1
+		ty = _ty[fourWindrose] * -1
 	}
 	// calculate text box size
 	textWidth := 0
-        textHeight := 0
+	textHeight := 0
 	fontFace := l.prepareFontFace(label, source, target)
 	texts := strings.Split(label.Title, "\n")
 	for _, line := range texts {
 		textBindings, _ := font.BoundString(fontFace, line)
-		textWidth = max(textWidth, textBindings.Max.X.Ceil() - textBindings.Min.X.Ceil())
+		textWidth = max(textWidth, textBindings.Max.X.Ceil()-textBindings.Min.X.Ceil())
 		textHeight += textBindings.Max.Y.Ceil() - textBindings.Min.Y.Ceil()
 	}
 
 	// label vector
-	ldx := _tx[(fourWindrose+3)%4]*float64(textWidth)
-	ldy := _ty[(fourWindrose+3)%4]*float64(textHeight)
+	ldx := _tx[(fourWindrose+3)%4] * float64(textWidth)
+	ldy := _ty[(fourWindrose+3)%4] * float64(textHeight)
 
 	// calculate the base of a right triangle
 	px, py := l.computeLabelPos(tx, ty, dx, dy, ldx, ldy)
 
-	// Unit vector for sliding textbox 
+	// Unit vector for sliding textbox
 	ltx := [4]float64{0.0, 0.0, -1.0, -1.0}
-        lty := [4]float64{0.0, 1.0, 1.0, 0.0}
-	
+	lty := [4]float64{0.0, 1.0, 1.0, 0.0}
+
 	// calculate buffer
 	mx := float64(tx) + dx
 	my := float64(ty) + dy
@@ -253,7 +253,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	}
 	bx := float64(mx) / mag * 5
 	by := float64(my) / mag * 5
-		
+
 	lx := float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[fourWindrose]
 	ly := float64(sourcePt.Y) + py + by + float64(textHeight)*lty[fourWindrose]
 
@@ -265,7 +265,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	lineOffset := fixed.I(0)
 	for _, line := range texts {
 		textBindings, _ := font.BoundString(fontFace, line)
-		point := fixed.Point26_6{fixed.I(int(lx)) , fixed.I(int(ly)) + lineOffset}
+		point := fixed.Point26_6{fixed.I(int(lx)), fixed.I(int(ly)) + lineOffset}
 		d := &font.Drawer{
 			Dst:  img,
 			Src:  image.NewUniform(label.Color),

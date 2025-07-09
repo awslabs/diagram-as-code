@@ -79,28 +79,28 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	var resources map[string]*types.Resource = make(map[string]*types.Resource)
 
 	log.Info("--- Load DefinitionFiles section ---")
-        if opts.OverrideDefFile != "" {
-                var overrideDefTemplate TemplateStruct
-                if IsURL(opts.OverrideDefFile) {
-                        log.Infof("As given overrideDefFile, use %s as URL instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
-                        var defFile = DefinitionFile{
-                                Type: "URL",
-                                Url: opts.OverrideDefFile,
-                        }
-                        overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
-                } else {
-                        log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
-                        var defFile = DefinitionFile{
-                                Type: "LocalFile",
-                                LocalFile: opts.OverrideDefFile,
-                        }
-                        overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
-                }
-                loadDefinitionFiles(&overrideDefTemplate, &ds)
-                log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
-        } else {
-                loadDefinitionFiles(&template, &ds)
-        }
+	if opts.OverrideDefFile != "" {
+		var overrideDefTemplate TemplateStruct
+		if IsURL(opts.OverrideDefFile) {
+			log.Infof("As given overrideDefFile, use %s as URL instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
+			var defFile = DefinitionFile{
+				Type: "URL",
+				Url:  opts.OverrideDefFile,
+			}
+			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+		} else {
+			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
+			var defFile = DefinitionFile{
+				Type:      "LocalFile",
+				LocalFile: opts.OverrideDefFile,
+			}
+			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+		}
+		loadDefinitionFiles(&overrideDefTemplate, &ds)
+		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
+	} else {
+		loadDefinitionFiles(&template, &ds)
+	}
 
 	log.Info("--- Convert CloudFormation template to diagram structures ---")
 	convertTemplate(cfn_template, &template, ds)

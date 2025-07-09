@@ -68,7 +68,7 @@ func main() {
 				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts)
 			} else {
 				opts := ctl.CreateOptions{
-					IsGoTemplate: isGoTemplate,
+					IsGoTemplate:    isGoTemplate,
 					OverrideDefFile: overrideDefFile,
 				}
 				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts)
@@ -83,7 +83,6 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&generateDacFile, "dac-file", "d", false, "[beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template")
 	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
 	rootCmd.PersistentFlags().BoolVarP(&isGoTemplate, "template", "t", false, "Processes the input file as a template according to text/template.")
-
 
 	rootCmd.Execute()
 }
