@@ -1,0 +1,40 @@
+name: Go Format Check
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.go'
+
+jobs:
+  format-check:
+    name: Check Go Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: false
+
+      - name: Install goimports
+        run: go install golang.org/x/tools/cmd/goimports@latest
+
+      - name: Check go fmt
+        run: |
+          gofmt -l -d . | tee fmt-output.txt
+          if [ -s fmt-output.txt ]; then
+            echo "Go files need formatting. Run 'go fmt ./...' locally and commit the changes."
+            exit 1
+          fi
+
+      - name: Check goimports
+        run: |
+          goimports -l -d . | tee imports-output.txt
+          if [ -s imports-output.txt ]; then
+            echo "Go files need import formatting. Run 'goimports -w .' locally and commit the changes."
+            exit 1
+          fi
