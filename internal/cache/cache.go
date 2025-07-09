@@ -7,12 +7,13 @@ import (
 	"archive/zip"
 	"crypto/md5"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func createFileWithDirectory(filePath string) (*os.File, error) {
@@ -34,7 +35,6 @@ func writeFile(outputFilename string, fi *zip.File) error {
 		return fmt.Errorf("cannot open file: %v", err)
 	}
 	defer rc.Close()
-
 
 	fo, err := createFileWithDirectory(outputFilename)
 	if err != nil {

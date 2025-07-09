@@ -24,12 +24,14 @@ import (
 const DEBUG_LAYOUT = false
 
 type BORDER_TYPE int
+
 const (
 	BORDER_TYPE_STRAIGHT BORDER_TYPE = iota
 	BORDER_TYPE_DASHED
 )
 
 type ICON_FILL_TYPE int
+
 const (
 	ICON_FILL_TYPE_NONE ICON_FILL_TYPE = iota
 	ICON_FILL_TYPE_RECT
@@ -58,8 +60,8 @@ type Resource struct {
 }
 
 type ResourceIconFill struct {
-	Type           ICON_FILL_TYPE // none(default) / rect
-	Color          color.RGBA
+	Type  ICON_FILL_TYPE // none(default) / rect
+	Color color.RGBA
 }
 
 type BorderChild struct {
@@ -67,7 +69,7 @@ type BorderChild struct {
 	Resource *Resource
 }
 
-func defaultResourceValues(hasChild bool,setIcon bool) Resource {
+func defaultResourceValues(hasChild bool, setIcon bool) Resource {
 	if hasChild {
 		return Resource{ // resource has children and show as Group
 			bindings: &image.Rectangle{
@@ -108,8 +110,8 @@ func (r *Resource) Init() *Resource {
 	rr.bindings = nil
 	rr.iconImage = image.NewRGBA(image.Rect(0, 0, 0, 0))
 	rr.iconBounds = image.Rect(0, 0, 0, 0)
-	rr.iconfill = ResourceIconFill {
-		Type: ICON_FILL_TYPE_NONE,
+	rr.iconfill = ResourceIconFill{
+		Type:  ICON_FILL_TYPE_NONE,
 		Color: color.RGBA{255, 255, 255, 255},
 	}
 	rr.borderColor = nil
@@ -318,7 +320,7 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 		texts := strings.Split(r.label, "\n")
 		for _, line := range texts {
 			textBindings, _ := font.BoundString(fontFace, line)
-			textWidth = max(textWidth, textBindings.Max.X.Floor() - textBindings.Min.X.Ceil() + 20)
+			textWidth = max(textWidth, textBindings.Max.X.Floor()-textBindings.Min.X.Ceil()+20)
 			textHeight += textBindings.Max.Y.Floor() - textBindings.Min.Y.Ceil() + 10
 		}
 	}

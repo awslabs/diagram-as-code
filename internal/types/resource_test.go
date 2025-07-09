@@ -122,7 +122,6 @@ func TestResource(t *testing.T) {
 	}
 }
 
-
 func TestResourceCycleDetection(t *testing.T) {
 	// Define test cases using a table-driven approach
 	testCases := []struct {

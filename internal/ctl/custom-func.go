@@ -12,7 +12,6 @@ If it is not pure function, consider how the change could affect not only the ap
 https://en.wikipedia.org/wiki/Pure_function
 */
 
-
 func customSeq(count int) []int {
 	result := make([]int, count)
 	for i := 0; i < count; i++ {
@@ -34,8 +33,8 @@ func customMkarr(args ...interface{}) []interface{} {
 }
 
 var funcMap = tmpl.FuncMap{
-	"seq": customSeq,
-	"add": customAdd,
-	"mul": customMul,
+	"seq":   customSeq,
+	"add":   customAdd,
+	"mul":   customMul,
 	"mkarr": customMkarr,
 }

@@ -121,8 +121,8 @@ func TestFunctionality(t *testing.T) {
 				t.Errorf("Cannot create directory(%s): %v", tmpOutputDir, err)
 			}
 			tmpOutputFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", ".png", 1))
-			opts := ctl.CreateOptions {
-				IsGoTemplate:  strings.HasSuffix(file.Name(), "-tmpl.yaml"),
+			opts := ctl.CreateOptions{
+				IsGoTemplate:    strings.HasSuffix(file.Name(), "-tmpl.yaml"),
 				OverrideDefFile: "../definitions/definition-for-aws-icons-light.yaml",
 			}
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
