@@ -6,13 +6,14 @@ package ctl
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"image/color"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/aws-cloudformation/rain/cft"
 	"github.com/aws-cloudformation/rain/cft/parse"

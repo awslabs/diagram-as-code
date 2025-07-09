@@ -7,12 +7,13 @@ import (
 	"archive/zip"
 	"crypto/md5"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func createFileWithDirectory(filePath string) (*os.File, error) {
