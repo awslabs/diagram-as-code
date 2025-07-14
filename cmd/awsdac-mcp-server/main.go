@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"encoding/base64"
+	"github.com/spf13/pflag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/awslabs/diagram-as-code/internal/ctl"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+	log "github.com/sirupsen/logrus"
 )
 
 // Variables to allow mocking file operations in tests
@@ -30,13 +31,13 @@ func NewMCPServer() *server.MCPServer {
 
 	// Add hooks for logging and debugging
 	hooks.AddBeforeAny(func(ctx context.Context, id any, method mcp.MCPMethod, message any) {
-		log.Printf("beforeAny: %s, %v", method, id)
+		log.Infof("beforeAny: %s, %v", method, id)
 	})
 	hooks.AddOnSuccess(func(ctx context.Context, id any, method mcp.MCPMethod, message any, result any) {
-		log.Printf("onSuccess: %s, %v", method, id)
+		log.Infof("onSuccess: %s, %v", method, id)
 	})
 	hooks.AddOnError(func(ctx context.Context, id any, method mcp.MCPMethod, message any, err error) {
-		log.Printf("onError: %s, %v, %v", method, id, err)
+		log.Errorf("onError: %s, %v, %v", method, id, err)
 	})
 
 	// Create the MCP server
@@ -128,7 +129,19 @@ func handleGenerateDiagram(
 }
 
 func main() {
-	log.Printf("Starting MCP server with stdio transport")
+	logFilePath := pflag.String("log-file", "awsdac-mcp-server.log", "Path to log file")
+	pflag.Parse()
+
+	// Setup logrus to write to file
+	logFile, err := os.OpenFile(*logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
+
+	log.Info("Starting MCP server with stdio transport")
 	mcpServer := NewMCPServer()
 
 	if err := server.ServeStdio(mcpServer); err != nil {
