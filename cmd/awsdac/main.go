@@ -22,6 +22,8 @@ func main() {
 	var generateDacFile bool
 	var overrideDefFile string
 	var isGoTemplate bool
+	var width int
+	var height int
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -64,12 +66,16 @@ func main() {
 			if cfnTemplate {
 				opts := ctl.CreateOptions{
 					OverrideDefFile: overrideDefFile,
+					Width:           width,
+					Height:          height,
 				}
 				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts)
 			} else {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:    isGoTemplate,
 					OverrideDefFile: overrideDefFile,
+					Width:           width,
+					Height:          height,
 				}
 				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts)
 			}
@@ -83,6 +89,8 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&generateDacFile, "dac-file", "d", false, "[beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template")
 	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
 	rootCmd.PersistentFlags().BoolVarP(&isGoTemplate, "template", "t", false, "Processes the input file as a template according to text/template.")
+	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
+	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
 
 	rootCmd.Execute()
 }
