@@ -88,12 +88,12 @@ func TestResizeImage(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			resized := resizeImage(src, tc.targetWidth, tc.targetHeight)
-			
+
 			actualWidth := resized.Bounds().Dx()
 			actualHeight := resized.Bounds().Dy()
-			
+
 			if actualWidth != tc.expectedWidth || actualHeight != tc.expectedHeight {
-				t.Errorf("Expected size %dx%d, got %dx%d", 
+				t.Errorf("Expected size %dx%d, got %dx%d",
 					tc.expectedWidth, tc.expectedHeight, actualWidth, actualHeight)
 			}
 		})
