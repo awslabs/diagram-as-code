@@ -131,5 +131,5 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	log.Info("Add Links section")
 	loadLinks(&template, resources)
 
-	createDiagram(resources, outputfile)
+	createDiagram(resources, outputfile, opts)
 }

@@ -120,7 +120,7 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		go generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
-	createDiagram(resources, outputfile)
+	createDiagram(resources, outputfile, opts)
 }
 
 func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds definition.DefinitionStructure) {
