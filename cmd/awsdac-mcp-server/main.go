@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"embed"
 	"encoding/base64"
-	"github.com/spf13/pflag"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/pflag"
 
 	"github.com/awslabs/diagram-as-code/internal/ctl"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -14,15 +16,26 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:embed prompts/*
+var promptsFS embed.FS
+
 // Variables to allow mocking file operations in tests
-var writeFileFunc = os.WriteFile
-var readFileFunc = os.ReadFile
+var (
+	writeFileFunc = os.WriteFile
+	readFileFunc  = os.ReadFile
+)
 
 // ToolName constants for the MCP server tools
 type ToolName string
 
 const (
-	GENERATE_DIAGRAM ToolName = "generateDiagram"
+	GENERATE_DIAGRAM                    ToolName = "generateDiagram"
+	GENERATE_DAC_FROM_USER_REQUIREMENTS ToolName = "generateDacFromUserRequirements"
+)
+
+// Default prompt template file paths
+const (
+	USER_REQUIREMENTS_TEMPLATE_FILE = "prompts/generate_dac_from_user_requirements.txt"
 )
 
 // NewMCPServer creates a new MCP server with the necessary tools and configurations
@@ -63,6 +76,11 @@ func NewMCPServer() *server.MCPServer {
 			mcp.DefaultString("png"),
 		),
 	), handleGenerateDiagram)
+
+	// Add the tool to generate DAC YAML from user requirements
+	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DAC_FROM_USER_REQUIREMENTS),
+		mcp.WithDescription("Generates a DAC YAML file from user requirements"),
+	), handleGenerateDacFromUserRequirements)
 
 	return mcpServer
 }
@@ -128,12 +146,49 @@ func handleGenerateDiagram(
 	}, nil
 }
 
+// handleGenerateDacFromUserRequirements handles the generation of DAC YAML from user requirements
+func handleGenerateDacFromUserRequirements(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	templateContent, err := readPromptFile(USER_REQUIREMENTS_TEMPLATE_FILE)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.TextContent{
+				Type: "text",
+				Text: string(templateContent),
+			},
+		},
+	}, nil
+}
+
+// readPromptFile reads a prompt file from the embedded filesystem
+func readPromptFile(filePath string) ([]byte, error) {
+	content, err := promptsFS.ReadFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read embedded prompt file %s: %v", filePath, err)
+	}
+	return content, nil
+}
+
 func main() {
-	logFilePath := pflag.String("log-file", "awsdac-mcp-server.log", "Path to log file")
+	logFilePath := pflag.String("log-file", "", "Path to log file")
 	pflag.Parse()
 
+	// Determine log file path
+	var actualLogPath string
+	if *logFilePath != "" {
+		actualLogPath = *logFilePath
+	} else {
+		actualLogPath = filepath.Join(os.TempDir(), "awsdac-mcp-server.log")
+	}
+
 	// Setup logrus to write to file
-	logFile, err := os.OpenFile(*logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(actualLogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}

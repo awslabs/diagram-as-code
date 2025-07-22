@@ -1,0 +1,846 @@
+User: ユーザー要件に基づいて、Diagram-as-code のYAMLファイルを生成してください。
+ユーザー要件は<user-requirements></user-requirements>セクションに記載されています。
+Diagram-as-codeファイル形式はYAML構文を使用し<diagram-as-code-format></diagram-as-code-format>のフォーマットに従います。
+また、<custom-rules></custom-rules>にカスタムルールセクションがあります。
+
+<diagram-as-code-format>
+You're absolutely right - I removed too much detail. Let me create a more comprehensive prompt that retains the important syntax details and examples:
+
+```markdown
+# Create a comprehensive introduction to DAC (Diagram as Code)
+
+## Document Structure
+Create an introduction document for DAC (Diagram as Code) with the following sections:
+
+1. Overview of DAC file structure
+2. Detailed explanation of each main section:
+   - DefinitionFiles
+   - Resources
+   - Links
+3. Resource Types reference
+
+## Content Requirements
+
+### 1. File Structure Overview
+Explain that DAC uses YAML syntax with three main sections:
+```yaml
+Diagram:
+    DefinitionFiles: # Specify the location of the definition file
+      ...
+    Resources: # Define your AWS resources here
+      ...
+    Links: # Define connections between resources
+      ...
+```
+
+### 2. DefinitionFiles Section
+Explain how to use pre-defined resource definitions with exact syntax:
+
+```yaml
+DefinitionFiles:
+  - Type: URL
+    Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+```
+
+For local file usage:
+```yaml
+DefinitionFiles:
+  - Type: LocalFile
+    LocalFile: "<your definition file path (e.g. ~/Desktop/your-custom-definition.yaml)>"
+```
+
+### 3. Resources Section
+- Explain the hierarchical structure using the Children property
+- Include this complete example:
+```yaml
+Resources:
+    Canvas:
+        Type: AWS::Diagram::Canvas
+        Children:
+            - AWSCloud
+    AWSCloud:
+        Type: AWS::Diagram::Cloud
+        Preset: AWSCloudNoLogo
+        Children:
+            - VPC
+    VPC:
+        Type: AWS::EC2::VPC
+        Children:
+            - ELB 
+            - Subnet1
+            - Subnet2
+    ELB:
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer 
+    Subnet1:
+        Type: AWS::EC2::Subnet
+        Children:
+            - EC2Instance1
+    Subnet2:
+        Type: AWS::EC2::Subnet
+        Children:
+            - EC2Instance2
+    EC2Instance1:
+        Type: AWS::EC2::Instance
+    EC2Instance2:
+        Type: AWS::EC2::Instance
+```
+
+- Explain how to improve resource organization with this example:
+```yaml
+Resources:
+    # ... other resources ...
+    VPC:
+        Type: AWS::EC2::VPC
+        Direction: "vertical"
+        Children:
+            - ELB
+            - HorizontalStackGroup
+    HorizontalStackGroup:
+        Type: AWS::Diagram::HorizontalStack
+        Children:
+            - Subnet1
+            - Subnet2
+    # ... other resources ...
+```
+
+### 4. Links Section
+Explain how to create connections between resources with complete syntax:
+
+#### Basic Link Structure
+```yaml
+Links:
+  - Source: ELB
+    SourcePosition: S # "S" (South) for SourcePosition means the line begins from the bottom of the icon
+    Target: EC2Instance1
+    TargetPosition: N # "N" (North) for TargetPosition means the line ends at the top of the icon
+    TargetArrowHead:
+        Type: Open
+```
+
+#### Link Position
+Explain the 16-wind rose positioning with this example:
+```yaml
+Links:
+  - Source: ALB
+    SourcePosition: N
+    Target: PublicSubnet1Instance
+    TargetPosition: S
+    LineWidth: 1
+    LineColor: 'rgba(255,255,255,255)'
+    LineStyle: 'normal' # or 'dashed'
+```
+
+#### Link Types
+Include both straight and orthogonal link examples:
+
+Straight link:
+```yaml
+Links:
+  - Source: StraightLambda
+    SourcePosition: N
+    Target: StraightBucket
+    TargetPosition: W
+    TargetArrowHead:
+      Type: Open
+```
+
+Orthogonal links:
+```yaml
+Links:
+  # Orthogonal (single-arm)
+  - Source: Orthogonal1Lambda
+    SourcePosition: N
+    Target: Orthogonal1Bucket
+    TargetPosition: W
+    TargetArrowHead:
+      Type: Open
+    Type: orthogonal
+
+  # Orthogonal (double-arm)
+  - Source: Orthogonal2Lambda
+    SourcePosition: E
+    Target: Orthogonal2Bucket
+    TargetPosition: W
+    TargetArrowHead:
+      Type: Open
+    Type: orthogonal
+
+  # Orthogonal (double-arm)
+  - Source: Orthogonal3Lambda
+    SourcePosition: E
+    Target: Orthogonal3Bucket
+    TargetPosition: E
+    TargetArrowHead:
+      Type: Open
+    Type: orthogonal
+```
+
+#### Link Labels
+```yaml
+Links:
+  - Source: ALB
+    SourcePosition: N
+    Target: PublicSubnet1Instance
+    TargetPosition: S
+    Labels:
+      SourceLeft:
+        Type: horizontal
+        Title: "Label text"
+        Color: "rgba(0,0,0,255)"
+        Font: "Arial"
+      SourceRight:
+        Type: horizontal
+        Title: "Another label"
+      TargetLeft:
+        Type: horizontal
+        Title: "Target label"
+      TargetRight:
+        Type: horizontal
+        Title: "Final label"
+```
+
+### 5. Resource Types Reference
+Include detailed descriptions of key resource types:
+
+#### AWS::Diagram::Canvas
+- Represents the drawable area
+- Required and must be unique in the file
+- All resources must be reachable from Canvas
+
+#### AWS::Diagram::Cloud
+```yaml
+AWSCloud:
+  Type: AWS::Diagram::Cloud
+  Preset: AWSCloudNoLogo
+```
+
+#### AWS::Diagram::Resource
+Include the attributes table:
+| Attribute | Type | Default Value | Description |
+|-----------|------|---------------|-------------|
+| Icon | string | | Icon file path |
+| IconFill | IconFill | Type: none, Color: rgba(255,255,255,255) | Filling icon background |
+| Direction | string | horizontal | vertical: left,center,right horizontal: top, center, bottom |
+| Preset | string | | Override resource attributes from preset |
+| Align | string | center | vertical, horizontal |
+| FillColor | string | rgba(0,0,0,0) | Only group |
+| BorderColor | string | rgba(0,0,0,0) | |
+| Title | string | | |
+| HeaderAlign | string | left | Only group. You can align icon and title to left/center/right |
+| Children | []string | [] | |
+
+#### AWS::Diagram::VerticalStack & HorizontalStack
+- Explain their purpose for organizing resources
+- Include alignment options
+
+#### Common AWS Resource Types
+Include the list of major service resource types from the original document
+
+## Formatting Guidelines
+- Use clear headings and subheadings
+- Include YAML code examples in code blocks
+- Add visual references where helpful
+- Use tables for comparing options when appropriate
+
+Here's the continuation of the prompt with the remaining sections:
+
+#### Common AWS Resource Types
+Include this comprehensive list of allowed resource types:
+
+```
+Definitions:
+  "User": { Type: Preset }
+  "Client": { Type: Preset }
+  "Internet": { Type: Preset }
+  "Database": { Type: Preset }
+  "Server": { Type: Preset }
+  
+  "AWS::ACMPCA": { Type: Resource }
+  "AWS::ACMPCA::Certificate": { Type: Resource }
+  "AWS::ACMPCA::CertificateAuthority": { Type: Resource }
+  "AWS::APS": { Type: Resource }
+  "AWS::APS::Workspace": { Type: Resource }
+  "AWS::ARCZonalShift": { Type: Resource }
+  "AWS::ARCZonalShift::ZonalAutoshiftConfiguration": { Type: Resource }
+  "AWS::AccessAnalyzer": { Type: Resource }
+  "AWS::AccessAnalyzer::Analyzer": { Type: Resource }
+  "AWS::AmazonMQ": { Type: Resource }
+  "AWS::AmazonMQ::Broker": { Type: Resource }
+  "AWS::Amplify": { Type: Resource }
+  "AWS::Amplify::App": { Type: Resource }
+  "AWS::AmplifyUIBuilder": { Type: Resource }
+  "AWS::ApiGateway": { Type: Resource }
+  "AWS::ApiGatewayV2": { Type: Resource }
+  "AWS::ApiGatewayV2::Api": { Type: Resource }
+  "AWS::AppConfig": { Type: Resource }
+  "AWS::AppConfig::Application": { Type: Resource }
+  "AWS::AppFlow": { Type: Resource }
+  "AWS::AppFlow::Flow": { Type: Resource }
+  "AWS::AppMesh": { Type: Resource }
+  "AWS::AppMesh::Mesh": { Type: Resource }
+  "AWS::AppMesh::VirtualGateway": { Type: Resource }
+  "AWS::AppMesh::VirtualNode": { Type: Resource }
+  "AWS::AppMesh::VirtualRouter": { Type: Resource }
+  "AWS::AppMesh::VirtualService": { Type: Resource }
+  "AWS::AppRunner": { Type: Resource }
+  "AWS::AppRunner::Service": { Type: Resource }
+  "AWS::AppStream": { Type: Resource }
+  "AWS::AppStream::Application": { Type: Resource }
+  "AWS::AppSync": { Type: Resource }
+  "AWS::ApplicationAutoScaling": { Type: Resource }
+  "AWS::Athena": { Type: Resource }
+  "AWS::Athena::WorkGroup": { Type: Resource }
+  "AWS::AuditManager": { Type: Resource }
+  "AWS::AuditManager::Assessment": { Type: Resource }
+  "AWS::AutoScaling": { Type: Resource }
+  "AWS::AutoScalingPlans::ScalingPlan": { Type: Resource }
+  "AWS::Backup": { Type: Resource }
+  "AWS::Backup::BackupPlan": { Type: Resource }
+  "AWS::Backup::BackupVault": { Type: Resource }
+  "AWS::BackupGateway": { Type: Resource }
+  "AWS::BackupGateway::Hypervisor": { Type: Resource }
+  "AWS::Batch": { Type: Resource }
+  "AWS::Budgets": { Type: Resource }
+  "AWS::Budgets::Budget": { Type: Resource }
+  "AWS::CE": { Type: Resource }
+  "AWS::CertificateManager": { Type: Resource }
+  "AWS::Chatbot": { Type: Resource }
+  "AWS::CleanRooms": { Type: Resource }
+  "Cloud9": { Type: Resource }
+  "AWS::Cloud9::EnvironmentEC2": { Type: Resource }
+  "AWS::CloudFormation": { Type: Resource }
+  "AWS::CloudFront": { Type: Resource }
+  "AWS::CloudFront::Function": { Type: Resource }
+  "AWS::CloudFront::StreamingDistribution": { Type: Resource }
+  "AWS::CloudTrail": { Type: Resource }
+  "AWS::CloudTrail::Trail": { Type: Resource }
+  "AWS::CloudWatch": { Type: Resource }
+  "AWS::CloudWatch::Alarm": { Type: Resource }
+  "AWS::CloudWatch::InsightRule": { Type: Resource }
+  "AWS::CodeArtifact": { Type: Resource }
+  "AWS::CodeBuild": { Type: Resource }
+  "AWS::CodeBuild::Project": { Type: Resource }
+  "AWS::CodeCommit": { Type: Resource }
+  "AWS::CodeCommit::Repository": { Type: Resource }
+  "AWS::CodeDeploy": { Type: Resource }
+  "AWS::CodeDeploy::Application": { Type: Resource }
+  "AWS::CodeGuruProfiler": { Type: Resource }
+  "AWS::CodeGuruProfiler::ProfilingGroup": { Type: Resource }
+  "AWS::CodeGuruReviewer::RepositoryAssociation": { Type: Resource }
+  "AWS::CodePipeline": { Type: Resource }
+  "AWS::CodePipeline::Pipeline": { Type: Resource }
+  "AWS::Cognito": { Type: Resource }
+  "AWS::Cognito::IdentityPool": { Type: Resource }
+  "AWS::Cognito::UserPool": { Type: Resource }
+  "AWS::Comprehend": { Type: Resource }
+  "AWS::Config": { Type: Resource }
+  "AWS::Connect": { Type: Resource }
+  "AWS::ControlTower": { Type: Resource }
+  "AWS::CustomerProfiles": { Type: Resource }
+  "AWS::DAX": { Type: Resource }
+  "AWS::DAX::Cluster": { Type: Resource }
+  "AWS::DLM::LifecyclePolicy": { Type: Resource }
+  "AWS::DMS": { Type: Resource }
+  "AWS::DataBrew": { Type: Resource }
+  "AWS::DataSync": { Type: Resource }
+  "AWS::DataSync::Agent": { Type: Resource }
+  "AWS::DataZone": { Type: Resource }
+  "AWS::DataZone::Project": { Type: Resource }
+  "AWS::Detective": { Type: Resource }
+  "AWS::DevOpsGuru": { Type: Resource }
+  "AWS::DirectoryService": { Type: Resource }
+  "AWS::DirectoryService::MicrosoftAD": { Type: Resource }
+  "AWS::DirectoryService::SimpleAD": { Type: Resource }
+  "AWS::DocDB": { Type: Resource }
+  "AWS::DocDB::DBCluster": { Type: Resource }
+  "AWS::DocDBElastic": { Type: Resource }
+  "AWS::DocDBElastic::Cluster": { Type: Resource }
+  "AWS::DynamoDB": { Type: Resource }
+  "AWS::DynamoDB::GlobalTable": { Type: Resource }
+  "AWS::DynamoDB::Table": { Type: Resource }
+  "AWS::EC2": { Type: Resource }
+  "AWS::EC2::CarrierGateway": { Type: Resource }
+  "AWS::EC2::ClientVpnEndpoint": { Type: Resource }
+  "AWS::EC2::CustomerGateway": { Type: Resource }
+  "AWS::EC2::EIP": { Type: Resource }
+  "AWS::EC2::FlowLog": { Type: Resource }
+  "AWS::EC2::Instance": { Type: Resource }
+  "AWS::EC2::InternetGateway": { Type: Resource }
+  "AWS::EC2::NatGateway": { Type: Resource }
+  "AWS::EC2::NetworkInterface": { Type: Resource }
+  "AWS::EC2::RouteTable": { Type: Resource }
+  "AWS::EC2::TrafficMirrorSession": { Type: Resource }
+  "AWS::EC2::TransitGateway": { Type: Resource }
+  "AWS::EC2::TransitGatewayAttachment": { Type: Resource }
+  "AWS::EC2::VPCEndpoint": { Type: Resource }
+  "AWS::EC2::VPCEndpointService": { Type: Resource }
+  "AWS::EC2::VPCPeeringConnection": { Type: Resource }
+  "AWS::EC2::VPNConnection": { Type: Resource }
+  "AWS::EC2::VPNGateway": { Type: Resource }
+  "AWS::EC2::VerifiedAccessEndpoint": { Type: Resource }
+  "AWS::EC2::Volume": { Type: Resource }
+  "AWS::ECR": { Type: Resource }
+  "AWS::ECS": { Type: Resource }
+  "AWS::ECS::Cluster": { Type: Resource }
+  "AWS::ECS::Service": { Type: Resource }
+  "AWS::ECS::TaskDefinition": { Type: Resource }
+  "AWS::EFS": { Type: Resource }
+  "AWS::EKS": { Type: Resource }
+  "AWS::EMR": { Type: Resource }
+  "AWS::EMR::Cluster": { Type: Resource }
+  "AWS::EMRContainers": { Type: Resource }
+  "AWS::EMRServerless": { Type: Resource }
+  "AWS::ElastiCache": { Type: Resource }
+  "AWS::ElastiCache::CacheCluster": { Type: Resource }
+  "AWS::ElasticBeanstalk": { Type: Resource }
+  "AWS::ElasticBeanstalk::Application": { Type: Resource }
+  "AWS::ElasticLoadBalancing": { Type: Resource }
+  "AWS::ElasticLoadBalancing::LoadBalancer": { Type: Resource }
+  "AWS::ElasticLoadBalancingV2": { Type: Resource }
+  "AWS::ElasticLoadBalancingV2::LoadBalancer": { Type: Resource }
+  "AWS::Elasticsearch": { Type: Resource }
+  "AWS::EntityResolution": { Type: Resource }
+  "AWS::EventSchemas": { Type: Resource }
+  "AWS::Events": { Type: Resource }
+  "AWS::Events::Rule": { Type: Resource }
+  "AWS::Evidently": { Type: Resource }
+  "AWS::FMS": { Type: Resource }
+  "AWS::FSx": { Type: Resource }
+  "AWS::FSx::FileSystem": { Type: Resource }
+  "AWS::Forecast": { Type: Resource }
+  "AWS::GameLift": { Type: Resource }
+  "AWS::GlobalAccelerator": { Type: Resource }
+  "AWS::GlobalAccelerator::Accelerator": { Type: Resource }
+  "AWS::Glue": { Type: Resource }
+  "AWS::Glue::Crawler": { Type: Resource }
+  "AWS::Grafana": { Type: Resource }
+  "AWS::Grafana::Workspace": { Type: Resource }
+  "AWS::Greengrass": { Type: Resource }
+  "AWS::GreengrassV2": { Type: Resource }
+  "AWS::GuardDuty": { Type: Resource }
+  "AWS::IAM": { Type: Resource }
+  "AWS::IAM::AccessKey": { Type: Resource }
+  "AWS::IAM::Role": { Type: Resource }
+  "AWS::IAM::User": { Type: Resource }
+  "AWS::IVS": { Type: Resource }
+  "AWS::IVSChat": { Type: Resource }
+  "AWS::ImageBuilder": { Type: Resource }
+  "AWS::Inspector": { Type: Resource }
+  "AWS::InspectorV2": { Type: Resource }
+  "AWS::IoT": { Type: Resource }
+  "AWS::IoTAnalytics": { Type: Resource }
+  "AWS::IoTAnalytics::Channel": { Type: Resource }
+  "AWS::IoTAnalytics::Dataset": { Type: Resource }
+  "AWS::IoTAnalytics::Datastore": { Type: Resource }
+  "AWS::IoTAnalytics::Pipeline": { Type: Resource }
+  "AWS::IoTCoreDeviceAdvisor": { Type: Resource }
+  "AWS::IoTCoreDeviceAdvisor::SuiteDefinition": { Type: Resource }
+  "AWS::IoTEvents": { Type: Resource }
+  "AWS::IoTFleetHub": { Type: Resource }
+  "AWS::IoTSiteWise": { Type: Resource }
+  "AWS::IoTSiteWise::Asset": { Type: Resource }
+  "AWS::IoTSiteWise::AssetModel": { Type: Resource }
+  "AWS::IoTTwinMaker": { Type: Resource }
+  "AWS::KMS": { Type: Resource }
+  "AWS::KafkaConnect": { Type: Resource }
+  "AWS::Kendra": { Type: Resource }
+  "AWS::KendraRanking": { Type: Resource }
+  "AWS::Kinesis": { Type: Resource }
+  "AWS::Kinesis::Stream": { Type: Resource }
+  "AWS::KinesisVideo": { Type: Resource }
+  "AWS::LakeFormation": { Type: Resource }
+  "AWS::Lambda": { Type: Resource }
+  "AWS::Lambda::Function": { Type: Resource }
+  "AWS::Lex": { Type: Resource }
+  "AWS::LicenseManager": { Type: Resource }
+  "AWS::Lightsail": { Type: Resource }
+  "AWS::Location": { Type: Resource }
+  "AWS::Logs": { Type: Resource }
+  "AWS::LookoutMetrics": { Type: Resource }
+  "AWS::LookoutVision": { Type: Resource }
+  "AWS::M2": { Type: Resource }
+  "AWS::MSK": { Type: Resource }
+  "AWS::MWAA": { Type: Resource }
+  "AWS::Macie": { Type: Resource }
+  "AWS::ManagedBlockchain": { Type: Resource }
+  "AWS::MediaConnect": { Type: Resource }
+  "AWS::MediaConnect::Gateway": { Type: Resource }
+  "AWS::MediaConvert": { Type: Resource }
+  "AWS::MediaLive": { Type: Resource }
+  "AWS::MediaPackage": { Type: Resource }
+  "AWS::MediaPackageV2": { Type: Resource }
+  "AWS::MediaStore": { Type: Resource }
+  "AWS::MediaTailor": { Type: Resource }
+  "AWS::Neptune": { Type: Resource }
+  "AWS::NeptuneGraph": { Type: Resource }
+  "AWS::NetworkFirewall": { Type: Resource }
+  "AWS::NetworkManager": { Type: Resource }
+  "AWS::NetworkManager::CoreNetwork": { Type: Resource }
+  "AWS::NetworkManager::TransitGatewayRouteTableAttachment": { Type: Resource }
+  "AWS::OSIS": { Type: Resource }
+  "AWS::Oam": { Type: Resource }
+  "AWS::OpenSearchServerless": { Type: Resource }
+  "AWS::OpenSearchService": { Type: Resource }
+  "AWS::OpsWorks::Instance": { Type: Resource }
+  "AWS::Organizations": { Type: Resource }
+  "AWS::Organizations::Account": { Type: Resource }
+  "AWS::Organizations::Organization": { Type: Resource }
+  "AWS::Organizations::OrganizationalUnit": { Type: Resource }
+  "AWS::Personalize": { Type: Resource }
+  "AWS::Pinpoint": { Type: Resource }
+  "AWS::Pipes": { Type: Resource }
+  "AWS::Pipes::Pipe": { Type: Resource }
+  "AWS::Proton": { Type: Resource }
+  "AWS::QLDB": { Type: Resource }
+  "AWS::QuickSight": { Type: Resource }
+  "AWS::RAM": { Type: Resource }
+  "AWS::RDS": { Type: Resource }
+  "AWS::RDS::DBCluster": { Type: Resource }
+  "AWS::RDS::DBInstance": { Type: Resource }
+  "AWS::RUM": { Type: Resource }
+  "AWS::RUM::AppMonitor": { Type: Resource }
+  "AWS::Redshift": { Type: Resource }
+  "AWS::RedshiftServerless": { Type: Resource }
+  "AWS::RefactorSpaces": { Type: Resource }
+  "AWS::RefactorSpaces::Application": { Type: Resource }
+  "AWS::RefactorSpaces::Environment": { Type: Resource }
+  "AWS::RefactorSpaces::Service": { Type: Resource }
+  "AWS::Rekognition": { Type: Resource }
+  "AWS::ResilienceHub": { Type: Resource }
+  "AWS::ResilienceHub::App": { Type: Resource }
+  "AWS::ResourceExplorer2": { Type: Resource }
+  "AWS::RoboMaker": { Type: Resource }
+  "AWS::RoboMaker::Fleet": { Type: Resource }
+  "AWS::RoboMaker::SimulationApplication": { Type: Resource }
+  "AWS::RolesAnywhere": { Type: Resource }
+  "AWS::Route53": { Type: Resource }
+  "AWS::Route53::HostedZone": { Type: Resource }
+  "AWS::Route53Resolver::FirewallRuleGroup": { Type: Resource }
+  "AWS::Route53Resolver::ResolverEndpoint": { Type: Resource }
+  "AWS::Route53Resolver::ResolverQueryLoggingConfig": { Type: Resource }
+  "AWS::S3": { Type: Resource }
+  "AWS::S3::Bucket": { Type: Resource }
+  "AWS::S3::MultiRegionAccessPoint": { Type: Resource }
+  "AWS::S3::StorageLens": { Type: Resource }
+  "AWS::S3Express": { Type: Resource }
+  "AWS::S3ObjectLambda": { Type: Resource }
+  "AWS::S3Outposts": { Type: Resource }
+  "AWS::SES": { Type: Resource }
+  "AWS::SNS": { Type: Resource }
+  "AWS::SNS::Topic": { Type: Resource }
+  "AWS::SQS": { Type: Resource }
+  "AWS::SQS::Queue": { Type: Resource }
+  "AWS::SSM": { Type: Resource }
+  "AWS::SSM::Document": { Type: Resource }
+  "AWS::SSM::MaintenanceWindow": { Type: Resource }
+  "AWS::SSM::Parameter": { Type: Resource }
+  "AWS::SSM::PatchBaseline": { Type: Resource }
+  "AWS::SSMIncidents": { Type: Resource }
+  "AWS::SSO": { Type: Resource }
+  "AWS::SageMaker": { Type: Resource }
+  "AWS::SageMaker::Model": { Type: Resource }
+  "AWS::SageMaker::NotebookInstance": { Type: Resource }
+  "AWS::Scheduler": { Type: Resource }
+  "AWS::Scheduler::Schedule": { Type: Resource }
+  "AWS::SecretsManager": { Type: Resource }
+  "AWS::SecretsManager::Secret": { Type: Resource }
+  "AWS::SecurityHub": { Type: Resource }
+  "AWS::ServiceCatalog": { Type: Resource }
+  "AWS::ServiceCatalogAppRegistry": { Type: Resource }
+  "AWS::ServiceDiscovery": { Type: Resource }
+  "AWS::Shield": { Type: Resource }
+  "AWS::Signer": { Type: Resource }
+  "AWS::StepFunctions": { Type: Resource }
+  "AWS::SupportApp": { Type: Resource }
+  "AWS::Synthetics": { Type: Resource }
+  "AWS::Synthetics::Canary": { Type: Resource }
+  "AWS::SystemsManagerSAP": { Type: Resource }
+  "AWS::Timestream": { Type: Resource }
+  "AWS::Timestream::Database": { Type: Resource }
+  "AWS::Transfer": { Type: Resource }
+  "AWS::VerifiedPermissions": { Type: Resource }
+  "AWS::VoiceID": { Type: Resource }
+  "AWS::VpcLattice": { Type: Resource }
+  "AWS::VpcLattice::Service": { Type: Resource }
+  "AWS::WAF": { Type: Resource }
+  "AWS::WAF::WebACL": { Type: Resource }
+  "AWS::WAFRegional": { Type: Resource }
+  "AWS::WAFRegional::WebACL": { Type: Resource }
+  "AWS::WAFv2": { Type: Resource }
+  "AWS::WAFv2::WebACL": { Type: Resource }
+  "AWS::Wisdom": { Type: Resource }
+  "AWS::WorkSpaces": { Type: Resource }
+  "AWS::WorkSpacesWeb": { Type: Resource }
+  "AWS::XRay": { Type: Resource }
+
+```
+</diagram-as-code-format>
+
+<custom-rules>
+全体に関する指示
+- YAML構文に従い、回答に不要な説明や説明文を含めないでください。
+- 回答の最初と最後にトリプルバッククォートのYAMLマーカーを含めないでください。
+
+Links に関する指示
+- 特に指示がない場合、CloudFormation template に含まれる Resource は全て表示してください。
+- Resources の後に Links を出力してください
+- Links セクションでは、SourcePosition が S の場合、TargetPosition は N が望ましく、その逆も同様です。また、SourcePosition が E の場合、TargetPosition は W が望ましく、その逆も同様です。
+- Links セクションの要素は、Resource セクションに存在する Resource 間でのみ接続する必要があり、存在しない Resource を Source もしくは Target に指定することはできません。
+- Links セクションの要素には必ず orthogonal プロパティを追加し、Source から Target への方向を明示してください。
+- AWS::Diagram::VerticalStack 、 AWS::Diagram::HorizontalStack、などグループ化に使用するリソースは描画しないリソースだったり内部に複数リソースを内包していて対象がわかりにくいのであるため、Link の Source と Target に指定しないでください。
+
+
+Resource に関する指示
+- CloudFormation で利用可能な、公式に定義されたリソースタイプと一部の Diagram-as-Code で定義されたリソースタイプのみ使用してください。存在しない AWS リソースタイプを勝手に作らないでください。
+- 同じ Resource を 複数の Resource の Children プロパティに指定できません。子の親は必ず 1 つです。
+- 指示がありUserアイコンを表示した方が良い場合には、以下の表記を使用できます：
+```
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: "User"
+```
+
+Label に関する指示
+- 同じ Resource を Target もしくは Source として指定する複数の Link があり、それぞれに Label がある場合、Label の重なりを防ぐため Label のプロパティに TargetLeftまたはTargetRight を使用してください。
+- Resource アイコンの下には Label が付与されるため、SourcePositionがSのLink の Label は TargetLeft か TargetRight のプロパティ使用して配置してください
+- Label プロパティは必ず英語表記してください
+
+配置に関する指示
+- Links の後に Resources を出力してください
+- 子の親は必ず 1 つです。
+- HorizontalStack の Children は西(W)から東(E)VerticalStack  の Children は北(N)から南(S)に描画されます。
+- HorizontalStack の Children は、Resouces Secion に記述された順番に 西(W)から東(E)に描画されます。 VerticalStack の Children は Resouces Secion に記述された順番に 北(N)から南(S)に描画されます。そのため、Link で指定するリソースのうち、Resources セクションに先に出てくるリソースの position にh E もしくは S を指定してください。逆に、後半に出てくるリソースの指定箇所については　Position を N や W にしてください。これにより、例えばリソースアイコンの N方向から Link が S 方向に伸びてしまい、アイコンの上に Link の線分が重なる事態を防ぐことができます。
+- 同じ VerticalStack の子供のリソース同士を Link が指定する場合、リソースは縦に並ぶため Position は必ず N か S から選んでください。同様に同じ HorizontalStack の子供のリソース同士を Link が指定する場合、リソースは横に並ぶため Position は必ず E か W から選んでください。
+- 逆に、異なる VetiaclStack の子供のリソース同士を Link が指定する場合、リソースは横方向に確実に離れているため、E か W から選んでください。同様に 異なる HorizontalStack の子供のリソース同士を Link が指定する場合、リソースは横方向に確実に離れているため、N か S から選んでください。
+
+- 以下の優先度のルールに従って配置してください。優先度は値が小さいものが優先されます。
+  1. Link はユーザを根ノードとするツリー構造にしてください
+  2. Link は SourcePosition: S と TargetPosition: N で固定してください。ただし、深い階層から浅い階層へフィードバックする Link のみ SourcePosition, TargetPosition に E もしくは W が許可されます。
+  3. AWSCloud (AWS::Diagram::Cloud) の中で AWS::Diagram::HorizontalStack で階層を作成してください。階層はユーザから辿れる Link 数です。階層は何個作成しても構いません。
+  4. Link が交差しないように Children の順序を入れ替えてください。Link(A->D), Link(B->C) ならば VerticalStack(HorizontalStack(A, B), HorizontalStack(D, C)) が Link が交差しない HorizontalStack 内の Children の順序です。前の階層の並び順から Link されているリソースの順序を決定してください。
+  5. 階層以外にグループはまとめないでください。
+</custom-rules>
+
+<user-requirements>
+- 権限は描画しないでください
+- API Gateway は複数リソースがあって複雑なので、一旦 API Gateway を一つのアイコンで表示してください
+- KinesisAnalytics リソースタイプは使えないので、AWS::Kinesis リソースタイプを指定し Label で Kinesis Data Analytics もしくは Amazon Managed Service for Apache Flink  と表示してください
+- RedShift 関連のリソースは AWS::Redshift リソースタイプを使用してください。
+- introduction で一覧化されているリソースタイプのみ使用してください。
+- TrustedAdvisor に関するリソースは現状未定義なので、出力に含めないでください。
+- AWS::ResourceGroups という定義はないのでつかわないでください
+- AWS::Diagram::Resource という定義はないのでつかわないでください
+</user-requirements>
+
+最終的なYAML出力を生成するには、以下の手順に従ってください:
+1. ユーザー要件とカスタムルールを確認しシステムアーキテクチャに関する追加のコンテキストや詳細を収集します。
+2. 以下の方法でDiagram-as-code YAMLファイルを構築します:
+- DefinitionFilesセクションでリソース定義ファイルの場所を指定する。
+- Diagram-as-code形式に従って、Resourcesセクションでリソースとその関係を定義する。リソースの定義自体は CloudFormation のリソース定義に従う。
+- Diagram-as-code形式とカスタムルールに従って、Linksセクションでリソース間のリンクを定義する。
+4. 最終的なYAML出力が入力ソースに基づいてシステムアーキテクチャを正確に表現していることを確認します。
+
+<example>
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Children:
+        - VPCsWithTGW
+        
+    VPCsWithTGW:
+      Type: AWS::Diagram::HorizontalStack
+      Align: center
+      Children:
+        - VPC1
+        - TGW
+        - VPC2
+        
+    TGW:
+      Type: AWS::EC2::TransitGateway
+      Title: "Transit Gateway"
+      
+    # VPC1 Resources
+    VPC1:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Title: "VPC1 (10.0.0.0/16)"
+      Children:
+        - VPC1SubnetsStack
+      
+    VPC1SubnetsStack:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - VPC1PrivateSubnetsGroup
+        - VPC1TransitSubnetsGroup
+        
+    VPC1PrivateSubnetsGroup:
+      Type: AWS::Diagram::Resource
+      Title: "Private Subnets"
+      Direction: horizontal
+      Children:
+        - VPC1PrivateSubnet1
+        - VPC1PrivateSubnet2
+        
+    VPC1PrivateSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Private Subnet 1"
+      Children:
+        - VPC1PrivateInstance1
+        
+    VPC1PrivateInstance1:
+      Type: AWS::EC2::Instance
+      Title: "Private Instance 1"
+      
+    VPC1PrivateSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Private Subnet 2"
+      Children:
+        - VPC1PrivateInstance2
+        
+    VPC1PrivateInstance2:
+      Type: AWS::EC2::Instance
+      Title: "Private Instance 2"
+      
+    VPC1TransitSubnetsGroup:
+      Type: AWS::Diagram::Resource
+      Title: "Transit Subnets"
+      Direction: horizontal
+      Children:
+        - VPC1TransitSubnet1
+        - VPC1TransitSubnet2
+        
+    VPC1TransitSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Transit Subnet 1"
+      
+    VPC1TransitSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Transit Subnet 2"
+      
+    # VPC2 Resources
+    VPC2:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Title: "VPC2 (10.1.0.0/16)"
+      Children:
+        - VPC2SubnetsStack
+        
+    VPC2SubnetsStack:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - VPC2PublicSubnetsGroup
+        - VPC2TransitSubnetsGroup
+        
+    VPC2PublicSubnetsGroup:
+      Type: AWS::Diagram::Resource
+      Title: "Public Subnets"
+      Direction: horizontal
+      Children:
+        - VPC2PublicSubnet1
+        - VPC2PublicSubnet2
+        
+    VPC2PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "Public Subnet 1"
+      Children:
+        - VPC2NATGW1
+        
+    VPC2NATGW1:
+      Type: AWS::EC2::NatGateway
+      Title: "NAT Gateway 1"
+      
+    VPC2PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "Public Subnet 2"
+      Children:
+        - VPC2NATGW2
+        
+    VPC2NATGW2:
+      Type: AWS::EC2::NatGateway
+      Title: "NAT Gateway 2"
+      
+    VPC2TransitSubnetsGroup:
+      Type: AWS::Diagram::Resource
+      Title: "Transit Subnets"
+      Direction: horizontal
+      Children:
+        - VPC2TransitSubnet1
+        - VPC2TransitSubnet2
+        
+    VPC2TransitSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Transit Subnet 1"
+      
+    VPC2TransitSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "Transit Subnet 2"
+
+  Links:
+    # TGW to VPCs Links
+    - Source: VPC1TransitSubnetsGroup
+      SourcePosition: E
+      Target: TGW
+      TargetPosition: W
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "VPC1 Attachment"
+        
+    - Source: TGW
+      SourcePosition: E
+      Target: VPC2TransitSubnetsGroup
+      TargetPosition: W
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetLeft:
+          Title: "VPC2 Attachment"
+        
+    # VPC1 Private Instances to Transit Gateway
+    - Source: VPC1PrivateSubnetsGroup
+      SourcePosition: S
+      Target: VPC1TransitSubnetsGroup
+      TargetPosition: N
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "0.0.0.0/0 → TGW"
+            
+    # VPC2 Transit Subnets to NAT Gateways
+    - Source: VPC2TransitSubnetsGroup
+      SourcePosition: N
+      Target: VPC2PublicSubnetsGroup
+      TargetPosition: S
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "0.0.0.0/0 → NATGW"
+</example>
