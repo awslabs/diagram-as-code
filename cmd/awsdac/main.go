@@ -34,7 +34,9 @@ func main() {
 			if len(args) == 0 {
 				error_message := "awsdac: This tool requires an input file to run. Please provide a file path.\n"
 				fmt.Println(error_message)
-				cmd.Help()
+				if err := cmd.Help(); err != nil {
+					fmt.Fprintf(os.Stderr, "Error displaying help: %v\n", err)
+				}
 
 				os.Exit(1)
 			}
@@ -65,7 +67,9 @@ func main() {
 				opts := ctl.CreateOptions{
 					OverrideDefFile: overrideDefFile,
 				}
-				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts)
+				if err := ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts); err != nil {
+					log.Fatalf("failed to create diagram from CloudFormation template: %v", err)
+				}
 			} else {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:    isGoTemplate,
@@ -86,5 +90,7 @@ func main() {
 	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
 	rootCmd.PersistentFlags().BoolVarP(&isGoTemplate, "template", "t", false, "Processes the input file as a template according to text/template.")
 
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }

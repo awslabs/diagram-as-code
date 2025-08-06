@@ -97,7 +97,9 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 		}
 		defer imageFile3.Close()
 
-		png.Encode(imageFile3, img3)
+		if err := png.Encode(imageFile3, img3); err != nil {
+			return fmt.Errorf("failed to encode diff image: %w", err)
+		}
 
 		return fmt.Errorf("Mismatch pixels on image %d of %d. See diff-image.png", pixels_diff_numer, img1b.Max.X*img1b.Max.Y)
 	}
@@ -126,7 +128,9 @@ func TestFunctionality(t *testing.T) {
 				OverrideDefFile: "../definitions/definition-for-aws-icons-light.yaml",
 			}
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
-				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts)
+				if err := ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts); err != nil {
+					t.Fatalf("failed to create diagram from CloudFormation template %s: %v", yamlFilename, err)
+				}
 			} else {
 				if err := ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, &opts); err != nil {
 					t.Fatalf("failed to create diagram from DAC file %s: %v", yamlFilename, err)

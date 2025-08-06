@@ -90,7 +90,9 @@ func FetchFile(url string) (string, error) {
 	}
 
 	hashedUrl := md5.New()
-	io.WriteString(hashedUrl, url)
+	if _, err := io.WriteString(hashedUrl, url); err != nil {
+		return "", fmt.Errorf("failed to write URL to hash: %w", err)
+	}
 
 	etagFilePath := filepath.Join(homeDir, ".cache", "awsdac", "etag", fmt.Sprintf("%x-%s", hashedUrl.Sum(nil), filepath.Base(url)))
 	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedUrl.Sum(nil), filepath.Base(url)))
