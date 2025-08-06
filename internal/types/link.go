@@ -406,6 +406,8 @@ func (l *Link) Draw(img *image.RGBA) {
 			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight)
 			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft)
 		}
+	} else {
+		log.Fatalf("Unknown type: %s", l.Type)
 	}
 	l.drawn = true
 }

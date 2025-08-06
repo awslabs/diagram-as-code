@@ -87,7 +87,9 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	}
 
 	// Unmarshal the processed YAML
-	err = yaml.Unmarshal(processedData, &template)
+	dec := yaml.NewDecoder(bytes.NewReader(processedData))
+	dec.KnownFields(true)
+	err = dec.Decode(&template)
 	if err != nil {
 		if !opts.IsGoTemplate && slices.Contains(processedData, '{') {
 			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
