@@ -58,13 +58,13 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		// URL from remote
 		resp, err := http.Get(inputfile)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to get URL: %w", err)
 		}
 		defer resp.Body.Close()
 
 		cfn_template, err = parse.Reader(resp.Body)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to parse CloudFormation template from URL: %w", err)
 		}
 
 	} else {
@@ -72,7 +72,7 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		var err error
 		cfn_template, err = parse.File(inputfile)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to parse CloudFormation template file: %w", err)
 		}
 	}
 
@@ -97,10 +97,14 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 			}
 			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
 		}
-		loadDefinitionFiles(&overrideDefTemplate, &ds)
+		if err := loadDefinitionFiles(&overrideDefTemplate, &ds); err != nil {
+			return fmt.Errorf("failed to load override definition files: %w", err)
+		}
 		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
 	} else {
-		loadDefinitionFiles(&template, &ds)
+		if err := loadDefinitionFiles(&template, &ds); err != nil {
+			return fmt.Errorf("failed to load definition files: %w", err)
+		}
 	}
 
 	log.Info("--- Convert CloudFormation template to diagram structures ---")
@@ -122,7 +126,9 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		go generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
-	createDiagram(resources, outputfile)
+	if err := createDiagram(resources, outputfile); err != nil {
+		return fmt.Errorf("failed to create diagram: %w", err)
+	}
 	return nil
 }
 
@@ -266,7 +272,10 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			}
 			log.Infof("Add child(%s) on %s", child, logicalId)
 
-			resources[logicalId].AddChild(resources[child])
+			if err := resources[logicalId].AddChild(resources[child]); err != nil {
+				log.Warnf("Failed to add child %s to %s: %v", child, logicalId, err)
+				continue
+			}
 
 			if def.Border == nil {
 				resources[logicalId].SetBorderColor(color.RGBA{0, 0, 0, 255})

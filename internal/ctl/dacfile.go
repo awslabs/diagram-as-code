@@ -70,7 +70,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	// Get the template content
 	data, err := getTemplate(inputfile)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to get template: %w", err)
 	}
 
 	// Process the template with variables
@@ -81,7 +81,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 			log.Infof("processed template: \n%s", string(processedData))
 		}
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to process template: %w", err)
 		}
 	} else {
 		processedData = data
@@ -95,7 +95,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 		if !opts.IsGoTemplate && slices.Contains(processedData, '{') {
 			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
 		}
-		log.Fatal(err)
+		return fmt.Errorf("failed to decode YAML: %w", err)
 	}
 
 	var ds definition.DefinitionStructure
@@ -119,10 +119,14 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 			}
 			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
 		}
-		loadDefinitionFiles(&overrideDefTemplate, &ds)
+		if err := loadDefinitionFiles(&overrideDefTemplate, &ds); err != nil {
+			return fmt.Errorf("failed to load override definition files: %w", err)
+		}
 		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
 	} else {
-		loadDefinitionFiles(&template, &ds)
+		if err := loadDefinitionFiles(&template, &ds); err != nil {
+			return fmt.Errorf("failed to load definition files: %w", err)
+		}
 	}
 
 	log.Info("Load Resources section")
@@ -140,6 +144,8 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 		return fmt.Errorf("failed to load links: %w", err)
 	}
 
-	createDiagram(resources, outputfile)
+	if err := createDiagram(resources, outputfile); err != nil {
+		return fmt.Errorf("failed to create diagram: %w", err)
+	}
 	return nil
 }
