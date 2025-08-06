@@ -5,6 +5,7 @@ package ctl
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -60,7 +61,7 @@ func processTemplate(templateData []byte) ([]byte, error) {
 	return processed.Bytes(), nil
 }
 
-func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) {
+func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -125,13 +126,20 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	}
 
 	log.Info("Load Resources section")
-	loadResources(&template, ds, resources)
+	if err := loadResources(&template, ds, resources); err != nil {
+		return fmt.Errorf("failed to load resources: %w", err)
+	}
 
 	log.Info("Associate children with parent resources")
-	associateChildren(&template, resources)
+	if err := associateChildren(&template, resources); err != nil {
+		return fmt.Errorf("failed to associate children: %w", err)
+	}
 
 	log.Info("Add Links section")
-	loadLinks(&template, resources)
+	if err := loadLinks(&template, resources); err != nil {
+		return fmt.Errorf("failed to load links: %w", err)
+	}
 
 	createDiagram(resources, outputfile)
+	return nil
 }

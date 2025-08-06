@@ -111,8 +111,13 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string) {
 	if err != nil {
 		log.Fatalf("Error scaling diagram: %v", err)
 	}
-	resources["Canvas"].ZeroAdjust()
-	img := resources["Canvas"].Draw(nil, nil)
+	if err := resources["Canvas"].ZeroAdjust(); err != nil {
+		log.Fatalf("Error adjusting diagram: %v", err)
+	}
+	img, err := resources["Canvas"].Draw(nil, nil)
+	if err != nil {
+		log.Fatalf("Error drawing diagram: %v", err)
+	}
 
 	log.Infof("Save %s\n", *outputfile)
 	fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", *outputfile)
@@ -151,7 +156,7 @@ func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStru
 
 }
 
-func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) {
+func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) error {
 
 	resources["Canvas"] = new(types.Resource).Init()
 
@@ -228,7 +233,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				}
 				err := resources[k].LoadIcon(def.CacheFilePath)
 				if err != nil {
-					panic(err)
+					return fmt.Errorf("failed to load icon from cache file path: %w", err)
 				}
 			}
 		}
@@ -276,7 +281,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if def.CacheFilePath != "" {
 					err := resources[k].LoadIcon(def.CacheFilePath)
 					if err != nil {
-						panic(err)
+						return fmt.Errorf("failed to load icon from cache file path: %w", err)
 					}
 				}
 			}
@@ -284,7 +289,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		if v.Icon != "" {
 			err := resources[k].LoadIcon(v.Icon)
 			if err != nil {
-				panic(err)
+				return fmt.Errorf("failed to load icon from file: %w", err)
 			}
 		}
 		if v.IconFill != nil {
@@ -329,6 +334,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 	}
 
+	return nil
 }
 
 func fallbackToServiceIcon(inputType string) string {
@@ -339,12 +345,12 @@ func fallbackToServiceIcon(inputType string) string {
 	return possibleServiceType
 }
 
-func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) {
+func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) error {
 
 	for logicalId, v := range template.Resources {
 		_, ok := resources[logicalId]
 		if !ok {
-			log.Fatalf("Unknown resource %s\n", logicalId)
+			return fmt.Errorf("unknown resource %s", logicalId)
 		}
 		for _, child := range v.Children {
 			_, ok := resources[child]
@@ -365,15 +371,18 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 
 			position, err := types.ConvertWindrose(borderChild.Position)
 			if err != nil {
-				panic(err)
+				return fmt.Errorf("failed to convert windrose position: %w", err)
 			}
 			bc := types.BorderChild{
 				Position: position,
 				Resource: resources[borderChild.Resource],
 			}
-			resources[logicalId].AddBorderChild(&bc)
+			if err := resources[logicalId].AddBorderChild(&bc); err != nil {
+				return fmt.Errorf("failed to add border child: %w", err)
+			}
 		}
 	}
+	return nil
 }
 
 func convertLabel(label *LinkLabel) *types.LinkLabel {
@@ -399,7 +408,7 @@ func convertLabel(label *LinkLabel) *types.LinkLabel {
 	return r
 }
 
-func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
+func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) error {
 
 	for _, v := range template.Links {
 		_, ok := resources[v.Source]
@@ -429,11 +438,11 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 
 		sourcePosition, err := types.ConvertWindrose(v.SourcePosition)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("failed to convert source windrose position: %w", err)
 		}
 		targetPosition, err := types.ConvertWindrose(v.TargetPosition)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("failed to convert target windrose position: %w", err)
 		}
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
 		link.SetType(v.Type)
@@ -453,7 +462,7 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) {
 		resources[v.Source].AddLink(link)
 		resources[v.Target].AddLink(link)
 	}
-
+	return nil
 }
 
 func IsURL(str string) bool {

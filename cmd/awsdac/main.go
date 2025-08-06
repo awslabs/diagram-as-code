@@ -71,7 +71,9 @@ func main() {
 					IsGoTemplate:    isGoTemplate,
 					OverrideDefFile: overrideDefFile,
 				}
-				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts)
+				if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts); err != nil {
+					log.Fatalf("failed to create diagram: %v", err)
+				}
 			}
 
 		},

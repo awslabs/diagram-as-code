@@ -5,6 +5,7 @@ package types
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"io"
@@ -124,7 +125,7 @@ func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Po
 	}
 }
 
-func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) font.Face {
+func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (font.Face, error) {
 	if label.Font == "" {
 		if parent1 != nil && parent1.labelFont != "" {
 			label.Font = parent1.labelFont
@@ -149,22 +150,22 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) fon
 		}
 	}
 	if label.Font == "" {
-		panic("Specified fonts are not installed.")
+		return nil, fmt.Errorf("specified fonts are not installed")
 	}
 	f, err := os.Open(label.Font)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to open font file: %w", err)
 	}
 	defer f.Close()
 
 	ttfBytes, err := io.ReadAll(f)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to read font file: %w", err)
 	}
 
 	ft, err := truetype.Parse(ttfBytes)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to parse font: %w", err)
 	}
 
 	opt := truetype.Options{
@@ -176,7 +177,7 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) fon
 		SubPixelsY:        0,
 	}
 
-	return truetype.NewFace(ft, &opt)
+	return truetype.NewFace(ft, &opt), nil
 }
 
 func (l *Link) computeLabelPos(tx, ty, dx, dy, lx, ly float64) (float64, float64) {
@@ -197,9 +198,9 @@ func (l *Link) computeLabelPos(tx, ty, dx, dy, lx, ly float64) (float64, float64
 	return 0.0, 0.0
 }
 
-func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource, sourcePt, targetPt image.Point, side string, label *LinkLabel) {
+func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource, sourcePt, targetPt image.Point, side string, label *LinkLabel) error {
 	if label == nil {
-		return
+		return nil
 	}
 	_dx := float64(targetPt.X - sourcePt.X)
 	_dy := float64(targetPt.Y - sourcePt.Y)
@@ -225,7 +226,10 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	// calculate text box size
 	textWidth := 0
 	textHeight := 0
-	fontFace := l.prepareFontFace(label, source, target)
+	fontFace, err := l.prepareFontFace(label, source, target)
+	if err != nil {
+		return fmt.Errorf("failed to prepare font face for link label: %w", err)
+	}
 	texts := strings.Split(label.Title, "\n")
 	for _, line := range texts {
 		textBindings, _ := font.BoundString(fontFace, line)
@@ -249,7 +253,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	my := float64(ty) + dy
 	mag := math.Sqrt(mx*mx + my*my)
 	if mag == 0 {
-		panic("Error: zero length")
+		return fmt.Errorf("zero length vector detected in link label calculation")
 	}
 	bx := float64(mx) / mag * 5
 	by := float64(my) / mag * 5
@@ -275,6 +279,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 		d.DrawString(line)
 		lineOffset += lineOffset + textBindings.Max.Y - textBindings.Min.Y
 	}
+	return nil
 }
 
 func (l *Link) getThreeSide(t string) (float64, float64, float64) {
@@ -324,12 +329,12 @@ func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt imag
 	}
 }
 
-func (l *Link) Draw(img *image.RGBA) {
+func (l *Link) Draw(img *image.RGBA) error {
 	source := *l.Source
 	target := *l.Target
 	if l.drawn {
 		log.Info("Link already drawn")
-		return
+		return nil
 	}
 	log.Info("Link Drawing")
 	sourcePt, _ := calcPosition(source.GetBindings(), l.SourcePosition)
@@ -339,10 +344,18 @@ func (l *Link) Draw(img *image.RGBA) {
 		l.drawLine(img, sourcePt, targetPt)
 		l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
 		l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
-		l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight)
-		l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft)
-		l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight)
-		l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft)
+		if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight); err != nil {
+			return fmt.Errorf("failed to draw source right label: %w", err)
+		}
+		if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft); err != nil {
+			return fmt.Errorf("failed to draw source left label: %w", err)
+		}
+		if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight); err != nil {
+			return fmt.Errorf("failed to draw target right label: %w", err)
+		}
+		if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft); err != nil {
+			return fmt.Errorf("failed to draw target left label: %w", err)
+		}
 	} else if l.Type == "orthogonal" {
 		controlPts := []image.Point{}
 
@@ -388,26 +401,43 @@ func (l *Link) Draw(img *image.RGBA) {
 		if len(controlPts) >= 1 {
 			l.drawLine(img, sourcePt, controlPts[0])
 			l.drawArrowHead(img, sourcePt, controlPts[0], l.SourceArrowHead)
-			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Right", l.Labels.SourceRight)
-			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Left", l.Labels.SourceLeft)
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Right", l.Labels.SourceRight); err != nil {
+				return fmt.Errorf("failed to draw source right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Left", l.Labels.SourceLeft); err != nil {
+				return fmt.Errorf("failed to draw source left label: %w", err)
+			}
 			for i := 0; i < len(controlPts)-1; i++ {
 				l.drawLine(img, controlPts[i], controlPts[i+1])
 			}
 			l.drawLine(img, controlPts[len(controlPts)-1], targetPt)
 			l.drawArrowHead(img, targetPt, controlPts[len(controlPts)-1], l.TargetArrowHead)
-			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Left", l.Labels.TargetRight)
-			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Right", l.Labels.TargetLeft)
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Left", l.Labels.TargetRight); err != nil {
+				return fmt.Errorf("failed to draw target right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Right", l.Labels.TargetLeft); err != nil {
+				return fmt.Errorf("failed to draw target left label: %w", err)
+			}
 		} else {
 			l.drawLine(img, sourcePt, targetPt)
 			l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
 			l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
-			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight)
-			l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft)
-			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight)
-			l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft)
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight); err != nil {
+				return fmt.Errorf("failed to draw source right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft); err != nil {
+				return fmt.Errorf("failed to draw source left label: %w", err)
+			}
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight); err != nil {
+				return fmt.Errorf("failed to draw target right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft); err != nil {
+				return fmt.Errorf("failed to draw target left label: %w", err)
+			}
 		}
 	} else {
-		log.Fatalf("Unknown type: %s", l.Type)
+		return fmt.Errorf("unknown link type: %s", l.Type)
 	}
 	l.drawn = true
+	return nil
 }
