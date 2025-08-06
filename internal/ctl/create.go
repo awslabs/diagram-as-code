@@ -121,9 +121,14 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string) {
 
 	log.Infof("Save %s\n", *outputfile)
 	fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", *outputfile)
-	f, _ := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Fatalf("Error opening output file: %v", err)
+	}
 	defer f.Close()
-	png.Encode(f, img)
+	if err := png.Encode(f, img); err != nil {
+		log.Fatalf("Error encoding PNG: %v", err)
+	}
 }
 
 func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure) {

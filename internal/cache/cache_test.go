@@ -22,7 +22,9 @@ func TestCreateFileWithDirectory(t *testing.T) {
 	if err != nil {
 		t.Errorf("createFileWithDirectory failed: %v", err)
 	} else {
-		file.Close()
+		if err := file.Close(); err != nil {
+			t.Errorf("Failed to close file: %v", err)
+		}
 	}
 
 	_, err = os.Stat(filePath)
