@@ -31,7 +31,9 @@ func TestResource(t *testing.T) {
 	// Test resource has not children
 	r2 := new(Resource).Init()
 	r3 := new(Resource).Init()
-	r2.AddChild(r3)
+	if err := r2.AddChild(r3); err != nil {
+		t.Errorf("AddChild failed: %v", err)
+	}
 	if err := r2.Scale(nil, nil); err != nil {
 		t.Errorf("Scale failed: %v", err)
 	}
@@ -143,7 +145,7 @@ func TestResourceCycleDetection(t *testing.T) {
 			setupResources: func() *Resource {
 				r1 := new(Resource).Init()
 				r1.label = "Resource1"
-				r1.AddChild(r1) // Create a direct cycle: r1 -> r1
+				if err := r1.AddChild(r1); err != nil { t.Errorf("AddChild failed: %v", err) } // Create a direct cycle: r1 -> r1
 
 				return r1
 			},
@@ -157,8 +159,8 @@ func TestResourceCycleDetection(t *testing.T) {
 				r2 := new(Resource).Init()
 				r1.label = "Resource1"
 				r2.label = "Resource2"
-				r1.AddChild(r2)
-				r2.AddChild(r1) // Create an indirect cycle: r1 -> r2 -> r1
+				if err := r1.AddChild(r2); err != nil { t.Errorf("AddChild failed: %v", err) }
+				if err := r2.AddChild(r1); err != nil { t.Errorf("AddChild failed: %v", err) } // Create an indirect cycle: r1 -> r2 -> r1
 				return r1
 			},
 			expectError:   true,
@@ -173,9 +175,9 @@ func TestResourceCycleDetection(t *testing.T) {
 				r1.label = "Resource1"
 				r2.label = "Resource2"
 				r3.label = "Resource3"
-				r1.AddChild(r2)
-				r2.AddChild(r3)
-				r3.AddChild(r1) // Create a cycle: r1 -> r2 -> r3 -> r1
+				if err := r1.AddChild(r2); err != nil { t.Errorf("AddChild failed: %v", err) }
+				if err := r2.AddChild(r3); err != nil { t.Errorf("AddChild failed: %v", err) }
+				if err := r3.AddChild(r1); err != nil { t.Errorf("AddChild failed: %v", err) } // Create a cycle: r1 -> r2 -> r3 -> r1
 				return r1
 			},
 			expectError:   true,
@@ -192,9 +194,9 @@ func TestResourceCycleDetection(t *testing.T) {
 				r2.label = "Child1"
 				r3.label = "Child2"
 				r4.label = "Grandchild"
-				r1.AddChild(r2)
-				r1.AddChild(r3)
-				r2.AddChild(r4)
+				if err := r1.AddChild(r2); err != nil { t.Errorf("AddChild failed: %v", err) }
+				if err := r1.AddChild(r3); err != nil { t.Errorf("AddChild failed: %v", err) }
+				if err := r2.AddChild(r4); err != nil { t.Errorf("AddChild failed: %v", err) }
 				return r1
 			},
 			expectError: false,
@@ -208,7 +210,7 @@ func TestResourceCycleDetection(t *testing.T) {
 				parent.label = "Parent"
 				child.label = "Child"
 				borderChild.label = "BorderChild"
-				parent.AddChild(child)
+				if err := parent.AddChild(child); err != nil { t.Errorf("AddChild failed: %v", err) }
 				if err := parent.AddBorderChild(&BorderChild{
 					Position: 8, // South position
 					Resource: borderChild,
@@ -228,7 +230,7 @@ func TestResourceCycleDetection(t *testing.T) {
 				parent.label = "Parent"
 				child.label = "Child"
 				borderChild.label = "BorderChild"
-				parent.AddChild(child)
+				if err := parent.AddChild(child); err != nil { t.Errorf("AddChild failed: %v", err) }
 				if err := parent.AddBorderChild(&BorderChild{
 					Position: 8, // South position
 					Resource: borderChild,
@@ -257,7 +259,7 @@ func TestResourceCycleDetection(t *testing.T) {
 				child.label = "Child"
 				borderChild1.label = "BorderChild1"
 				borderChild2.label = "BorderChild2"
-				parent.AddChild(child)
+				if err := parent.AddChild(child); err != nil { t.Errorf("AddChild failed: %v", err) }
 				if err := parent.AddBorderChild(&BorderChild{
 					Position: 0, // North position
 					Resource: borderChild1,
@@ -285,7 +287,7 @@ func TestResourceCycleDetection(t *testing.T) {
 				child.label = "Child"
 				borderChild1.label = "BorderChild1"
 				borderChild2.label = "BorderChild2"
-				parent.AddChild(child)
+				if err := parent.AddChild(child); err != nil { t.Errorf("AddChild failed: %v", err) }
 				if err := parent.AddBorderChild(&BorderChild{
 					Position: 0, // North position
 					Resource: borderChild1,
@@ -322,7 +324,7 @@ func TestResourceCycleDetection(t *testing.T) {
 				borderChild1.label = "BorderChild1"
 				borderChild2.label = "BorderChild2"
 				borderChild3.label = "BorderChild3"
-				parent.AddChild(child)
+				if err := parent.AddChild(child); err != nil { t.Errorf("AddChild failed: %v", err) }
 				if err := parent.AddBorderChild(&BorderChild{
 					Position: 0, // North position
 					Resource: borderChild1,

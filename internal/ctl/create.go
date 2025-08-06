@@ -125,7 +125,11 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string) err
 	if err != nil {
 		return fmt.Errorf("error opening output file: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil {
+			log.Warnf("Failed to close output file: %v", closeErr)
+		}
+	}()
 	if err := png.Encode(f, img); err != nil {
 		return fmt.Errorf("error encoding PNG: %w", err)
 	}
