@@ -128,7 +128,9 @@ func TestFunctionality(t *testing.T) {
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
 				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts)
 			} else {
-				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, &opts)
+				if err := ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, &opts); err != nil {
+					t.Fatalf("failed to create diagram from DAC file %s: %v", yamlFilename, err)
+				}
 			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			tmpOutputDiffFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", "-diff.png", 1))

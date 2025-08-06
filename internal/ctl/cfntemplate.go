@@ -48,7 +48,7 @@ var template = TemplateStruct{
 	},
 }
 
-func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateDacFile bool, opts *CreateOptions) {
+func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateDacFile bool, opts *CreateOptions) error {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -110,7 +110,9 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	ensureSingleParent(&template)
 
 	log.Info("--- Load Resources section ---")
-	loadResources(&template, ds, resources)
+	if err := loadResources(&template, ds, resources); err != nil {
+		return fmt.Errorf("failed to load resources: %w", err)
+	}
 
 	log.Info("--- Associate children with parent resources ---")
 	associateCFnChildren(&template, ds, resources)
@@ -121,6 +123,7 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	}
 
 	createDiagram(resources, outputfile)
+	return nil
 }
 
 func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds definition.DefinitionStructure) {
