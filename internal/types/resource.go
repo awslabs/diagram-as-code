@@ -134,7 +134,11 @@ func (r *Resource) LoadIcon(imageFilePath string) error {
 	if err != nil {
 		return err
 	}
-	defer imageFile.Close()
+	defer func() {
+		if closeErr := imageFile.Close(); closeErr != nil {
+			log.Warnf("Failed to close image file: %v", closeErr)
+		}
+	}()
 	iconImage, _, err := image.Decode(imageFile)
 	if err != nil {
 		return err
@@ -261,7 +265,11 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to open font file: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil {
+			log.Warnf("Failed to close font file: %v", closeErr)
+		}
+	}()
 
 	ttfBytes, err := io.ReadAll(f)
 	if err != nil {

@@ -156,7 +156,11 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (fo
 	if err != nil {
 		return nil, fmt.Errorf("failed to open font file: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil {
+			log.Warnf("Failed to close font file: %v", closeErr)
+		}
+	}()
 
 	ttfBytes, err := io.ReadAll(f)
 	if err != nil {

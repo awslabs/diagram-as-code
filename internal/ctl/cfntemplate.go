@@ -60,7 +60,11 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		if err != nil {
 			return fmt.Errorf("failed to get URL: %w", err)
 		}
-		defer resp.Body.Close()
+		defer func() {
+			if closeErr := resp.Body.Close(); closeErr != nil {
+				log.Warnf("Failed to close response body: %v", closeErr)
+			}
+		}()
 
 		cfn_template, err = parse.Reader(resp.Body)
 		if err != nil {

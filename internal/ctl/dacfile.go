@@ -28,7 +28,11 @@ func getTemplate(inputfile string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
+		defer func() {
+			if closeErr := resp.Body.Close(); closeErr != nil {
+				log.Warnf("Failed to close response body: %v", closeErr)
+			}
+		}()
 
 		data, err = io.ReadAll(resp.Body)
 	} else {
