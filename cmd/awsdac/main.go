@@ -45,7 +45,7 @@ func main() {
 			return nil
 
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 
 			if verbose {
 				log.SetLevel(log.InfoLevel)
@@ -60,7 +60,7 @@ func main() {
 					OverrideDefFile: overrideDefFile,
 				}
 				if err := ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts); err != nil {
-					log.Fatalf("failed to create diagram from CloudFormation template: %v", err)
+					return fmt.Errorf("failed to create diagram from CloudFormation template: %w", err)
 				}
 			} else {
 				opts := ctl.CreateOptions{
@@ -68,10 +68,11 @@ func main() {
 					OverrideDefFile: overrideDefFile,
 				}
 				if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts); err != nil {
-					log.Fatalf("failed to create diagram: %v", err)
+					return fmt.Errorf("failed to create diagram: %w", err)
 				}
 			}
 
+			return nil
 		},
 	}
 
