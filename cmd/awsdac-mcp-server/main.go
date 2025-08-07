@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"encoding/base64"
 	"fmt"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	log "github.com/sirupsen/logrus"
 )
+
+//go:embed prompts/*
+var promptsFS embed.FS
 
 // Variables to allow mocking file operations in tests
 var (
@@ -32,12 +36,9 @@ const (
 
 // Default prompt template file paths
 const (
-	USER_REQUIREMENTS_TEMPLATE_FILE     = "examples/generate_dac_from_user_requirements.txt"
-	CFN_USER_REQUIREMENTS_TEMPLATE_FILE = "examples/generate_dac_from_cfn_and_user_requirements.txt"
+	USER_REQUIREMENTS_TEMPLATE_FILE     = "prompts/generate_dac_from_user_requirements.txt"
+	CFN_USER_REQUIREMENTS_TEMPLATE_FILE = "prompts/generate_dac_from_cfn_and_user_requirements.txt"
 )
-
-// Global variable to store prompts directory
-var promptsDir string
 
 // NewMCPServer creates a new MCP server with the necessary tools and configurations
 func NewMCPServer() *server.MCPServer {
@@ -192,47 +193,18 @@ func handleGenerateDacFromCfnAndUserRequirements(
 	}, nil
 }
 
-// readPromptFile reads a prompt file from the configured prompts directory
+// readPromptFile reads a prompt file from the embedded filesystem
 func readPromptFile(filePath string) ([]byte, error) {
-	var templateFilePath string
-
-	if promptsDir != "" {
-		// Use the specified prompts directory
-		templateFilePath = filepath.Join(promptsDir, filePath)
-	} else {
-		// Fallback to default paths
-		execPath, err := os.Executable()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get executable path: %v", err)
-		}
-		execDir := filepath.Dir(execPath)
-		templateFilePath = filepath.Join(execDir, filePath)
-	}
-
-	templateContent, err := readFileFunc(templateFilePath)
-	if err != nil && promptsDir == "" {
-		// Try relative path from current directory as fallback
-		cwd, _ := os.Getwd()
-		templateFilePath = filepath.Join(cwd, filePath)
-		templateContent, err = readFileFunc(templateFilePath)
-	}
-
+	content, err := promptsFS.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read template file %s: %v", templateFilePath, err)
+		return nil, fmt.Errorf("failed to read embedded prompt file %s: %v", filePath, err)
 	}
-
-	return templateContent, nil
+	return content, nil
 }
 
 func main() {
 	logFilePath := pflag.String("log-file", "", "Path to log file")
-	promptsDirectory := pflag.String("prompts-dir", "", "Directory containing prompt template files")
 	pflag.Parse()
-
-	// Set the global prompts directory
-	if *promptsDirectory != "" {
-		promptsDir = *promptsDirectory
-	}
 
 	// Determine log file path
 	var actualLogPath string
