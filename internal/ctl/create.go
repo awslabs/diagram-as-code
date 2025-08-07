@@ -348,9 +348,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 		if v.TitleColor != "" {
 			c, err := stringToColor(v.TitleColor)
-		if err != nil {
-			return fmt.Errorf("failed to parse title color for resource %s: %w", k, err)
-		}
+			if err != nil {
+				return fmt.Errorf("failed to parse title color for resource %s: %w", k, err)
+			}
 			resources[k].SetLabel(nil, &c, nil)
 		}
 		if v.HeaderAlign != "" {
@@ -367,17 +367,17 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 		if v.FillColor != "" {
 			fillColor, err := stringToColor(v.FillColor)
-		if err != nil {
-			return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
-		}
-		resources[k].SetFillColor(fillColor)
+			if err != nil {
+				return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
+			}
+			resources[k].SetFillColor(fillColor)
 		}
 		if v.BorderColor != "" {
 			borderColor, err := stringToColor(v.BorderColor)
-		if err != nil {
-			return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
-		}
-		resources[k].SetBorderColor(borderColor)
+			if err != nil {
+				return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
+			}
+			resources[k].SetBorderColor(borderColor)
 		}
 	}
 
