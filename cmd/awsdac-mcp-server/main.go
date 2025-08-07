@@ -225,7 +225,7 @@ func readPromptFile(filePath string) ([]byte, error) {
 }
 
 func main() {
-	logFilePath := pflag.String("log-file", "awsdac-mcp-server.log", "Path to log file")
+	logFilePath := pflag.String("log-file", "", "Path to log file")
 	promptsDirectory := pflag.String("prompts-dir", "", "Directory containing prompt template files")
 	pflag.Parse()
 
@@ -234,8 +234,16 @@ func main() {
 		promptsDir = *promptsDirectory
 	}
 
+	// Determine log file path
+	var actualLogPath string
+	if *logFilePath != "" {
+		actualLogPath = *logFilePath
+	} else {
+		actualLogPath = filepath.Join(os.TempDir(), "awsdac-mcp-server.log")
+	}
+
 	// Setup logrus to write to file
-	logFile, err := os.OpenFile(*logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
+	logFile, err := os.OpenFile(actualLogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
