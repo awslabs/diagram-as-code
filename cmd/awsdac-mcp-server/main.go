@@ -29,15 +29,13 @@ var (
 type ToolName string
 
 const (
-	GENERATE_DIAGRAM                            ToolName = "generateDiagram"
-	GENERATE_DAC_FROM_USER_REQUIREMENTS         ToolName = "generateDacFromUserRequirements"
-	GENERATE_DAC_FROM_CFN_AND_USER_REQUIREMENTS ToolName = "generateDacFromCfnAndUserRequirements"
+	GENERATE_DIAGRAM                    ToolName = "generateDiagram"
+	GENERATE_DAC_FROM_USER_REQUIREMENTS ToolName = "generateDacFromUserRequirements"
 )
 
 // Default prompt template file paths
 const (
-	USER_REQUIREMENTS_TEMPLATE_FILE     = "prompts/generate_dac_from_user_requirements.txt"
-	CFN_USER_REQUIREMENTS_TEMPLATE_FILE = "prompts/generate_dac_from_cfn_and_user_requirements.txt"
+	USER_REQUIREMENTS_TEMPLATE_FILE = "prompts/generate_dac_from_user_requirements.txt"
 )
 
 // NewMCPServer creates a new MCP server with the necessary tools and configurations
@@ -83,11 +81,6 @@ func NewMCPServer() *server.MCPServer {
 	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DAC_FROM_USER_REQUIREMENTS),
 		mcp.WithDescription("Generates a DAC YAML file from user requirements"),
 	), handleGenerateDacFromUserRequirements)
-
-	// Add the tool to generate DAC YAML from CloudFormation template and user requirements
-	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DAC_FROM_CFN_AND_USER_REQUIREMENTS),
-		mcp.WithDescription("Generates a DAC YAML file from CloudFormation template and user requirements"),
-	), handleGenerateDacFromCfnAndUserRequirements)
 
 	return mcpServer
 }
@@ -159,26 +152,6 @@ func handleGenerateDacFromUserRequirements(
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	templateContent, err := readPromptFile(USER_REQUIREMENTS_TEMPLATE_FILE)
-	if err != nil {
-		return nil, err
-	}
-
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{
-			mcp.TextContent{
-				Type: "text",
-				Text: string(templateContent),
-			},
-		},
-	}, nil
-}
-
-// handleGenerateDacFromCfnAndUserRequirements handles the generation of DAC YAML from CloudFormation template and user requirements
-func handleGenerateDacFromCfnAndUserRequirements(
-	ctx context.Context,
-	request mcp.CallToolRequest,
-) (*mcp.CallToolResult, error) {
-	templateContent, err := readPromptFile(CFN_USER_REQUIREMENTS_TEMPLATE_FILE)
 	if err != nil {
 		return nil, err
 	}
