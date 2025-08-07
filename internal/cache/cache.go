@@ -34,13 +34,21 @@ func writeFile(outputFilename string, fi *zip.File) error {
 	if err != nil {
 		return fmt.Errorf("cannot open file: %v", err)
 	}
-	defer rc.Close()
+	defer func() {
+		if closeErr := rc.Close(); closeErr != nil {
+			log.Warnf("Failed to close zip reader: %v", closeErr)
+		}
+	}()
 
 	fo, err := createFileWithDirectory(outputFilename)
 	if err != nil {
 		return fmt.Errorf("cannot create file with directory: %v", err)
 	}
-	defer fo.Close()
+	defer func() {
+		if closeErr := fo.Close(); closeErr != nil {
+			log.Warnf("Failed to close output file: %v", closeErr)
+		}
+	}()
 
 	_, err = io.Copy(fo, rc)
 	if err != nil {
@@ -56,7 +64,11 @@ func loadEtagCache(etagFilePath string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot open Etag file(%s): %v", etagFilePath, err)
 		}
-		defer f.Close()
+		defer func() {
+			if closeErr := f.Close(); closeErr != nil {
+				log.Warnf("Failed to close etag file: %v", closeErr)
+			}
+		}()
 
 		bytes, err := io.ReadAll(f)
 		if err != nil {
@@ -72,7 +84,11 @@ func writeEtagCache(etagFilePath, etag_value string) error {
 	if err != nil {
 		return fmt.Errorf("cannot create file with directory: %v", err)
 	}
-	defer out.Close()
+	defer func() {
+		if closeErr := out.Close(); closeErr != nil {
+			log.Warnf("Failed to close etag output file: %v", closeErr)
+		}
+	}()
 
 	d := []byte(etag_value)
 	_, err = out.Write(d)
@@ -121,7 +137,11 @@ func FetchFile(url string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("cannot get HTTP resource(%s): %v", url, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			log.Warnf("Failed to close HTTP response body: %v", closeErr)
+		}
+	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		return "", fmt.Errorf("failed to fetch file %s: http status %d", url, resp.StatusCode)
@@ -151,7 +171,11 @@ func FetchFile(url string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot create file with directory: %v", err)
 		}
-		defer out.Close()
+		defer func() {
+			if closeErr := out.Close(); closeErr != nil {
+				log.Warnf("Failed to close cache output file: %v", closeErr)
+			}
+		}()
 
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
@@ -182,7 +206,11 @@ func ExtractZipFile(filePath string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("cannot open file(%s): %v", filePath, err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil {
+			log.Warnf("Failed to close zip file: %v", closeErr)
+		}
+	}()
 
 	hashedContent := md5.New()
 	if _, err := io.Copy(hashedContent, f); err != nil {
@@ -195,6 +223,11 @@ func ExtractZipFile(filePath string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot open file(%s): %v", filePath, err)
 		}
+		defer func() {
+			if closeErr := r.Close(); closeErr != nil {
+				log.Warnf("Failed to close zip reader: %v", closeErr)
+			}
+		}()
 		for _, f := range r.File {
 			if strings.HasSuffix(f.Name, "/") {
 				continue
@@ -207,7 +240,6 @@ func ExtractZipFile(filePath string) (string, error) {
 			}
 		}
 
-		defer r.Close()
 	}
 
 	return cacheFilePath, nil

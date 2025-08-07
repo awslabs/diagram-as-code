@@ -48,7 +48,11 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 	if err != nil {
 		return fmt.Errorf("Cannot open imageFilePath1(%s): %v", imageFilePath1, err)
 	}
-	defer imageFile1.Close()
+	defer func() {
+		if closeErr := imageFile1.Close(); closeErr != nil {
+			log.Warnf("Failed to close image file 1: %v", closeErr)
+		}
+	}()
 	img1, _, err := image.Decode(imageFile1)
 	if err != nil {
 		return fmt.Errorf("Cannot decode imageFile1: %v", err)
@@ -58,7 +62,11 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 	if err != nil {
 		return fmt.Errorf("Cannot open imageFilePath2(%s): %v", imageFilePath2, err)
 	}
-	defer imageFile2.Close()
+	defer func() {
+		if closeErr := imageFile2.Close(); closeErr != nil {
+			log.Warnf("Failed to close image file 2: %v", closeErr)
+		}
+	}()
 	img2, _, err := image.Decode(imageFile2)
 	if err != nil {
 		return fmt.Errorf("Cannot decode imageFile2: %v", err)
@@ -95,7 +103,11 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 		if err != nil {
 			return fmt.Errorf("Cannot open ")
 		}
-		defer imageFile3.Close()
+		defer func() {
+			if closeErr := imageFile3.Close(); closeErr != nil {
+				log.Warnf("Failed to close image file 3: %v", closeErr)
+			}
+		}()
 
 		if err := png.Encode(imageFile3, img3); err != nil {
 			return fmt.Errorf("failed to encode diff image: %w", err)
