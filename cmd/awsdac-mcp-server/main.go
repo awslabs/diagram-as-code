@@ -30,6 +30,7 @@ type ToolName string
 
 const (
 	GENERATE_DIAGRAM           ToolName = "generateDiagram"
+	GENERATE_DIAGRAM_TO_FILE   ToolName = "generateDiagramToFile"
 	GET_DIAGRAM_AS_CODE_FORMAT ToolName = "getDiagramAsCodeFormat"
 )
 
@@ -59,6 +60,28 @@ FEATURES:
 
 USE CASE:
 Perfect for creating technical documentation, architecture reviews, and system design presentations.
+
+PREREQUISITE:
+Call 'getDiagramAsCodeFormat' first if you need format specification and examples.`
+
+	GENERATE_DIAGRAM_TO_FILE_DESC = `Generate AWS architecture diagrams from YAML and save directly to file.
+
+DESCRIPTION:
+This tool creates professional PNG images of AWS architecture diagrams and saves them directly to the specified file path. Unlike generateDiagram, this tool saves the image to the filesystem rather than returning base64 data.
+
+REQUIREMENTS:
+- YAML must follow the same Diagram-as-code format as generateDiagram
+- Valid file path with write permissions
+- Directory structure will be created if it doesn't exist
+
+FEATURES:
+- Same diagram generation capabilities as generateDiagram
+- Direct file system output for integration with file-based workflows
+- Automatic directory creation
+- Supports relative and absolute file paths
+
+USE CASE:
+Perfect for automated workflows that need diagrams saved to specific locations, CI/CD pipelines, or batch processing scenarios.
 
 PREREQUISITE:
 Call 'getDiagramAsCodeFormat' first if you need format specification and examples.`
@@ -186,6 +209,19 @@ TECHNICAL DETAILS:
 		),
 	), handleGenerateDiagram)
 
+	// Add the diagram generation to file tool
+	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DIAGRAM_TO_FILE),
+		mcp.WithDescription(GENERATE_DIAGRAM_TO_FILE_DESC),
+		mcp.WithString("yamlContent",
+			mcp.Description("Complete YAML specification for the AWS architecture diagram (same format as generateDiagram)"),
+			mcp.Required(),
+		),
+		mcp.WithString("outputFilePath",
+			mcp.Description("Path where the generated PNG file should be saved. Can be relative or absolute path. Parent directories will be created if they don't exist."),
+			mcp.Required(),
+		),
+	), handleGenerateDiagramToFile)
+
 	// Add the tool to generate DAC YAML from user requirements
 	mcpServer.AddTool(mcp.NewTool(string(GET_DIAGRAM_AS_CODE_FORMAT),
 		mcp.WithDescription(GET_FORMAT_DESC),
@@ -250,6 +286,61 @@ func handleGenerateDiagram(
 				Type:     "image",
 				Data:     base64Diagram,
 				MIMEType: "image/png",
+			},
+		},
+	}, nil
+}
+
+// handleGenerateDiagramToFile handles the diagram generation to file tool calls
+func handleGenerateDiagramToFile(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	arguments := request.GetArguments()
+
+	yamlContent, ok := arguments["yamlContent"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid yamlContent argument")
+	}
+
+	outputFilePath, ok := arguments["outputFilePath"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid outputFilePath argument")
+	}
+
+	// Create output directory if it doesn't exist
+	outputDir := filepath.Dir(outputFilePath)
+	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+		return nil, fmt.Errorf("failed to create output directory: %v", err)
+	}
+
+	// Create temporary directory for processing
+	tempDir, err := os.MkdirTemp("", "awsdac-mcp")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temp directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Create temporary input file
+	inputFile := filepath.Join(tempDir, "input.yaml")
+	if err := writeFileFunc(inputFile, []byte(yamlContent), 0o644); err != nil {
+		return nil, fmt.Errorf("failed to write input file: %v", err)
+	}
+
+	// Generate diagram - save directly to specified path
+	opts := &ctl.CreateOptions{}
+	ctl.CreateDiagramFromDacFile(inputFile, &outputFilePath, opts)
+
+	// Verify that the file was created successfully
+	if _, err := os.Stat(outputFilePath); err != nil {
+		return nil, fmt.Errorf("failed to verify generated diagram file: %v", err)
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.TextContent{
+				Type: "text",
+				Text: fmt.Sprintf("Diagram successfully generated and saved to: %s", outputFilePath),
 			},
 		},
 	}, nil
