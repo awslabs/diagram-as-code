@@ -29,8 +29,8 @@ var (
 type ToolName string
 
 const (
-	GENERATE_DIAGRAM                    ToolName = "generateDiagram"
-	GENERATE_DAC_FROM_USER_REQUIREMENTS ToolName = "generateDacFromUserRequirements"
+	GENERATE_DIAGRAM           ToolName = "generateDiagram"
+	GET_DIAGRAM_AS_CODE_FORMAT ToolName = "getDiagramAsCodeFormat"
 )
 
 // Default prompt template file paths
@@ -61,25 +61,25 @@ func NewMCPServer() *server.MCPServer {
 		server.WithResourceCapabilities(true, true), // Enable resource capabilities
 		server.WithLogging(),
 		server.WithHooks(hooks),
-		server.WithInstructions("AWS Diagram-as-Code MCP Server provides tools to generate AWS architecture diagrams from YAML files."),
+		server.WithInstructions("AWS Diagram-as-Code MCP Server provides tools to generate AWS architecture diagrams from Diagram-as-code template."),
 	)
 
 	// Add the diagram generation tool
 	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DIAGRAM),
-		mcp.WithDescription("Generates an AWS architecture diagram from a YAML file"),
+		mcp.WithDescription("Generates an AWS architecture diagram from Diagram-as-code template"),
 		mcp.WithString("yamlContent",
-			mcp.Description("The YAML content to generate a diagram from"),
+			mcp.Description("The Diagram-as-code template to generate diagram format"),
 			mcp.Required(),
 		),
 		mcp.WithString("outputFormat",
-			mcp.Description("The output format of the diagram (png, svg)"),
+			mcp.Description("The output format of the diagram (png)"),
 			mcp.DefaultString("png"),
 		),
 	), handleGenerateDiagram)
 
 	// Add the tool to generate DAC YAML from user requirements
-	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DAC_FROM_USER_REQUIREMENTS),
-		mcp.WithDescription("Generates a DAC YAML file from user requirements"),
+	mcpServer.AddTool(mcp.NewTool(string(GET_DIAGRAM_AS_CODE_FORMAT),
+		mcp.WithDescription("Get Diagram as code format"),
 	), handleGenerateDacFromUserRequirements)
 
 	return mcpServer
