@@ -16,6 +16,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var cacheBaseDir string
+
+// getCacheBaseDir returns a consistent cache directory for the lifetime of the process.
+// Note: This implementation uses TempDir as fallback for MCP Server usage.
+// While inefficient for CLI execution (creates temp directory each run),
+// MCP servers are long-running processes where TempDir remains unique during execution.
+func getCacheBaseDir() string {
+	if cacheBaseDir == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			log.Infof("cannot get home directory: %v", err)
+			cacheBaseDir = os.TempDir()
+		} else {
+			cacheBaseDir = homeDir
+		}
+	}
+	return cacheBaseDir
+}
+
 func createFileWithDirectory(filePath string) (*os.File, error) {
 	err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm)
 	if err != nil {
@@ -198,11 +217,7 @@ func FetchFile(url string) (string, error) {
 }
 
 func ExtractZipFile(filePath string) (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Infof("cannot get home directory: %v", err)
-		homeDir = os.TempDir()
-	}
+	homeDir := getCacheBaseDir()
 
 	f, err := os.Open(filePath)
 	if err != nil {
