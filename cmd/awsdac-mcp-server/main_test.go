@@ -20,11 +20,21 @@ func TestNewMCPServer(t *testing.T) {
 func TestHandleGenerateDiagram(t *testing.T) {
 	ctx := context.Background()
 	validYAML := `
-Resources:
-  - Type: AWS::EC2::VPC
-    Name: MyVPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Children:
+        - MyVPC
+    MyVPC:
+      Type: AWS::EC2::VPC
 `
 
 	tests := []struct {
@@ -132,9 +142,21 @@ Resources:
 
 func TestHandleGenerateDiagram_TempFileContent(t *testing.T) {
 	ctx := context.Background()
-	yamlContent := `Resources:
-  - Type: AWS::EC2::VPC
-    Name: TestVPC`
+	yamlContent := `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Children:
+        - TestVPC
+    TestVPC:
+      Type: AWS::EC2::VPC`
 
 	request := mcp.CallToolRequest{
 		Params: mcp.CallToolParams{
@@ -168,9 +190,21 @@ func TestHandleGenerateDiagram_TempFileContent(t *testing.T) {
 
 func TestHandleGenerateDiagram_OutputFileContent(t *testing.T) {
 	ctx := context.Background()
-	yamlContent := `Resources:
-  - Type: AWS::EC2::VPC
-    Name: TestVPC`
+	yamlContent := `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Children:
+        - TestVPC
+    TestVPC:
+      Type: AWS::EC2::VPC`
 	// Expected content generation approach:
 	// 1. Create mock data instead of actual PNG image data for test stability
 	// 2. Use predictable mock data to ensure consistent test results
@@ -431,6 +465,14 @@ Diagram:
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Children:
+        - TestVPC
+    TestVPC:
+      Type: AWS::EC2::VPC
 `
 
 	tempDir := t.TempDir()
@@ -491,7 +533,7 @@ Diagram:
 		{
 			name:           "invalid output path with null byte",
 			outputPath:     "/tmp/diagram\x00.png",
-			expectedErrMsg: "failed to verify generated diagram file",
+			expectedErrMsg: "error opening output file",
 		},
 	}
 
