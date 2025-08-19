@@ -331,7 +331,9 @@ func handleGenerateDiagramToFile(
 
 	// Generate diagram - save directly to specified path
 	opts := &ctl.CreateOptions{}
-	ctl.CreateDiagramFromDacFile(inputFile, &outputFilePath, opts)
+	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFilePath, opts); err != nil {
+		return nil, fmt.Errorf("failed to create diagram: %v", err)
+	}
 
 	// Verify that the file was created successfully
 	if _, err := os.Stat(outputFilePath); err != nil {
