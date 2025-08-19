@@ -265,7 +265,9 @@ func handleGenerateDiagram(
 	// Generate diagram directly in the main thread
 	// This ensures logs are properly captured
 	opts := &ctl.CreateOptions{}
-	ctl.CreateDiagramFromDacFile(inputFile, &outputFile, opts)
+	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, opts); err != nil {
+		return nil, fmt.Errorf("failed to create diagram: %v", err)
+	}
 
 	// Read the generated diagram
 	diagramData, err := readFileFunc(outputFile)
