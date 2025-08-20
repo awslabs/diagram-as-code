@@ -119,11 +119,7 @@ func writeEtagCache(etagFilePath, etag_value string) error {
 
 func FetchFile(url string) (string, error) {
 	log.Infof("[internal/cache/cache.go] FetchFile %s", url)
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Infof("cannot get home directory: %v", err)
-		homeDir = os.TempDir()
-	}
+	homeDir := getCacheBaseDir()
 
 	hashedUrl := md5.New()
 	if _, err := io.WriteString(hashedUrl, url); err != nil {
