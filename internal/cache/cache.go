@@ -16,6 +16,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var cacheBaseDir string
+
+// getCacheBaseDir returns a consistent cache directory for the lifetime of the process.
+// Note: This implementation uses TempDir as fallback for MCP Server usage.
+// While inefficient for CLI execution (creates temp directory each run),
+// MCP servers are long-running processes where TempDir remains unique during execution.
+func getCacheBaseDir() string {
+	if cacheBaseDir == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			log.Infof("cannot get home directory: %v", err)
+			cacheBaseDir = os.TempDir()
+		} else {
+			cacheBaseDir = homeDir
+		}
+	}
+	return cacheBaseDir
+}
+
 func createFileWithDirectory(filePath string) (*os.File, error) {
 	err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm)
 	if err != nil {
@@ -34,13 +53,21 @@ func writeFile(outputFilename string, fi *zip.File) error {
 	if err != nil {
 		return fmt.Errorf("cannot open file: %v", err)
 	}
-	defer rc.Close()
+	defer func() {
+		if closeErr := rc.Close(); closeErr != nil {
+			log.Warnf("Failed to close zip reader: %v", closeErr)
+		}
+	}()
 
 	fo, err := createFileWithDirectory(outputFilename)
 	if err != nil {
 		return fmt.Errorf("cannot create file with directory: %v", err)
 	}
-	defer fo.Close()
+	defer func() {
+		if closeErr := fo.Close(); closeErr != nil {
+			log.Warnf("Failed to close output file: %v", closeErr)
+		}
+	}()
 
 	_, err = io.Copy(fo, rc)
 	if err != nil {
@@ -56,7 +83,11 @@ func loadEtagCache(etagFilePath string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot open Etag file(%s): %v", etagFilePath, err)
 		}
-		defer f.Close()
+		defer func() {
+			if closeErr := f.Close(); closeErr != nil {
+				log.Warnf("Failed to close etag file: %v", closeErr)
+			}
+		}()
 
 		bytes, err := io.ReadAll(f)
 		if err != nil {
@@ -72,7 +103,11 @@ func writeEtagCache(etagFilePath, etag_value string) error {
 	if err != nil {
 		return fmt.Errorf("cannot create file with directory: %v", err)
 	}
-	defer out.Close()
+	defer func() {
+		if closeErr := out.Close(); closeErr != nil {
+			log.Warnf("Failed to close etag output file: %v", closeErr)
+		}
+	}()
 
 	d := []byte(etag_value)
 	_, err = out.Write(d)
@@ -84,13 +119,12 @@ func writeEtagCache(etagFilePath, etag_value string) error {
 
 func FetchFile(url string) (string, error) {
 	log.Infof("[internal/cache/cache.go] FetchFile %s", url)
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", fmt.Errorf("cannot get home directory: %v", err)
-	}
+	homeDir := getCacheBaseDir()
 
 	hashedUrl := md5.New()
-	io.WriteString(hashedUrl, url)
+	if _, err := io.WriteString(hashedUrl, url); err != nil {
+		return "", fmt.Errorf("failed to write URL to hash: %w", err)
+	}
 
 	etagFilePath := filepath.Join(homeDir, ".cache", "awsdac", "etag", fmt.Sprintf("%x-%s", hashedUrl.Sum(nil), filepath.Base(url)))
 	cacheFilePath := filepath.Join(homeDir, ".cache", "awsdac", fmt.Sprintf("%x-%s", hashedUrl.Sum(nil), filepath.Base(url)))
@@ -119,7 +153,11 @@ func FetchFile(url string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("cannot get HTTP resource(%s): %v", url, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			log.Warnf("Failed to close HTTP response body: %v", closeErr)
+		}
+	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		return "", fmt.Errorf("failed to fetch file %s: http status %d", url, resp.StatusCode)
@@ -149,7 +187,11 @@ func FetchFile(url string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot create file with directory: %v", err)
 		}
-		defer out.Close()
+		defer func() {
+			if closeErr := out.Close(); closeErr != nil {
+				log.Warnf("Failed to close cache output file: %v", closeErr)
+			}
+		}()
 
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
@@ -171,16 +213,17 @@ func FetchFile(url string) (string, error) {
 }
 
 func ExtractZipFile(filePath string) (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", fmt.Errorf("cannot get home directory: %v", err)
-	}
+	homeDir := getCacheBaseDir()
 
 	f, err := os.Open(filePath)
 	if err != nil {
 		return "", fmt.Errorf("cannot open file(%s): %v", filePath, err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil {
+			log.Warnf("Failed to close zip file: %v", closeErr)
+		}
+	}()
 
 	hashedContent := md5.New()
 	if _, err := io.Copy(hashedContent, f); err != nil {
@@ -193,6 +236,11 @@ func ExtractZipFile(filePath string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot open file(%s): %v", filePath, err)
 		}
+		defer func() {
+			if closeErr := r.Close(); closeErr != nil {
+				log.Warnf("Failed to close zip reader: %v", closeErr)
+			}
+		}()
 		for _, f := range r.File {
 			if strings.HasSuffix(f.Name, "/") {
 				continue
@@ -205,7 +253,6 @@ func ExtractZipFile(filePath string) (string, error) {
 			}
 		}
 
-		defer r.Close()
 	}
 
 	return cacheFilePath, nil

@@ -48,7 +48,11 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 	if err != nil {
 		return fmt.Errorf("Cannot open imageFilePath1(%s): %v", imageFilePath1, err)
 	}
-	defer imageFile1.Close()
+	defer func() {
+		if closeErr := imageFile1.Close(); closeErr != nil {
+			log.Warnf("Failed to close image file 1: %v", closeErr)
+		}
+	}()
 	img1, _, err := image.Decode(imageFile1)
 	if err != nil {
 		return fmt.Errorf("Cannot decode imageFile1: %v", err)
@@ -58,7 +62,11 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 	if err != nil {
 		return fmt.Errorf("Cannot open imageFilePath2(%s): %v", imageFilePath2, err)
 	}
-	defer imageFile2.Close()
+	defer func() {
+		if closeErr := imageFile2.Close(); closeErr != nil {
+			log.Warnf("Failed to close image file 2: %v", closeErr)
+		}
+	}()
 	img2, _, err := image.Decode(imageFile2)
 	if err != nil {
 		return fmt.Errorf("Cannot decode imageFile2: %v", err)
@@ -95,9 +103,15 @@ func compareTwoImages(imageFilePath1, imageFilePath2, tmpOutputDiffFilename stri
 		if err != nil {
 			return fmt.Errorf("Cannot open ")
 		}
-		defer imageFile3.Close()
+		defer func() {
+			if closeErr := imageFile3.Close(); closeErr != nil {
+				log.Warnf("Failed to close image file 3: %v", closeErr)
+			}
+		}()
 
-		png.Encode(imageFile3, img3)
+		if err := png.Encode(imageFile3, img3); err != nil {
+			return fmt.Errorf("failed to encode diff image: %w", err)
+		}
 
 		return fmt.Errorf("Mismatch pixels on image %d of %d. See diff-image.png", pixels_diff_numer, img1b.Max.X*img1b.Max.Y)
 	}
@@ -126,9 +140,13 @@ func TestFunctionality(t *testing.T) {
 				OverrideDefFile: "../definitions/definition-for-aws-icons-light.yaml",
 			}
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
-				ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts)
+				if err := ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts); err != nil {
+					t.Fatalf("failed to create diagram from CloudFormation template %s: %v", yamlFilename, err)
+				}
 			} else {
-				ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, &opts)
+				if err := ctl.CreateDiagramFromDacFile(yamlFilename, &tmpOutputFilename, &opts); err != nil {
+					t.Fatalf("failed to create diagram from DAC file %s: %v", yamlFilename, err)
+				}
 			}
 			pngFilename := strings.Replace(yamlFilename, ".yaml", ".png", 1)
 			tmpOutputDiffFilename := fmt.Sprintf("%s/%s", tmpOutputDir, strings.Replace(file.Name(), ".yaml", "-diff.png", 1))

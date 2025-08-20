@@ -1,0 +1,424 @@
+User: You will be generating a Diagram-as-code YAML file based on user requirements.
+The user requirements are provided in the <user-requirements></user-requirements> section.
+The Diagram-as-code file format uses YAML syntax and consists of 3 main sections and there is a custom rules section in <custom-rules></custom-rules>.
+<diagram-as-code-format>
+Introduction
+Introductions
+
+Understanding DAC (diagram as code) File / How to Make Input File
+To create diagrams with awsdac, you need to provide a "DAC (diagram as code) file" that defines the components and layout of your architecture. The DAC file uses YAML syntax and consists of 3 main sections:
+
+Diagram:
+    DefinitionFiles:  # Specify the location of the definition file
+      ...
+    Resources:        # Define your AWS resources here
+      ...
+    Links:            # Define connections between resources
+      ...
+DefinitionFiles section
+To use the pre-defined resource definitions from the awsdac GitHub repository, specify the URL in the DefinitionFiles section:
+
+    DefinitionFiles:
+      - Type: URL
+        Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+If you want to customize the resource definitions locally, you can specify a local file path instead:
+
+    DefinitionFiles:
+      - Type: LocalFile
+        LocalFile: "<your definition file path (e.g. ~/Desktop/your-custom-definition.yaml)>"
+Resources section
+awsdac has a unique feature where it provides resource types such as AWS::Diagram::Canvas and AWS::Diagram::Cloud, but you can define other AWS resources in a similar way to CloudFormation resource types. And these resources are associated with each other by listing them under the "Children" property.
+
+    Resources:
+        Canvas:
+            Type: AWS::Diagram::Canvas
+            Children:
+                - AWSCloud
+        AWSCloud:
+            Type: AWS::Diagram::Cloud
+            Preset: AWSCloudNoLogo
+            Children:
+                - VPC
+        VPC:
+            Type: AWS::EC2::VPC
+            Children:
+                - ELB            
+                - Subnet1
+                - Subnet2
+        ELB:
+            Type: AWS::ElasticLoadBalancingV2::LoadBalancer                
+        Subnet1:
+            Type: AWS::EC2::Subnet
+            Children:
+                - EC2Instance1
+        Subnet2:
+            Type: AWS::EC2::Subnet
+            Children:
+                - EC2Instance2
+        EC2Instance1:
+            Type: AWS::EC2::Instance
+        EC2Instance2:
+            Type: AWS::EC2::Instance
+However, if you use the above file, the resulting diagram will have the ELB on the same layer as the subnets, like this:
+
+
+
+If you want to have more control over the positioning of AWS resources, such as placing the ELB in front of the subnets, you can define AWS::Diagram::VerticalStack or AWS::Diagram::HorizontalStack resources to group other resources. For example, in this case, you could:
+
+Group the 2 subnets together by creating an AWS::Diagram::HorizontalStack resource
+Define the VPC resource to have the AWS::Diagram::HorizontalStack and the ELB resource as its Children
+Set the Direction of the VPC resource to "vertical" so that the resources under the VPC are stacked vertically (note: the default value for the Direction property is "horizontal")
+    Resources:
+        ...
+        VPC:
+            Type: AWS::EC2::VPC
++           Direction: "vertical"
+            Children:
+                - ELB
++               - HorizontalStackGroup
+-                - Subnet1
+-                - Subnet2
+        ...
++       HorizontalStackGroup:
++           Type: AWS::Diagram::HorizontalStack
++           Children:
++               - Subnet1
++               - Subnet2
+        ...
+
+
+For more detailed information about "Resources" section, please refer to: resource-types.md
+
+Links section
+You can draw a line between the resource specified as the Source and the resource specified as the Target. At this time, you can define "where the line is drawn on the icon" by specifying SourcePosition or TargetPosition. For example, if you make the following definition, you will get a diagram like this:
+
+    Links:
+      - Source: ELB
+        SourcePosition: S     # "S" (South) for SourcePosition means the line begins from the bottom of the icon
+        Target: EC2Instance1
+        TargetPosition: N     # "N" (North) for TargetPosition means the line ends at the top of the icon
+        TargetArrowHead:
+            Type: Open
+
+
+For more detailed information about Links, please refer to: links.md
+
+
+
+Links are lines that show relationships between resources. Currently supports a straight line between resources.
+
+Link position
+The start and end points of the line specify the location as the 16-wind rose of the resource (for example, NNW).
+
+position
+
+Diagrams:
+  Resources:
+    ALB: ...
+    PublicSubnet1Instance: ...
+  Links:
+    - Source: ALB # (required)
+      SourcePosition: NNE # (required)
+      Target: PublicSubnet1Instance # (required)
+      TargetPosition: S # (required)
+      LineWidth: 1 # (optional)
+      LineColor: 'rgba(255,255,255,255)' # (optional)
+      LineStyle: `normal|dashed` (optional)
+Link type
+Straight
+straight link
+
+  Links:
+    - Source: StraightLambda
+      SourcePosition: N
+      Target: StraightBucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+Orthogonal
+orthogonal link
+
+  Links:
+      # Orthogonal (single-arm)
+    - Source: Orthogonal1Lambda
+      SourcePosition: N
+      Target: Orthogonal1Bucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+
+      # Orthogonal (double-arm)
+    - Source: Orthogonal2Lambda
+      SourcePosition: E
+      Target: Orthogonal2Bucket
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+
+      # Orthogonal (double-arm)
+    - Source: Orthogonal3Lambda
+      SourcePosition: E
+      Target: Orthogonal3Bucket
+      TargetPosition: E
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+Arrow head
+Arrows add context and meaning to a diagram by indicating the direction of flow.
+
+arrow head (generated from static/arrows.yaml)
+
+    - Source: ALB
+      SourcePosition: NNW
+      SourceArrowHead: #(optional)
+        Type: Open #(required) Open/Default
+        Width: Default #  (optional) Narrow/Default/Wide default="Default"
+        Length: 2 # (optional) default=2
+      Target: VPCPublicSubnet1Instance
+      TargetPosition: SSE
+      TargetArrowHead: #(optional)
+        Type: Open #(required) Open/Default
+        Width: Default #  (optional) Narrow/Default/Wide default="Default"
+        Length: 2 # (optional) default=2
+Link Labels
+Link Labels add labels along the link
+
+  Links:
+    - Source: ALB # (required)
+      SourcePosition: NNE # (required)
+      Target: PublicSubnet1Instance # (required)
+      TargetPosition: S # (required)
+      Labels: (optional)
+        SourceLeft: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on SourceLeft, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        SourceRight: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on SourceRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        TargetLeft: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on TargetLeft, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        TargetRight: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on TargetRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+
+
+Resouce Types
+AWS::Diagram::Canvas
+Canvas is a resource type that represents a drawable area. The Canvas resource type doesn't draw anything, but it is a special resource type, and all resources must be reached from the Canvas. There must be only one Canvas resource type in the file.
+
+Dependency graph
+
+AWS::Diagram::Cloud
+A resource type that indicates that it is within the AWS cloud. It is defined internally as AWS::Diagram::Group resource type. It is often used mainly in contrast to users and on-premises environments but is not required.
+
+AWS Cloud
+
+Diagram:
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Preset: AWSCloudNoLogo
+
+AWS::Diagram::Resource
+An essential resource type that represents a single resource or group. The following attributes are defined for the resource, and it is possible to customize the decoration with these attributes. AWS::Diagram::Resource type are used implicitly from other predefined types, but you can specify AWS::Diagram::Resource explicitly and create custom resources.
+
+Attribute	Type	Default Value	Description
+Icon	string	 	Icon file path
+IconFill	IconFill	Type: none, Color: rgba(255,255,255,255)	Filling icon background
+Direction	string	horizontal	vertical: left,center,right horizontal: top, center, bottom
+Preset	string	 	Override resource attributes from preset
+Align	string	center	vertical, horizontal
+FillColor	string	rgba(0,0,0,0)	Only group.
+BorderColor	string	rgba(0,0,0,0)	
+Title	string	 	
+HeaderAlign	string	left	Only group. You can align icon and title to left/center/right.
+Children	[]string	[]	
+Single resource
+    Subnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+
+A resource with EC2 instance children
+    Subnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - Instance
+    Instance:
+      Type: AWS::EC2::Instance
+
+A resource with empty resource children
+    Subnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - SubnetEmptyResource
+    SubnetEmptyResource:
+      Type: AWS::Diagram::Resource
+
+AWS::Diagram::VerticalStack
+A resource type that indicates a vertical stack. It is treated internally as a Group resource type but is undecorated by default. left alignment, center alignment, or right alignment can be specified with align attribute when stacking.
+
+Vertical Stack
+
+AWS::Diagram::HorizontalStack
+A resource type that indicates a horizontal stack. It is treated internally as a Group resource type but is undecorated by default. top alignment, center alignment, or bottom alignment can be specified with align attribute when stacking.
+
+Horizontal Stack
+
+</diagram-as-code-format><beautiful-diagram-tips>
+- A Transit Gateway can be associated with multiple Availability Zones (subnets) through attachments. The association creates a network interface in each subnet. In terms of diagrams, it is best to place the attachment itself in BorderChildren and each ENI in a Transit Subnet, with dashed links to represent the relationship.
+- The relationship between the Internet gateway and the public subnet is self-evident, so a Link is not required.
+- Associations/attachments should also be represented by Link, but it should be without ArrowHead/Orthogonal and with LineStyle `dashed`.
+- An EC2 instance always resides on a subnet.
+- Place InternetGateway(North) and VPNGateway in BorderChildren.
+- In Links section, if SourcePosition is S, it is better that TargetPosition is N and vice versa. And if SourcePosition is E, it is better that TargetPosition is W and vice versa.
+- If meaningful groupings can be identified, please group them using AWS::Cloud.
+- Place Transit Gateway as center
+- To display a user, you can use the following notation:
+```
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: "User"
+```
+- To display an administrator, you can use the following notation:
+```
+    Administrator:
+      Type: AWS::Diagram::Resource
+      Preset: "User"
+      Title: Administrator
+```
+
+- The parent-child relationship of the group should be Canvas -> Onprem/AWSCloud -> Region -> VPC -> Private/Public/Transit Subnet -> Private/Public/Transit subnet -> Instance.
+- Anything that can be grouped should be grouped into a group.
+```
+    GroupA:
+      Type: AWS::Diagram::Resource
+      Preset: Generic group
+      Title: Group A
+```
+- Should be HorizontalStack(A, B) for the link A{SourcePosition: E}->B{TargetPosition:W}, and VerticalStack(A, B) for the link A{SourcePosition:S}->B{TargetPosition:N}.
+- Output Resources after Links.
+- A child must have one parent.
+- The order of placement of children should be as follows. Lower values take precedence.
+1. Links should be in a tree structure with the root as the starting point.
+2. Use AWS::Diagram::HorizontalStack in AWSCloud (AWS::Diagram::Cloud) to create a hierarchy. The hierarchy is the number of links that can be reached from the root.
+3. Change the order of children to avoid crossing links. For Link(A->D), Link(B->C), the order of children in HorizontalStack should be VerticalStack(HorizontalStack(A, B), HorizontalStack(D, C)) to avoid crossing links.
+- If a Route53 hosted zone exists, DNS performs name resolution to obtain IP addresses before users send requests. Route 53 hosted zones are a service that provides DNS.
+- Beautiful diagram tips
+How do you draw a large-scale architecture diagram beautifully?
+
+Here are some unofficial tips to keep your diagrams beautiful.
+
+It's a good idea to start thinking about the purpose of the architecture diagram you're drawing and what you want to express. Here are three types of diagrams:
+
+1. Action flow diagram
+
+It can start with a user, particularly an exposed service, and show how that user's actions affect resources in the system. This user is often an anonymous user, or a user authenticated with Cognito or IDP. The user sends requests to the system, mainly through HTTP requests, and the system tries to resolve those requests. The flow is mainly represented by arrows, and the labels explain what kind of request was made.
+
+2. Infrastructure diagram
+
+Mainly used for infrastructure management. Not only complex VPCs and subnets, but also configurations that extend VPC networks such as VPNs, Direct Connects, Transit Gateways, and Cloud WANs can become complicated to manage, so visually easy-to-understand architecture diagrams are useful for management.
+
+Infrastructure diagrams were once used in datacenter networks, and the method of expressing North as external and South as internal was often used. https://en.wikipedia.org/wiki/North-south_traffic In other words, North-South communication represents traffic inside and outside the datacenter, and East-West communication represents communication within the datacenter. In AWS architecture diagrams, this concept is incorporated into subnets and VPCs rather than datacenters, making it possible to express more complex architecture diagrams. Infrastructure diagrams are mainly intended for management purposes, so they are not often expressed with arrows, but when expressing the flow of network traffic based on route table settings, etc., arrows may be used to represent the flow of traffic.
+
+3. Management diagram
+This is very similar to an action flow diagram, but it is drawn from the perspective of an administrator rather than a user who uses the system. When some kind of problem occurs in the system, troubleshooting is required quickly, and it is very important to know what resources exist and what to check early in order to identify the situation of the problem as soon as possible. Administrators can understand the situation by using various monitoring and logging tools such as the AWS Management Console and CloudWatch.
+
+# Architecture diagram and tree structure
+
+In many cases, it is not possible to clearly classify things as above. One architecture diagram may represent multiple purposes. The important thing here is to prepare a tree structure for each purpose in advance. This makes it easier to organize your thoughts. For example, if you create a tree structure with the user as the starting point (root), it will be clear which resources should be drawn in the action flow diagram. When expressing the flow of traffic, creating a tree structure from the source of the packet to the destination will make the flow clear.
+
+In addition to the relationship between resources you want to express, the parent-child relationship between resources is also important. For example, a VPC always exists in one of the AWS regions. A subnet always has a parent VPC. Resources that run on a VPC, such as an EC2 instance, always have one or more subnets as parents. In diagram as code, the parent-child relationship of resources is also necessary, so it is a good idea to prepare a tree structure that shows the parent-child relationship.
+
+Tip 1. Direction of user and resource placement
+If you want to express all uses using the above classification, how should you place resources? In infrastructure diagrams, it is customary to represent North as external and South as internal. If you are also representing other uses, anonymous users and authenticated users will be external, so you will basically place them in North. The Internet gateway will also be placed in N(North). Since it is assumed that administrators will access from inside, it is easy to think of placing them in S(South). Redundancy layers (availability zones and subnets) will be represented horizontally (East-West). However, if the system does not accept requests from users and is for East-West communication, it is better to make it vertically (North-South) redundant.
+
+Tip 2. Redundancy Layers
+AWS recommends redundancy using multiple availability zones, and this redundancy may be shown in architecture diagrams. However, when considering link display, it is a difficult question whether to show redundancy vertically or horizontally. Basically, if you are showing east-west communication as a link, it is more appropriate to show redundancy vertical (north-south). In other cases, it is better to use horizontal (east-west) redundancy.
+
+East-west traffic, Subnets are grouped horizontally by subnet type for vertical redundancy.
+```
+  Subnets:
+    Type: AWS::Diagram::HorizontalStack
+    Children:
+      - PublicSubnets
+      - PrivateSubnets
+  PublicSubnets:
+    Type: AWS::Diagram::VerticalStack
+    Children:
+      - PublicSubnet1
+      - PublicSubnet2
+    ...
+  PrivateSubnets:
+    Type: AWS::Diagram::VerticalStack
+    Children:
+      - PrivateSubnet1
+      - PrivateSubnet2
+    ...
+```
+
+To receive traffic from users (North), subnets are grouped vertically by subnet type for horizontal redundancy.
+```
+  Subnets:
+    Type: AWS::Diagram::VerticalStack
+    Children:
+      - PublicSubnets
+      - PrivateSubnets
+  PublicSubnets:
+    Type: AWS::Diagram::HorizontalStack
+    Children:
+      - PublicSubnet1
+      - PublicSubnet2
+    ...
+  PrivateSubnets:
+    Type: AWS::Diagram::HorizontalStack
+    Children:
+      - PrivateSubnet1
+      - PrivateSubnet2
+    ...
+```
+
+</beautiful-diagram-tips>
+<custom-rules>
+- Link must connect existing resources in Resource Section. Link must not connect non-existing resources.
+- When there are multiple Links from the same resource and each has a label, use TargetLeft or TargetRight to prevent labels from overlapping.
+- Arrange resources carefully to avoid arrow overlapping as much as possible.
+- Follow YAML syntax and do not include unnecessary explanations or descriptive text in your response.
+- When a single resource has relationships with multiple resources, use HorizontalStack or VerticalStack to ensure the multiple resources are aligned.
+- Add the orthogonal property to the Links section.
+- Do not create Links to non-existent resources.
+- Do not use AWS::Diagram::VerticalStack and AWS::Diagram::HorizontalStack as Source and Target in Links as they are non-drawable resources.
+- If you want to explicitly specify a group of resources, use AWS::Diagram::Resource.
+- All resource types that begin with AWS:: must be located in the AWS cloud.
+- Think about it step by step and output your thoughts using <thinking></thinking>.
+- The generated code should be printed within <code></code>.
+- First, explain what type of diagram (user action diagram, infrastructure diagram, etc.) would be appropriate to display from the given template, and why.
+- Create and output the following tree structure:
+  1. North-south user action flow tree
+    For systems that are actionable from external users, such as API Gateway, ELB, CloudFront, Global Accelerator, via protocols HTTP(S), think of a flow tree of events rooted at the user.
+  2. East-west packet flow tree 
+    If network traffic is present, a packet flow tree showing the flow of network traffic. 
+  3. South-north administrator action flow tree
+    If it is appropriate to display administrator actions using like SSH, InstanceConnect, SSM or Management Console, a flow tree of events rooted at the administrator
+  4. Parent-child relationship of Diagram-as-code format
+    A tree structure showing the parent-child relationships of DaC files
+- <code></code> should appear last.
+- Do not display the Internet Gateway.
+</custom-rules>

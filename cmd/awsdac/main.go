@@ -34,26 +34,20 @@ func main() {
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 
 			if len(args) == 0 {
-				error_message := "awsdac: This tool requires an input file to run. Please provide a file path.\n"
-				fmt.Println(error_message)
-				cmd.Help()
-
-				os.Exit(1)
+				return fmt.Errorf("awsdac: This tool requires an input file to run. Please provide a file path")
 			}
 
 			inputFile := args[0]
 			if !ctl.IsURL(inputFile) {
-
 				if _, err := os.Stat(inputFile); os.IsNotExist(err) {
-					fmt.Printf("awsdac: Input file '%s' does not exist.\n", inputFile)
-					os.Exit(1)
+					return fmt.Errorf("awsdac: Input file '%s' does not exist", inputFile)
 				}
 			}
 
 			return nil
 
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 
 			if verbose {
 				log.SetLevel(log.InfoLevel)
@@ -69,7 +63,9 @@ func main() {
 					Width:           width,
 					Height:          height,
 				}
-				ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts)
+				if err := ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts); err != nil {
+					return fmt.Errorf("failed to create diagram from CloudFormation template: %w", err)
+				}
 			} else {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:    isGoTemplate,
@@ -77,9 +73,12 @@ func main() {
 					Width:           width,
 					Height:          height,
 				}
-				ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts)
+				if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts); err != nil {
+					return fmt.Errorf("failed to create diagram: %w", err)
+				}
 			}
 
+			return nil
 		},
 	}
 
@@ -92,5 +91,8 @@ func main() {
 	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
 	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
 
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
 }

@@ -48,7 +48,7 @@ var template = TemplateStruct{
 	},
 }
 
-func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateDacFile bool, opts *CreateOptions) {
+func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generateDacFile bool, opts *CreateOptions) error {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -58,13 +58,17 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		// URL from remote
 		resp, err := http.Get(inputfile)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to get URL: %w", err)
 		}
-		defer resp.Body.Close()
+		defer func() {
+			if closeErr := resp.Body.Close(); closeErr != nil {
+				log.Warnf("Failed to close response body: %v", closeErr)
+			}
+		}()
 
 		cfn_template, err = parse.Reader(resp.Body)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to parse CloudFormation template from URL: %w", err)
 		}
 
 	} else {
@@ -72,12 +76,12 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		var err error
 		cfn_template, err = parse.File(inputfile)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to parse CloudFormation template file: %w", err)
 		}
 	}
 
 	var ds definition.DefinitionStructure
-	var resources map[string]*types.Resource = make(map[string]*types.Resource)
+	resources := make(map[string]*types.Resource)
 
 	log.Info("--- Load DefinitionFiles section ---")
 	if opts.OverrideDefFile != "" {
@@ -88,19 +92,23 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 				Type: "URL",
 				Url:  opts.OverrideDefFile,
 			}
-			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		} else {
 			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
 			var defFile = DefinitionFile{
 				Type:      "LocalFile",
 				LocalFile: opts.OverrideDefFile,
 			}
-			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		}
-		loadDefinitionFiles(&overrideDefTemplate, &ds)
+		if err := loadDefinitionFiles(&overrideDefTemplate, &ds); err != nil {
+			return fmt.Errorf("failed to load override definition files: %w", err)
+		}
 		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
 	} else {
-		loadDefinitionFiles(&template, &ds)
+		if err := loadDefinitionFiles(&template, &ds); err != nil {
+			return fmt.Errorf("failed to load definition files: %w", err)
+		}
 	}
 
 	log.Info("--- Convert CloudFormation template to diagram structures ---")
@@ -110,7 +118,9 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	ensureSingleParent(&template)
 
 	log.Info("--- Load Resources section ---")
-	loadResources(&template, ds, resources)
+	if err := loadResources(&template, ds, resources); err != nil {
+		return fmt.Errorf("failed to load resources: %w", err)
+	}
 
 	log.Info("--- Associate children with parent resources ---")
 	associateCFnChildren(&template, ds, resources)
@@ -120,7 +130,10 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		go generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
-	createDiagram(resources, outputfile, opts)
+	if err := createDiagram(resources, outputfile, opts); err != nil {
+		return fmt.Errorf("failed to create diagram: %w", err)
+	}
+	return nil
 }
 
 func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds definition.DefinitionStructure) {
@@ -134,8 +147,8 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 			resource := res.(map[string]interface{})
 			typeValue, _ := resource["Type"].(string)
 
-			if _, ok := template.Diagram.Resources[logicalId]; !ok {
-				template.Diagram.Resources[logicalId] = Resource{
+			if _, ok := template.Resources[logicalId]; !ok {
+				template.Resources[logicalId] = Resource{
 					Type: typeValue,
 				}
 			}
@@ -167,7 +180,7 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 				}
 
 				//related_resource_type can not have children resources due to the restrict of definition file.
-				if !def.CFn.HasChildren {
+				if def == nil || !def.CFn.HasChildren {
 					log.Infof("%s cannot have children resource.", related)
 					continue
 				}
@@ -175,23 +188,23 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 				//Find parent
 				findParent = true
 				parent_logicalId := related
-				parent_resources := template.Diagram.Resources[parent_logicalId]
+				parent_resources := template.Resources[parent_logicalId]
 				parent_resources.Children = append(parent_resources.Children, logicalId)
-				template.Diagram.Resources[parent_logicalId] = parent_resources
+				template.Resources[parent_logicalId] = parent_resources
 			}
 
 			//If there is no parent resource, consider "AWSCloud" as the parent
 			if !findParent {
-				parents := template.Diagram.Resources["AWSCloud"]
+				parents := template.Resources["AWSCloud"]
 				parents.Children = append(parents.Children, logicalId)
-				template.Diagram.Resources["AWSCloud"] = parents
+				template.Resources["AWSCloud"] = parents
 			}
 		}
 	}
 }
 
 func ensureSingleParent(template *TemplateStruct) {
-	for logicalId, resource := range template.Diagram.Resources {
+	for logicalId, resource := range template.Resources {
 
 		if logicalId == "Canvas" || logicalId == "AWSCloud" {
 			continue
@@ -200,7 +213,7 @@ func ensureSingleParent(template *TemplateStruct) {
 		if len(resource.Children) > 1 {
 
 			for _, childID := range resource.Children {
-				child, ok := template.Diagram.Resources[childID]
+				child, ok := template.Resources[childID]
 				if !ok {
 					continue
 				}
@@ -221,9 +234,9 @@ func ensureSingleParent(template *TemplateStruct) {
 						}
 					}
 
-					grandparent_resources := template.Diagram.Resources[logicalId]
+					grandparent_resources := template.Resources[logicalId]
 					grandparent_resources.Children = newChildren
-					template.Diagram.Resources[logicalId] = grandparent_resources
+					template.Resources[logicalId] = grandparent_resources
 					resource.Children = newChildren
 					log.Infof("Updated resource %s children: %v", logicalId, newChildren)
 				}
@@ -243,7 +256,7 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			continue
 		}
 
-		if !def.CFn.HasChildren {
+		if def == nil || !def.CFn.HasChildren {
 			log.Infof("%s cannot have children resource.", logicalId)
 			continue
 		}
@@ -263,18 +276,21 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 			}
 			log.Infof("Add child(%s) on %s", child, logicalId)
 
-			resources[logicalId].AddChild(resources[child])
+			if err := resources[logicalId].AddChild(resources[child]); err != nil {
+				log.Warnf("Failed to add child %s to %s: %v", child, logicalId, err)
+				continue
+			}
 
-			if def.Border == nil {
+			if def == nil || def.Border == nil {
 				resources[logicalId].SetBorderColor(color.RGBA{0, 0, 0, 255})
 				resources[logicalId].SetFillColor(color.RGBA{0, 0, 0, 0})
 			}
 
 			// Update yaml template for providing
 			newChildren = append(newChildren, child)
-			template_resource := template.Diagram.Resources[logicalId]
+			template_resource := template.Resources[logicalId]
 			template_resource.Children = newChildren
-			template.Diagram.Resources[logicalId] = template_resource
+			template.Resources[logicalId] = template_resource
 
 		}
 	}

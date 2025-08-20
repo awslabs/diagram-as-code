@@ -5,6 +5,7 @@ package ctl
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -27,15 +28,22 @@ func getTemplate(inputfile string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
+		defer func() {
+			if closeErr := resp.Body.Close(); closeErr != nil {
+				log.Warnf("Failed to close response body: %v", closeErr)
+			}
+		}()
 
 		data, err = io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		// Local file
 		data, err = os.ReadFile(inputfile)
-	}
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 	return data, nil
 }
@@ -60,7 +68,7 @@ func processTemplate(templateData []byte) ([]byte, error) {
 	return processed.Bytes(), nil
 }
 
-func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) {
+func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
 
 	log.Infof("input file path: %s\n", inputfile)
 
@@ -69,7 +77,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	// Get the template content
 	data, err := getTemplate(inputfile)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to get template: %w", err)
 	}
 
 	// Process the template with variables
@@ -80,23 +88,25 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 			log.Infof("processed template: \n%s", string(processedData))
 		}
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("failed to process template: %w", err)
 		}
 	} else {
 		processedData = data
 	}
 
 	// Unmarshal the processed YAML
-	err = yaml.Unmarshal(processedData, &template)
+	dec := yaml.NewDecoder(bytes.NewReader(processedData))
+	dec.KnownFields(true)
+	err = dec.Decode(&template)
 	if err != nil {
 		if !opts.IsGoTemplate && slices.Contains(processedData, '{') {
 			log.Warn("Is this file a template, containing template control syntax such as {{ that according to text/template package? If so, add the -t (--tempate) option.")
 		}
-		log.Fatal(err)
+		return fmt.Errorf("failed to decode YAML: %w", err)
 	}
 
 	var ds definition.DefinitionStructure
-	var resources map[string]*types.Resource = make(map[string]*types.Resource)
+	resources := make(map[string]*types.Resource)
 
 	log.Info("Load DefinitionFiles section")
 	if opts.OverrideDefFile != "" {
@@ -107,29 +117,42 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 				Type: "URL",
 				Url:  opts.OverrideDefFile,
 			}
-			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		} else {
 			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
 			var defFile = DefinitionFile{
 				Type:      "LocalFile",
 				LocalFile: opts.OverrideDefFile,
 			}
-			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		}
-		loadDefinitionFiles(&overrideDefTemplate, &ds)
+		if err := loadDefinitionFiles(&overrideDefTemplate, &ds); err != nil {
+			return fmt.Errorf("failed to load override definition files: %w", err)
+		}
 		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
 	} else {
-		loadDefinitionFiles(&template, &ds)
+		if err := loadDefinitionFiles(&template, &ds); err != nil {
+			return fmt.Errorf("failed to load definition files: %w", err)
+		}
 	}
 
 	log.Info("Load Resources section")
-	loadResources(&template, ds, resources)
+	if err := loadResources(&template, ds, resources); err != nil {
+		return fmt.Errorf("failed to load resources: %w", err)
+	}
 
 	log.Info("Associate children with parent resources")
-	associateChildren(&template, resources)
+	if err := associateChildren(&template, resources); err != nil {
+		return fmt.Errorf("failed to associate children: %w", err)
+	}
 
 	log.Info("Add Links section")
-	loadLinks(&template, resources)
+	if err := loadLinks(&template, resources); err != nil {
+		return fmt.Errorf("failed to load links: %w", err)
+	}
 
-	createDiagram(resources, outputfile, opts)
+	if err := createDiagram(resources, outputfile, opts); err != nil {
+		return fmt.Errorf("failed to create diagram: %w", err)
+	}
+	return nil
 }

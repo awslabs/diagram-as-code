@@ -134,7 +134,11 @@ func (r *Resource) LoadIcon(imageFilePath string) error {
 	if err != nil {
 		return err
 	}
-	defer imageFile.Close()
+	defer func() {
+		if closeErr := imageFile.Close(); closeErr != nil {
+			log.Warnf("Failed to close image file: %v", closeErr)
+		}
+	}()
 	iconImage, _, err := image.Decode(imageFile)
 	if err != nil {
 		return err
@@ -216,23 +220,25 @@ func (r *Resource) AddLink(link *Link) {
 func (r *Resource) AddParent() {
 }
 
-func (r *Resource) AddChild(child *Resource) {
+func (r *Resource) AddChild(child *Resource) error {
 	// [TODO] check whether the parent is border children
 	if child == nil {
-		log.Fatalf("Unknown child. Please see debug logs with -v flag.")
+		return fmt.Errorf("unknown child resource - please see debug logs with -v flag")
 	}
 	r.children = append(r.children, child)
+	return nil
 }
 
-func (r *Resource) AddBorderChild(borderChild *BorderChild) {
+func (r *Resource) AddBorderChild(borderChild *BorderChild) error {
 	hasChild := len(borderChild.Resource.children) != 0
 	if hasChild {
-		panic("Couldn't add Group to Border Childlen")
+		return fmt.Errorf("couldn't add group to border children")
 	}
 	r.borderChildren = append(r.borderChildren, borderChild)
+	return nil
 }
 
-func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
+func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, error) {
 	if r.labelFont == "" {
 		if parent != nil && parent.labelFont != "" {
 			r.labelFont = parent.labelFont
@@ -253,22 +259,26 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
 		}
 	}
 	if r.labelFont == "" {
-		panic("Specified fonts are not installed.")
+		return nil, fmt.Errorf("specified fonts are not installed")
 	}
 	f, err := os.Open(r.labelFont)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to open font file: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil {
+			log.Warnf("Failed to close font file: %v", closeErr)
+		}
+	}()
 
 	ttfBytes, err := io.ReadAll(f)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to read font file: %w", err)
 	}
 
 	ft, err := truetype.Parse(ttfBytes)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to parse font: %w", err)
 	}
 
 	opt := truetype.Options{
@@ -283,7 +293,7 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) font.Face {
 		opt.Size = 30
 	}
 
-	return truetype.NewFace(ft, &opt)
+	return truetype.NewFace(ft, &opt), nil
 }
 
 func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
@@ -316,7 +326,10 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	textHeight := 0
 	if r.label != "" {
 		textHeight = 10
-		fontFace := r.prepareFontFace(hasChildren, parent)
+		fontFace, err := r.prepareFontFace(hasChildren, parent)
+		if err != nil {
+			return fmt.Errorf("failed to prepare font face: %w", err)
+		}
 		texts := strings.Split(r.label, "\n")
 		for _, line := range texts {
 			textBindings, _ := font.BoundString(fontFace, line)
@@ -419,42 +432,54 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 			if r.direction == "horizontal" {
 				switch r.align {
 				case "top":
-					subResource.Translation(
+					if err := subResource.Translation(
 						prevBindings.Max.X+prevMargin.Right+margin.Left-bindings.Min.X,
 						prevBindings.Min.Y-prevMargin.Top+margin.Top-bindings.Min.Y,
-					)
+					); err != nil {
+						return fmt.Errorf("failed to translate subresource: %w", err)
+					}
 				case "center":
-					subResource.Translation(
+					if err := subResource.Translation(
 						prevBindings.Max.X+prevMargin.Right+margin.Left-bindings.Min.X,
 						prevBindings.Min.Y+(prevBindings.Dy()-bindings.Dy())/2-bindings.Min.Y,
-					)
+					); err != nil {
+						return fmt.Errorf("failed to translate subresource: %w", err)
+					}
 				case "bottom":
-					subResource.Translation(
+					if err := subResource.Translation(
 						prevBindings.Max.X+prevMargin.Right+margin.Left-bindings.Min.X,
 						prevBindings.Max.Y+prevMargin.Bottom-margin.Bottom-bindings.Max.Y,
-					)
+					); err != nil {
+						return fmt.Errorf("failed to translate subresource: %w", err)
+					}
 				default:
-					log.Fatalf("Unknown align %s in the direction(%s) on %s", r.align, r.direction, r.label)
+					return fmt.Errorf("unknown align %s in the direction(%s) on %s", r.align, r.direction, r.label)
 				}
 			} else {
 				switch r.align {
 				case "left":
-					subResource.Translation(
+					if err := subResource.Translation(
 						prevBindings.Min.X-prevMargin.Left+margin.Left-bindings.Min.X,
 						prevBindings.Max.Y+prevMargin.Bottom+margin.Top-bindings.Min.Y,
-					)
+					); err != nil {
+						return fmt.Errorf("failed to translate subresource: %w", err)
+					}
 				case "center":
-					subResource.Translation(
+					if err := subResource.Translation(
 						prevBindings.Min.X+(prevBindings.Dx()-bindings.Dx())/2-bindings.Min.X,
 						prevBindings.Max.Y+prevMargin.Bottom+margin.Top-bindings.Min.Y,
-					)
+					); err != nil {
+						return fmt.Errorf("failed to translate subresource: %w", err)
+					}
 				case "right":
-					subResource.Translation(
+					if err := subResource.Translation(
 						prevBindings.Max.X+prevMargin.Right-margin.Right-bindings.Min.X,
 						prevBindings.Max.Y+prevMargin.Bottom+margin.Top-bindings.Min.Y,
-					)
+					); err != nil {
+						return fmt.Errorf("failed to translate subresource: %w", err)
+					}
 				default:
-					log.Fatalf("Unknown align %s in the direction(%s) on %s", r.align, r.direction, r.label)
+					return fmt.Errorf("unknown align %s in the direction(%s) on %s", r.align, r.direction, r.label)
 				}
 			}
 		}
@@ -484,24 +509,26 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	for _, borderChild := range r.borderChildren {
 		pt, err := calcPosition(r.GetBindings(), borderChild.Position)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("failed to calculate position for border child: %w", err)
 		}
 		err = borderChild.Resource.Scale(parent, visited) // to initialize default values
 		if err != nil {
 			return err
 		}
 		bindings := borderChild.Resource.GetBindings()
-		borderChild.Resource.Translation(
+		if err := borderChild.Resource.Translation(
 			pt.X-(bindings.Min.X+bindings.Max.X)/2,
 			pt.Y-(bindings.Min.Y+bindings.Max.Y)/2,
-		)
+		); err != nil {
+			return fmt.Errorf("failed to translate border child resource: %w", err)
+		}
 	}
 	return nil
 }
 
-func (r *Resource) Translation(dx, dy int) {
+func (r *Resource) Translation(dx, dy int) error {
 	if r.bindings == nil {
-		panic("The resource has no binding.")
+		return fmt.Errorf("the resource has no binding")
 	}
 	r.bindings = &image.Rectangle{
 		image.Point{
@@ -514,23 +541,27 @@ func (r *Resource) Translation(dx, dy int) {
 		},
 	}
 	for _, subResource := range r.children {
-		subResource.Translation(dx, dy)
+		if err := subResource.Translation(dx, dy); err != nil {
+			return fmt.Errorf("failed to translate child resource: %w", err)
+		}
 	}
 	for _, borderChild := range r.borderChildren {
-		borderChild.Resource.Translation(dx, dy)
+		if err := borderChild.Resource.Translation(dx, dy); err != nil {
+			return fmt.Errorf("failed to translate border child resource: %w", err)
+		}
 	}
-
+	return nil
 }
 
-func (r *Resource) ZeroAdjust() {
-	r.Translation(-r.bindings.Min.X+r.padding.Left, -r.bindings.Min.Y+r.padding.Top)
+func (r *Resource) ZeroAdjust() error {
+	return r.Translation(-r.bindings.Min.X+r.padding.Left, -r.bindings.Min.Y+r.padding.Top)
 }
 
 func (r *Resource) IsDrawn() bool {
 	return r.drawn
 }
 
-func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
+func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) {
 	if img == nil {
 		img = image.NewRGBA(*r.bindings)
 	}
@@ -566,24 +597,32 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) *image.RGBA {
 
 	hasIcon := r.iconImage.Bounds().Max.X != 0
 	if parent != nil {
-		r.drawLabel(img, parent, len(r.children) > 0, hasIcon)
+		if err := r.drawLabel(img, parent, len(r.children) > 0, hasIcon); err != nil {
+			return nil, fmt.Errorf("failed to draw label: %w", err)
+		}
 	}
 
 	for _, subResource := range r.children {
-		subResource.Draw(img, r)
+		if _, err := subResource.Draw(img, r); err != nil {
+			return nil, fmt.Errorf("failed to draw child resource: %w", err)
+		}
 	}
 	for _, borderResource := range r.borderChildren {
-		borderResource.Resource.Draw(img, r)
+		if _, err := borderResource.Resource.Draw(img, r); err != nil {
+			return nil, fmt.Errorf("failed to draw border child resource: %w", err)
+		}
 	}
 	r.drawn = true
 	for _, v := range r.links {
 		source := *v.Source
 		target := *v.Target
 		if source.IsDrawn() && target.IsDrawn() {
-			v.Draw(img)
+			if err := v.Draw(img); err != nil {
+				return nil, fmt.Errorf("failed to draw link: %w", err)
+			}
 		}
 	}
-	return img
+	return img, nil
 }
 
 func (r *Resource) drawFrame(img *image.RGBA) {
@@ -653,8 +692,11 @@ func (r *Resource) drawMargin(img *image.RGBA) {
 	}
 }
 
-func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild, hasIcon bool) {
-	face := r.prepareFontFace(hasChild, parent)
+func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild, hasIcon bool) error {
+	face, err := r.prepareFontFace(hasChild, parent)
+	if err != nil {
+		return fmt.Errorf("failed to prepare font face for drawing label: %w", err)
+	}
 
 	texts := strings.Split(r.label, "\n")
 	lineOffset := 0
@@ -706,4 +748,5 @@ func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild, hasIco
 		d.DrawString(line)
 		lineOffset += textHeight + 10
 	}
+	return nil
 }
