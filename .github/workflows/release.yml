@@ -36,12 +36,23 @@ jobs:
           apt-get update
           apt-get install -y zip
 
+      - name: Generate third-party licenses and NOTICE
+        run: |
+          bash scripts/gen-licenses.sh
+
       - name: Build
         run: |
           name="${{ matrix.binary }}-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
           mkdir -p "dist/${name}"
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/${{ matrix.binary }}
           cp LICENSE README.md "dist/${name}"
+          # Copy generated license files if they exist
+          if [[ -f "dist/licenses/NOTICE" ]]; then
+            cp "dist/licenses/NOTICE" "dist/${name}/NOTICE"
+          fi
+          if [[ -d "dist/licenses/third_party_licenses" ]]; then
+            cp -r "dist/licenses/third_party_licenses" "dist/${name}/THIRD_PARTY_LICENSES"
+          fi
           zip -9 -r "dist/${name}.zip" "dist/${name}"
 
       - uses: actions/upload-artifact@v4.4.0
