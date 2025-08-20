@@ -18,6 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -262,22 +263,25 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, 
 			r.labelColor = &color.RGBA{0, 0, 0, 255}
 		}
 	}
-	if r.labelFont == "" {
-		return nil, fmt.Errorf("specified fonts are not installed")
-	}
-	f, err := os.Open(r.labelFont)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open font file: %w", err)
-	}
-	defer func() {
-		if closeErr := f.Close(); closeErr != nil {
-			log.Warnf("Failed to close font file: %v", closeErr)
+	var ttfBytes []byte
+	if r.labelFont == "goregular" {
+		// Use Go-fonts instead system fonts
+		ttfBytes = goregular.TTF
+	} else {
+		f, err := os.Open(r.labelFont)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open font file: %w", err)
 		}
-	}()
+		defer func() {
+			if closeErr := f.Close(); closeErr != nil {
+				log.Warnf("Failed to close font file: %v", closeErr)
+			}
+		}()
 
-	ttfBytes, err := io.ReadAll(f)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read font file: %w", err)
+		ttfBytes, err = io.ReadAll(f)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read font file: %w", err)
+		}
 	}
 
 	ft, err := truetype.Parse(ttfBytes)
