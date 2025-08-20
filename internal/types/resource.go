@@ -240,6 +240,9 @@ func (r *Resource) AddBorderChild(borderChild *BorderChild) error {
 
 func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, error) {
 	if r.labelFont == "" {
+		if parent != nil {
+			log.Infof("parent labelFont: %s", r.labelFont)
+		}
 		if parent != nil && parent.labelFont != "" {
 			r.labelFont = parent.labelFont
 		} else {
@@ -251,6 +254,7 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, 
 			}
 		}
 	}
+	log.Infof("labelFont: %s", r.labelFont)
 	if r.labelColor == nil {
 		if parent != nil && parent.labelColor != nil {
 			r.labelColor = parent.labelColor
@@ -324,12 +328,12 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	log.Infof("hasIcon: %t\n", hasIcon)
 	textWidth := 0
 	textHeight := 0
+	fontFace, err := r.prepareFontFace(hasChildren, parent)
+	if err != nil {
+		return fmt.Errorf("failed to prepare font face: %w", err)
+	}
 	if r.label != "" {
 		textHeight = 10
-		fontFace, err := r.prepareFontFace(hasChildren, parent)
-		if err != nil {
-			return fmt.Errorf("failed to prepare font face: %w", err)
-		}
 		texts := strings.Split(r.label, "\n")
 		for _, line := range texts {
 			textBindings, _ := font.BoundString(fontFace, line)
@@ -419,7 +423,7 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	}
 
 	for _, subResource := range r.children {
-		err := subResource.Scale(parent, visited)
+		err := subResource.Scale(r, visited)
 		if err != nil {
 			return err
 		}
@@ -511,7 +515,7 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 		if err != nil {
 			return fmt.Errorf("failed to calculate position for border child: %w", err)
 		}
-		err = borderChild.Resource.Scale(parent, visited) // to initialize default values
+		err = borderChild.Resource.Scale(r, visited) // to initialize default values
 		if err != nil {
 			return err
 		}
