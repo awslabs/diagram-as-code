@@ -35,6 +35,9 @@ jobs:
         run: |
           go test -v ./test/...
 
+      - name: Build awsdac-mcp-server
+        run: go build -v ./cmd/awsdac-mcp-server
+
       - if: failure()
         run: echo "Check artifacts https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts"
 

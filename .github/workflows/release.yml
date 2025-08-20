@@ -11,6 +11,7 @@ jobs:
       matrix:
         os: ['linux', 'darwin', 'windows']
         arch: ['amd64', '386', 'arm', 'arm64']
+        binary: ['awsdac', 'awsdac-mcp-server']
         exclude:
           - os: 'darwin'
             arch: '386'
@@ -37,15 +38,15 @@ jobs:
 
       - name: Build
         run: |
-          name="awsdac-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
+          name="${{ matrix.binary }}-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
           mkdir -p "dist/${name}"
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/awsdac
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/${{ matrix.binary }}
           cp LICENSE README.md "dist/${name}"
           zip -9 -r "dist/${name}.zip" "dist/${name}"
 
       - uses: actions/upload-artifact@v4.4.0
         with:
-          name: dist-${{ matrix.os }}-${{ matrix.arch }}
+          name: dist-${{ matrix.binary }}-${{ matrix.os }}-${{ matrix.arch }}
           path: ./dist/*.zip
 
   release:
