@@ -38,7 +38,8 @@ jobs:
 
       - name: Generate third-party licenses and NOTICE
         run: |
-          bash scripts/gen-licenses.sh
+          name="awsdac-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
+          bash scripts/gen-licenses.sh "dist/${name}"
 
       - name: Build
         run: |
@@ -47,11 +48,11 @@ jobs:
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/${{ matrix.binary }}
           cp LICENSE README.md "dist/${name}"
           # Copy generated license files if they exist
-          if [[ -f "dist/licenses/NOTICE" ]]; then
-            cp "dist/licenses/NOTICE" "dist/${name}/NOTICE"
+          if [[ -f "dist/${name}/NOTICE" ]]; then
+            cp "dist/${name}/NOTICE" "dist/${name}/NOTICE"
           fi
-          if [[ -d "dist/licenses/third_party_licenses" ]]; then
-            cp -r "dist/licenses/third_party_licenses" "dist/${name}/THIRD_PARTY_LICENSES"
+          if [[ -d "dist/${name}/third_party_licenses" ]]; then
+            cp -r "dist/${name}/third_party_licenses" "dist/${name}/THIRD_PARTY_LICENSES"
           fi
           zip -9 -r "dist/${name}.zip" "dist/${name}"
 

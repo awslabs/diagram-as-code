@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OUT_ROOT=dist/licenses
+OUT_ROOT="${1:-dist/licenses}"
 OUT_THIRD="$OUT_ROOT/third_party_licenses"
 MERGED_NOTICE="$OUT_ROOT/NOTICE"
 
