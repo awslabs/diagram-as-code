@@ -47,13 +47,6 @@ jobs:
           mkdir -p "dist/${name}"
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -buildvcs=false -ldflags="-w -X main.version=${GITHUB_REF##*/}" -o "dist/${name}" ./cmd/${{ matrix.binary }}
           cp LICENSE README.md "dist/${name}"
-          # Copy generated license files if they exist
-          if [[ -f "dist/${name}/NOTICE" ]]; then
-            cp "dist/${name}/NOTICE" "dist/${name}/NOTICE"
-          fi
-          if [[ -d "dist/${name}/third_party_licenses" ]]; then
-            cp -r "dist/${name}/third_party_licenses" "dist/${name}/THIRD_PARTY_LICENSES"
-          fi
           zip -9 -r "dist/${name}.zip" "dist/${name}"
 
       - uses: actions/upload-artifact@v4.4.0
