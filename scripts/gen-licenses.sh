@@ -17,7 +17,7 @@ if ! command -v go-licenses >/dev/null 2>&1; then
 fi
 
 # 依存ライセンス全文を収集（各モジュールの LICENSE* / COPYING* 等）
-go-licenses save ./... --save_path="$OUT_THIRD"
+go-licenses save ./... --save_path="$OUT_THIRD" --ignore="github.com/golang/freetype"
 
 # 上流 NOTICE をマージ（存在するものだけ）
 : > "$MERGED_NOTICE"
