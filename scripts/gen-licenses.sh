@@ -6,7 +6,7 @@ OUT_THIRD="$OUT_ROOT/third_party_licenses"
 MERGED_NOTICE="$OUT_ROOT/NOTICE"
 
 rm -rf "$OUT_ROOT"
-mkdir -p "$OUT_THIRD"
+mkdir -p "$OUT_ROOT"
 
 # 依存解決
 go mod download
