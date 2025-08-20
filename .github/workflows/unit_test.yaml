@@ -32,4 +32,9 @@ jobs:
           sudo apt-get install -y ttf-mscorefonts-installer
 
       - name: Unit tests
-        run: go test -v ./internal/...
+        run: |
+          go test -v ./internal/...
+          go test -v ./cmd/awsdac-mcp-server/...
+
+      - name: Build awsdac-mcp-server
+        run: go build -v ./cmd/awsdac-mcp-server
