@@ -139,7 +139,7 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string) err
 func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure) error {
 
 	// Load definition files
-	for _, v := range template.Diagram.DefinitionFiles {
+	for _, v := range template.DefinitionFiles {
 		switch v.Type {
 		case "URL":
 			log.Infof("Fetch definition file from URL: %s\n", v.Url)
@@ -191,22 +191,27 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			def, ok := ds.Definitions[v.Type]
 			if !ok {
 				newType := fallbackToServiceIcon(v.Type)
-				_, check := ds.Definitions[newType]
-				if !check {
+				fallbackDef, check := ds.Definitions[newType]
+				if !check || fallbackDef == nil {
 					log.Warnf("Type %s is not defined in the DAC definition file. It cannot be fall backed to service icon. Ignore this type.\n", v.Type)
 					continue
 				}
 				log.Warnf("Type %s is not defined in the DAC definition file. It's fall backed to its service icon (Type %s).\n", v.Type, newType)
-				def = ds.Definitions[newType]
+				def = fallbackDef
 
 				// Change the title to indicate the original resource type for fallback icons.
 				if v.Title == "" {
 					resources[k].SetLabel(&v.Type, nil, nil)
 				}
 			}
-			if def.Type == "Resource" {
+			if def == nil {
+				log.Warnf("Definition for %s is nil. Skip this resource.\n", v.Type)
+				continue
+			}
+			switch def.Type {
+			case "Resource":
 				resources[k] = new(types.Resource).Init()
-			} else if def.Type == "Group" {
+			case "Group":
 				resources[k] = new(types.Resource).Init()
 			}
 			if fill := def.Fill; fill != nil {
@@ -269,52 +274,53 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			def, ok := ds.Definitions[v.Preset]
 			if !ok {
 				log.Warnf("Unknown preset %s on %s\n", v.Preset, v.Type)
-			}
-			if fill := def.Fill; fill != nil {
-				fillColor, err := stringToColor(fill.Color)
-				if err != nil {
-					return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
-				}
-				resources[k].SetFillColor(fillColor)
-			}
-			if border := def.Border; border != nil {
-				borderColor, err := stringToColor(border.Color)
-				if err != nil {
-					return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
-				}
-				resources[k].SetBorderColor(borderColor)
-				switch border.Type {
-				case "straight":
-					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
-				case "dashed":
-					resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
-				default:
-					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
-				}
-			}
-			if label := def.Label; label != nil {
-				if label.Title != "" {
-					resources[k].SetLabel(&label.Title, nil, nil)
-				}
-				if label.Color != "" {
-					c, err := stringToColor(label.Color)
+			} else {
+				if fill := def.Fill; fill != nil {
+					fillColor, err := stringToColor(fill.Color)
 					if err != nil {
-						return fmt.Errorf("failed to parse label color for resource %s: %w", k, err)
+						return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
 					}
-					resources[k].SetLabel(nil, &c, nil)
+					resources[k].SetFillColor(fillColor)
 				}
-				if label.Font != "" {
-					resources[k].SetLabel(nil, nil, &label.Font)
-				}
-			}
-			if headerAlign := def.HeaderAlign; headerAlign != "" {
-				resources[k].SetHeaderAlign(headerAlign)
-			}
-			if icon := def.Icon; icon != nil {
-				if def.CacheFilePath != "" {
-					err := resources[k].LoadIcon(def.CacheFilePath)
+				if border := def.Border; border != nil {
+					borderColor, err := stringToColor(border.Color)
 					if err != nil {
-						return fmt.Errorf("failed to load icon from cache file path: %w", err)
+						return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
+					}
+					resources[k].SetBorderColor(borderColor)
+					switch border.Type {
+					case "straight":
+						resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+					case "dashed":
+						resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
+					default:
+						resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+					}
+				}
+				if label := def.Label; label != nil {
+					if label.Title != "" {
+						resources[k].SetLabel(&label.Title, nil, nil)
+					}
+					if label.Color != "" {
+						c, err := stringToColor(label.Color)
+						if err != nil {
+							return fmt.Errorf("failed to parse label color for resource %s: %w", k, err)
+						}
+						resources[k].SetLabel(nil, &c, nil)
+					}
+					if label.Font != "" {
+						resources[k].SetLabel(nil, nil, &label.Font)
+					}
+				}
+				if headerAlign := def.HeaderAlign; headerAlign != "" {
+					resources[k].SetHeaderAlign(headerAlign)
+				}
+				if icon := def.Icon; icon != nil {
+					if def.CacheFilePath != "" {
+						err := resources[k].LoadIcon(def.CacheFilePath)
+						if err != nil {
+							return fmt.Errorf("failed to load icon from cache file path: %w", err)
+						}
 					}
 				}
 			}

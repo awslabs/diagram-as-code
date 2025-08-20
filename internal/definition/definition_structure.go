@@ -47,8 +47,10 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 			return ""
 		}()
 		if src != "" {
-			sourceDefinition := b.Definitions[src]
-			v.Parent = sourceDefinition
+			sourceDefinition, exists := b.Definitions[src]
+			if exists {
+				v.Parent = sourceDefinition
+			}
 		}
 		b.Definitions[k] = v
 	}

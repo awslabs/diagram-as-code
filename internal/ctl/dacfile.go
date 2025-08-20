@@ -35,12 +35,15 @@ func getTemplate(inputfile string) ([]byte, error) {
 		}()
 
 		data, err = io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		// Local file
 		data, err = os.ReadFile(inputfile)
-	}
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 	return data, nil
 }
@@ -103,7 +106,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 	}
 
 	var ds definition.DefinitionStructure
-	var resources map[string]*types.Resource = make(map[string]*types.Resource)
+	resources := make(map[string]*types.Resource)
 
 	log.Info("Load DefinitionFiles section")
 	if opts.OverrideDefFile != "" {
@@ -114,14 +117,14 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 				Type: "URL",
 				Url:  opts.OverrideDefFile,
 			}
-			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		} else {
 			log.Infof("As given overrideDefFile, use %s as LocalFile instead of %v", opts.OverrideDefFile, &template.DefinitionFiles)
 			var defFile = DefinitionFile{
 				Type:      "LocalFile",
 				LocalFile: opts.OverrideDefFile,
 			}
-			overrideDefTemplate.Diagram.DefinitionFiles = append(overrideDefTemplate.Diagram.DefinitionFiles, defFile)
+			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		}
 		if err := loadDefinitionFiles(&overrideDefTemplate, &ds); err != nil {
 			return fmt.Errorf("failed to load override definition files: %w", err)
