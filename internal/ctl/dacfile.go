@@ -151,7 +151,7 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 		return fmt.Errorf("failed to load links: %w", err)
 	}
 
-	if err := createDiagram(resources, outputfile); err != nil {
+	if err := createDiagram(resources, outputfile, opts); err != nil {
 		return fmt.Errorf("failed to create diagram: %w", err)
 	}
 	return nil

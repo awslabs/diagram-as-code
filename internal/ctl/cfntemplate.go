@@ -130,7 +130,7 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		go generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
-	if err := createDiagram(resources, outputfile); err != nil {
+	if err := createDiagram(resources, outputfile, opts); err != nil {
 		return fmt.Errorf("failed to create diagram: %w", err)
 	}
 	return nil

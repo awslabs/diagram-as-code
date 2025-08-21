@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math"
 	"os"
 	"strings"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/awslabs/diagram-as-code/internal/types"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/exp/maps"
+	"golang.org/x/image/draw"
 )
 
 func stringToColor(c string) (color.RGBA, error) {
@@ -102,9 +104,11 @@ type LinkLabel struct {
 type CreateOptions struct {
 	IsGoTemplate    bool
 	OverrideDefFile string
+	Width           int
+	Height          int
 }
 
-func createDiagram(resources map[string]*types.Resource, outputfile *string) error {
+func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
 
 	log.Info("--- Draw diagram ---")
 	err := resources["Canvas"].Scale(nil, nil)
@@ -117,6 +121,13 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string) err
 	img, err := resources["Canvas"].Draw(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error drawing diagram: %w", err)
+	}
+
+	// Resize the image if width or height is specified
+	if opts != nil && (opts.Width > 0 || opts.Height > 0) {
+		log.Infof("Resizing image to width: %d, height: %d", opts.Width, opts.Height)
+		resizedImg := resizeImage(img, opts.Width, opts.Height)
+		img = resizedImg
 	}
 
 	log.Infof("Save %s\n", *outputfile)
@@ -134,6 +145,47 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string) err
 		return fmt.Errorf("error encoding PNG: %w", err)
 	}
 	return nil
+}
+
+// resizeImage resizes the image while maintaining aspect ratio
+func resizeImage(src *image.RGBA, width, height int) *image.RGBA {
+	// Get original dimensions
+	bounds := src.Bounds()
+	srcWidth := bounds.Dx()
+	srcHeight := bounds.Dy()
+
+	// If neither width nor height is specified, return the original image
+	if width == 0 && height == 0 {
+		return src
+	}
+
+	// Calculate new dimensions while maintaining aspect ratio
+	var ratio float64
+	if width > 0 && height > 0 {
+		// Both width and height specified, fit within these constraints
+		widthRatio := float64(width) / float64(srcWidth)
+		heightRatio := float64(height) / float64(srcHeight)
+
+		// Use the smaller ratio to ensure the image fits within the specified dimensions
+		ratio = math.Min(widthRatio, heightRatio)
+	} else if width > 0 {
+		// Only width specified
+		ratio = float64(width) / float64(srcWidth)
+	} else {
+		// Only height specified
+		ratio = float64(height) / float64(srcHeight)
+	}
+
+	newWidth := int(float64(srcWidth) * ratio)
+	newHeight := int(float64(srcHeight) * ratio)
+
+	// Create a new RGBA image with the calculated dimensions
+	dst := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
+
+	// Resize the image using CatmullRom algorithm for better quality
+	draw.CatmullRom.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
+
+	return dst
 }
 
 func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure) error {
