@@ -36,6 +36,11 @@ jobs:
           apt-get update
           apt-get install -y zip
 
+      - name: Generate third-party licenses and NOTICE
+        run: |
+          name="awsdac-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
+          bash scripts/gen-licenses.sh "dist/${name}"
+
       - name: Build
         run: |
           name="${{ matrix.binary }}-${GITHUB_REF##*/}_${{ matrix.os }}-${{ matrix.arch }}"
