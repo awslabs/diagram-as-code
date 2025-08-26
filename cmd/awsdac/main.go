@@ -22,6 +22,7 @@ func main() {
 	var generateDacFile bool
 	var overrideDefFile string
 	var isGoTemplate bool
+	var force bool
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -59,6 +60,11 @@ func main() {
 				opts := ctl.CreateOptions{
 					OverrideDefFile: overrideDefFile,
 				}
+				if force {
+					opts.OverwriteMode = ctl.Force
+				} else {
+					opts.OverwriteMode = ctl.Ask
+				}
 				if err := ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts); err != nil {
 					return fmt.Errorf("failed to create diagram from CloudFormation template: %w", err)
 				}
@@ -66,6 +72,11 @@ func main() {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:    isGoTemplate,
 					OverrideDefFile: overrideDefFile,
+				}
+				if force {
+					opts.OverwriteMode = ctl.Force
+				} else {
+					opts.OverwriteMode = ctl.Ask
 				}
 				if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts); err != nil {
 					return fmt.Errorf("failed to create diagram: %w", err)
@@ -82,6 +93,7 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&generateDacFile, "dac-file", "d", false, "[beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template")
 	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
 	rootCmd.PersistentFlags().BoolVarP(&isGoTemplate, "template", "t", false, "Processes the input file as a template according to text/template.")
+	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Overwrite output file without confirmation")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
