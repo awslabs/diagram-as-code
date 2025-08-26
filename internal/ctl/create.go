@@ -163,10 +163,10 @@ type CreateOptions struct {
 	OverwriteMode   OverwriteMode
 }
 
-func createDiagram(resources map[string]*types.Resource, outputfile *string, overwriteMode OverwriteMode) error {
+func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
 
 	// Check for file overwrite before processing
-	if err := CheckOutputFileOverwrite(*outputfile, overwriteMode); err != nil {
+	if err := CheckOutputFileOverwrite(*outputfile, opts.OverwriteMode); err != nil {
 		return err
 	}
 
