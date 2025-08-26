@@ -264,7 +264,9 @@ func handleGenerateDiagram(
 
 	// Generate diagram directly in the main thread
 	// This ensures logs are properly captured
-	opts := &ctl.CreateOptions{}
+	opts := &ctl.CreateOptions{
+		OverwriteMode: ctl.Force, // Use Force for temporary files
+	}
 	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, opts); err != nil {
 		return nil, fmt.Errorf("failed to create diagram: %v", err)
 	}
@@ -330,7 +332,9 @@ func handleGenerateDiagramToFile(
 	}
 
 	// Generate diagram - save directly to specified path
-	opts := &ctl.CreateOptions{}
+	opts := &ctl.CreateOptions{
+		OverwriteMode: ctl.NoOverwrite, // MCP server refuses to overwrite existing files
+	}
 	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFilePath, opts); err != nil {
 		return nil, fmt.Errorf("failed to create diagram: %v", err)
 	}
