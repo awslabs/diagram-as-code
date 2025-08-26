@@ -94,6 +94,124 @@ Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI too
 - **Extensible**  
 Add definition files to create non-AWS diagrams as well.
 
+## MCP Server Integration
+
+The awsdac MCP server enables AI assistants and development tools to generate AWS architecture diagrams programmatically through the Model Context Protocol (MCP). This integration allows seamless diagram creation within your development workflow.
+
+### Installation
+
+#### for macOS user
+```bash
+brew install awsdac-mcp-server
+```
+
+#### for Gopher (go 1.21 or higher)
+```bash
+go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
+```
+
+### MCP Client Configuration
+
+#### for Homebrew installation
+```json
+{
+  "mcpServers": {
+    "awsdac-mcp-server": {
+      "command": "/opt/homebrew/bin/awsdac-mcp-server"
+    }
+  }
+}
+```
+
+#### for Go install
+```json
+{
+  "mcpServers": {
+    "awsdac-mcp-server": {
+      "command": "/Users/yourusername/go/bin/awsdac-mcp-server"
+    }
+  }
+}
+```
+
+**Note:** Replace `/Users/yourusername` with your actual home directory path.
+
+#### Finding your binary location
+If you installed via `go install`, you can find the binary location using:
+
+```bash
+# Check if awsdac-mcp-server is in your PATH
+which awsdac-mcp-server
+
+# Or check common Go install locations
+ls ~/go/bin/awsdac-mcp-server
+ls $GOPATH/bin/awsdac-mcp-server  # if GOPATH is set
+```
+
+Use the path returned by these commands in your MCP client configuration.
+
+#### Custom Log File (Optional)
+You can specify a custom log file location:
+
+```json
+{
+  "mcpServers": {
+    "awsdac-mcp-server": {
+      "command": "/opt/homebrew/bin/awsdac-mcp-server",
+      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"]
+    }
+  }
+}
+```
+
+### Available Tools
+
+#### generateDiagram
+Generates AWS architecture diagrams from YAML specifications and returns base64-encoded PNG images.
+
+**Parameters:**
+- `yamlContent` (required): Complete YAML specification following the diagram-as-code format
+
+#### generateDiagramToFile
+Same as `generateDiagram` but saves the image directly to a specified file path.
+
+**Parameters:**
+- `yamlContent` (required): Complete YAML specification
+- `outputFilePath` (required): Path where the PNG file should be saved
+
+#### getDiagramAsCodeFormat
+Returns comprehensive format specification, examples, and best practices for creating diagram-as-code YAML files.
+
+### Usage Examples
+
+```
+Generate an AWS architecture diagram showing a VPC with public and private subnets, an ALB, and EC2 instances.
+```
+
+However, if the MCP host cannot receive large-sized image data from the MCP server, please use generateDiagramToFile to save the image data directly to a file.
+
+To save directly to a file:
+```
+Generate an AWS architecture diagram showing a VPC with public and private subnets, an ALB, and EC2 instances, then save it to /tmp/test-diagram.png.
+```
+
+### Troubleshooting
+
+#### Connection Issues
+- Verify the MCP server binary path in your configuration
+- Check that the binary has execution permissions
+- Review log files for error messages
+
+#### Log Files
+By default, logs are written to `/tmp/awsdac-mcp-server.log`.
+
+To use a custom log file location, add the `--log-file` argument to your MCP client configuration:
+```json
+"args": ["--log-file", "/path/to/your/custom.log"]
+```
+
+Check the log file for detailed error messages and debugging information.
+
 ## Resource types
 See [doc/resource-types.md](doc/resource-types.md).
 
