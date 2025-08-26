@@ -70,18 +70,18 @@ func CheckOutputFileOverwrite(outputFile string, mode OverwriteMode) error {
 // askOverwriteConfirmation shows interactive confirmation prompt
 func askOverwriteConfirmation(outputFile string) error {
 	fmt.Printf("File '%s' already exists. Overwrite? [y/N]: ", outputFile)
-	
+
 	reader := bufio.NewReader(os.Stdin)
 	response, err := reader.ReadString('\n')
 	if err != nil {
 		return fmt.Errorf("failed to read user input: %w", err)
 	}
-	
+
 	response = strings.TrimSpace(strings.ToLower(response))
 	if response == "y" || response == "yes" {
 		return nil
 	}
-	
+
 	return fmt.Errorf("operation cancelled by user")
 }
 

@@ -533,7 +533,7 @@ Diagram:
 		{
 			name:           "invalid output path with null byte",
 			outputPath:     "/tmp/diagram\x00.png",
-			expectedErrMsg: "error opening output file",
+			expectedErrMsg: "failed to check output file",
 		},
 	}
 
