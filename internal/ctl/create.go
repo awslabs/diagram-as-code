@@ -4,6 +4,7 @@
 package ctl
 
 import (
+	"bufio"
 	"fmt"
 	"image"
 	"image/color"
@@ -27,6 +28,63 @@ func stringToColor(c string) (color.RGBA, error) {
 		return color.RGBA{}, fmt.Errorf("failed to parse color string '%s': %w", c, err)
 	}
 	return color.RGBA{r, g, b, a}, nil
+}
+
+// OverwriteMode defines how to handle existing output files
+type OverwriteMode int
+
+const (
+	// Ask shows confirmation prompt when output file exists (CLI default)
+	Ask OverwriteMode = iota
+	// Force overwrites without confirmation (CLI with --force)
+	Force
+	// NoOverwrite refuses to overwrite and returns error (MCP server default)
+	NoOverwrite
+)
+
+// CheckOutputFileOverwrite checks if output file exists and handles according to mode
+func CheckOutputFileOverwrite(outputFile string, mode OverwriteMode) error {
+	// Check if file exists
+	if _, err := os.Stat(outputFile); os.IsNotExist(err) {
+		// File doesn't exist, proceed
+		return nil
+	} else if err != nil {
+		// Some other error occurred
+		return fmt.Errorf("failed to check output file: %w", err)
+	}
+
+	// File exists, handle according to mode
+	switch mode {
+	case Force:
+		// Force mode: proceed without confirmation
+		return nil
+	case NoOverwrite:
+		// NoOverwrite mode: return error
+		return fmt.Errorf("output file '%s' already exists", outputFile)
+	case Ask:
+		// Ask mode: show confirmation prompt
+		return askOverwriteConfirmation(outputFile)
+	default:
+		return fmt.Errorf("unknown overwrite mode: %d", mode)
+	}
+}
+
+// askOverwriteConfirmation shows interactive confirmation prompt
+func askOverwriteConfirmation(outputFile string) error {
+	fmt.Printf("File '%s' already exists. Overwrite? [y/N]: ", outputFile)
+
+	reader := bufio.NewReader(os.Stdin)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return fmt.Errorf("failed to read user input: %w", err)
+	}
+
+	response = strings.TrimSpace(strings.ToLower(response))
+	if response == "y" || response == "yes" {
+		return nil
+	}
+
+	return fmt.Errorf("operation cancelled by user")
 }
 
 type TemplateStruct struct {
@@ -104,11 +162,17 @@ type LinkLabel struct {
 type CreateOptions struct {
 	IsGoTemplate    bool
 	OverrideDefFile string
+	OverwriteMode   OverwriteMode
 	Width           int
 	Height          int
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
+
+	// Check for file overwrite before processing
+	if err := CheckOutputFileOverwrite(*outputfile, opts.OverwriteMode); err != nil {
+		return err
+	}
 
 	log.Info("--- Draw diagram ---")
 	err := resources["Canvas"].Scale(nil, nil)
@@ -132,7 +196,7 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 
 	log.Infof("Save %s\n", *outputfile)
 	fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", *outputfile)
-	f, err := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening output file: %w", err)
 	}

@@ -18,6 +18,7 @@ import (
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -149,22 +150,25 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (fo
 			label.Color = &color.RGBA{0, 0, 0, 255}
 		}
 	}
-	if label.Font == "" {
-		return nil, fmt.Errorf("specified fonts are not installed")
-	}
-	f, err := os.Open(label.Font)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open font file: %w", err)
-	}
-	defer func() {
-		if closeErr := f.Close(); closeErr != nil {
-			log.Warnf("Failed to close font file: %v", closeErr)
+	var ttfBytes []byte
+	if label.Font == "goregular" {
+		// Use Go-fonts instead system fonts
+		ttfBytes = goregular.TTF
+	} else {
+		f, err := os.Open(label.Font)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open font file: %w", err)
 		}
-	}()
+		defer func() {
+			if closeErr := f.Close(); closeErr != nil {
+				log.Warnf("Failed to close font file: %v", closeErr)
+			}
+		}()
 
-	ttfBytes, err := io.ReadAll(f)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read font file: %w", err)
+		ttfBytes, err = io.ReadAll(f)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read font file: %w", err)
+		}
 	}
 
 	ft, err := truetype.Parse(ttfBytes)
