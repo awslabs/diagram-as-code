@@ -139,6 +139,7 @@ func TestFunctionality(t *testing.T) {
 				IsGoTemplate:    strings.HasSuffix(file.Name(), "-tmpl.yaml"),
 				OverrideDefFile: "../definitions/definition-for-aws-icons-light.yaml",
 				OverwriteMode:   ctl.Force,
+				OverrideFont:    "goregular",
 			}
 			if strings.HasSuffix(file.Name(), "-cfn.yaml") {
 				if err := ctl.CreateDiagramFromCFnTemplate(yamlFilename, &tmpOutputFilename, true, &opts); err != nil {

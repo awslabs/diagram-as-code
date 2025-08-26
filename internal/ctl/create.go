@@ -161,6 +161,7 @@ type CreateOptions struct {
 	IsGoTemplate    bool
 	OverrideDefFile string
 	OverwriteMode   OverwriteMode
+	OverrideFont    string
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
@@ -168,6 +169,13 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	// Check for file overwrite before processing
 	if err := CheckOutputFileOverwrite(*outputfile, opts.OverwriteMode); err != nil {
 		return err
+	}
+
+	// Override font if specified
+	if opts.OverrideFont != "" {
+		for _, resource := range resources {
+			resource.SetLabel(nil, nil, &opts.OverrideFont)
+		}
 	}
 
 	log.Info("--- Draw diagram ---")
