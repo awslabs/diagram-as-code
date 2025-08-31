@@ -326,9 +326,9 @@ func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt imag
 		arrowHead.Length*(-_c*dx+_a*dy)/(_b*length),
 	))
 
-	// Convert to int only at the end for better precision
-	at1 := image.Point{int(at1Vec.X), int(at1Vec.Y)}
-	at2 := image.Point{int(at2Vec.X), int(at2Vec.Y)}
+	// Convert to int with rounding for better symmetry
+	at1 := image.Point{int(math.Round(at1Vec.X)), int(math.Round(at1Vec.Y))}
+	at2 := image.Point{int(math.Round(at2Vec.X)), int(math.Round(at2Vec.Y))}
 
 	switch arrowHead.Type {
 	case "Default":

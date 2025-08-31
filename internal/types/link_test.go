@@ -471,3 +471,204 @@ func TestArrowHeadAccuracy(t *testing.T) {
 		t.Logf("Both methods are equally accurate for at1")
 	}
 }
+func TestVerticalArrowHeadSymmetry(t *testing.T) {
+	tests := []struct {
+		name     string
+		arrowPt  image.Point
+		originPt image.Point
+		expected string
+	}{
+		{
+			name:     "Vertical North arrow",
+			arrowPt:  image.Point{50, 50},
+			originPt: image.Point{50, 100},
+			expected: "symmetric",
+		},
+		{
+			name:     "Vertical South arrow", 
+			arrowPt:  image.Point{50, 100},
+			originPt: image.Point{50, 50},
+			expected: "symmetric",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			link := &Link{lineColor: color.RGBA{0, 0, 0, 255}}
+			arrowHead := ArrowHead{Type: "Open", Length: 10, Width: "Default"}
+			
+			// Calculate arrow head points
+			arrowVec := vector.New(float64(tt.arrowPt.X), float64(tt.arrowPt.Y))
+			originVec := vector.New(float64(tt.originPt.X), float64(tt.originPt.Y))
+			direction := arrowVec.Sub(originVec)
+			length := direction.Length()
+			
+			_a, _b, _c := link.getThreeSide(arrowHead.Width)
+			dx, dy := direction.X, direction.Y
+			
+			at1Vec := arrowVec.Sub(vector.New(
+				arrowHead.Length*(_a*dx-_c*dy)/(_b*length),
+				arrowHead.Length*(_c*dx+_a*dy)/(_b*length),
+			))
+			at2Vec := arrowVec.Sub(vector.New(
+				arrowHead.Length*(_a*dx+_c*dy)/(_b*length),
+				arrowHead.Length*(-_c*dx+_a*dy)/(_b*length),
+			))
+			
+			at1 := image.Point{int(math.Round(at1Vec.X)), int(math.Round(at1Vec.Y))}
+			at2 := image.Point{int(math.Round(at2Vec.X)), int(math.Round(at2Vec.Y))}
+			
+			t.Logf("Arrow: %v -> %v", tt.originPt, tt.arrowPt)
+			t.Logf("Direction: dx=%v, dy=%v, length=%v", dx, dy, length)
+			t.Logf("Arrow points: at1=%v, at2=%v", at1, at2)
+			
+			// Check symmetry for vertical arrows
+			if dx == 0 { // Vertical arrow
+				// For vertical arrows, at1 and at2 should be symmetric around the arrow point
+				centerX := float64(tt.arrowPt.X)
+				dist1 := math.Abs(float64(at1.X) - centerX)
+				dist2 := math.Abs(float64(at2.X) - centerX)
+				
+				t.Logf("Symmetry check: center=%v, dist1=%v, dist2=%v", centerX, dist1, dist2)
+				
+				if math.Abs(dist1-dist2) > 1e-10 {
+					t.Errorf("Vertical arrow head is not symmetric: dist1=%v, dist2=%v, diff=%v", 
+						dist1, dist2, math.Abs(dist1-dist2))
+				}
+				
+				// Also check Y coordinates should be the same for horizontal symmetry
+				if at1.Y != at2.Y {
+					t.Errorf("Vertical arrow head Y coordinates should be equal: at1.Y=%d, at2.Y=%d", 
+						at1.Y, at2.Y)
+				}
+			}
+		})
+	}
+}
+func TestVerticalArrowCalculationAnalysis(t *testing.T) {
+	arrowPt := image.Point{50, 100}
+	originPt := image.Point{50, 50}
+	arrowHead := ArrowHead{Type: "Open", Length: 10, Width: "Default"}
+	
+	link := &Link{lineColor: color.RGBA{0, 0, 0, 255}}
+	
+	// Direction vector
+	dx := float64(arrowPt.X - originPt.X) // 0
+	dy := float64(arrowPt.Y - originPt.Y) // 50
+	length := math.Sqrt(dx*dx + dy*dy)    // 50
+	
+	_a, _b, _c := link.getThreeSide(arrowHead.Width) // 1.0, √2, 1.0
+	
+	t.Logf("Input: dx=%v, dy=%v, length=%v", dx, dy, length)
+	t.Logf("Coefficients: _a=%v, _b=%v, _c=%v", _a, _b, _c)
+	
+	// Calculate offsets step by step
+	// at1 offset
+	at1_x_offset := arrowHead.Length * (_a*dx - _c*dy) / (_b * length)
+	at1_y_offset := arrowHead.Length * (_c*dx + _a*dy) / (_b * length)
+	
+	// at2 offset  
+	at2_x_offset := arrowHead.Length * (_a*dx + _c*dy) / (_b * length)
+	at2_y_offset := arrowHead.Length * (-_c*dx + _a*dy) / (_b * length)
+	
+	t.Logf("at1 offset: x=%v, y=%v", at1_x_offset, at1_y_offset)
+	t.Logf("at2 offset: x=%v, y=%v", at2_x_offset, at2_y_offset)
+	
+	// For vertical arrow (dx=0, dy=50):
+	// at1_x_offset = 10 * (1*0 - 1*50) / (√2 * 50) = 10 * (-50) / (50√2) = -10/√2 ≈ -7.071
+	// at2_x_offset = 10 * (1*0 + 1*50) / (√2 * 50) = 10 * 50 / (50√2) = 10/√2 ≈ 7.071
+	
+	expected_offset := 10.0 / math.Sqrt(2.0)
+	t.Logf("Expected symmetric offset: ±%v", expected_offset)
+	
+	// Final points
+	at1_x := float64(arrowPt.X) - at1_x_offset
+	at1_y := float64(arrowPt.Y) - at1_y_offset
+	at2_x := float64(arrowPt.X) - at2_x_offset  
+	at2_y := float64(arrowPt.Y) - at2_y_offset
+	
+	t.Logf("Final float points: at1=(%v, %v), at2=(%v, %v)", at1_x, at1_y, at2_x, at2_y)
+	
+	// Convert to int
+	at1 := image.Point{int(at1_x), int(at1_y)}
+	at2 := image.Point{int(at2_x), int(at2_y)}
+	
+	t.Logf("Final int points: at1=%v, at2=%v", at1, at2)
+	
+	// Check if the issue is in int conversion
+	t.Logf("Int conversion: at1_x %v->%d, at2_x %v->%d", at1_x, int(at1_x), at2_x, int(at2_x))
+	
+	// The issue: at1_x ≈ 57.071 -> 57, at2_x ≈ 42.929 -> 42
+	// This creates asymmetry due to different rounding behavior
+}
+func TestHorizontalArrowHeadSymmetry(t *testing.T) {
+	tests := []struct {
+		name     string
+		arrowPt  image.Point
+		originPt image.Point
+	}{
+		{
+			name:     "Horizontal East arrow",
+			arrowPt:  image.Point{100, 50},
+			originPt: image.Point{50, 50},
+		},
+		{
+			name:     "Horizontal West arrow",
+			arrowPt:  image.Point{50, 50},
+			originPt: image.Point{100, 50},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			link := &Link{lineColor: color.RGBA{0, 0, 0, 255}}
+			arrowHead := ArrowHead{Type: "Open", Length: 10, Width: "Default"}
+			
+			// Calculate arrow head points
+			arrowVec := vector.New(float64(tt.arrowPt.X), float64(tt.arrowPt.Y))
+			originVec := vector.New(float64(tt.originPt.X), float64(tt.originPt.Y))
+			direction := arrowVec.Sub(originVec)
+			length := direction.Length()
+			
+			_a, _b, _c := link.getThreeSide(arrowHead.Width)
+			dx, dy := direction.X, direction.Y
+			
+			at1Vec := arrowVec.Sub(vector.New(
+				arrowHead.Length*(_a*dx-_c*dy)/(_b*length),
+				arrowHead.Length*(_c*dx+_a*dy)/(_b*length),
+			))
+			at2Vec := arrowVec.Sub(vector.New(
+				arrowHead.Length*(_a*dx+_c*dy)/(_b*length),
+				arrowHead.Length*(-_c*dx+_a*dy)/(_b*length),
+			))
+			
+			at1 := image.Point{int(math.Round(at1Vec.X)), int(math.Round(at1Vec.Y))}
+			at2 := image.Point{int(math.Round(at2Vec.X)), int(math.Round(at2Vec.Y))}
+			
+			t.Logf("Arrow: %v -> %v", tt.originPt, tt.arrowPt)
+			t.Logf("Direction: dx=%v, dy=%v, length=%v", dx, dy, length)
+			t.Logf("Arrow points: at1=%v, at2=%v", at1, at2)
+			
+			// Check symmetry for horizontal arrows
+			if dy == 0 { // Horizontal arrow
+				// For horizontal arrows, at1 and at2 should be symmetric around the arrow point
+				centerY := float64(tt.arrowPt.Y)
+				dist1 := math.Abs(float64(at1.Y) - centerY)
+				dist2 := math.Abs(float64(at2.Y) - centerY)
+				
+				t.Logf("Symmetry check: center=%v, dist1=%v, dist2=%v", centerY, dist1, dist2)
+				
+				if math.Abs(dist1-dist2) > 1e-10 {
+					t.Errorf("Horizontal arrow head is not symmetric: dist1=%v, dist2=%v, diff=%v", 
+						dist1, dist2, math.Abs(dist1-dist2))
+				}
+				
+				// Also check X coordinates should be the same for vertical symmetry
+				if at1.X != at2.X {
+					t.Errorf("Horizontal arrow head X coordinates should be equal: at1.X=%d, at2.X=%d", 
+						at1.X, at2.X)
+				}
+			}
+		})
+	}
+}
