@@ -24,6 +24,10 @@ Diagram:
         - Account3
     VerticalEmpty1:
       Type: AWS::Diagram::Resource
+      Children:
+        - VerticalEmpty1R
+    VerticalEmpty1R:
+      Type: AWS::Diagram::Resource
     Vertical2:
       Type: AWS::Diagram::VerticalStack
       Children:
@@ -34,6 +38,11 @@ Diagram:
         - Account6
     VerticalEmpty2:
       Type: AWS::Diagram::Resource
+      Children:
+        - VerticalEmpty2R
+    VerticalEmpty2R:
+      Type: AWS::Diagram::Resource
+
     Vertical3:
       Type: AWS::Diagram::VerticalStack
       Children:
@@ -50,6 +59,10 @@ Diagram:
         - Account1Empty
     Account1Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account1EmptyR
+    Account1EmptyR:
+      Type: AWS::Diagram::Resource
 
     Account2:
       Type: AWS::Diagram::Resource
@@ -58,6 +71,11 @@ Diagram:
         - Account2Empty
     Account2Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account2EmptyR
+    Account2EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account3:
       Type: AWS::Diagram::Resource
@@ -66,6 +84,11 @@ Diagram:
         - Account3Empty
     Account3Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account3EmptyR
+    Account3EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account4:
       Type: AWS::Diagram::Resource
@@ -74,6 +97,11 @@ Diagram:
         - Account4Empty
     Account4Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account4EmptyR
+    Account4EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account5:
       Type: AWS::Diagram::Resource
@@ -82,6 +110,11 @@ Diagram:
         - Account5Empty
     Account5Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account5EmptyR
+    Account5EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account6:
       Type: AWS::Diagram::Resource
@@ -90,6 +123,11 @@ Diagram:
         - Account6Empty
     Account6Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account6EmptyR
+    Account6EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account7:
       Type: AWS::Diagram::Resource
@@ -98,6 +136,11 @@ Diagram:
         - Account7Empty
     Account7Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account7EmptyR
+    Account7EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account8:
       Type: AWS::Diagram::Resource
@@ -106,6 +149,11 @@ Diagram:
         - Account8Empty
     Account8Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account8EmptyR
+    Account8EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     Account9:
       Type: AWS::Diagram::Resource
@@ -114,23 +162,67 @@ Diagram:
         - Account9Empty
     Account9Empty:
       Type: AWS::Diagram::Resource
+      Children:
+        - Account9EmptyR
+    Account9EmptyR:
+      Type: AWS::Diagram::Resource
+
 
     HorizontalEmpty1:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty1R
+    HorizontalEmpty1R:
+      Type: AWS::Diagram::Resource
     HorizontalEmpty2:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty2R
+    HorizontalEmpty2R:
+      Type: AWS::Diagram::Resource
+
     HorizontalEmpty3:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty3R
+    HorizontalEmpty3R:
+      Type: AWS::Diagram::Resource
+
     HorizontalEmpty4:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty4R
+    HorizontalEmpty4R:
+      Type: AWS::Diagram::Resource
+
     HorizontalEmpty5:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty5R
+    HorizontalEmpty5R:
+      Type: AWS::Diagram::Resource
+
     HorizontalEmpty6:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty6R
+    HorizontalEmpty6R:
+      Type: AWS::Diagram::Resource
+
     HorizontalEmpty7:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty7R
+    HorizontalEmpty7R:
+      Type: AWS::Diagram::Resource
+
     HorizontalEmpty8:
       Type: AWS::Diagram::Resource
+      Children:
+        - HorizontalEmpty8R
+    HorizontalEmpty8R:
+      Type: AWS::Diagram::Resource
+
 
 
 

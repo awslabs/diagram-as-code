@@ -70,7 +70,7 @@ func TestNormalize(t *testing.T) {
 	if math.Abs(result.X-expected.X) > 1e-10 || math.Abs(result.Y-expected.Y) > 1e-10 {
 		t.Errorf("Normalize() = %v, want %v", result, expected)
 	}
-	
+
 	// Test zero vector
 	zero := New(0.0, 0.0)
 	result = zero.Normalize()
@@ -87,7 +87,7 @@ func TestPerpendicular(t *testing.T) {
 	if result != expected {
 		t.Errorf("Perpendicular() = %v, want %v", result, expected)
 	}
-	
+
 	// Test that perpendicular is actually perpendicular (dot product = 0)
 	if math.Abs(v.Dot(result)) > 1e-10 {
 		t.Errorf("Perpendicular vector is not perpendicular, dot product = %v", v.Dot(result))
@@ -99,7 +99,7 @@ func TestIsZero(t *testing.T) {
 	if !zero.IsZero() {
 		t.Errorf("IsZero() on zero vector = false, want true")
 	}
-	
+
 	nonZero := New(1.0, 0.0)
 	if nonZero.IsZero() {
 		t.Errorf("IsZero() on non-zero vector = true, want false")

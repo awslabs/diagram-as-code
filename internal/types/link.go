@@ -202,7 +202,7 @@ func (l *Link) computeLabelPos(t, d, label vector.Vector) vector.Vector {
 	if dotProduct > 0 {
 		// Compute scalar α using cross product for 2D
 		numerator := label.Y*d.X - label.X*d.Y
-		denominator := t.X*d.Y - t.Y*d.X  // Fixed order to match original
+		denominator := t.X*d.Y - t.Y*d.X // Fixed order to match original
 		// Check for division by zero
 		if denominator != 0 {
 			alpha := numerator / denominator
@@ -220,7 +220,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
 	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
 	direction := targetVec.Sub(sourceVec).Normalize()
-	
+
 	fourWindrose := ((pos + 2) % 16) / 4
 	isCorner := ((pos+2)%16)%4 == 0
 
@@ -235,7 +235,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	if side == "Left" {
 		t = t.Scale(-1)
 	}
-	
+
 	// calculate text box size
 	textWidth := 0
 	textHeight := 0
@@ -264,7 +264,7 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	m := t.Add(direction)
 	if !m.IsZero() {
 		b := m.Normalize().Scale(5)
-		
+
 		l := sourceVec.Add(p).Add(b).Add(vector.New(float64(textWidth)*ltx[fourWindrose], float64(textHeight)*lty[fourWindrose]))
 
 		if side == "Left" {
@@ -305,27 +305,27 @@ func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt imag
 	originVec := vector.New(float64(originPt.X), float64(originPt.Y))
 	direction := arrowVec.Sub(originVec)
 	length := direction.Length()
-	
+
 	if arrowHead.Length == 0 {
 		arrowHead.Length = 10
 	}
 	log.Infof("arrowHead.Length:\"%v\", arrowHead.Width:\"%v\"", arrowHead.Length, arrowHead.Width)
 	_a, _b, _c := l.getThreeSide(arrowHead.Width)
-	
+
 	// Calculate final positions in floating point for better accuracy
 	dx := direction.X
 	dy := direction.Y
-	
+
 	// Calculate final arrow head positions (not offsets)
 	at1Vec := arrowVec.Sub(vector.New(
-		arrowHead.Length * (_a*dx - _c*dy) / (_b * length),
-		arrowHead.Length * (_c*dx + _a*dy) / (_b * length),
+		arrowHead.Length*(_a*dx-_c*dy)/(_b*length),
+		arrowHead.Length*(_c*dx+_a*dy)/(_b*length),
 	))
 	at2Vec := arrowVec.Sub(vector.New(
-		arrowHead.Length * (_a*dx + _c*dy) / (_b * length),
-		arrowHead.Length * (-_c*dx + _a*dy) / (_b * length),
+		arrowHead.Length*(_a*dx+_c*dy)/(_b*length),
+		arrowHead.Length*(-_c*dx+_a*dy)/(_b*length),
 	))
-	
+
 	// Convert to int only at the end for better precision
 	at1 := image.Point{int(at1Vec.X), int(at1Vec.Y)}
 	at2 := image.Point{int(at2Vec.X), int(at2Vec.Y)}
