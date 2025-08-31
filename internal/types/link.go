@@ -304,6 +304,7 @@ func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt imag
 	arrowVec := vector.New(float64(arrowPt.X), float64(arrowPt.Y))
 	originVec := vector.New(float64(originPt.X), float64(originPt.Y))
 	direction := arrowVec.Sub(originVec)
+	length := direction.Length()
 	
 	if arrowHead.Length == 0 {
 		arrowHead.Length = 10
@@ -311,12 +312,21 @@ func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt imag
 	log.Infof("arrowHead.Length:\"%v\", arrowHead.Width:\"%v\"", arrowHead.Length, arrowHead.Width)
 	_a, _b, _c := l.getThreeSide(arrowHead.Width)
 	
-	unitDir := direction.Normalize()
-	perpDir := unitDir.Perpendicular()
+	// Calculate final positions in floating point for better accuracy
+	dx := direction.X
+	dy := direction.Y
 	
-	at1Vec := arrowVec.Sub(unitDir.Scale(arrowHead.Length * _a / _b)).Sub(perpDir.Scale(arrowHead.Length * _c / _b))
-	at2Vec := arrowVec.Sub(unitDir.Scale(arrowHead.Length * _a / _b)).Add(perpDir.Scale(arrowHead.Length * _c / _b))
+	// Calculate final arrow head positions (not offsets)
+	at1Vec := arrowVec.Sub(vector.New(
+		arrowHead.Length * (_a*dx - _c*dy) / (_b * length),
+		arrowHead.Length * (_c*dx + _a*dy) / (_b * length),
+	))
+	at2Vec := arrowVec.Sub(vector.New(
+		arrowHead.Length * (_a*dx + _c*dy) / (_b * length),
+		arrowHead.Length * (-_c*dx + _a*dy) / (_b * length),
+	))
 	
+	// Convert to int only at the end for better precision
 	at1 := image.Point{int(at1Vec.X), int(at1Vec.Y)}
 	at2 := image.Point{int(at2Vec.X), int(at2Vec.Y)}
 
