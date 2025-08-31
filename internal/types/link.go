@@ -16,6 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
+	"github.com/awslabs/diagram-as-code/internal/vector"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
@@ -106,22 +107,28 @@ func (l *Link) drawNeighborsDot(img *image.RGBA, x, y float64) {
 }
 
 func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Point) {
-	dx := float64(targetPt.X - sourcePt.X)
-	dy := float64(targetPt.Y - sourcePt.Y)
-	length := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
+	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
+	direction := targetVec.Sub(sourceVec)
+	length := direction.Length()
+
+	if length == 0 {
+		return
+	}
+
+	unitDir := direction.Normalize()
+	perpDir := unitDir.Perpendicular()
 
 	for i := 0; i < int(length); i++ {
-		x := float64(sourcePt.X) + dx/length*float64(i)
-		y := float64(sourcePt.Y) + dy/length*float64(i)
+		pos := sourceVec.Add(unitDir.Scale(float64(i)))
 
 		if l.LineStyle == "dashed" && i%9 > 5 {
 			continue
 		}
 		for j := 0; j < l.LineWidth; j++ {
-			u := float64(j) - float64(l.LineWidth-1)/2
-			wx := dy / length * u
-			wy := -dx / length * u
-			l.drawNeighborsDot(img, x+wx, y+wy)
+			offset := float64(j) - float64(l.LineWidth-1)/2
+			finalPos := pos.Add(perpDir.Scale(offset))
+			l.drawNeighborsDot(img, finalPos.X, finalPos.Y)
 		}
 	}
 }
@@ -188,33 +195,32 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (fo
 	return truetype.NewFace(ft, &opt), nil
 }
 
-func (l *Link) computeLabelPos(tx, ty, dx, dy, lx, ly float64) (float64, float64) {
+func (l *Link) computeLabelPos(t, d, label vector.Vector) vector.Vector {
 	// Compute the dot product of the unit vectors
-	dot_product := tx*dx + ty*dy
+	dotProduct := t.Dot(d)
 	// If the angle is 90 degrees or more (dot product <= 0), set a to (0,0)
-	if dot_product > 0 {
-		// Compute scalar α
-		numerator := ly*dx - lx*dy
-		denominator := tx*dy - ty*dx
+	if dotProduct > 0 {
+		// Compute scalar α using cross product for 2D
+		numerator := label.Y*d.X - label.X*d.Y
+		denominator := t.X*d.Y - t.Y*d.X // Fixed order to match original
 		// Check for division by zero
 		if denominator != 0 {
 			alpha := numerator / denominator
 			// Compute vector a
-			return alpha * tx, alpha * ty
+			return t.Scale(alpha)
 		}
 	}
-	return 0.0, 0.0
+	return vector.New(0.0, 0.0)
 }
 
 func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource, sourcePt, targetPt image.Point, side string, label *LinkLabel) error {
 	if label == nil {
 		return nil
 	}
-	_dx := float64(targetPt.X - sourcePt.X)
-	_dy := float64(targetPt.Y - sourcePt.Y)
-	length := math.Sqrt(math.Pow(_dx, 2) + math.Pow(_dy, 2))
-	dx := _dx / length
-	dy := _dy / length
+	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
+	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
+	direction := targetVec.Sub(sourceVec).Normalize()
+
 	fourWindrose := ((pos + 2) % 16) / 4
 	isCorner := ((pos+2)%16)%4 == 0
 
@@ -225,12 +231,11 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 		fourWindrose = (fourWindrose + 3) % 4
 	}
 
-	tx := _tx[fourWindrose]
-	ty := _ty[fourWindrose]
+	t := vector.New(_tx[fourWindrose], _ty[fourWindrose])
 	if side == "Left" {
-		tx = _tx[fourWindrose] * -1
-		ty = _ty[fourWindrose] * -1
+		t = t.Scale(-1)
 	}
+
 	// calculate text box size
 	textWidth := 0
 	textHeight := 0
@@ -246,46 +251,39 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	}
 
 	// label vector
-	ldx := _tx[(fourWindrose+3)%4] * float64(textWidth)
-	ldy := _ty[(fourWindrose+3)%4] * float64(textHeight)
+	labelVec := vector.New(_tx[(fourWindrose+3)%4]*float64(textWidth), _ty[(fourWindrose+3)%4]*float64(textHeight))
 
 	// calculate the base of a right triangle
-	px, py := l.computeLabelPos(tx, ty, dx, dy, ldx, ldy)
+	p := l.computeLabelPos(t, direction, labelVec)
 
 	// Unit vector for sliding textbox
 	ltx := [4]float64{0.0, 0.0, -1.0, -1.0}
 	lty := [4]float64{0.0, 1.0, 1.0, 0.0}
 
 	// calculate buffer
-	mx := float64(tx) + dx
-	my := float64(ty) + dy
-	mag := math.Sqrt(mx*mx + my*my)
-	if mag == 0 {
-		return fmt.Errorf("zero length vector detected in link label calculation")
-	}
-	bx := float64(mx) / mag * 5
-	by := float64(my) / mag * 5
+	m := t.Add(direction)
+	if !m.IsZero() {
+		b := m.Normalize().Scale(5)
 
-	lx := float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[fourWindrose]
-	ly := float64(sourcePt.Y) + py + by + float64(textHeight)*lty[fourWindrose]
+		l := sourceVec.Add(p).Add(b).Add(vector.New(float64(textWidth)*ltx[fourWindrose], float64(textHeight)*lty[fourWindrose]))
 
-	if side == "Left" {
-		lx = float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[(fourWindrose+3)%4]
-		ly = float64(sourcePt.Y) + py + by + float64(textHeight)*lty[(fourWindrose+3)%4]
-	}
-
-	lineOffset := fixed.I(0)
-	for _, line := range texts {
-		textBindings, _ := font.BoundString(fontFace, line)
-		point := fixed.Point26_6{fixed.I(int(lx)), fixed.I(int(ly)) + lineOffset}
-		d := &font.Drawer{
-			Dst:  img,
-			Src:  image.NewUniform(label.Color),
-			Face: fontFace,
-			Dot:  point,
+		if side == "Left" {
+			l = sourceVec.Add(p).Add(b).Add(vector.New(float64(textWidth)*ltx[(fourWindrose+3)%4], float64(textHeight)*lty[(fourWindrose+3)%4]))
 		}
-		d.DrawString(line)
-		lineOffset += lineOffset + textBindings.Max.Y - textBindings.Min.Y
+
+		lineOffset := fixed.I(0)
+		for _, line := range texts {
+			textBindings, _ := font.BoundString(fontFace, line)
+			point := fixed.Point26_6{fixed.I(int(l.X)), fixed.I(int(l.Y)) + lineOffset}
+			d := &font.Drawer{
+				Dst:  img,
+				Src:  image.NewUniform(label.Color),
+				Face: fontFace,
+				Dot:  point,
+			}
+			d.DrawString(line)
+			lineOffset += lineOffset + textBindings.Max.Y - textBindings.Min.Y
+		}
 	}
 	return nil
 }
@@ -303,22 +301,34 @@ func (l *Link) getThreeSide(t string) (float64, float64, float64) {
 }
 
 func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt image.Point, arrowHead ArrowHead) {
-	dx := float64(arrowPt.X - originPt.X)
-	dy := float64(arrowPt.Y - originPt.Y)
-	length := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	arrowVec := vector.New(float64(arrowPt.X), float64(arrowPt.Y))
+	originVec := vector.New(float64(originPt.X), float64(originPt.Y))
+	direction := arrowVec.Sub(originVec)
+	length := direction.Length()
+
 	if arrowHead.Length == 0 {
 		arrowHead.Length = 10
 	}
 	log.Infof("arrowHead.Length:\"%v\", arrowHead.Width:\"%v\"", arrowHead.Length, arrowHead.Width)
 	_a, _b, _c := l.getThreeSide(arrowHead.Width)
-	at1 := arrowPt.Sub(image.Point{
-		int(arrowHead.Length * (_a*dx - _c*dy) / (_b * length)),
-		int(arrowHead.Length * (_c*dx + _a*dy) / (_b * length)),
-	})
-	at2 := arrowPt.Sub(image.Point{
-		int(arrowHead.Length * (_a*dx + _c*dy) / (_b * length)),
-		int(arrowHead.Length * (-_c*dx + _a*dy) / (_b * length)),
-	})
+
+	// Calculate final positions in floating point for better accuracy
+	dx := direction.X
+	dy := direction.Y
+
+	// Calculate final arrow head positions (not offsets)
+	at1Vec := arrowVec.Sub(vector.New(
+		arrowHead.Length*(_a*dx-_c*dy)/(_b*length),
+		arrowHead.Length*(_c*dx+_a*dy)/(_b*length),
+	))
+	at2Vec := arrowVec.Sub(vector.New(
+		arrowHead.Length*(_a*dx+_c*dy)/(_b*length),
+		arrowHead.Length*(-_c*dx+_a*dy)/(_b*length),
+	))
+
+	// Convert to int with rounding for better symmetry
+	at1 := image.Point{int(math.Round(at1Vec.X)), int(math.Round(at1Vec.Y))}
+	at2 := image.Point{int(math.Round(at2Vec.X)), int(math.Round(at2Vec.Y))}
 
 	switch arrowHead.Type {
 	case "Default":
