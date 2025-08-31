@@ -5,6 +5,8 @@ import (
 	"image/color"
 	"math"
 	"testing"
+
+	"github.com/awslabs/diagram-as-code/internal/vector"
 )
 
 func TestLinkInit(t *testing.T) {
@@ -121,5 +123,83 @@ func TestDrawNeighborDots2(t *testing.T) {
 		if neighborColor != (color.RGBA{255, 192, 192, 255}) {
 			t.Errorf("Expected neighbor pixel at (%d, %d) to be semi-transparent red, got %v", neighbor.X, neighbor.Y, neighborColor)
 		}
+	}
+}
+
+// Original computeLabelPos function for comparison
+func computeLabelPosOriginal(tx, ty, dx, dy, lx, ly float64) (float64, float64) {
+	// Compute the dot product of the unit vectors
+	dot_product := tx*dx + ty*dy
+	// If the angle is 90 degrees or more (dot product <= 0), set a to (0,0)
+	if dot_product > 0 {
+		// Compute scalar α
+		numerator := ly*dx - lx*dy
+		denominator := tx*dy - ty*dx
+		// Check for division by zero
+		if denominator != 0 {
+			alpha := numerator / denominator
+			// Compute vector a
+			return alpha * tx, alpha * ty
+		}
+	}
+	return 0.0, 0.0
+}
+
+func TestComputeLabelPosComparison(t *testing.T) {
+	link := Link{
+		lineColor: color.RGBA{0, 0, 0, 255},
+	}
+
+	tests := []struct {
+		name string
+		tx, ty, dx, dy, lx, ly float64
+	}{
+		{
+			name: "Perpendicular vectors (90 degrees)",
+			tx: 1.0, ty: 0.0,  // East
+			dx: 0.0, dy: 1.0,  // South
+			lx: 10.0, ly: 5.0,
+		},
+		{
+			name: "Obtuse angle (dot product < 0)",
+			tx: 1.0, ty: 0.0,   // East
+			dx: -1.0, dy: 0.0,  // West (opposite)
+			lx: 10.0, ly: 5.0,
+		},
+		{
+			name: "Acute angle with calculation",
+			tx: 1.0, ty: 0.0,    // East
+			dx: 0.707, dy: 0.707, // Southeast (45 degrees)
+			lx: 0.0, ly: 10.0,   // North label
+		},
+		{
+			name: "Same direction (denominator = 0)",
+			tx: 1.0, ty: 0.0,  // East
+			dx: 1.0, dy: 0.0,  // Same direction
+			lx: 0.0, ly: 10.0, // North label
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Original calculation
+			origX, origY := computeLabelPosOriginal(tt.tx, tt.ty, tt.dx, tt.dy, tt.lx, tt.ly)
+			
+			// New vector calculation
+			tVec := vector.New(tt.tx, tt.ty)
+			dVec := vector.New(tt.dx, tt.dy)
+			labelVec := vector.New(tt.lx, tt.ly)
+			result := link.computeLabelPos(tVec, dVec, labelVec)
+			
+			tolerance := 1e-10
+			if math.Abs(result.X-origX) > tolerance || math.Abs(result.Y-origY) > tolerance {
+				t.Errorf("Vector version differs from original:\n"+
+					"  Original: (%v, %v)\n"+
+					"  Vector:   (%v, %v)\n"+
+					"  Input: tx=%v, ty=%v, dx=%v, dy=%v, lx=%v, ly=%v",
+					origX, origY, result.X, result.Y,
+					tt.tx, tt.ty, tt.dx, tt.dy, tt.lx, tt.ly)
+			}
+		})
 	}
 }
