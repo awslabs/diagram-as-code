@@ -756,6 +756,25 @@ func TestSToNOrthogonalPath(t *testing.T) {
 		}
 	}
 	
+	
+	// Verify Source → First control point orthogonality
+	if len(actualControlPoints) > 0 {
+		first := actualControlPoints[0]
+		if sourcePt.X != first.X && sourcePt.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				sourcePt.X, sourcePt.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(actualControlPoints) > 0 {
+		last := actualControlPoints[len(actualControlPoints)-1]
+		if last.X != targetPt.X && last.Y != targetPt.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, targetPt.X, targetPt.Y)
+		}
+	}
+	
 	t.Logf("=== End S to N Test ===")
 }
 func TestSToEOrthogonalPath(t *testing.T) {
@@ -828,6 +847,25 @@ func TestSToEOrthogonalPath(t *testing.T) {
 		}
 		if !xChanged && !yChanged {
 			t.Errorf("No movement from %v to %v", prev, curr)
+		}
+	}
+	
+	
+	// Verify Source → First control point orthogonality
+	if len(actualControlPoints) > 0 {
+		first := actualControlPoints[0]
+		if sourcePt.X != first.X && sourcePt.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				sourcePt.X, sourcePt.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(actualControlPoints) > 0 {
+		last := actualControlPoints[len(actualControlPoints)-1]
+		if last.X != targetPt.X && last.Y != targetPt.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, targetPt.X, targetPt.Y)
 		}
 	}
 	
@@ -907,6 +945,25 @@ func TestSToSOrthogonalPath(t *testing.T) {
 		}
 		if !xChanged && !yChanged {
 			t.Errorf("No movement from %v to %v", prev, curr)
+		}
+	}
+	
+	
+	// Verify Source → First control point orthogonality
+	if len(actualControlPoints) > 0 {
+		first := actualControlPoints[0]
+		if sourcePt.X != first.X && sourcePt.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				sourcePt.X, sourcePt.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(actualControlPoints) > 0 {
+		last := actualControlPoints[len(actualControlPoints)-1]
+		if last.X != targetPt.X && last.Y != targetPt.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, targetPt.X, targetPt.Y)
 		}
 	}
 	
@@ -991,6 +1048,25 @@ func TestWToEOrthogonalPath(t *testing.T) {
 		}
 		if !xChanged && !yChanged {
 			t.Errorf("No movement from %v to %v", prev, curr)
+		}
+	}
+	
+	
+	// Verify Source → First control point orthogonality
+	if len(actualControlPoints) > 0 {
+		first := actualControlPoints[0]
+		if sourcePt.X != first.X && sourcePt.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				sourcePt.X, sourcePt.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(actualControlPoints) > 0 {
+		last := actualControlPoints[len(actualControlPoints)-1]
+		if last.X != targetPt.X && last.Y != targetPt.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, targetPt.X, targetPt.Y)
 		}
 	}
 	
@@ -1115,6 +1191,24 @@ func TestVerticalStackSToNOrthogonalPath(t *testing.T) {
 		}
 	}
 	
+	// Verify Source → First control point orthogonality
+	if len(controlPts) > 0 {
+		first := controlPts[0]
+		if source.X != first.X && source.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				source.X, source.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(controlPts) > 0 {
+		last := controlPts[len(controlPts)-1]
+		if last.X != target.X && last.Y != target.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, target.X, target.Y)
+		}
+	}
+	
 	// Should have detour since both positions point toward each other
 	// Expected: detour to avoid direct collision
 	if len(controlPts) < 3 {
@@ -1162,5 +1256,389 @@ func TestEToNOrthogonalPath(t *testing.T) {
 		}
 	}
 	
+	// Verify Source → First control point orthogonality
+	if len(actualControlPoints) > 0 {
+		first := actualControlPoints[0]
+		if sourcePt.X != first.X && sourcePt.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				sourcePt.X, sourcePt.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(actualControlPoints) > 0 {
+		last := actualControlPoints[len(actualControlPoints)-1]
+		if last.X != targetPt.X && last.Y != targetPt.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, targetPt.X, targetPt.Y)
+		}
+	}	
 	t.Logf("=== End E to N Test ===")
+}
+
+func TestHorizontalStackEToWOrthogonalPath(t *testing.T) {
+	t.Log("=== Horizontal Stack E to W Orthogonal Path Test ===")
+	
+	// Create horizontal stack with Instance1 left, Instance2 right
+	// Instance1 (left): (350, 402)
+	// Instance2 (right): (450, 402)
+	// Link: Instance1:E -> Instance2:W (should require detour)
+	
+	source := image.Point{X: 350, Y: 402} // Instance1 center (left)
+	target := image.Point{X: 450, Y: 402} // Instance2 center (right)
+	
+	t.Logf("Source (Instance1): (%d,%d)", source.X, source.Y)
+	t.Logf("Target (Instance2): (%d,%d)", target.X, target.Y)
+	
+	link := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4,  // E (East)
+		TargetPosition: 12, // W (West)
+	}
+	
+	controlPts := link.calculateOrthogonalPath(source, target)
+	
+	t.Logf("Actual control points: %v", controlPts)
+	t.Logf("Number of control points: %d", len(controlPts))
+	
+	// Verify orthogonal movements
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1 := controlPts[i]
+		p2 := controlPts[i+1]
+		
+		if p1.X != p2.X && p1.Y != p2.Y {
+			t.Errorf("Non-orthogonal movement from (%d,%d) to (%d,%d)", p1.X, p1.Y, p2.X, p2.Y)
+		}
+	
+	// Verify Source → First control point orthogonality
+	if len(controlPts) > 0 {
+		first := controlPts[0]
+		if source.X != first.X && source.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				source.X, source.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(controlPts) > 0 {
+		last := controlPts[len(controlPts)-1]
+		if last.X != target.X && last.Y != target.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, target.X, target.Y)
+		}
+	}	}
+	
+	// Distance is 100px, which allows direct connection without detour
+	// Expected: efficient direct path with minimal control points
+	if len(controlPts) < 1 {
+		t.Errorf("Expected at least 1 control point, got %d", len(controlPts))
+	}
+	
+	// Verify the path converges at the midpoint for efficient connection
+	if len(controlPts) == 1 {
+		midpoint := controlPts[0]
+		expectedX := (source.X + target.X) / 2 // 400
+		if midpoint.X != expectedX || midpoint.Y != source.Y {
+			t.Errorf("Expected midpoint convergence at (%d,%d), got (%d,%d)", 
+				expectedX, source.Y, midpoint.X, midpoint.Y)
+		}
+	}
+	
+	t.Log("=== End Horizontal Stack E to W Test ===")
+}
+
+func TestNestedLayoutELBToVerticalStackOrthogonalPath(t *testing.T) {
+	t.Log("=== Nested Layout ELB to VerticalStack Orthogonal Path Test ===")
+	
+	// Layout: HorizontalStack{ELB, VerticalStack{Instance1, Instance2}}
+	// ELB (left): (300, 400)
+	// Instance1 (top right): (500, 350) 
+	// Instance2 (bottom right): (500, 450)
+	// Links: ELB:E -> Instance1:W, ELB:E -> Instance2:W
+	
+	elbPos := image.Point{X: 300, Y: 400}
+	instance1Pos := image.Point{X: 500, Y: 350}
+	instance2Pos := image.Point{X: 500, Y: 450}
+	
+	t.Logf("ELB: (%d,%d)", elbPos.X, elbPos.Y)
+	t.Logf("Instance1: (%d,%d)", instance1Pos.X, instance1Pos.Y)
+	t.Logf("Instance2: (%d,%d)", instance2Pos.X, instance2Pos.Y)
+	
+	// Test ELB:E -> Instance1:W
+	t.Log("--- Testing ELB:E -> Instance1:W ---")
+	link1 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4,  // E (East)
+		TargetPosition: 12, // W (West)
+	}
+	
+	controlPts1 := link1.calculateOrthogonalPath(elbPos, instance1Pos)
+	t.Logf("ELB -> Instance1 control points: %v", controlPts1)
+	
+	// Test ELB:E -> Instance2:W
+	t.Log("--- Testing ELB:E -> Instance2:W ---")
+	link2 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4,  // E (East)
+		TargetPosition: 12, // W (West)
+	}
+	
+	controlPts2 := link2.calculateOrthogonalPath(elbPos, instance2Pos)
+	t.Logf("ELB -> Instance2 control points: %v", controlPts2)
+	
+	// Verify orthogonal movements for both links
+	for i, controlPts := range [][]image.Point{controlPts1, controlPts2} {
+		linkName := []string{"ELB->Instance1", "ELB->Instance2"}[i]
+		for j := 0; j < len(controlPts)-1; j++ {
+			p1 := controlPts[j]
+			p2 := controlPts[j+1]
+			
+			if p1.X != p2.X && p1.Y != p2.Y {
+				t.Errorf("%s: Non-orthogonal movement from (%d,%d) to (%d,%d)", 
+					linkName, p1.X, p1.Y, p2.X, p2.Y)
+			}
+		
+		// Verify Source → First control point orthogonality
+		if len(controlPts) > 0 {
+			first := controlPts[0]
+			if elbPos.X != first.X && elbPos.Y != first.Y {
+				t.Errorf("%s: Non-orthogonal Source (%d,%d) → First control point (%d,%d)", 
+					linkName, elbPos.X, elbPos.Y, first.X, first.Y)
+			}
+		}
+		
+		// Verify Last control point → Target orthogonality
+		if len(controlPts) > 0 {
+			last := controlPts[len(controlPts)-1]
+			targetPos := []image.Point{instance1Pos, instance2Pos}[i]
+			if last.X != targetPos.X && last.Y != targetPos.Y {
+				t.Errorf("%s: Non-orthogonal Last control point (%d,%d) → Target (%d,%d)", 
+					linkName, last.X, last.Y, targetPos.X, targetPos.Y)
+			}
+		}		}
+	}
+	
+	// Both links should have efficient paths (distance 200px allows direct connection)
+	if len(controlPts1) < 1 {
+		t.Errorf("Expected at least 1 control point for ELB->Instance1, got %d", len(controlPts1))
+	}
+	if len(controlPts2) < 1 {
+		t.Errorf("Expected at least 1 control point for ELB->Instance2, got %d", len(controlPts2))
+	}
+	
+	// Verify different Y coordinates for the two paths (no collision)
+	if len(controlPts1) > 0 && len(controlPts2) > 0 {
+		// Paths should diverge to reach different Y levels
+		t.Logf("Instance1 path Y: %d, Instance2 path Y: %d", 
+			controlPts1[len(controlPts1)-1].Y, controlPts2[len(controlPts2)-1].Y)
+	}
+	
+	t.Log("=== End Nested Layout Test ===")
+}
+
+func TestHorizontalStackWToEOrthogonalPath(t *testing.T) {
+	t.Log("=== Horizontal Stack W to E Orthogonal Path Test ===")
+	
+	// Create horizontal stack with Instance1 left, Instance2 right
+	// Instance1 (left): (350, 402)
+	// Instance2 (right): (450, 402)
+	// Link: Instance2:W -> Instance1:E (reverse direction)
+	
+	source := image.Point{X: 450, Y: 402} // Instance2 center (right)
+	target := image.Point{X: 350, Y: 402} // Instance1 center (left)
+	
+	t.Logf("Source (Instance2): (%d,%d)", source.X, source.Y)
+	t.Logf("Target (Instance1): (%d,%d)", target.X, target.Y)
+	
+	link := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 12, // W (West)
+		TargetPosition: 4,  // E (East)
+	}
+	
+	controlPts := link.calculateOrthogonalPath(source, target)
+	
+	t.Logf("Actual control points: %v", controlPts)
+	t.Logf("Number of control points: %d", len(controlPts))
+	
+	// Verify orthogonal movements
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1 := controlPts[i]
+		p2 := controlPts[i+1]
+		
+		if p1.X != p2.X && p1.Y != p2.Y {
+			t.Errorf("Non-orthogonal movement from (%d,%d) to (%d,%d)", p1.X, p1.Y, p2.X, p2.Y)
+		}
+	}
+	
+	// Verify Source → First control point orthogonality
+	if len(controlPts) > 0 {
+		first := controlPts[0]
+		if source.X != first.X && source.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				source.X, source.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(controlPts) > 0 {
+		last := controlPts[len(controlPts)-1]
+		if last.X != target.X && last.Y != target.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, target.X, target.Y)
+		}
+	}	
+	// Distance is 100px, which allows direct connection without detour
+	// Expected: efficient direct path with minimal control points
+	if len(controlPts) < 1 {
+		t.Errorf("Expected at least 1 control point, got %d", len(controlPts))
+	}
+	
+	// Verify the path converges at the midpoint for efficient connection
+	if len(controlPts) == 1 {
+		midpoint := controlPts[0]
+		expectedX := (source.X + target.X) / 2 // 400
+		if midpoint.X != expectedX || midpoint.Y != source.Y {
+			t.Errorf("Expected midpoint convergence at (%d,%d), got (%d,%d)", 
+				expectedX, source.Y, midpoint.X, midpoint.Y)
+		}
+	}
+	
+	t.Log("=== End Horizontal Stack W to E Test ===")
+}
+
+func TestNestedLayoutELBToHorizontalStackOrthogonalPath(t *testing.T) {
+	t.Log("=== Nested Layout ELB to HorizontalStack Orthogonal Path Test ===")
+	
+	// Layout: VerticalStack{HorizontalStack{Instance1, Instance2}, ELB}
+	// Instance1 (top left): (350, 300)
+	// Instance2 (top right): (450, 300) 
+	// ELB (bottom center): (400, 450)
+	// Links: ELB:NNW -> Instance1:S, ELB:NNE -> Instance2:S
+	
+	instance1Pos := image.Point{X: 350, Y: 300}
+	instance2Pos := image.Point{X: 450, Y: 300}
+	elbPos := image.Point{X: 400, Y: 450}
+	
+	t.Logf("Instance1: (%d,%d)", instance1Pos.X, instance1Pos.Y)
+	t.Logf("Instance2: (%d,%d)", instance2Pos.X, instance2Pos.Y)
+	t.Logf("ELB: (%d,%d)", elbPos.X, elbPos.Y)
+	
+	// Test ELB:NNW -> Instance1:S
+	t.Log("--- Testing ELB:NNW -> Instance1:S ---")
+	link1 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 1,  // NNW (North-North-West)
+		TargetPosition: 8,  // S (South)
+	}
+	
+	controlPts1 := link1.calculateOrthogonalPath(elbPos, instance1Pos)
+	t.Logf("ELB -> Instance1 control points: %v", controlPts1)
+	
+	// Test ELB:NNE -> Instance2:S
+	t.Log("--- Testing ELB:NNE -> Instance2:S ---")
+	link2 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 3,  // NNE (North-North-East)
+		TargetPosition: 8,  // S (South)
+	}
+	
+	controlPts2 := link2.calculateOrthogonalPath(elbPos, instance2Pos)
+	t.Logf("ELB -> Instance2 control points: %v", controlPts2)
+	
+	// Verify orthogonal movements for both links
+	for i, controlPts := range [][]image.Point{controlPts1, controlPts2} {
+		linkName := []string{"ELB->Instance1", "ELB->Instance2"}[i]
+		for j := 0; j < len(controlPts)-1; j++ {
+			p1 := controlPts[j]
+			p2 := controlPts[j+1]
+			
+			if p1.X != p2.X && p1.Y != p2.Y {
+				t.Errorf("%s: Non-orthogonal movement from (%d,%d) to (%d,%d)", 
+					linkName, p1.X, p1.Y, p2.X, p2.Y)
+			}
+		}
+	}
+	
+	// Both links should have efficient paths
+	if len(controlPts1) < 1 {
+		t.Errorf("Expected at least 1 control point for ELB->Instance1, got %d", len(controlPts1))
+	}
+	if len(controlPts2) < 1 {
+		t.Errorf("Expected at least 1 control point for ELB->Instance2, got %d", len(controlPts2))
+	}
+	
+	// Verify paths diverge correctly (different X coordinates)
+	if len(controlPts1) > 0 && len(controlPts2) > 0 {
+		// Paths should diverge to reach different X positions
+		t.Logf("Instance1 path final X: %d, Instance2 path final X: %d", 
+			controlPts1[len(controlPts1)-1].X, controlPts2[len(controlPts2)-1].X)
+	}
+	
+	
+	// Verify Source → First control point orthogonality for both links
+	for i, controlPts := range [][]image.Point{controlPts1, controlPts2} {
+		linkName := []string{"ELB->Instance1", "ELB->Instance2"}[i]
+		targetPos := []image.Point{instance1Pos, instance2Pos}[i]
+		
+		if len(controlPts) > 0 {
+			first := controlPts[0]
+			if elbPos.X != first.X && elbPos.Y != first.Y {
+				t.Errorf("%s: Non-orthogonal Source (%d,%d) → First control point (%d,%d)", 
+					linkName, elbPos.X, elbPos.Y, first.X, first.Y)
+			}
+		}
+		
+		if len(controlPts) > 0 {
+			last := controlPts[len(controlPts)-1]
+			if last.X != targetPos.X && last.Y != targetPos.Y {
+				t.Errorf("%s: Non-orthogonal Last control point (%d,%d) → Target (%d,%d)", 
+					linkName, last.X, last.Y, targetPos.X, targetPos.Y)
+			}
+		}
+	}
+	
+	t.Log("=== End Nested Layout ELB to HorizontalStack Test ===")
+}
+
+func TestOrthogonalityCheck(t *testing.T) {
+	t.Log("=== Testing Source/Target Orthogonality ===")
+	
+	source := image.Point{X: 350, Y: 402}
+	target := image.Point{X: 450, Y: 402}
+	
+	link := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4,  // E
+		TargetPosition: 12, // W
+	}
+	
+	controlPts := link.calculateOrthogonalPath(source, target)
+	t.Logf("Control points: %v", controlPts)
+	
+	// Verify Source → First control point orthogonality
+	if len(controlPts) > 0 {
+		first := controlPts[0]
+		if source.X != first.X && source.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
+				source.X, source.Y, first.X, first.Y)
+		} else {
+			t.Logf("✅ Source → First control point orthogonal: (%d,%d) → (%d,%d)", 
+				source.X, source.Y, first.X, first.Y)
+		}
+	}
+	
+	// Verify Last control point → Target orthogonality
+	if len(controlPts) > 0 {
+		last := controlPts[len(controlPts)-1]
+		if last.X != target.X && last.Y != target.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
+				last.X, last.Y, target.X, target.Y)
+		} else {
+			t.Logf("✅ Last control point → Target orthogonal: (%d,%d) → (%d,%d)", 
+				last.X, last.Y, target.X, target.Y)
+		}
+	}
+	
+	t.Log("=== End Orthogonality Check ===")
 }

@@ -538,44 +538,31 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 		// Source movement: detour or normal convergence
 		if step == 0 {
 			// Step 0: Position direction movement
+			// - For detour cases: Move 20px minimum to clear resource boundary
+			// - For direct cases: Move efficiently toward target (with 20px minimum)
+			// - Always moves in the resource's position direction
 			var moveDistance float64
-			if sourceUseX {
-				moveDistance = remaining.X
-				if isParallel {
-					moveDistance = remaining.X / 2.0
-				}
-				
-				// Check direction using dot product
-				moveVector := vector.New(moveDistance, 0)
-				if sourceDir.Dot(moveVector) < 0 {
-					// Opposite direction: 20px fixed
-					moveDistance = 20.0
-				} else {
-					// Same direction: minimum 20px guarantee
-					if math.Abs(moveDistance) < 20.0 {
-						moveDistance = math.Copysign(20.0, moveDistance)
-					}
-				}
-				sourceCurrent = sourceCurrent.Add(sourceDir.Scale(moveDistance))
+			if sourcePenetration {
+				// Source penetration: fixed 20px to clear resource
+				moveDistance = 20.0
 			} else {
-				moveDistance = remaining.Y
-				if isParallel {
-					moveDistance = remaining.Y / 2.0
-				}
-				
-				// Check direction using dot product
-				moveVector := vector.New(0, moveDistance)
-				if sourceDir.Dot(moveVector) < 0 {
-					// Opposite direction: 20px fixed
-					moveDistance = 20.0
+				// Source no penetration: efficient distance
+				if sourceUseX {
+					moveDistance = math.Abs(remaining.X)
+					if isParallel {
+						moveDistance = math.Abs(remaining.X) / 2.0  // Parallel: share distance
+					}
 				} else {
-					// Same direction: minimum 20px guarantee
-					if math.Abs(moveDistance) < 20.0 {
-						moveDistance = math.Copysign(20.0, moveDistance)
+					moveDistance = math.Abs(remaining.Y)
+					if isParallel {
+						moveDistance = math.Abs(remaining.Y) / 2.0  // Parallel: share distance
 					}
 				}
-				sourceCurrent = sourceCurrent.Add(sourceDir.Scale(moveDistance))
+				if moveDistance < 20.0 {
+					moveDistance = 20.0  // Minimum guarantee
+				}
 			}
+			sourceCurrent = sourceCurrent.Add(sourceDir.Scale(moveDistance))
 			log.Infof("  Source position move: %v (distance: %v)", sourceCurrent, moveDistance)
 		} else if step == 1 && sourcePenetration {
 			// Source detour movement
@@ -628,44 +615,31 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 		// Target movement: detour or normal convergence
 		if step == 0 {
 			// Step 0: Position direction movement
+			// - For detour cases: Move 20px minimum to clear resource boundary
+			// - For direct cases: Move efficiently toward source (with 20px minimum)
+			// - Always moves in the resource's position direction
 			var moveDistance float64
-			if targetUseX {
-				moveDistance = remaining.X
-				if isParallel {
-					moveDistance = remaining.X / 2.0
-				}
-				
-				// Check direction using convergence vector
-				convergenceVector := vector.New(-remaining.X, 0) // Target moves opposite to remaining
-				if targetDir.Dot(convergenceVector) < 0 {
-					// Opposite direction: 20px fixed
-					moveDistance = 20.0
-				} else {
-					// Same direction: minimum 20px guarantee
-					if math.Abs(moveDistance) < 20.0 {
-						moveDistance = math.Copysign(20.0, moveDistance)
-					}
-				}
-				targetCurrent = targetCurrent.Add(targetDir.Scale(moveDistance))
+			if targetPenetration {
+				// Target penetration: fixed 20px to clear resource
+				moveDistance = 20.0
 			} else {
-				moveDistance = remaining.Y
-				if isParallel {
-					moveDistance = remaining.Y / 2.0
-				}
-				
-				// Check direction using convergence vector
-				convergenceVector := vector.New(0, -remaining.Y) // Target moves opposite to remaining
-				if targetDir.Dot(convergenceVector) < 0 {
-					// Opposite direction: 20px fixed
-					moveDistance = 20.0
+				// Target no penetration: efficient distance
+				if targetUseX {
+					moveDistance = math.Abs(remaining.X)
+					if isParallel {
+						moveDistance = math.Abs(remaining.X) / 2.0  // Parallel: share distance
+					}
 				} else {
-					// Same direction: minimum 20px guarantee
-					if math.Abs(moveDistance) < 20.0 {
-						moveDistance = math.Copysign(20.0, moveDistance)
+					moveDistance = math.Abs(remaining.Y)
+					if isParallel {
+						moveDistance = math.Abs(remaining.Y) / 2.0  // Parallel: share distance
 					}
 				}
-				targetCurrent = targetCurrent.Add(targetDir.Scale(moveDistance))
+				if moveDistance < 20.0 {
+					moveDistance = 20.0  // Minimum guarantee
+				}
 			}
+			targetCurrent = targetCurrent.Add(targetDir.Scale(moveDistance))
 			log.Infof("  Target position move: %v (distance: %v)", targetCurrent, moveDistance)
 		} else if step == 1 && targetPenetration {
 			// Target detour movement
@@ -725,9 +699,10 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 		log.Infof("Added source point %d: (%d, %d)", i, int(math.Round(pt.X)), int(math.Round(pt.Y)))
 	}
 	
-	// Add target points in reverse order (excluding the first target point and duplicates)
-	for i := len(targetPoints) - 1; i >= 1; i-- {
+	// Add target points in reverse order (excluding duplicates)
+	for i := len(targetPoints) - 1; i >= 0; i-- {
 		targetPoint := image.Point{int(math.Round(targetPoints[i].X)), int(math.Round(targetPoints[i].Y))}
+		log.Infof("Processing target point %d: (%d, %d)", i, targetPoint.X, targetPoint.Y)
 		// Skip if duplicate of last control point
 		if len(controlPts) > 0 && controlPts[len(controlPts)-1] == targetPoint {
 			log.Infof("Skipped duplicate target point %d: (%d, %d)", i, targetPoint.X, targetPoint.Y)
