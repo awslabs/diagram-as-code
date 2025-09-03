@@ -376,7 +376,7 @@ func (l *Link) Draw(img *image.RGBA) error {
 		}
 	} else if l.Type == "orthogonal" {
 		controlPts := l.calculateOrthogonalPath(sourcePt, targetPt)
-		
+
 		// Draw the path
 		if len(controlPts) >= 1 {
 			l.drawLine(img, sourcePt, controlPts[0])
@@ -465,76 +465,77 @@ func (l *Link) Draw(img *image.RGBA) error {
 	l.drawn = true
 	return nil
 }
+
 // calculateOrthogonalPath generates control points using convergent approach
 func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.Point {
 	log.Infof("=== Convergent Orthogonal Path Calculation ===")
 	log.Infof("Source: %v (Position: %v)", sourcePt, l.SourcePosition)
 	log.Infof("Target: %v (Position: %v)", targetPt, l.TargetPosition)
-	
+
 	// 1. Get direction vectors from positions
 	sourceDir := l.getDirectionVector(int(l.SourcePosition))
 	targetDir := l.getDirectionVector(int(l.TargetPosition))
 	log.Infof("Source direction: %v", sourceDir)
 	log.Infof("Target direction: %v", targetDir)
-	
+
 	// 2. Start from resource positions
 	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
 	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
-	
+
 	sourceCurrent := sourceVec
 	targetCurrent := targetVec
 	log.Infof("Source start: %v", sourceCurrent)
 	log.Infof("Target start: %v", targetCurrent)
-	
+
 	// 3. Check for resource penetration
 	remaining := targetVec.Sub(sourceVec)
-	
+
 	// Source penetration: moving opposite to source direction
 	sourcePenetration := sourceDir.Dot(remaining) < -0.5
-	
+
 	// Target penetration: moving same as target direction (overshooting)
 	targetPenetration := targetDir.Dot(remaining) > 0.5
-	
+
 	log.Infof("Penetration check - Source: %v, Target: %v", sourcePenetration, targetPenetration)
-	
+
 	// 4. Check direction relationship between source and target
 	isParallel := math.Abs(sourceDir.Dot(targetDir)) > 0.5 // Parallel or opposite directions
 	log.Infof("Directions parallel: %v (dot product: %v)", isParallel, sourceDir.Dot(targetDir))
-	
+
 	// 4. Generate convergent path
 	sourcePoints := []vector.Vector{}
 	targetPoints := []vector.Vector{}
-	
+
 	maxSteps := 4
 	if isParallel {
 		maxSteps = 5 // Need more steps for parallel directions
 	}
-	
+
 	for step := 0; step < maxSteps; step++ {
 		log.Infof("Step %d:", step)
-		
+
 		// Calculate remaining distance at step start
 		remaining := targetCurrent.Sub(sourceCurrent)
 		log.Infof("  Remaining: %v", remaining)
-		
+
 		// Check convergence
 		if math.Abs(remaining.X) <= 1.0 && math.Abs(remaining.Y) <= 1.0 {
 			log.Infof("  Converged!")
 			break
 		}
-		
+
 		// Determine movement direction based on position directions
 		// Source/Target positions determine initial axis preference
 		sourceStartsWithX := math.Abs(sourceDir.X) > 0.5 // Horizontal positions (W/E) start with X-axis
 		targetStartsWithX := math.Abs(targetDir.X) > 0.5 // Horizontal positions (W/E) start with X-axis
-		
+
 		// Alternating pattern for each source/target
 		sourceUseX := (step%2 == 0) == sourceStartsWithX
 		targetUseX := (step%2 == 0) == targetStartsWithX
-		
+
 		log.Infof("  Source use X-axis: %v (starts with X: %v)", sourceUseX, sourceStartsWithX)
 		log.Infof("  Target use X-axis: %v (starts with X: %v)", targetUseX, targetStartsWithX)
-		
+
 		// Source movement: detour or normal convergence
 		if step == 0 {
 			// Step 0: Position direction movement
@@ -575,14 +576,14 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 					}
 				}
 				if moveDistance < 20.0 {
-					moveDistance = 20.0  // Minimum guarantee
+					moveDistance = 20.0 // Minimum guarantee
 				}
 			}
 			sourceCurrent = sourceCurrent.Add(sourceDir.Scale(moveDistance))
 			log.Infof("  Source position move: %v (distance: %v)", sourceCurrent, moveDistance)
 		} else if step == 1 && sourcePenetration {
 			// Source detour movement
-			detourDistance := 64.0/2 + 20  // Minimum 52px
+			detourDistance := 64.0/2 + 20 // Minimum 52px
 			if math.Abs(sourceDir.X) > 0.5 {
 				// Horizontal position: vertical detour
 				// Calculate adaptive distance: max(52px, remaining/2)
@@ -593,7 +594,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
 				}
-				
+
 				detourOffset := -detourDistance // Default north
 				if remaining.Y > 0 {
 					detourOffset = detourDistance // South if target is below
@@ -610,7 +611,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
 				}
-				
+
 				detourOffset := detourDistance // Default east
 				if remaining.X < 0 {
 					detourOffset = -detourDistance // West if target is left
@@ -645,7 +646,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			}
 		}
 		sourcePoints = append(sourcePoints, sourceCurrent)
-		
+
 		// Target movement: detour or normal convergence
 		if step == 0 {
 			// Step 0: Position direction movement
@@ -686,14 +687,14 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 					}
 				}
 				if moveDistance < 20.0 {
-					moveDistance = 20.0  // Minimum guarantee
+					moveDistance = 20.0 // Minimum guarantee
 				}
 			}
 			targetCurrent = targetCurrent.Add(targetDir.Scale(moveDistance))
 			log.Infof("  Target position move: %v (distance: %v)", targetCurrent, moveDistance)
 		} else if step == 1 && targetPenetration {
 			// Target detour movement
-			detourDistance := 64.0/2 + 20  // Minimum 52px
+			detourDistance := 64.0/2 + 20 // Minimum 52px
 			if math.Abs(targetDir.X) > 0.5 {
 				// Horizontal position: vertical detour
 				// Calculate adaptive distance: max(52px, remaining/2)
@@ -704,9 +705,9 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
 				}
-				
+
 				detourOffset := -detourDistance // Default north
-				if remaining.Y < 0 { // Inverted: remaining.Y < 0 means Source is above Target
+				if remaining.Y < 0 {            // Inverted: remaining.Y < 0 means Source is above Target
 					detourOffset = detourDistance // South if source is above
 				}
 				targetCurrent = targetCurrent.Add(vector.New(0, detourOffset))
@@ -721,9 +722,9 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
 				}
-				
+
 				detourOffset := detourDistance // Default east
-				if remaining.X > 0 { // Inverted: remaining.X > 0 means Source is right of Target
+				if remaining.X > 0 {           // Inverted: remaining.X > 0 means Source is right of Target
 					detourOffset = -detourDistance // West if source is right
 				}
 				targetCurrent = targetCurrent.Add(vector.New(detourOffset, 0))
@@ -757,16 +758,16 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 		}
 		targetPoints = append(targetPoints, targetCurrent)
 	}
-	
+
 	// 5. Build final control points
 	controlPts := []image.Point{}
-	
+
 	// Add source points
 	for i, pt := range sourcePoints {
 		controlPts = append(controlPts, image.Point{int(math.Round(pt.X)), int(math.Round(pt.Y))})
 		log.Infof("Added source point %d: (%d, %d)", i, int(math.Round(pt.X)), int(math.Round(pt.Y)))
 	}
-	
+
 	// Add target points in reverse order (excluding duplicates)
 	for i := len(targetPoints) - 1; i >= 0; i-- {
 		targetPoint := image.Point{int(math.Round(targetPoints[i].X)), int(math.Round(targetPoints[i].Y))}
@@ -779,7 +780,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 		controlPts = append(controlPts, targetPoint)
 		log.Infof("Added target point %d: (%d, %d)", i, targetPoint.X, targetPoint.Y)
 	}
-	
+
 	log.Infof("Final control points: %v", controlPts)
 	log.Infof("=== End Convergent Calculation ===")
 	return controlPts
@@ -789,12 +790,17 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 func (l *Link) getDirectionVector(position int) vector.Vector {
 	// Convert windrose position to 4-direction
 	fourWindrose := ((position + 2) % 16) / 4
-	
+
 	switch fourWindrose {
-	case 0: return vector.New(0, -1)  // North
-	case 1: return vector.New(1, 0)   // East  
-	case 2: return vector.New(0, 1)   // South
-	case 3: return vector.New(-1, 0)  // West
-	default: return vector.New(0, -1) // Default to North
+	case 0:
+		return vector.New(0, -1) // North
+	case 1:
+		return vector.New(1, 0) // East
+	case 2:
+		return vector.New(0, 1) // South
+	case 3:
+		return vector.New(-1, 0) // West
+	default:
+		return vector.New(0, -1) // Default to North
 	}
 }
