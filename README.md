@@ -98,21 +98,14 @@ Add definition files to create non-AWS diagrams as well.
 
 The awsdac MCP server enables AI assistants and development tools to generate AWS architecture diagrams programmatically through the Model Context Protocol (MCP). This integration allows seamless diagram creation within your development workflow.
 
-### Installation
+### Installation & MCP Client configuration
 
 #### for macOS user
 ```bash
-brew install awsdac-mcp-server
+brew install awsdac
 ```
 
-#### for Gopher (go 1.21 or higher)
-```bash
-go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
-```
-
-### MCP Client Configuration
-
-#### for Homebrew installation
+MCP Client configuration:
 ```json
 {
   "mcpServers": {
@@ -123,7 +116,23 @@ go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
 }
 ```
 
-#### for Go install
+MCP Client configuration with custom log:
+```json
+{
+  "mcpServers": {
+    "awsdac-mcp-server": {
+      "command": "/opt/homebrew/bin/awsdac-mcp-server",
+      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"]
+    }
+  }
+}
+```
+
+#### for Gopher (go 1.21 or higher)
+```bash
+go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
+```
+
 ```json
 {
   "mcpServers": {
@@ -151,18 +160,7 @@ ls $GOPATH/bin/awsdac-mcp-server  # if GOPATH is set
 Use the path returned by these commands in your MCP client configuration.
 
 #### Custom Log File (Optional)
-You can specify a custom log file location:
 
-```json
-{
-  "mcpServers": {
-    "awsdac-mcp-server": {
-      "command": "/opt/homebrew/bin/awsdac-mcp-server",
-      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"]
-    }
-  }
-}
-```
 
 ### Available Tools
 
