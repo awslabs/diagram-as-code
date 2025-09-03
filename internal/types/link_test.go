@@ -672,6 +672,7 @@ func TestHorizontalArrowHeadSymmetry(t *testing.T) {
 		})
 	}
 }
+
 func TestSToNOrthogonalPath(t *testing.T) {
 	// Test S to N orthogonal path control points
 	link := &Link{
