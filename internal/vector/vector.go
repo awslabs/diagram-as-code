@@ -60,3 +60,10 @@ func (v Vector) Perpendicular() Vector {
 func (v Vector) IsZero() bool {
 	return v.X == 0 && v.Y == 0
 }
+
+// DecomposeXY splits a vector into its X and Y components
+func (v Vector) DecomposeXY() (Vector, Vector) {
+	xComponent := New(v.X, 0)
+	yComponent := New(0, v.Y)
+	return xComponent, yComponent
+}
