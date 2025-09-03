@@ -550,12 +550,28 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				if sourceUseX {
 					moveDistance = math.Abs(remaining.X)
 					if isParallel {
-						moveDistance = math.Abs(remaining.X) / 2.0  // Parallel: share distance
+						// Check if counterpart (target) will have detour
+						counterpartDetour := targetPenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.X) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.X) / 2.0
+						}
 					}
 				} else {
 					moveDistance = math.Abs(remaining.Y)
 					if isParallel {
-						moveDistance = math.Abs(remaining.Y) / 2.0  // Parallel: share distance
+						// Check if counterpart (target) will have detour
+						counterpartDetour := targetPenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.Y) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.Y) / 2.0
+						}
 					}
 				}
 				if moveDistance < 20.0 {
@@ -566,9 +582,18 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			log.Infof("  Source position move: %v (distance: %v)", sourceCurrent, moveDistance)
 		} else if step == 1 && sourcePenetration {
 			// Source detour movement
-			detourDistance := 64.0/2 + 20
+			detourDistance := 64.0/2 + 20  // Minimum 52px
 			if math.Abs(sourceDir.X) > 0.5 {
 				// Horizontal position: vertical detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.Y)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.Y) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+				
 				detourOffset := -detourDistance // Default north
 				if remaining.Y > 0 {
 					detourOffset = detourDistance // South if target is below
@@ -577,6 +602,15 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				log.Infof("  Source detour Y-move: %v (distance: %v)", sourceCurrent, detourOffset)
 			} else {
 				// Vertical position: horizontal detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.X)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.X) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+				
 				detourOffset := detourDistance // Default east
 				if remaining.X < 0 {
 					detourOffset = -detourDistance // West if target is left
@@ -627,12 +661,28 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				if targetUseX {
 					moveDistance = math.Abs(remaining.X)
 					if isParallel {
-						moveDistance = math.Abs(remaining.X) / 2.0  // Parallel: share distance
+						// Check if counterpart (source) will have detour
+						counterpartDetour := sourcePenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.X) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.X) / 2.0
+						}
 					}
 				} else {
 					moveDistance = math.Abs(remaining.Y)
 					if isParallel {
-						moveDistance = math.Abs(remaining.Y) / 2.0  // Parallel: share distance
+						// Check if counterpart (source) will have detour
+						counterpartDetour := sourcePenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.Y) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.Y) / 2.0
+						}
 					}
 				}
 				if moveDistance < 20.0 {
@@ -643,20 +693,38 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			log.Infof("  Target position move: %v (distance: %v)", targetCurrent, moveDistance)
 		} else if step == 1 && targetPenetration {
 			// Target detour movement
-			detourDistance := 64.0/2 + 20
+			detourDistance := 64.0/2 + 20  // Minimum 52px
 			if math.Abs(targetDir.X) > 0.5 {
 				// Horizontal position: vertical detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.Y)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.Y) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+				
 				detourOffset := -detourDistance // Default north
-				if remaining.Y > 0 {
-					detourOffset = detourDistance // South if target is below
+				if remaining.Y < 0 { // Inverted: remaining.Y < 0 means Source is above Target
+					detourOffset = detourDistance // South if source is above
 				}
 				targetCurrent = targetCurrent.Add(vector.New(0, detourOffset))
 				log.Infof("  Target detour Y-move: %v (distance: %v)", targetCurrent, detourOffset)
 			} else {
 				// Vertical position: horizontal detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.X)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.X) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+				
 				detourOffset := detourDistance // Default east
-				if remaining.X < 0 {
-					detourOffset = -detourDistance // West if target is left
+				if remaining.X > 0 { // Inverted: remaining.X > 0 means Source is right of Target
+					detourOffset = -detourDistance // West if source is right
 				}
 				targetCurrent = targetCurrent.Add(vector.New(detourOffset, 0))
 				log.Infof("  Target detour X-move: %v (distance: %v)", targetCurrent, detourOffset)

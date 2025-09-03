@@ -1622,9 +1622,6 @@ func TestOrthogonalityCheck(t *testing.T) {
 		if source.X != first.X && source.Y != first.Y {
 			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)", 
 				source.X, source.Y, first.X, first.Y)
-		} else {
-			t.Logf("✅ Source → First control point orthogonal: (%d,%d) → (%d,%d)", 
-				source.X, source.Y, first.X, first.Y)
 		}
 	}
 	
@@ -1634,11 +1631,157 @@ func TestOrthogonalityCheck(t *testing.T) {
 		if last.X != target.X && last.Y != target.Y {
 			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)", 
 				last.X, last.Y, target.X, target.Y)
-		} else {
-			t.Logf("✅ Last control point → Target orthogonal: (%d,%d) → (%d,%d)", 
-				last.X, last.Y, target.X, target.Y)
 		}
 	}
 	
 	t.Log("=== End Orthogonality Check ===")
+}
+
+func TestDetourDirectionOrthogonalPath(t *testing.T) {
+	t.Log("=== Detour Direction Orthogonal Path Test ===")
+	
+	// Layout: HorizontalStack{ELB1, VerticalStack{Instance1, Instance2}, ELB2}
+	// ELB1 (left): (200, 400)
+	// Instance1 (top): (400, 350) 
+	// Instance2 (bottom): (400, 450)
+	// ELB2 (right): (600, 400)
+	
+	elb1Pos := image.Point{X: 200, Y: 400}
+	instance1Pos := image.Point{X: 400, Y: 350}
+	instance2Pos := image.Point{X: 400, Y: 450}
+	elb2Pos := image.Point{X: 600, Y: 400}
+	
+	t.Logf("ELB1: (%d,%d)", elb1Pos.X, elb1Pos.Y)
+	t.Logf("Instance1: (%d,%d)", instance1Pos.X, instance1Pos.Y)
+	t.Logf("Instance2: (%d,%d)", instance2Pos.X, instance2Pos.Y)
+	t.Logf("ELB2: (%d,%d)", elb2Pos.X, elb2Pos.Y)
+	
+	// Test 1: ELB1:W -> Instance1:W (expect north detour)
+	t.Log("--- Testing ELB1:W -> Instance1:W (expect north detour) ---")
+	link1 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 12, // W (West)
+		TargetPosition: 12, // W (West)
+	}
+	
+	controlPts1 := link1.calculateOrthogonalPath(elb1Pos, instance1Pos)
+	t.Logf("ELB1 -> Instance1 control points: %v", controlPts1)
+	
+	// Test 2: ELB1:W -> Instance2:W (expect south detour)
+	t.Log("--- Testing ELB1:W -> Instance2:W (expect south detour) ---")
+	link2 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 12, // W (West)
+		TargetPosition: 12, // W (West)
+	}
+	
+	controlPts2 := link2.calculateOrthogonalPath(elb1Pos, instance2Pos)
+	t.Logf("ELB1 -> Instance2 control points: %v", controlPts2)
+	
+	// Test 3: Instance1:E -> ELB2:E (expect north detour)
+	t.Log("--- Testing Instance1:E -> ELB2:E (expect north detour) ---")
+	link3 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4, // E (East)
+		TargetPosition: 4, // E (East)
+	}
+	
+	controlPts3 := link3.calculateOrthogonalPath(instance1Pos, elb2Pos)
+	t.Logf("Instance1 -> ELB2 control points: %v", controlPts3)
+	
+	// Test 4: Instance2:E -> ELB2:E (expect south detour)
+	t.Log("--- Testing Instance2:E -> ELB2:E (expect south detour) ---")
+	link4 := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4, // E (East)
+		TargetPosition: 4, // E (East)
+	}
+	
+	controlPts4 := link4.calculateOrthogonalPath(instance2Pos, elb2Pos)
+	t.Logf("Instance2 -> ELB2 control points: %v", controlPts4)
+	
+	// Verify orthogonal movements for all links
+	allLinks := []struct {
+		name        string
+		controlPts  []image.Point
+		source      image.Point
+		target      image.Point
+		expectNorth bool
+	}{
+		{"ELB1->Instance1", controlPts1, elb1Pos, instance1Pos, true},
+		{"ELB1->Instance2", controlPts2, elb1Pos, instance2Pos, false},
+		{"Instance1->ELB2", controlPts3, instance1Pos, elb2Pos, true},
+		{"Instance2->ELB2", controlPts4, instance2Pos, elb2Pos, false},
+	}
+	
+	for _, link := range allLinks {
+		t.Logf("--- Verifying %s ---", link.name)
+		
+		// Verify orthogonal movements between control points
+		for i := 0; i < len(link.controlPts)-1; i++ {
+			p1 := link.controlPts[i]
+			p2 := link.controlPts[i+1]
+			
+			if p1.X != p2.X && p1.Y != p2.Y {
+				t.Errorf("%s: Non-orthogonal movement from (%d,%d) to (%d,%d)", 
+					link.name, p1.X, p1.Y, p2.X, p2.Y)
+			}
+		}
+		
+		// Verify Source → First control point orthogonality
+		if len(link.controlPts) > 0 {
+			first := link.controlPts[0]
+			if link.source.X != first.X && link.source.Y != first.Y {
+				t.Errorf("%s: Non-orthogonal Source (%d,%d) → First control point (%d,%d)", 
+					link.name, link.source.X, link.source.Y, first.X, first.Y)
+			}
+		}
+		
+		// Verify Last control point → Target orthogonality
+		if len(link.controlPts) > 0 {
+			last := link.controlPts[len(link.controlPts)-1]
+			if last.X != link.target.X && last.Y != link.target.Y {
+				t.Errorf("%s: Non-orthogonal Last control point (%d,%d) → Target (%d,%d)", 
+					link.name, last.X, last.Y, link.target.X, link.target.Y)
+			}
+		}
+		
+		// Verify detour direction (north vs south)
+		if len(link.controlPts) >= 2 {
+			// Check if there's vertical movement in the path
+			hasVerticalDetour := false
+			detourDirection := ""
+			
+			for i := 0; i < len(link.controlPts)-1; i++ {
+				p1 := link.controlPts[i]
+				p2 := link.controlPts[i+1]
+				
+				if p1.X == p2.X && p1.Y != p2.Y {
+					hasVerticalDetour = true
+					if p2.Y < p1.Y {
+						detourDirection = "north"
+					} else {
+						detourDirection = "south"
+					}
+					break
+				}
+			}
+			
+			if hasVerticalDetour {
+				expectedDirection := "north"
+				if !link.expectNorth {
+					expectedDirection = "south"
+				}
+				
+				if detourDirection != expectedDirection {
+					t.Errorf("%s: Expected %s detour, got %s detour", 
+						link.name, expectedDirection, detourDirection)
+				} else {
+					t.Logf("%s: ✅ Correct %s detour detected", link.name, detourDirection)
+				}
+			}
+		}
+	}
+	
+	t.Log("=== End Detour Direction Test ===")
 }
