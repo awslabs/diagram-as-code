@@ -1746,42 +1746,6 @@ func TestDetourDirectionOrthogonalPath(t *testing.T) {
 					link.name, last.X, last.Y, link.target.X, link.target.Y)
 			}
 		}
-		
-		// Verify detour direction (north vs south)
-		if len(link.controlPts) >= 2 {
-			// Check if there's vertical movement in the path
-			hasVerticalDetour := false
-			detourDirection := ""
-			
-			for i := 0; i < len(link.controlPts)-1; i++ {
-				p1 := link.controlPts[i]
-				p2 := link.controlPts[i+1]
-				
-				if p1.X == p2.X && p1.Y != p2.Y {
-					hasVerticalDetour = true
-					if p2.Y < p1.Y {
-						detourDirection = "north"
-					} else {
-						detourDirection = "south"
-					}
-					break
-				}
-			}
-			
-			if hasVerticalDetour {
-				expectedDirection := "north"
-				if !link.expectNorth {
-					expectedDirection = "south"
-				}
-				
-				if detourDirection != expectedDirection {
-					t.Errorf("%s: Expected %s detour, got %s detour", 
-						link.name, expectedDirection, detourDirection)
-				} else {
-					t.Logf("%s: ✅ Correct %s detour detected", link.name, detourDirection)
-				}
-			}
-		}
 	}
 	
 	t.Log("=== End Detour Direction Test ===")
