@@ -115,7 +115,8 @@ WHEN TO USE:
 
 OUTPUT:
 Extensive documentation including format rules, examples, and architectural guidance for creating effective AWS diagrams.
-`)
+`
+)
 
 // NewMCPServer creates a new MCP server with the necessary tools and configurations
 func NewMCPServer() *server.MCPServer {
