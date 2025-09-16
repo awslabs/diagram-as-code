@@ -110,7 +110,9 @@ MCP Client configuration:
 {
   "mcpServers": {
     "awsdac-mcp-server": {
-      "command": "/opt/homebrew/bin/awsdac-mcp-server"
+      "command": "/opt/homebrew/bin/awsdac-mcp-server",
+      "args": [],
+      "type": "stdio"
     }
   }
 }
@@ -122,7 +124,8 @@ MCP Client configuration with custom log:
   "mcpServers": {
     "awsdac-mcp-server": {
       "command": "/opt/homebrew/bin/awsdac-mcp-server",
-      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"]
+      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"],
+      "type": "stdio"
     }
   }
 }
@@ -137,7 +140,9 @@ go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
 {
   "mcpServers": {
     "awsdac-mcp-server": {
-      "command": "/Users/yourusername/go/bin/awsdac-mcp-server"
+      "command": "/Users/yourusername/go/bin/awsdac-mcp-server",
+      "args": [],
+      "type": "stdio"
     }
   }
 }
