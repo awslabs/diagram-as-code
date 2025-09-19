@@ -268,12 +268,11 @@ func handleGenerateDiagram(
 	// Create output file path
 	outputFile := filepath.Join(tempDir, "output.png")
 
-	// Generate diagram directly in the main thread
-	// This ensures logs are properly captured
+	// Generate diagram with panic recovery
 	opts := &ctl.CreateOptions{
 		OverwriteMode: ctl.Force, // Use Force for temporary files
 	}
-	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, opts); err != nil {
+	if err := createDiagramSafely(inputFile, &outputFile, opts); err != nil {
 		return nil, fmt.Errorf("failed to create diagram: %v", err)
 	}
 
@@ -337,11 +336,11 @@ func handleGenerateDiagramToFile(
 		return nil, fmt.Errorf("failed to write input file: %v", err)
 	}
 
-	// Generate diagram - save directly to specified path
+	// Generate diagram with panic recovery
 	opts := &ctl.CreateOptions{
 		OverwriteMode: ctl.NoOverwrite, // MCP server refuses to overwrite existing files
 	}
-	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFilePath, opts); err != nil {
+	if err := createDiagramSafely(inputFile, &outputFilePath, opts); err != nil {
 		return nil, fmt.Errorf("failed to create diagram: %v", err)
 	}
 
@@ -378,6 +377,16 @@ func handleGenerateDacFromUserRequirements(
 			},
 		},
 	}, nil
+}
+
+// createDiagramSafely wraps ctl.CreateDiagramFromDacFile with panic recovery
+func createDiagramSafely(inputFile string, outputFile *string, opts *ctl.CreateOptions) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("panic occurred during diagram creation: %v", r)
+		}
+	}()
+	return ctl.CreateDiagramFromDacFile(inputFile, outputFile, opts)
 }
 
 // readPromptFile reads a prompt file from the embedded filesystem
