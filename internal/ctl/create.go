@@ -270,11 +270,6 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				}
 				log.Warnf("Type %s is not defined in the DAC definition file. It's fall backed to its service icon (Type %s).\n", v.Type, newType)
 				def = fallbackDef
-
-				// Change the title to indicate the original resource type for fallback icons.
-				if v.Title == "" {
-					resources[k].SetLabel(&v.Type, nil, nil)
-				}
 			}
 			if def == nil {
 				log.Warnf("Definition for %s is nil. Skip this resource.\n", v.Type)
