@@ -101,7 +101,7 @@ func TestResizeImage(t *testing.T) {
 					tc.expectedWidth, tc.expectedHeight, actualWidth, actualHeight)
 			}
 		})
-  }
+	}
 }
 
 func TestLoadResourcesWithUndefinedTypeFallback(t *testing.T) {
