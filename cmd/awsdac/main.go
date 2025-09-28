@@ -23,6 +23,8 @@ func main() {
 	var overrideDefFile string
 	var isGoTemplate bool
 	var force bool
+	var width int
+	var height int
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -59,6 +61,8 @@ func main() {
 			if cfnTemplate {
 				opts := ctl.CreateOptions{
 					OverrideDefFile: overrideDefFile,
+					Width:           width,
+					Height:          height,
 				}
 				if force {
 					opts.OverwriteMode = ctl.Force
@@ -72,6 +76,8 @@ func main() {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:    isGoTemplate,
 					OverrideDefFile: overrideDefFile,
+					Width:           width,
+					Height:          height,
 				}
 				if force {
 					opts.OverwriteMode = ctl.Force
@@ -94,6 +100,8 @@ func main() {
 	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
 	rootCmd.PersistentFlags().BoolVarP(&isGoTemplate, "template", "t", false, "Processes the input file as a template according to text/template.")
 	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Overwrite output file without confirmation")
+	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
+	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
