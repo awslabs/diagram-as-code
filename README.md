@@ -98,11 +98,38 @@ Add definition files to create non-AWS diagrams as well.
 
 The awsdac MCP server enables AI assistants and development tools to generate AWS architecture diagrams programmatically through the Model Context Protocol (MCP). This integration allows seamless diagram creation within your development workflow.
 
-### Installation
+### Installation & MCP Client configuration
+**Note;** Currently, MCP Client Configuration depends on the MCP Client implementation. Please check the MCP client's documentation for the correct json format.
 
 #### for macOS user
 ```bash
-brew install awsdac-mcp-server
+brew install awsdac
+```
+
+MCP Client configuration:
+```json
+{
+  "mcpServers": {
+    "awsdac-mcp-server": {
+      "command": "/opt/homebrew/bin/awsdac-mcp-server",
+      "args": [],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+MCP Client configuration with custom log:
+```json
+{
+  "mcpServers": {
+    "awsdac-mcp-server": {
+      "command": "/opt/homebrew/bin/awsdac-mcp-server",
+      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"],
+      "type": "stdio"
+    }
+  }
+}
 ```
 
 #### for Gopher (go 1.21 or higher)
@@ -110,25 +137,13 @@ brew install awsdac-mcp-server
 go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
 ```
 
-### MCP Client Configuration
-
-#### for Homebrew installation
 ```json
 {
   "mcpServers": {
     "awsdac-mcp-server": {
-      "command": "/opt/homebrew/bin/awsdac-mcp-server"
-    }
-  }
-}
-```
-
-#### for Go install
-```json
-{
-  "mcpServers": {
-    "awsdac-mcp-server": {
-      "command": "/Users/yourusername/go/bin/awsdac-mcp-server"
+      "command": "/Users/yourusername/go/bin/awsdac-mcp-server",
+      "args": [],
+      "type": "stdio"
     }
   }
 }
@@ -151,18 +166,7 @@ ls $GOPATH/bin/awsdac-mcp-server  # if GOPATH is set
 Use the path returned by these commands in your MCP client configuration.
 
 #### Custom Log File (Optional)
-You can specify a custom log file location:
 
-```json
-{
-  "mcpServers": {
-    "awsdac-mcp-server": {
-      "command": "/opt/homebrew/bin/awsdac-mcp-server",
-      "args": ["--log-file", "/path/to/custom/awsdac-mcp.log"]
-    }
-  }
-}
-```
 
 ### Available Tools
 

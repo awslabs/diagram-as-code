@@ -47,6 +47,8 @@ DESCRIPTION:
 This tool creates professional PNG images of AWS architecture diagrams. The input YAML must follow the Diagram-as-code format with three main sections: DefinitionFiles, Resources, and optional Links.
 
 REQUIREMENTS:
+- You must run getDiagramAsCodeFormat before running this tool
+- You must support displaying base64 encoded images. A client that has been confirmed to support this is Cline.
 - YAML must include 'Diagram:' as root element
 - DefinitionFiles section must reference AWS icon definitions
 - Resources section must define hierarchical AWS resource structure  
@@ -70,6 +72,8 @@ DESCRIPTION:
 This tool creates professional PNG images of AWS architecture diagrams and saves them directly to the specified file path. Unlike generateDiagram, this tool saves the image to the filesystem rather than returning base64 data.
 
 REQUIREMENTS:
+- You must run getDiagramAsCodeFormat before running this tool
+- You must NOT support displaying base64 encoded images. A client that has been confirmed to support this is Amazon Q.
 - YAML must follow the same Diagram-as-code format as generateDiagram
 - Valid file path with write permissions
 - Directory structure will be created if it doesn't exist
@@ -78,13 +82,17 @@ FEATURES:
 - Same diagram generation capabilities as generateDiagram
 - Direct file system output for integration with file-based workflows
 - Automatic directory creation
-- Supports relative and absolute file paths
+- Supports absolute file paths
 
 USE CASE:
 Perfect for automated workflows that need diagrams saved to specific locations, CI/CD pipelines, or batch processing scenarios.
 
 PREREQUISITE:
-Call 'getDiagramAsCodeFormat' first if you need format specification and examples.`
+Call 'getDiagramAsCodeFormat' first if you need format specification and examples.
+
+RECOMMENDATION:
+After saving the image to a file, follow the user's instructions to open the image file. Possible methods include opening an image viewer with the open command, or displaying it with img2sixel if your terminal supports it and libsixel is installed.
+`
 
 	GET_FORMAT_DESC = `Get comprehensive Diagram-as-code format specification, examples, and best practices.
 
@@ -107,9 +115,7 @@ WHEN TO USE:
 
 OUTPUT:
 Extensive documentation including format rules, examples, and architectural guidance for creating effective AWS diagrams.
-
-RECOMMENDATION:
-Always call this tool first to understand the format before using generateDiagram.`
+`
 )
 
 // NewMCPServer creates a new MCP server with the necessary tools and configurations
@@ -140,10 +146,10 @@ func NewMCPServer() *server.MCPServer {
 PURPOSE:
 Generate professional AWS architecture diagrams from YAML-based specifications.
 
-RECOMMENDED WORKFLOW:
+ESSENTIAL WORKFLOW:
 1. Call 'getDiagramAsCodeFormat' first to understand the format and get examples
 2. Use the format guide to create proper YAML content
-3. Call 'generateDiagram' with the complete YAML specification
+3. Call 'generateDiagram' or 'generateDiagramToFile' with the complete YAML specification
 4. Receive a base64-encoded PNG diagram
 
 CAPABILITIES:
@@ -262,12 +268,11 @@ func handleGenerateDiagram(
 	// Create output file path
 	outputFile := filepath.Join(tempDir, "output.png")
 
-	// Generate diagram directly in the main thread
-	// This ensures logs are properly captured
+	// Generate diagram with panic recovery
 	opts := &ctl.CreateOptions{
 		OverwriteMode: ctl.Force, // Use Force for temporary files
 	}
-	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, opts); err != nil {
+	if err := createDiagramSafely(inputFile, &outputFile, opts); err != nil {
 		return nil, fmt.Errorf("failed to create diagram: %v", err)
 	}
 
@@ -331,11 +336,11 @@ func handleGenerateDiagramToFile(
 		return nil, fmt.Errorf("failed to write input file: %v", err)
 	}
 
-	// Generate diagram - save directly to specified path
+	// Generate diagram with panic recovery
 	opts := &ctl.CreateOptions{
 		OverwriteMode: ctl.NoOverwrite, // MCP server refuses to overwrite existing files
 	}
-	if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFilePath, opts); err != nil {
+	if err := createDiagramSafely(inputFile, &outputFilePath, opts); err != nil {
 		return nil, fmt.Errorf("failed to create diagram: %v", err)
 	}
 
@@ -372,6 +377,16 @@ func handleGenerateDacFromUserRequirements(
 			},
 		},
 	}, nil
+}
+
+// createDiagramSafely wraps ctl.CreateDiagramFromDacFile with panic recovery
+func createDiagramSafely(inputFile string, outputFile *string, opts *ctl.CreateOptions) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("panic occurred during diagram creation: %v", r)
+		}
+	}()
+	return ctl.CreateDiagramFromDacFile(inputFile, outputFile, opts)
 }
 
 // readPromptFile reads a prompt file from the embedded filesystem

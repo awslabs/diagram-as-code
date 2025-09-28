@@ -16,6 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
+	"github.com/awslabs/diagram-as-code/internal/vector"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
@@ -106,22 +107,28 @@ func (l *Link) drawNeighborsDot(img *image.RGBA, x, y float64) {
 }
 
 func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Point) {
-	dx := float64(targetPt.X - sourcePt.X)
-	dy := float64(targetPt.Y - sourcePt.Y)
-	length := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
+	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
+	direction := targetVec.Sub(sourceVec)
+	length := direction.Length()
+
+	if length == 0 {
+		return
+	}
+
+	unitDir := direction.Normalize()
+	perpDir := unitDir.Perpendicular()
 
 	for i := 0; i < int(length); i++ {
-		x := float64(sourcePt.X) + dx/length*float64(i)
-		y := float64(sourcePt.Y) + dy/length*float64(i)
+		pos := sourceVec.Add(unitDir.Scale(float64(i)))
 
 		if l.LineStyle == "dashed" && i%9 > 5 {
 			continue
 		}
 		for j := 0; j < l.LineWidth; j++ {
-			u := float64(j) - float64(l.LineWidth-1)/2
-			wx := dy / length * u
-			wy := -dx / length * u
-			l.drawNeighborsDot(img, x+wx, y+wy)
+			offset := float64(j) - float64(l.LineWidth-1)/2
+			finalPos := pos.Add(perpDir.Scale(offset))
+			l.drawNeighborsDot(img, finalPos.X, finalPos.Y)
 		}
 	}
 }
@@ -188,33 +195,32 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (fo
 	return truetype.NewFace(ft, &opt), nil
 }
 
-func (l *Link) computeLabelPos(tx, ty, dx, dy, lx, ly float64) (float64, float64) {
+func (l *Link) computeLabelPos(t, d, label vector.Vector) vector.Vector {
 	// Compute the dot product of the unit vectors
-	dot_product := tx*dx + ty*dy
+	dotProduct := t.Dot(d)
 	// If the angle is 90 degrees or more (dot product <= 0), set a to (0,0)
-	if dot_product > 0 {
-		// Compute scalar α
-		numerator := ly*dx - lx*dy
-		denominator := tx*dy - ty*dx
+	if dotProduct > 0 {
+		// Compute scalar α using cross product for 2D
+		numerator := label.Y*d.X - label.X*d.Y
+		denominator := t.X*d.Y - t.Y*d.X // Fixed order to match original
 		// Check for division by zero
 		if denominator != 0 {
 			alpha := numerator / denominator
 			// Compute vector a
-			return alpha * tx, alpha * ty
+			return t.Scale(alpha)
 		}
 	}
-	return 0.0, 0.0
+	return vector.New(0.0, 0.0)
 }
 
 func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource, sourcePt, targetPt image.Point, side string, label *LinkLabel) error {
 	if label == nil {
 		return nil
 	}
-	_dx := float64(targetPt.X - sourcePt.X)
-	_dy := float64(targetPt.Y - sourcePt.Y)
-	length := math.Sqrt(math.Pow(_dx, 2) + math.Pow(_dy, 2))
-	dx := _dx / length
-	dy := _dy / length
+	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
+	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
+	direction := targetVec.Sub(sourceVec).Normalize()
+
 	fourWindrose := ((pos + 2) % 16) / 4
 	isCorner := ((pos+2)%16)%4 == 0
 
@@ -225,12 +231,11 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 		fourWindrose = (fourWindrose + 3) % 4
 	}
 
-	tx := _tx[fourWindrose]
-	ty := _ty[fourWindrose]
+	t := vector.New(_tx[fourWindrose], _ty[fourWindrose])
 	if side == "Left" {
-		tx = _tx[fourWindrose] * -1
-		ty = _ty[fourWindrose] * -1
+		t = t.Scale(-1)
 	}
+
 	// calculate text box size
 	textWidth := 0
 	textHeight := 0
@@ -246,46 +251,39 @@ func (l *Link) drawLabel(img *image.RGBA, pos Windrose, source, target *Resource
 	}
 
 	// label vector
-	ldx := _tx[(fourWindrose+3)%4] * float64(textWidth)
-	ldy := _ty[(fourWindrose+3)%4] * float64(textHeight)
+	labelVec := vector.New(_tx[(fourWindrose+3)%4]*float64(textWidth), _ty[(fourWindrose+3)%4]*float64(textHeight))
 
 	// calculate the base of a right triangle
-	px, py := l.computeLabelPos(tx, ty, dx, dy, ldx, ldy)
+	p := l.computeLabelPos(t, direction, labelVec)
 
 	// Unit vector for sliding textbox
 	ltx := [4]float64{0.0, 0.0, -1.0, -1.0}
 	lty := [4]float64{0.0, 1.0, 1.0, 0.0}
 
 	// calculate buffer
-	mx := float64(tx) + dx
-	my := float64(ty) + dy
-	mag := math.Sqrt(mx*mx + my*my)
-	if mag == 0 {
-		return fmt.Errorf("zero length vector detected in link label calculation")
-	}
-	bx := float64(mx) / mag * 5
-	by := float64(my) / mag * 5
+	m := t.Add(direction)
+	if !m.IsZero() {
+		b := m.Normalize().Scale(5)
 
-	lx := float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[fourWindrose]
-	ly := float64(sourcePt.Y) + py + by + float64(textHeight)*lty[fourWindrose]
+		l := sourceVec.Add(p).Add(b).Add(vector.New(float64(textWidth)*ltx[fourWindrose], float64(textHeight)*lty[fourWindrose]))
 
-	if side == "Left" {
-		lx = float64(sourcePt.X) + px + bx + float64(textWidth)*ltx[(fourWindrose+3)%4]
-		ly = float64(sourcePt.Y) + py + by + float64(textHeight)*lty[(fourWindrose+3)%4]
-	}
-
-	lineOffset := fixed.I(0)
-	for _, line := range texts {
-		textBindings, _ := font.BoundString(fontFace, line)
-		point := fixed.Point26_6{fixed.I(int(lx)), fixed.I(int(ly)) + lineOffset}
-		d := &font.Drawer{
-			Dst:  img,
-			Src:  image.NewUniform(label.Color),
-			Face: fontFace,
-			Dot:  point,
+		if side == "Left" {
+			l = sourceVec.Add(p).Add(b).Add(vector.New(float64(textWidth)*ltx[(fourWindrose+3)%4], float64(textHeight)*lty[(fourWindrose+3)%4]))
 		}
-		d.DrawString(line)
-		lineOffset += lineOffset + textBindings.Max.Y - textBindings.Min.Y
+
+		lineOffset := fixed.I(0)
+		for _, line := range texts {
+			textBindings, _ := font.BoundString(fontFace, line)
+			point := fixed.Point26_6{fixed.I(int(l.X)), fixed.I(int(l.Y)) + lineOffset}
+			d := &font.Drawer{
+				Dst:  img,
+				Src:  image.NewUniform(label.Color),
+				Face: fontFace,
+				Dot:  point,
+			}
+			d.DrawString(line)
+			lineOffset += lineOffset + textBindings.Max.Y - textBindings.Min.Y
+		}
 	}
 	return nil
 }
@@ -303,22 +301,34 @@ func (l *Link) getThreeSide(t string) (float64, float64, float64) {
 }
 
 func (l *Link) drawArrowHead(img *image.RGBA, arrowPt image.Point, originPt image.Point, arrowHead ArrowHead) {
-	dx := float64(arrowPt.X - originPt.X)
-	dy := float64(arrowPt.Y - originPt.Y)
-	length := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	arrowVec := vector.New(float64(arrowPt.X), float64(arrowPt.Y))
+	originVec := vector.New(float64(originPt.X), float64(originPt.Y))
+	direction := arrowVec.Sub(originVec)
+	length := direction.Length()
+
 	if arrowHead.Length == 0 {
 		arrowHead.Length = 10
 	}
 	log.Infof("arrowHead.Length:\"%v\", arrowHead.Width:\"%v\"", arrowHead.Length, arrowHead.Width)
 	_a, _b, _c := l.getThreeSide(arrowHead.Width)
-	at1 := arrowPt.Sub(image.Point{
-		int(arrowHead.Length * (_a*dx - _c*dy) / (_b * length)),
-		int(arrowHead.Length * (_c*dx + _a*dy) / (_b * length)),
-	})
-	at2 := arrowPt.Sub(image.Point{
-		int(arrowHead.Length * (_a*dx + _c*dy) / (_b * length)),
-		int(arrowHead.Length * (-_c*dx + _a*dy) / (_b * length)),
-	})
+
+	// Calculate final positions in floating point for better accuracy
+	dx := direction.X
+	dy := direction.Y
+
+	// Calculate final arrow head positions (not offsets)
+	at1Vec := arrowVec.Sub(vector.New(
+		arrowHead.Length*(_a*dx-_c*dy)/(_b*length),
+		arrowHead.Length*(_c*dx+_a*dy)/(_b*length),
+	))
+	at2Vec := arrowVec.Sub(vector.New(
+		arrowHead.Length*(_a*dx+_c*dy)/(_b*length),
+		arrowHead.Length*(-_c*dx+_a*dy)/(_b*length),
+	))
+
+	// Convert to int with rounding for better symmetry
+	at1 := image.Point{int(math.Round(at1Vec.X)), int(math.Round(at1Vec.Y))}
+	at2 := image.Point{int(math.Round(at2Vec.X)), int(math.Round(at2Vec.Y))}
 
 	switch arrowHead.Type {
 	case "Default":
@@ -365,6 +375,48 @@ func (l *Link) Draw(img *image.RGBA) error {
 			return fmt.Errorf("failed to draw target left label: %w", err)
 		}
 	} else if l.Type == "orthogonal" {
+		controlPts := l.calculateOrthogonalPath(sourcePt, targetPt)
+
+		// Draw the path
+		if len(controlPts) >= 1 {
+			l.drawLine(img, sourcePt, controlPts[0])
+			l.drawArrowHead(img, sourcePt, controlPts[0], l.SourceArrowHead)
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Right", l.Labels.SourceRight); err != nil {
+				return fmt.Errorf("failed to draw source right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Left", l.Labels.SourceLeft); err != nil {
+				return fmt.Errorf("failed to draw source left label: %w", err)
+			}
+			for i := 0; i < len(controlPts)-1; i++ {
+				l.drawLine(img, controlPts[i], controlPts[i+1])
+			}
+			l.drawLine(img, controlPts[len(controlPts)-1], targetPt)
+			l.drawArrowHead(img, targetPt, controlPts[len(controlPts)-1], l.TargetArrowHead)
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Left", l.Labels.TargetRight); err != nil {
+				return fmt.Errorf("failed to draw target right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Right", l.Labels.TargetLeft); err != nil {
+				return fmt.Errorf("failed to draw target left label: %w", err)
+			}
+		} else {
+			l.drawLine(img, sourcePt, targetPt)
+			l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
+			l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight); err != nil {
+				return fmt.Errorf("failed to draw source right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft); err != nil {
+				return fmt.Errorf("failed to draw source left label: %w", err)
+			}
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight); err != nil {
+				return fmt.Errorf("failed to draw target right label: %w", err)
+			}
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft); err != nil {
+				return fmt.Errorf("failed to draw target left label: %w", err)
+			}
+		}
+
+		/* Original orthogonal implementation - commented out for reference
 		controlPts := []image.Point{}
 
 		// Convert 4-wind rose
@@ -406,46 +458,349 @@ func (l *Link) Draw(img *image.RGBA) error {
 				}
 			}
 		}
-		if len(controlPts) >= 1 {
-			l.drawLine(img, sourcePt, controlPts[0])
-			l.drawArrowHead(img, sourcePt, controlPts[0], l.SourceArrowHead)
-			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Right", l.Labels.SourceRight); err != nil {
-				return fmt.Errorf("failed to draw source right label: %w", err)
-			}
-			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Left", l.Labels.SourceLeft); err != nil {
-				return fmt.Errorf("failed to draw source left label: %w", err)
-			}
-			for i := 0; i < len(controlPts)-1; i++ {
-				l.drawLine(img, controlPts[i], controlPts[i+1])
-			}
-			l.drawLine(img, controlPts[len(controlPts)-1], targetPt)
-			l.drawArrowHead(img, targetPt, controlPts[len(controlPts)-1], l.TargetArrowHead)
-			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Left", l.Labels.TargetRight); err != nil {
-				return fmt.Errorf("failed to draw target right label: %w", err)
-			}
-			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Right", l.Labels.TargetLeft); err != nil {
-				return fmt.Errorf("failed to draw target left label: %w", err)
-			}
-		} else {
-			l.drawLine(img, sourcePt, targetPt)
-			l.drawArrowHead(img, sourcePt, targetPt, l.SourceArrowHead)
-			l.drawArrowHead(img, targetPt, sourcePt, l.TargetArrowHead)
-			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Right", l.Labels.SourceRight); err != nil {
-				return fmt.Errorf("failed to draw source right label: %w", err)
-			}
-			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, targetPt, "Left", l.Labels.SourceLeft); err != nil {
-				return fmt.Errorf("failed to draw source left label: %w", err)
-			}
-			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Left", l.Labels.TargetRight); err != nil {
-				return fmt.Errorf("failed to draw target right label: %w", err)
-			}
-			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, sourcePt, "Right", l.Labels.TargetLeft); err != nil {
-				return fmt.Errorf("failed to draw target left label: %w", err)
-			}
-		}
+		*/
 	} else {
 		return fmt.Errorf("unknown link type: %s", l.Type)
 	}
 	l.drawn = true
 	return nil
+}
+
+// calculateOrthogonalPath generates control points using convergent approach
+func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.Point {
+	log.Infof("=== Convergent Orthogonal Path Calculation ===")
+	log.Infof("Source: %v (Position: %v)", sourcePt, l.SourcePosition)
+	log.Infof("Target: %v (Position: %v)", targetPt, l.TargetPosition)
+
+	// 1. Get direction vectors from positions
+	sourceDir := l.getDirectionVector(int(l.SourcePosition))
+	targetDir := l.getDirectionVector(int(l.TargetPosition))
+	log.Infof("Source direction: %v", sourceDir)
+	log.Infof("Target direction: %v", targetDir)
+
+	// 2. Start from resource positions
+	sourceVec := vector.New(float64(sourcePt.X), float64(sourcePt.Y))
+	targetVec := vector.New(float64(targetPt.X), float64(targetPt.Y))
+
+	sourceCurrent := sourceVec
+	targetCurrent := targetVec
+	log.Infof("Source start: %v", sourceCurrent)
+	log.Infof("Target start: %v", targetCurrent)
+
+	// 3. Check for resource penetration
+	remaining := targetVec.Sub(sourceVec)
+
+	// Source penetration: moving opposite to source direction
+	sourcePenetration := sourceDir.Dot(remaining) < -0.5
+
+	// Target penetration: moving same as target direction (overshooting)
+	targetPenetration := targetDir.Dot(remaining) > 0.5
+
+	log.Infof("Penetration check - Source: %v, Target: %v", sourcePenetration, targetPenetration)
+
+	// 4. Check direction relationship between source and target
+	isParallel := math.Abs(sourceDir.Dot(targetDir)) > 0.5 // Parallel or opposite directions
+	log.Infof("Directions parallel: %v (dot product: %v)", isParallel, sourceDir.Dot(targetDir))
+
+	// 4. Generate convergent path
+	sourcePoints := []vector.Vector{}
+	targetPoints := []vector.Vector{}
+
+	maxSteps := 4
+	if isParallel {
+		maxSteps = 5 // Need more steps for parallel directions
+	}
+
+	for step := 0; step < maxSteps; step++ {
+		log.Infof("Step %d:", step)
+
+		// Calculate remaining distance at step start
+		remaining := targetCurrent.Sub(sourceCurrent)
+		log.Infof("  Remaining: %v", remaining)
+
+		// Check convergence
+		if math.Abs(remaining.X) <= 1.0 && math.Abs(remaining.Y) <= 1.0 {
+			log.Infof("  Converged!")
+			break
+		}
+
+		// Determine movement direction based on position directions
+		// Source/Target positions determine initial axis preference
+		sourceStartsWithX := math.Abs(sourceDir.X) > 0.5 // Horizontal positions (W/E) start with X-axis
+		targetStartsWithX := math.Abs(targetDir.X) > 0.5 // Horizontal positions (W/E) start with X-axis
+
+		// Alternating pattern for each source/target
+		sourceUseX := (step%2 == 0) == sourceStartsWithX
+		targetUseX := (step%2 == 0) == targetStartsWithX
+
+		log.Infof("  Source use X-axis: %v (starts with X: %v)", sourceUseX, sourceStartsWithX)
+		log.Infof("  Target use X-axis: %v (starts with X: %v)", targetUseX, targetStartsWithX)
+
+		// Source movement: detour or normal convergence
+		if step == 0 {
+			// Step 0: Position direction movement
+			// - For detour cases: Move 20px minimum to clear resource boundary
+			// - For direct cases: Move efficiently toward target (with 20px minimum)
+			// - Always moves in the resource's position direction
+			var moveDistance float64
+			if sourcePenetration {
+				// Source penetration: fixed 20px to clear resource
+				moveDistance = 20.0
+			} else {
+				// Source no penetration: efficient distance
+				if sourceUseX {
+					moveDistance = math.Abs(remaining.X)
+					if isParallel {
+						// Check if counterpart (target) will have detour
+						counterpartDetour := targetPenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.X) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.X) / 2.0
+						}
+					}
+				} else {
+					moveDistance = math.Abs(remaining.Y)
+					if isParallel {
+						// Check if counterpart (target) will have detour
+						counterpartDetour := targetPenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.Y) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.Y) / 2.0
+						}
+					}
+				}
+				if moveDistance < 20.0 {
+					moveDistance = 20.0 // Minimum guarantee
+				}
+			}
+			sourceCurrent = sourceCurrent.Add(sourceDir.Scale(moveDistance))
+			log.Infof("  Source position move: %v (distance: %v)", sourceCurrent, moveDistance)
+		} else if step == 1 && sourcePenetration {
+			// Source detour movement
+			detourDistance := 64.0/2 + 20 // Minimum 52px
+			if math.Abs(sourceDir.X) > 0.5 {
+				// Horizontal position: vertical detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.Y)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.Y) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+
+				detourOffset := -detourDistance // Default north
+				if remaining.Y > 0 {
+					detourOffset = detourDistance // South if target is below
+				}
+				sourceCurrent = sourceCurrent.Add(vector.New(0, detourOffset))
+				log.Infof("  Source detour Y-move: %v (distance: %v)", sourceCurrent, detourOffset)
+			} else {
+				// Vertical position: horizontal detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.X)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.X) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+
+				detourOffset := detourDistance // Default east
+				if remaining.X < 0 {
+					detourOffset = -detourDistance // West if target is left
+				}
+				sourceCurrent = sourceCurrent.Add(vector.New(detourOffset, 0))
+				log.Infof("  Source detour X-move: %v (distance: %v)", sourceCurrent, detourOffset)
+			}
+		} else {
+			// Normal convergence movement
+			if sourceUseX {
+				moveDistance := remaining.X
+				if isParallel {
+					moveDistance = remaining.X / 2.0 // Half for parallel directions
+				}
+				// Apply minimum distance for step 0
+				if step == 0 && math.Abs(moveDistance) < 20.0 {
+					moveDistance = math.Copysign(20.0, moveDistance)
+				}
+				sourceCurrent = vector.New(sourceCurrent.X+moveDistance, sourceCurrent.Y)
+				log.Infof("  Source X-move: %v (distance: %v)", sourceCurrent, moveDistance)
+			} else {
+				moveDistance := remaining.Y
+				if isParallel {
+					moveDistance = remaining.Y / 2.0 // Half for parallel directions
+				}
+				// Apply minimum distance for step 0
+				if step == 0 && math.Abs(moveDistance) < 20.0 {
+					moveDistance = math.Copysign(20.0, moveDistance)
+				}
+				sourceCurrent = vector.New(sourceCurrent.X, sourceCurrent.Y+moveDistance)
+				log.Infof("  Source Y-move: %v (distance: %v)", sourceCurrent, moveDistance)
+			}
+		}
+		sourcePoints = append(sourcePoints, sourceCurrent)
+
+		// Target movement: detour or normal convergence
+		if step == 0 {
+			// Step 0: Position direction movement
+			// - For detour cases: Move 20px minimum to clear resource boundary
+			// - For direct cases: Move efficiently toward source (with 20px minimum)
+			// - Always moves in the resource's position direction
+			var moveDistance float64
+			if targetPenetration {
+				// Target penetration: fixed 20px to clear resource
+				moveDistance = 20.0
+			} else {
+				// Target no penetration: efficient distance
+				if targetUseX {
+					moveDistance = math.Abs(remaining.X)
+					if isParallel {
+						// Check if counterpart (source) will have detour
+						counterpartDetour := sourcePenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.X) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.X) / 2.0
+						}
+					}
+				} else {
+					moveDistance = math.Abs(remaining.Y)
+					if isParallel {
+						// Check if counterpart (source) will have detour
+						counterpartDetour := sourcePenetration
+						if counterpartDetour {
+							// Counterpart has detour: use full distance + 20 for efficiency
+							moveDistance = math.Abs(remaining.Y) + 20.0
+						} else {
+							// Normal parallel: share distance
+							moveDistance = math.Abs(remaining.Y) / 2.0
+						}
+					}
+				}
+				if moveDistance < 20.0 {
+					moveDistance = 20.0 // Minimum guarantee
+				}
+			}
+			targetCurrent = targetCurrent.Add(targetDir.Scale(moveDistance))
+			log.Infof("  Target position move: %v (distance: %v)", targetCurrent, moveDistance)
+		} else if step == 1 && targetPenetration {
+			// Target detour movement
+			detourDistance := 64.0/2 + 20 // Minimum 52px
+			if math.Abs(targetDir.X) > 0.5 {
+				// Horizontal position: vertical detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.Y)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.Y) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+
+				detourOffset := -detourDistance // Default north
+				if remaining.Y < 0 {            // Inverted: remaining.Y < 0 means Source is above Target
+					detourOffset = detourDistance // South if source is above
+				}
+				targetCurrent = targetCurrent.Add(vector.New(0, detourOffset))
+				log.Infof("  Target detour Y-move: %v (distance: %v)", targetCurrent, detourOffset)
+			} else {
+				// Vertical position: horizontal detour
+				// Calculate adaptive distance: max(52px, remaining/2)
+				adaptiveDistance := math.Abs(remaining.X)
+				if isParallel {
+					adaptiveDistance = math.Abs(remaining.X) / 2.0
+				}
+				if adaptiveDistance > detourDistance {
+					detourDistance = adaptiveDistance
+				}
+
+				detourOffset := detourDistance // Default east
+				if remaining.X > 0 {           // Inverted: remaining.X > 0 means Source is right of Target
+					detourOffset = -detourDistance // West if source is right
+				}
+				targetCurrent = targetCurrent.Add(vector.New(detourOffset, 0))
+				log.Infof("  Target detour X-move: %v (distance: %v)", targetCurrent, detourOffset)
+			}
+		} else {
+			// Normal convergence movement
+			if targetUseX {
+				moveDistance := remaining.X
+				if isParallel {
+					moveDistance = remaining.X / 2.0 // Half for parallel directions
+				}
+				// Apply minimum distance for step 0
+				if step == 0 && math.Abs(moveDistance) < 20.0 {
+					moveDistance = math.Copysign(20.0, moveDistance)
+				}
+				targetCurrent = vector.New(targetCurrent.X-moveDistance, targetCurrent.Y)
+				log.Infof("  Target X-move: %v (distance: %v)", targetCurrent, moveDistance)
+			} else {
+				moveDistance := remaining.Y
+				if isParallel {
+					moveDistance = remaining.Y / 2.0 // Half for parallel directions
+				}
+				// Apply minimum distance for step 0
+				if step == 0 && math.Abs(moveDistance) < 20.0 {
+					moveDistance = math.Copysign(20.0, moveDistance)
+				}
+				targetCurrent = vector.New(targetCurrent.X, targetCurrent.Y-moveDistance)
+				log.Infof("  Target Y-move: %v (distance: %v)", targetCurrent, moveDistance)
+			}
+		}
+		targetPoints = append(targetPoints, targetCurrent)
+	}
+
+	// 5. Build final control points
+	controlPts := []image.Point{}
+
+	// Add source points
+	for i, pt := range sourcePoints {
+		controlPts = append(controlPts, image.Point{int(math.Round(pt.X)), int(math.Round(pt.Y))})
+		log.Infof("Added source point %d: (%d, %d)", i, int(math.Round(pt.X)), int(math.Round(pt.Y)))
+	}
+
+	// Add target points in reverse order (excluding duplicates)
+	for i := len(targetPoints) - 1; i >= 0; i-- {
+		targetPoint := image.Point{int(math.Round(targetPoints[i].X)), int(math.Round(targetPoints[i].Y))}
+		log.Infof("Processing target point %d: (%d, %d)", i, targetPoint.X, targetPoint.Y)
+		// Skip if duplicate of last control point
+		if len(controlPts) > 0 && controlPts[len(controlPts)-1] == targetPoint {
+			log.Infof("Skipped duplicate target point %d: (%d, %d)", i, targetPoint.X, targetPoint.Y)
+			continue
+		}
+		controlPts = append(controlPts, targetPoint)
+		log.Infof("Added target point %d: (%d, %d)", i, targetPoint.X, targetPoint.Y)
+	}
+
+	log.Infof("Final control points: %v", controlPts)
+	log.Infof("=== End Convergent Calculation ===")
+	return controlPts
+}
+
+// getDirectionVector converts windrose position to unit direction vector
+func (l *Link) getDirectionVector(position int) vector.Vector {
+	// Convert windrose position to 4-direction
+	fourWindrose := ((position + 2) % 16) / 4
+
+	switch fourWindrose {
+	case 0:
+		return vector.New(0, -1) // North
+	case 1:
+		return vector.New(1, 0) // East
+	case 2:
+		return vector.New(0, 1) // South
+	case 3:
+		return vector.New(-1, 0) // West
+	default:
+		return vector.New(0, -1) // Default to North
+	}
 }
