@@ -175,6 +175,14 @@ func (r *Resource) GetPadding() Padding {
 	return *r.padding
 }
 
+func (r *Resource) SetMargin(margin Margin) {
+	r.margin = &margin
+}
+
+func (r *Resource) SetPadding(padding Padding) {
+	r.padding = &padding
+}
+
 func (r *Resource) SetBorderColor(borderColor color.RGBA) {
 	r.borderColor = &borderColor
 }
