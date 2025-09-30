@@ -53,7 +53,7 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 		if mapType := getMapType(pass.TypesInfo, indexExpr.X); mapType != nil {
 			// Check if this is NOT a comma-ok assignment
 			if !commaOkAssignments[indexExpr] {
-				pass.Reportf(indexExpr.Pos(), "map access without comma-ok idiom: use 'value, ok := map[key]' instead")
+				pass.Reportf(indexExpr.Pos(), "map access without comma-ok idiom: use 'value, ok := map[key]', 'value, _ := map[key]', or '_, ok := map[key]' instead")
 			}
 		}
 	})
