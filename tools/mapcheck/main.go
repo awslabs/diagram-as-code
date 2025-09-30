@@ -22,7 +22,7 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 
 	// Track all comma-ok assignments
 	commaOkAssignments := make(map[ast.Node]bool)
-	
+
 	// First pass: identify comma-ok assignments
 	nodeFilter1 := []ast.Node{
 		(*ast.AssignStmt)(nil),
@@ -30,7 +30,7 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 
 	inspect.Preorder(nodeFilter1, func(n ast.Node) {
 		assignStmt := n.(*ast.AssignStmt)
-		
+
 		// Check if this is a comma-ok assignment (2 LHS, 1 RHS)
 		if len(assignStmt.Lhs) == 2 && len(assignStmt.Rhs) == 1 {
 			if indexExpr, ok := assignStmt.Rhs[0].(*ast.IndexExpr); ok {
@@ -48,7 +48,7 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 
 	inspect.Preorder(nodeFilter2, func(n ast.Node) {
 		indexExpr := n.(*ast.IndexExpr)
-		
+
 		// Check if the indexed expression is a map type
 		if mapType := getMapType(pass.TypesInfo, indexExpr.X); mapType != nil {
 			// Check if this is NOT a comma-ok assignment
@@ -69,8 +69,6 @@ func getMapType(info *types.Info, expr ast.Expr) *types.Map {
 	}
 	return nil
 }
-
-
 
 func main() {
 	singlechecker.Main(MapCheckAnalyzer)
