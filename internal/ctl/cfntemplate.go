@@ -214,6 +214,7 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 			}
 		}
 	}
+	return nil
 }
 
 func ensureSingleParent(template *TemplateStruct) {
@@ -307,7 +308,6 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 
 		}
 	}
-	return nil
 }
 
 func generateDacFileFromCFnTemplate(template *TemplateStruct, outputfile string) {
