@@ -22,7 +22,7 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 
 	// Track all comma-ok assignments
 	commaOkAssignments := make(map[ast.Node]bool)
-	
+
 	// Track assignment LHS (should not be flagged)
 	assignmentLHS := make(map[ast.Node]bool)
 
