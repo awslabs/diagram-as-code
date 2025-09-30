@@ -59,3 +59,12 @@ jobs:
             echo "Go files have unchecked errors. Fix the errors and commit the changes."
             exit 1
           fi
+
+      - name: Check map access safety
+        run: |
+          cd tools/mapcheck && go build -o mapcheck . && cd ../..
+          ./tools/mapcheck/mapcheck ./... 2>&1 | tee mapcheck-output.txt
+          if [ -s mapcheck-output.txt ]; then
+            echo "Unsafe map access patterns detected. Use comma-ok idiom 'value, ok := map[key]' for safe map access."
+            exit 1
+          fi

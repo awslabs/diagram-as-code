@@ -2,3 +2,4 @@
 # Build artifacts
 awsdac
 main
+tools/mapcheck/mapcheck
