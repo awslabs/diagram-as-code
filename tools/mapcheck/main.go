@@ -22,14 +22,24 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 
 	// Track all comma-ok assignments
 	commaOkAssignments := make(map[ast.Node]bool)
+	
+	// Track assignment LHS (should not be flagged)
+	assignmentLHS := make(map[ast.Node]bool)
 
-	// First pass: identify comma-ok assignments
+	// First pass: identify comma-ok assignments and assignment LHS
 	nodeFilter1 := []ast.Node{
 		(*ast.AssignStmt)(nil),
 	}
 
 	inspect.Preorder(nodeFilter1, func(n ast.Node) {
 		assignStmt := n.(*ast.AssignStmt)
+
+		// Track all LHS IndexExpr in assignments (these should not be flagged)
+		for _, lhs := range assignStmt.Lhs {
+			if indexExpr, ok := lhs.(*ast.IndexExpr); ok {
+				assignmentLHS[indexExpr] = true
+			}
+		}
 
 		// Check if this is a comma-ok assignment (2 LHS, 1 RHS)
 		if len(assignStmt.Lhs) == 2 && len(assignStmt.Rhs) == 1 {
@@ -51,8 +61,8 @@ func checkMapAccess(pass *analysis.Pass) (interface{}, error) {
 
 		// Check if the indexed expression is a map type
 		if mapType := getMapType(pass.TypesInfo, indexExpr.X); mapType != nil {
-			// Check if this is NOT a comma-ok assignment
-			if !commaOkAssignments[indexExpr] {
+			// Check if this is NOT a comma-ok assignment AND NOT an assignment LHS
+			if !commaOkAssignments[indexExpr] && !assignmentLHS[indexExpr] {
 				pass.Reportf(indexExpr.Pos(), "map access without comma-ok idiom: use 'value, ok := map[key]', 'value, _ := map[key]', or '_, ok := map[key]' instead")
 			}
 		}

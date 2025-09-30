@@ -37,6 +37,9 @@ func testMapAccess() {
 		// key exists
 	}
 	
+	// Should NOT be flagged - map assignment
+	m["key6"] = 100
+	
 	// Should be flagged - unsafe
 	if m["key5"] > 0 {
 		// do something
@@ -109,8 +112,8 @@ func testMapAccess() {
 
 	if len(issues) >= 2 {
 		pos2 := fset.Position(issues[1].Pos)
-		if pos2.Line != 27 || pos2.Column != 5 {
-			t.Errorf("Second issue expected at line 27, column 5, but found at line %d, column %d", pos2.Line, pos2.Column)
+		if pos2.Line != 30 || pos2.Column != 5 {
+			t.Errorf("Second issue expected at line 30, column 5, but found at line %d, column %d", pos2.Line, pos2.Column)
 		}
 	}
 

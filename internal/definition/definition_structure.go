@@ -31,8 +31,7 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 	}
 
 	// Linking definitions
-	for k := range b.Definitions {
-		v := b.Definitions[k]
+	for k, v := range b.Definitions {
 		src := func() string {
 			switch v.Type {
 			case "Resource", "Preset":
@@ -62,7 +61,10 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 	}
 	for len(q) > 0 {
 		k := q[0]
-		v := b.Definitions[k]
+		v, ok := b.Definitions[k]
+		if !ok {
+			return fmt.Errorf("definition key %s not found in definitions map", k)
+		}
 		switch v.Type {
 		case "Zip":
 			switch v.ZipFile.SourceType {
@@ -85,11 +87,15 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 					//return fmt.Errorf("Zip(file) needs ZipFile.Source")
 					filePath = strings.TrimSuffix(v.ZipFile.Path, "/")
 				} else {
-					if b.Definitions[v.ZipFile.Source].CacheFilePath == "" {
+					sourceDef, ok := b.Definitions[v.ZipFile.Source]
+					if !ok {
+						return fmt.Errorf("ZipFile source %s not found in definitions", v.ZipFile.Source)
+					}
+					if sourceDef.CacheFilePath == "" {
 						q = append(q, k)
 						break
 					}
-					filePath = fmt.Sprintf("%s/%s", b.Definitions[v.ZipFile.Source].CacheFilePath, strings.TrimSuffix(v.ZipFile.Path, "/"))
+					filePath = fmt.Sprintf("%s/%s", sourceDef.CacheFilePath, strings.TrimSuffix(v.ZipFile.Path, "/"))
 				}
 				v.CacheFilePath, err = cache.ExtractZipFile(filePath)
 				if err != nil {
@@ -103,23 +109,33 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string) error {
 				return fmt.Errorf("Directory %s has only slash or empty path", q)
 			}
 			if v.Directory.Source != "" {
-				if b.Definitions[v.Directory.Source].CacheFilePath == "" {
+				sourceDef, ok := b.Definitions[v.Directory.Source]
+				if !ok {
+					return fmt.Errorf("Directory source %s not found in definitions", v.Directory.Source)
+				}
+				if sourceDef.CacheFilePath == "" {
 					q = append(q, k)
 					break
 				}
+				v.CacheFilePath = fmt.Sprintf("%s/%s", sourceDef.CacheFilePath, trimmedPath)
+			} else {
+				v.CacheFilePath = trimmedPath
 			}
-			v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Directory.Source].CacheFilePath, trimmedPath)
 		case "Resource", "Preset", "Group":
 			if v.Icon != nil {
 				if v.Icon.Path == "" {
 					break
 				}
 				if v.Icon.Source != "" {
-					if b.Definitions[v.Icon.Source].CacheFilePath == "" {
+					sourceDef, ok := b.Definitions[v.Icon.Source]
+					if !ok {
+						return fmt.Errorf("Icon source %s not found in definitions", v.Icon.Source)
+					}
+					if sourceDef.CacheFilePath == "" {
 						q = append(q, k)
 						break
 					}
-					v.CacheFilePath = fmt.Sprintf("%s/%s", b.Definitions[v.Icon.Source].CacheFilePath, v.Icon.Path)
+					v.CacheFilePath = fmt.Sprintf("%s/%s", sourceDef.CacheFilePath, v.Icon.Path)
 				}
 			}
 		}
