@@ -404,3 +404,28 @@ func TestResourceCycleDetection(t *testing.T) {
 		})
 	}
 }
+func TestSetMargin(t *testing.T) {
+	resource := new(Resource).Init()
+
+	newMargin := Margin{Top: 10, Right: 20, Bottom: 30, Left: 40}
+	resource.SetMargin(newMargin)
+
+	result := resource.GetMargin()
+	if result.Top != 10 || result.Right != 20 || result.Bottom != 30 || result.Left != 40 {
+		t.Errorf("SetMargin failed: expected {10 20 30 40}, got {%d %d %d %d}",
+			result.Top, result.Right, result.Bottom, result.Left)
+	}
+}
+
+func TestSetPadding(t *testing.T) {
+	resource := new(Resource).Init()
+
+	newPadding := Padding{Top: 5, Right: 15, Bottom: 25, Left: 35}
+	resource.SetPadding(newPadding)
+
+	result := resource.GetPadding()
+	if result.Top != 5 || result.Right != 15 || result.Bottom != 25 || result.Left != 35 {
+		t.Errorf("SetPadding failed: expected {5 15 25 35}, got {%d %d %d %d}",
+			result.Top, result.Right, result.Bottom, result.Left)
+	}
+}
