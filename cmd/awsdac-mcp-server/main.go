@@ -257,7 +257,11 @@ func handleGenerateDiagram(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			log.Printf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	// Create temporary input file
 	inputFile := filepath.Join(tempDir, "input.yaml")
@@ -328,7 +332,11 @@ func handleGenerateDiagramToFile(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			log.Printf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	// Create temporary input file
 	inputFile := filepath.Join(tempDir, "input.yaml")
@@ -415,7 +423,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
-	defer logFile.Close()
+	defer func() {
+		if err := logFile.Close(); err != nil {
+			log.Printf("Failed to close log file: %v", err)
+		}
+	}()
 	log.SetOutput(logFile)
 	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 
