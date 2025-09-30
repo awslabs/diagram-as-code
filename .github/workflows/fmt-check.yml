@@ -23,6 +23,9 @@ jobs:
       - name: Install goimports
         run: go install golang.org/x/tools/cmd/goimports@latest
 
+      - name: Install errcheck
+        run: go install github.com/kisielk/errcheck@latest
+
       - name: Check go fmt
         run: |
           gofmt -l -d . | tee fmt-output.txt
@@ -36,5 +39,13 @@ jobs:
           goimports -l -d . | tee imports-output.txt
           if [ -s imports-output.txt ]; then
             echo "Go files need import formatting. Run 'goimports -w .' locally and commit the changes."
+            exit 1
+          fi
+
+      - name: Check errcheck
+        run: |
+          errcheck ./... | tee errcheck-output.txt
+          if [ -s errcheck-output.txt ]; then
+            echo "Go files have unchecked errors. Fix the errors and commit the changes."
             exit 1
           fi
