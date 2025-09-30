@@ -3,6 +3,7 @@ package cache
 import (
 	"archive/zip"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -15,7 +16,11 @@ func TestCreateFileWithDirectory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	filePath := filepath.Join(tempDir, "testdir", "testfile.txt")
 	file, err := createFileWithDirectory(filePath)
@@ -38,7 +43,11 @@ func TestLoadEtagCache(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	etagFilePath := filepath.Join(tempDir, "etag.txt")
 
@@ -70,7 +79,11 @@ func TestWriteEtagCache(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	etagFilePath := filepath.Join(tempDir, "etag.txt")
 	err = writeEtagCache(etagFilePath, "test-etag")
@@ -96,7 +109,9 @@ func TestFetchFile(t *testing.T) {
 			return
 		}
 		w.Header().Set("Etag", `"test-etag"`)
-		fmt.Fprint(w, "test content")
+		if _, err := fmt.Fprint(w, "test content"); err != nil {
+			t.Logf("Failed to write response: %v", err)
+		}
 	}))
 	defer server.Close()
 
@@ -104,7 +119,11 @@ func TestFetchFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	// Test when no cache exists
 	filePath, err := FetchFile(server.URL)
@@ -140,7 +159,9 @@ func TestFetchFile(t *testing.T) {
 			return
 		}
 		w.Header().Set("Etag", `"new-etag"`)
-		fmt.Fprint(w, "new content")
+		if _, err := fmt.Fprint(w, "new content"); err != nil {
+			t.Logf("Failed to write response: %v", err)
+		}
 	})
 
 	filePath, err = FetchFile(server.URL)
@@ -161,7 +182,11 @@ func TestExtractZipFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Failed to remove temp directory: %v", err)
+		}
+	}()
 
 	zipFilePath := filepath.Join(tempDir, "test.zip")
 	err = createTestZipFile(zipFilePath)
@@ -186,10 +211,18 @@ func createTestZipFile(filePath string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Printf("Failed to close file: %v", err)
+		}
+	}()
 
 	zipWriter := zip.NewWriter(file)
-	defer zipWriter.Close()
+	defer func() {
+		if err := zipWriter.Close(); err != nil {
+			log.Printf("Failed to close zip writer: %v", err)
+		}
+	}()
 
 	testFileData := []byte("test content")
 	f, err := zipWriter.Create("test.txt")
