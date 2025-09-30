@@ -112,7 +112,9 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	}
 
 	log.Info("--- Convert CloudFormation template to diagram structures ---")
-	convertTemplate(cfn_template, &template, ds)
+	if err := convertTemplate(cfn_template, &template, ds); err != nil {
+		return fmt.Errorf("failed to convert CloudFormation template: %w", err)
+	}
 
 	log.Info("--- Ensuring a single parent for resources with multiple parents ---")
 	ensureSingleParent(&template)
@@ -136,20 +138,31 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	return nil
 }
 
-func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds definition.DefinitionStructure) {
+func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds definition.DefinitionStructure) error {
 
-	resources_cfn_template := cfn_template.Map()["Resources"]
+	templateMap := cfn_template.Map()
+	resources_cfn_template, exists := templateMap["Resources"]
+	if !exists {
+		return fmt.Errorf("CloudFormation template missing Resources section")
+	}
 
 	if resourcesMap, ok := resources_cfn_template.(map[string]interface{}); ok {
 
 		//Initialized with all logical IDs written in the template
 		for logicalId, res := range resourcesMap {
 			resource := res.(map[string]interface{})
-			typeValue, _ := resource["Type"].(string)
+			typeValue, exists := resource["Type"]
+			if !exists {
+				return fmt.Errorf("resource %s missing Type field", logicalId)
+			}
+			typeStr, ok := typeValue.(string)
+			if !ok {
+				return fmt.Errorf("resource %s has non-string Type field", logicalId)
+			}
 
 			if _, ok := template.Resources[logicalId]; !ok {
 				template.Resources[logicalId] = Resource{
-					Type: typeValue,
+					Type: typeStr,
 				}
 			}
 		}
@@ -294,6 +307,7 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 
 		}
 	}
+	return nil
 }
 
 func generateDacFileFromCFnTemplate(template *TemplateStruct, outputfile string) {
