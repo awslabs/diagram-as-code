@@ -183,14 +183,18 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	}
 
 	log.Info("--- Draw diagram ---")
-	err := resources["Canvas"].Scale(nil, nil)
+	canvas, exists := resources["Canvas"]
+	if !exists {
+		return fmt.Errorf("Canvas resource not found")
+	}
+	err := canvas.Scale(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error scaling diagram: %w", err)
 	}
-	if err := resources["Canvas"].ZeroAdjust(); err != nil {
+	if err := canvas.ZeroAdjust(); err != nil {
 		return fmt.Errorf("error adjusting diagram: %w", err)
 	}
-	img, err := resources["Canvas"].Draw(nil, nil)
+	img, err := canvas.Draw(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error drawing diagram: %w", err)
 	}
@@ -303,8 +307,12 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			log.Warnf("%s does not have Type field. Skipping this resource.", k)
 			continue
 		case "AWS::Diagram::Canvas":
-			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
-			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("Canvas resource %s not found in resources map", k)
+			}
+			resource.SetBorderColor(color.RGBA{0, 0, 0, 0})
+			resource.SetFillColor(color.RGBA{255, 255, 255, 255})
 		case "AWS::Diagram::Resource":
 			resources[k] = new(types.Resource).Init()
 		case "AWS::Diagram::VerticalStack":
@@ -345,14 +353,18 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if err != nil {
 					return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
 				}
-				resources[k].SetBorderColor(borderColor)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found when setting border", k)
+				}
+				resource.SetBorderColor(borderColor)
 				switch border.Type {
 				case "straight":
-					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+					resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
 				case "dashed":
-					resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
+					resource.SetBorderType(types.BORDER_TYPE_DASHED)
 				default:
-					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+					resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
 				}
 			}
 			if label := def.Label; label != nil {
@@ -364,10 +376,18 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 					if err != nil {
 						return fmt.Errorf("failed to parse label color for resource %s: %w", k, err)
 					}
-					resources[k].SetLabel(nil, &c, nil)
+					resource, exists := resources[k]
+					if !exists {
+						return fmt.Errorf("resource %s not found when setting label color", k)
+					}
+					resource.SetLabel(nil, &c, nil)
 				}
 				if label.Font != "" {
-					resources[k].SetLabel(nil, nil, &label.Font)
+					resource, exists := resources[k]
+					if !exists {
+						return fmt.Errorf("resource %s not found when setting label font", k)
+					}
+					resource.SetLabel(nil, nil, &label.Font)
 				}
 			}
 			if headerAlign := def.HeaderAlign; headerAlign != "" {
