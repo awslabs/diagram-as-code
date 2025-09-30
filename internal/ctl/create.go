@@ -346,7 +346,11 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if err != nil {
 					return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
 				}
-				resources[k].SetFillColor(fillColor)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found for fill color", k)
+				}
+				resource.SetFillColor(fillColor)
 			}
 			if border := def.Border; border != nil {
 				borderColor, err := stringToColor(border.Color)
@@ -368,8 +372,12 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				}
 			}
 			if label := def.Label; label != nil {
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found for label", k)
+				}
 				if label.Title != "" {
-					resources[k].SetLabel(&label.Title, nil, nil)
+					resource.SetLabel(&label.Title, nil, nil)
 				}
 				if label.Color != "" {
 					c, err := stringToColor(label.Color)
@@ -625,9 +633,9 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 			}
 			bc := types.BorderChild{
 				Position: position,
-				Resource: resources[borderChild.Resource],
+				Resource: borderChildResource,
 			}
-			if err := resources[logicalId].AddBorderChild(&bc); err != nil {
+			if err := resource.AddBorderChild(&bc); err != nil {
 				return fmt.Errorf("failed to add border child: %w", err)
 			}
 		}
@@ -732,8 +740,8 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) e
 			}
 			link.Labels.TargetLeft = label
 		}
-		resources[v.Source].AddLink(link)
-		resources[v.Target].AddLink(link)
+		source.AddLink(link)
+		target.AddLink(link)
 	}
 	return nil
 }
