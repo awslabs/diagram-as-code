@@ -54,7 +54,7 @@ func testMapAccess() {
 	info := &types.Info{
 		Types: make(map[ast.Expr]types.TypeAndValue),
 	}
-	
+
 	conf := &types.Config{}
 	pkg, err := conf.Check("testdata", fset, []*ast.File{file}, info)
 	if err != nil {
@@ -64,12 +64,12 @@ func testMapAccess() {
 	// Create analysis pass
 	var issues []analysis.Diagnostic
 	pass := &analysis.Pass{
-		Analyzer: MapCheckAnalyzer,
-		Fset:     fset,
-		Files:    []*ast.File{file},
-		Pkg:      pkg,
+		Analyzer:  MapCheckAnalyzer,
+		Fset:      fset,
+		Files:     []*ast.File{file},
+		Pkg:       pkg,
 		TypesInfo: info,
-		ResultOf: make(map[*analysis.Analyzer]interface{}),
+		ResultOf:  make(map[*analysis.Analyzer]interface{}),
 		Report: func(d analysis.Diagnostic) {
 			issues = append(issues, d)
 			t.Logf("Found issue at %s: %s", fset.Position(d.Pos), d.Message)
