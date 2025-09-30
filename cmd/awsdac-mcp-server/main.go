@@ -242,12 +242,17 @@ func handleGenerateDiagram(
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	arguments := request.GetArguments()
-	yamlContent, ok := arguments["yamlContent"].(string)
+	yamlContentArg, exists := arguments["yamlContent"]
+	if !exists {
+		return nil, fmt.Errorf("missing yamlContent argument")
+	}
+	yamlContent, ok := yamlContentArg.(string)
 	if !ok {
 		return nil, fmt.Errorf("invalid yamlContent argument")
 	}
 
-	outputFormat, _ := arguments["outputFormat"].(string)
+	outputFormatArg, _ := arguments["outputFormat"]
+	outputFormat, _ := outputFormatArg.(string)
 	if outputFormat == "" {
 		outputFormat = "png"
 	}
@@ -311,12 +316,20 @@ func handleGenerateDiagramToFile(
 ) (*mcp.CallToolResult, error) {
 	arguments := request.GetArguments()
 
-	yamlContent, ok := arguments["yamlContent"].(string)
+	yamlContentArg, exists := arguments["yamlContent"]
+	if !exists {
+		return nil, fmt.Errorf("missing yamlContent argument")
+	}
+	yamlContent, ok := yamlContentArg.(string)
 	if !ok {
 		return nil, fmt.Errorf("invalid yamlContent argument")
 	}
 
-	outputFilePath, ok := arguments["outputFilePath"].(string)
+	outputFilePathArg, exists := arguments["outputFilePath"]
+	if !exists {
+		return nil, fmt.Errorf("missing outputFilePath argument")
+	}
+	outputFilePath, ok := outputFilePathArg.(string)
 	if !ok {
 		return nil, fmt.Errorf("invalid outputFilePath argument")
 	}
