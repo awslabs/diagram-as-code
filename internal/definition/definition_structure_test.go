@@ -61,12 +61,31 @@ func TestDefinitionStructure_LoadDefinitions(t *testing.T) {
 		if err != nil {
 			t.Errorf("Failed to laod definition file: %v", err)
 		}
-		ds.Definitions["Icons"].CacheFilePath = ""
-		ds.Definitions["IconsDirectory"].CacheFilePath = ""
-		ds.Definitions["IconsDirectory"].Parent.CacheFilePath = ""
-		ds.Definitions["IconResource"].CacheFilePath = ""
-		ds.Definitions["IconResource"].Parent.CacheFilePath = ""
-		ds.Definitions["IconResource"].Parent.Parent.CacheFilePath = ""
+		// Clear cache file paths for comparison (these are set dynamically during loading)
+		if icons, exists := ds.Definitions["Icons"]; exists {
+			icons.CacheFilePath = ""
+		} else {
+			t.Error("Expected 'Icons' definition not found")
+		}
+		if iconsDir, exists := ds.Definitions["IconsDirectory"]; exists {
+			iconsDir.CacheFilePath = ""
+			if iconsDir.Parent != nil {
+				iconsDir.Parent.CacheFilePath = ""
+			}
+		} else {
+			t.Error("Expected 'IconsDirectory' definition not found")
+		}
+		if iconRes, exists := ds.Definitions["IconResource"]; exists {
+			iconRes.CacheFilePath = ""
+			if iconRes.Parent != nil {
+				iconRes.Parent.CacheFilePath = ""
+				if iconRes.Parent.Parent != nil {
+					iconRes.Parent.Parent.CacheFilePath = ""
+				}
+			}
+		} else {
+			t.Error("Expected 'IconResource' definition not found")
+		}
 
 		if reflect.DeepEqual(tc.Definitions, ds.Definitions) != true {
 			t.Errorf("Definition mismatch\n===load from file===\n%v\b======\n===expects===\n%v\n===", tc.Definitions, ds.Definitions)
