@@ -391,13 +391,21 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				}
 			}
 			if headerAlign := def.HeaderAlign; headerAlign != "" {
-				resources[k].SetHeaderAlign(headerAlign)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found when setting header align", k)
+				}
+				resource.SetHeaderAlign(headerAlign)
 			}
 			if icon := def.Icon; icon != nil {
 				if def.CacheFilePath == "" {
 					break
 				}
-				err := resources[k].LoadIcon(def.CacheFilePath)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found when loading icon", k)
+				}
+				err := resource.LoadIcon(def.CacheFilePath)
 				if err != nil {
 					return fmt.Errorf("failed to load icon from cache file path: %w", err)
 				}
