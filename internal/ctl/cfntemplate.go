@@ -178,7 +178,12 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 			for _, related := range findRefs(resource, logicalId) {
 
 				related = strings.Split(related, ".")[0]
-				related_resource_type := template.Diagram.Resources[related].Type
+				relatedResource, ok := template.Diagram.Resources[related]
+				if !ok {
+					log.Infof("%s does not exist in resources.", related)
+					continue
+				}
+				related_resource_type := relatedResource.Type
 
 				//related_resource_type does not have "Type". This means it may be a Parameter value
 				if related_resource_type == "" {
@@ -201,14 +206,22 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 				//Find parent
 				findParent = true
 				parent_logicalId := related
-				parent_resources := template.Resources[parent_logicalId]
+				parent_resources, ok := template.Resources[parent_logicalId]
+				if !ok {
+					log.Warnf("Parent resource %s not found", parent_logicalId)
+					continue
+				}
 				parent_resources.Children = append(parent_resources.Children, logicalId)
 				template.Resources[parent_logicalId] = parent_resources
 			}
 
 			//If there is no parent resource, consider "AWSCloud" as the parent
 			if !findParent {
-				parents := template.Resources["AWSCloud"]
+				parents, ok := template.Resources["AWSCloud"]
+				if !ok {
+					log.Warnf("AWSCloud resource not found")
+					continue
+				}
 				parents.Children = append(parents.Children, logicalId)
 				template.Resources["AWSCloud"] = parents
 			}
@@ -248,7 +261,11 @@ func ensureSingleParent(template *TemplateStruct) {
 						}
 					}
 
-					grandparent_resources := template.Resources[logicalId]
+					grandparent_resources, ok := template.Resources[logicalId]
+					if !ok {
+						log.Warnf("Grandparent resource %s not found", logicalId)
+						continue
+					}
 					grandparent_resources.Children = newChildren
 					template.Resources[logicalId] = grandparent_resources
 					resource.Children = newChildren
@@ -283,26 +300,36 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 		newChildren := make([]string, 0)
 
 		for _, child := range resource.Children {
-			_, ok := resources[child]
+			childResource, ok := resources[child]
 			if !ok {
-				log.Infof("%s does not have parent resource", child)
+				log.Warnf("%s does not have parent resource", child)
 				continue
 			}
 			log.Infof("Add child(%s) on %s", child, logicalId)
 
-			if err := resources[logicalId].AddChild(resources[child]); err != nil {
+			parentResource, ok := resources[logicalId]
+			if !ok {
+				log.Warnf("Parent resource %s not found in resources", logicalId)
+				continue
+			}
+
+			if err := parentResource.AddChild(childResource); err != nil {
 				log.Warnf("Failed to add child %s to %s: %v", child, logicalId, err)
 				continue
 			}
 
 			if def == nil || def.Border == nil {
-				resources[logicalId].SetBorderColor(color.RGBA{0, 0, 0, 255})
-				resources[logicalId].SetFillColor(color.RGBA{0, 0, 0, 0})
+				parentResource.SetBorderColor(color.RGBA{0, 0, 0, 255})
+				parentResource.SetFillColor(color.RGBA{0, 0, 0, 0})
 			}
 
 			// Update yaml template for providing
 			newChildren = append(newChildren, child)
-			template_resource := template.Resources[logicalId]
+			template_resource, ok := template.Resources[logicalId]
+			if !ok {
+				log.Warnf("Template resource %s not found", logicalId)
+				continue
+			}
 			template_resource.Children = newChildren
 			template.Resources[logicalId] = template_resource
 
