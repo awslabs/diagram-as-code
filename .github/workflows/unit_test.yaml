@@ -1,10 +1,18 @@
 on:
   push:
-    branches:
-      - main
+    branches: [ '**' ]
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/unit_test.yaml'
   pull_request:
-    branches:
-      - main
+    branches: [ '**' ]
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
 
 name: Unit test
 
