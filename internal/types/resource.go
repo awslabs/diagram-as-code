@@ -318,7 +318,9 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	if visited == nil {
 		visited = make(map[*Resource]bool)
 	}
-	if visited[r] {
+	// Check if resource has been visited to detect cycles
+	// Using comma-ok idiom for safe map access
+	if isVisited, _ := visited[r]; isVisited {
 		return fmt.Errorf("Cycle detected in resource tree at %s", r.label)
 	}
 	visited[r] = true

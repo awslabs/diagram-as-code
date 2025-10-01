@@ -183,14 +183,18 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	}
 
 	log.Info("--- Draw diagram ---")
-	err := resources["Canvas"].Scale(nil, nil)
+	canvas, exists := resources["Canvas"]
+	if !exists {
+		return fmt.Errorf("Canvas resource not found")
+	}
+	err := canvas.Scale(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error scaling diagram: %w", err)
 	}
-	if err := resources["Canvas"].ZeroAdjust(); err != nil {
+	if err := canvas.ZeroAdjust(); err != nil {
 		return fmt.Errorf("error adjusting diagram: %w", err)
 	}
-	img, err := resources["Canvas"].Draw(nil, nil)
+	img, err := canvas.Draw(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error drawing diagram: %w", err)
 	}
@@ -303,8 +307,12 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			log.Warnf("%s does not have Type field. Skipping this resource.", k)
 			continue
 		case "AWS::Diagram::Canvas":
-			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
-			resources[k].SetFillColor(color.RGBA{255, 255, 255, 255})
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("Canvas resource %s not found in resources map", k)
+			}
+			resource.SetBorderColor(color.RGBA{0, 0, 0, 0})
+			resource.SetFillColor(color.RGBA{255, 255, 255, 255})
 		case "AWS::Diagram::Resource":
 			resources[k] = new(types.Resource).Init()
 		case "AWS::Diagram::VerticalStack":
@@ -338,46 +346,74 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if err != nil {
 					return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
 				}
-				resources[k].SetFillColor(fillColor)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found for fill color", k)
+				}
+				resource.SetFillColor(fillColor)
 			}
 			if border := def.Border; border != nil {
 				borderColor, err := stringToColor(border.Color)
 				if err != nil {
 					return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
 				}
-				resources[k].SetBorderColor(borderColor)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found when setting border", k)
+				}
+				resource.SetBorderColor(borderColor)
 				switch border.Type {
 				case "straight":
-					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+					resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
 				case "dashed":
-					resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
+					resource.SetBorderType(types.BORDER_TYPE_DASHED)
 				default:
-					resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+					resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
 				}
 			}
 			if label := def.Label; label != nil {
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found for label", k)
+				}
 				if label.Title != "" {
-					resources[k].SetLabel(&label.Title, nil, nil)
+					resource.SetLabel(&label.Title, nil, nil)
 				}
 				if label.Color != "" {
 					c, err := stringToColor(label.Color)
 					if err != nil {
 						return fmt.Errorf("failed to parse label color for resource %s: %w", k, err)
 					}
-					resources[k].SetLabel(nil, &c, nil)
+					resource, exists := resources[k]
+					if !exists {
+						return fmt.Errorf("resource %s not found when setting label color", k)
+					}
+					resource.SetLabel(nil, &c, nil)
 				}
 				if label.Font != "" {
-					resources[k].SetLabel(nil, nil, &label.Font)
+					resource, exists := resources[k]
+					if !exists {
+						return fmt.Errorf("resource %s not found when setting label font", k)
+					}
+					resource.SetLabel(nil, nil, &label.Font)
 				}
 			}
 			if headerAlign := def.HeaderAlign; headerAlign != "" {
-				resources[k].SetHeaderAlign(headerAlign)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found when setting header align", k)
+				}
+				resource.SetHeaderAlign(headerAlign)
 			}
 			if icon := def.Icon; icon != nil {
 				if def.CacheFilePath == "" {
 					break
 				}
-				err := resources[k].LoadIcon(def.CacheFilePath)
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found when loading icon", k)
+				}
+				err := resource.LoadIcon(def.CacheFilePath)
 				if err != nil {
 					return fmt.Errorf("failed to load icon from cache file path: %w", err)
 				}
@@ -386,57 +422,65 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 
 		switch v.Preset {
 		case "BlankGroup":
-			resources[k].SetIconBounds(image.Rect(0, 0, 64, 64))
-			resources[k].SetBorderColor(color.RGBA{0, 0, 0, 0})
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for BlankGroup preset", k)
+			}
+			resource.SetIconBounds(image.Rect(0, 0, 64, 64))
+			resource.SetBorderColor(color.RGBA{0, 0, 0, 0})
 		case "":
 		default:
 			def, ok := ds.Definitions[v.Preset]
 			if !ok {
 				log.Warnf("Unknown preset %s on %s\n", v.Preset, v.Type)
 			} else {
+				resource, exists := resources[k]
+				if !exists {
+					return fmt.Errorf("resource %s not found for preset configuration", k)
+				}
 				if fill := def.Fill; fill != nil {
 					fillColor, err := stringToColor(fill.Color)
 					if err != nil {
 						return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
 					}
-					resources[k].SetFillColor(fillColor)
+					resource.SetFillColor(fillColor)
 				}
 				if border := def.Border; border != nil {
 					borderColor, err := stringToColor(border.Color)
 					if err != nil {
 						return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
 					}
-					resources[k].SetBorderColor(borderColor)
+					resource.SetBorderColor(borderColor)
 					switch border.Type {
 					case "straight":
-						resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+						resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
 					case "dashed":
-						resources[k].SetBorderType(types.BORDER_TYPE_DASHED)
+						resource.SetBorderType(types.BORDER_TYPE_DASHED)
 					default:
-						resources[k].SetBorderType(types.BORDER_TYPE_STRAIGHT)
+						resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
 					}
 				}
 				if label := def.Label; label != nil {
 					if label.Title != "" {
-						resources[k].SetLabel(&label.Title, nil, nil)
+						resource.SetLabel(&label.Title, nil, nil)
 					}
 					if label.Color != "" {
 						c, err := stringToColor(label.Color)
 						if err != nil {
 							return fmt.Errorf("failed to parse label color for resource %s: %w", k, err)
 						}
-						resources[k].SetLabel(nil, &c, nil)
+						resource.SetLabel(nil, &c, nil)
 					}
 					if label.Font != "" {
-						resources[k].SetLabel(nil, nil, &label.Font)
+						resource.SetLabel(nil, nil, &label.Font)
 					}
 				}
 				if headerAlign := def.HeaderAlign; headerAlign != "" {
-					resources[k].SetHeaderAlign(headerAlign)
+					resource.SetHeaderAlign(headerAlign)
 				}
 				if icon := def.Icon; icon != nil {
 					if def.CacheFilePath != "" {
-						err := resources[k].LoadIcon(def.CacheFilePath)
+						err := resource.LoadIcon(def.CacheFilePath)
 						if err != nil {
 							return fmt.Errorf("failed to load icon from cache file path: %w", err)
 						}
@@ -445,64 +489,104 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 		}
 		if v.Icon != "" {
-			err := resources[k].LoadIcon(v.Icon)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for icon loading", k)
+			}
+			err := resource.LoadIcon(v.Icon)
 			if err != nil {
 				return fmt.Errorf("failed to load icon from file: %w", err)
 			}
 		}
 		if v.IconFill != nil {
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for icon fill", k)
+			}
 			switch *v.IconFill.Type {
 			case "none":
-				resources[k].SetIconFill(types.ICON_FILL_TYPE_NONE, nil)
+				resource.SetIconFill(types.ICON_FILL_TYPE_NONE, nil)
 			case "rect":
 				if v.IconFill.Color != nil {
 					c, err := stringToColor(*v.IconFill.Color)
 					if err != nil {
 						return fmt.Errorf("failed to parse icon fill color for resource %s: %w", k, err)
 					}
-					resources[k].SetIconFill(types.ICON_FILL_TYPE_RECT, &c)
+					resource.SetIconFill(types.ICON_FILL_TYPE_RECT, &c)
 				} else {
-					resources[k].SetIconFill(types.ICON_FILL_TYPE_RECT, nil)
+					resource.SetIconFill(types.ICON_FILL_TYPE_RECT, nil)
 				}
 			default:
-				resources[k].SetIconFill(types.ICON_FILL_TYPE_NONE, nil)
+				resource.SetIconFill(types.ICON_FILL_TYPE_NONE, nil)
 			}
 		}
 		if v.Title != "" {
-			resources[k].SetLabel(&v.Title, nil, nil)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for title", k)
+			}
+			resource.SetLabel(&v.Title, nil, nil)
 		}
 		if v.TitleColor != "" {
 			c, err := stringToColor(v.TitleColor)
 			if err != nil {
 				return fmt.Errorf("failed to parse title color for resource %s: %w", k, err)
 			}
-			resources[k].SetLabel(nil, &c, nil)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for title color", k)
+			}
+			resource.SetLabel(nil, &c, nil)
 		}
 		if v.HeaderAlign != "" {
-			resources[k].SetHeaderAlign(v.HeaderAlign)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for header align", k)
+			}
+			resource.SetHeaderAlign(v.HeaderAlign)
 		}
 		if v.Font != "" {
-			resources[k].SetLabel(nil, nil, &v.Font)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for font", k)
+			}
+			resource.SetLabel(nil, nil, &v.Font)
 		}
 		if v.Align != "" {
-			resources[k].SetAlign(v.Align)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for align", k)
+			}
+			resource.SetAlign(v.Align)
 		}
 		if v.Direction != "" {
-			resources[k].SetDirection(v.Direction)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for direction", k)
+			}
+			resource.SetDirection(v.Direction)
 		}
 		if v.FillColor != "" {
 			fillColor, err := stringToColor(v.FillColor)
 			if err != nil {
 				return fmt.Errorf("failed to parse fill color for resource %s: %w", k, err)
 			}
-			resources[k].SetFillColor(fillColor)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for fill color", k)
+			}
+			resource.SetFillColor(fillColor)
 		}
 		if v.BorderColor != "" {
 			borderColor, err := stringToColor(v.BorderColor)
 			if err != nil {
 				return fmt.Errorf("failed to parse border color for resource %s: %w", k, err)
 			}
-			resources[k].SetBorderColor(borderColor)
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for border color", k)
+			}
+			resource.SetBorderColor(borderColor)
 		}
 	}
 
@@ -520,15 +604,15 @@ func fallbackToServiceIcon(inputType string) string {
 func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) error {
 
 	for logicalId, v := range template.Resources {
-		_, ok := resources[logicalId]
+		resource, ok := resources[logicalId]
 		if !ok {
 			return fmt.Errorf("unknown resource %s", logicalId)
 		}
 		for _, child := range v.Children {
-			_, ok := resources[child]
+			childResource, ok := resources[child]
 			if ok {
 				log.Infof("Add child(%s) on %s", child, logicalId)
-				if err := resources[logicalId].AddChild(resources[child]); err != nil {
+				if err := resource.AddChild(childResource); err != nil {
 					return fmt.Errorf("failed to add child %s to %s: %w", child, logicalId, err)
 				}
 			} else {
@@ -536,7 +620,7 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 			}
 		}
 		for _, borderChild := range v.BorderChildren {
-			_, ok := resources[borderChild.Resource]
+			borderChildResource, ok := resources[borderChild.Resource]
 			if !ok {
 				log.Warnf("Child `%s` was not found, ignoring it.", borderChild.Resource)
 				continue
@@ -549,9 +633,9 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 			}
 			bc := types.BorderChild{
 				Position: position,
-				Resource: resources[borderChild.Resource],
+				Resource: borderChildResource,
 			}
-			if err := resources[logicalId].AddBorderChild(&bc); err != nil {
+			if err := resource.AddBorderChild(&bc); err != nil {
 				return fmt.Errorf("failed to add border child: %w", err)
 			}
 		}
@@ -588,19 +672,19 @@ func convertLabel(label *LinkLabel) (*types.LinkLabel, error) {
 func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) error {
 
 	for _, v := range template.Links {
-		_, ok := resources[v.Source]
+		sourceResource, ok := resources[v.Source]
 		if !ok {
 			log.Warnf("Not found Source esource %s", v.Source)
 			continue
 		}
-		source := resources[v.Source]
+		source := sourceResource
 
-		_, ok = resources[v.Target]
+		targetResource, ok := resources[v.Target]
 		if !ok {
 			log.Warnf("Not found Target resource %s", v.Target)
 			continue
 		}
-		target := resources[v.Target]
+		target := targetResource
 
 		log.Infof("Add link(%s-%s)", v.Source, v.Target)
 		lineWidth := v.LineWidth
@@ -656,8 +740,8 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) e
 			}
 			link.Labels.TargetLeft = label
 		}
-		resources[v.Source].AddLink(link)
-		resources[v.Target].AddLink(link)
+		source.AddLink(link)
+		target.AddLink(link)
 	}
 	return nil
 }

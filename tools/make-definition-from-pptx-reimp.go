@@ -574,7 +574,12 @@ func generateYAML(url string, imageMappings map[string]string) error {
 
 	// Write Preset type definitions (with quotes)
 	for _, name := range mappingsKeys {
-		imagePath := imageMappings[name]
+		imagePath, exists := imageMappings[name]
+		if !exists {
+			// This should not happen since mappingsKeys comes from imageMappings keys
+			log.Printf("Warning: imagePath not found for key %s", name)
+			continue
+		}
 		// Remove any (number) from the display title but keep the original name as the key
 		displayName := regexp.MustCompile(`\([0-9]\)`).ReplaceAllString(name, "")
 		displayName = strings.TrimSpace(displayName) // Remove any extra spaces

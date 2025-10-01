@@ -272,7 +272,8 @@ func TestLoadResourcesWithNoFallbackPossible(t *testing.T) {
 		t.Errorf("Expected 1 resource (Canvas only), got %d", len(actualResources))
 	}
 
-	if actualResources["Canvas"] == nil {
+	canvas, exists := actualResources["Canvas"]
+	if !exists || canvas == nil {
 		t.Error("Canvas resource should still be created")
 	}
 }
