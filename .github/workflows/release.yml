@@ -5,6 +5,9 @@ on:
 
 name: Create release from tag
 
+permissions:
+  contents: read
+
 jobs:
   build:
     strategy:
@@ -58,6 +61,8 @@ jobs:
     name: Release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
