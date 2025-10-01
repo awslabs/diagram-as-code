@@ -40,6 +40,47 @@ GitHub provides additional document on [forking a repository](https://help.githu
 [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
 
 
+## Code Quality Tools
+
+### mapcheck Static Analyzer
+
+This project includes a custom static analyzer called `mapcheck` that enforces safe map access patterns by requiring the comma-ok idiom.
+
+#### Running mapcheck
+
+```bash
+# Run mapcheck on the entire codebase
+./tools/mapcheck/mapcheck ./...
+
+# Run mapcheck on specific files or directories
+./tools/mapcheck/mapcheck internal/ctl/
+```
+
+#### What mapcheck detects
+
+The tool identifies unsafe map access patterns and suggests using the comma-ok idiom:
+
+```go
+// ❌ Unsafe - may panic if key doesn't exist
+value := myMap[key]
+
+// ✅ Safe - recommended patterns
+value, ok := myMap[key]  // Check existence
+value, _ := myMap[key]   // Ignore existence check
+_, ok := myMap[key]      // Only check existence
+```
+
+#### CI Integration
+
+mapcheck is automatically run in our CI pipeline. All pull requests must pass mapcheck validation before merging.
+
+#### Building mapcheck
+
+```bash
+cd tools/mapcheck
+go build -o mapcheck main.go
+```
+
 ## Finding contributions to work on
 Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
 
