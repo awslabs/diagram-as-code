@@ -7,6 +7,8 @@ on:
       - main
 
 name: Functional test
+permissions:
+  contents: read
 
 jobs:
   build:
