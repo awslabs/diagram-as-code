@@ -1,0 +1,82 @@
+name: Get AWS Icons
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/get-aws-icons.yml'
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday
+  workflow_dispatch:
+
+jobs:
+  get-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Checkout wiki
+        uses: actions/checkout@v3
+        with:
+          repository: "${{ github.repository }}.wiki"
+          path: .wiki
+
+      - name: Get AWS Asset Package and extract to wiki
+        run: |
+          ASSET_URL=$(curl -s "https://aws.amazon.com/jp/architecture/icons/" | \
+            sed -n '/<script type="application\/json">/,/<\/script>/p' | \
+            grep -o 'https://[^"]*Asset-Package[^"]*\.zip')
+          
+          FILENAME=$(basename "$ASSET_URL" .zip)
+          
+          # Download and extract ZIP
+          curl -L "$ASSET_URL" -o asset-package.zip
+          unzip -o -q asset-package.zip -d .wiki/
+          
+          # Create markdown file with image table
+          mkdir -p .wiki/AssetPackage
+          cat > ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          # AWS Asset Package
+          
+          ## Download Link
+          EOF
+          echo "[$FILENAME]($ASSET_URL)" >> ".wiki/AssetPackage/${FILENAME}.md"
+          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          
+          ## Updated
+          EOF
+          echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ".wiki/AssetPackage/${FILENAME}.md"
+          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          
+          ## Image Gallery
+          
+          | Image | Path |
+          |-------|------|
+          EOF
+          
+          # Generate image table
+          find .wiki -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+            rel_path=${file#.wiki/}
+            raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+            echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}.md"
+          done
+
+      - name: Staging the changes
+        working-directory: .wiki
+        id: staging
+        run: |
+          git add .
+          echo "CHANGES=$(git diff --staged --name-only | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Publish wiki
+        working-directory: .wiki
+        if: steps.staging.outputs.CHANGES > 0
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "Update AWS Asset Package with extracted contents [$(date -u +"%Y-%m-%d")]"
+          git push
