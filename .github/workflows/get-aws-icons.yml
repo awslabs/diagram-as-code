@@ -34,20 +34,33 @@ jobs:
           curl -L "$ASSET_URL" -o asset-package.zip
           unzip -q asset-package.zip -d .wiki/
           
-          # Create markdown file
+          # Create markdown file with image table
           mkdir -p .wiki/AssetPackage
-          cat > ".wiki/AssetPackage/${FILENAME}.md" << EOF
+          cat > ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
           # AWS Asset Package
           
           ## Download Link
-          [$FILENAME]($ASSET_URL)
+          EOF
+          echo "[$FILENAME]($ASSET_URL)" >> ".wiki/AssetPackage/${FILENAME}.md"
+          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
           
           ## Updated
-          $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          
-          ## Contents
-          Extracted from: $ASSET_URL
           EOF
+          echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ".wiki/AssetPackage/${FILENAME}.md"
+          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          
+          ## Image Gallery
+          
+          | Image | Path |
+          |-------|------|
+          EOF
+          
+          # Generate image table
+          find .wiki -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+            rel_path=${file#.wiki/}
+            raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+            echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}.md"
+          done
 
       - name: Staging the changes
         working-directory: .wiki
