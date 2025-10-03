@@ -1,0 +1,59 @@
+name: Get AWS Icons
+
+permissions:
+  contents: write
+
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  get-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Checkout wiki
+        uses: actions/checkout@v3
+        with:
+          repository: "${{ github.repository }}.wiki"
+          path: .wiki
+
+      - name: Get AWS Asset Package link
+        run: |
+          ASSET_URL=$(curl -s "https://aws.amazon.com/jp/architecture/icons/" | \
+            sed -n '/<script type="application\/json">/,/<\/script>/p' | \
+            grep -o 'https://[^"]*Asset-Package[^"]*\.zip')
+          
+          FILENAME=$(basename "$ASSET_URL" .zip)
+          
+          mkdir -p .wiki/AssetPackage
+          
+          cat > ".wiki/AssetPackage/${FILENAME}.md" << EOF
+          # AWS Asset Package
+          
+          ## Download Link
+          [$FILENAME]($ASSET_URL)
+          
+          ## Updated
+          $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          EOF
+
+      - name: Staging the changes
+        working-directory: .wiki
+        id: staging
+        run: |
+          git add .
+          echo "CHANGES=$(git diff --staged --name-only | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Publish wiki
+        working-directory: .wiki
+        if: steps.staging.outputs.CHANGES > 0
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "Update AWS Asset Package [$(date -u +"%Y-%m-%d")]"
+          git push
