@@ -5,8 +5,9 @@ permissions:
 
 on:
   push:
+    branches: main
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 * * 1'  # Weekly on Monday
   workflow_dispatch:
 
 jobs:
