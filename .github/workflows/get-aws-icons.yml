@@ -22,7 +22,7 @@ jobs:
           repository: "${{ github.repository }}.wiki"
           path: .wiki
 
-      - name: Get AWS Asset Package link
+      - name: Get AWS Asset Package and extract to wiki
         run: |
           ASSET_URL=$(curl -s "https://aws.amazon.com/jp/architecture/icons/" | \
             sed -n '/<script type="application\/json">/,/<\/script>/p' | \
@@ -30,8 +30,12 @@ jobs:
           
           FILENAME=$(basename "$ASSET_URL" .zip)
           
-          mkdir -p .wiki/AssetPackage
+          # Download and extract ZIP
+          curl -L "$ASSET_URL" -o asset-package.zip
+          unzip -q asset-package.zip -d .wiki/
           
+          # Create markdown file
+          mkdir -p .wiki/AssetPackage
           cat > ".wiki/AssetPackage/${FILENAME}.md" << EOF
           # AWS Asset Package
           
@@ -40,6 +44,9 @@ jobs:
           
           ## Updated
           $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Contents
+          Extracted from: $ASSET_URL
           EOF
 
       - name: Staging the changes
@@ -55,5 +62,5 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git commit -m "Update AWS Asset Package [$(date -u +"%Y-%m-%d")]"
+          git commit -m "Update AWS Asset Package with extracted contents [$(date -u +"%Y-%m-%d")]"
           git push
