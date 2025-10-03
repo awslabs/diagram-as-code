@@ -272,7 +272,7 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, 
 		}
 	}
 	var ttfBytes []byte
-	if r.labelFont == "goregular" {
+	if r.labelFont == "goregular" || r.labelFont == "" {
 		// Use Go-fonts instead system fonts
 		ttfBytes = goregular.TTF
 	} else {
