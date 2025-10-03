@@ -32,7 +32,7 @@ jobs:
           
           # Download and extract ZIP
           curl -L "$ASSET_URL" -o asset-package.zip
-          unzip -q asset-package.zip -d .wiki/
+          unzip -o -q asset-package.zip -d .wiki/
           
           # Create markdown file with image table
           mkdir -p .wiki/AssetPackage
