@@ -6,6 +6,8 @@ permissions:
 on:
   push:
     branches: [ main ]
+    paths:
+      - '.github/workflows/get-aws-icons.yml'
   schedule:
     - cron: '0 0 * * 1'  # Weekly on Monday
   workflow_dispatch:
