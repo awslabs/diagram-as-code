@@ -158,7 +158,7 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (fo
 		}
 	}
 	var ttfBytes []byte
-	if label.Font == "goregular" {
+	if label.Font == "goregular" || label.Font == "" {
 		// Use Go-fonts instead system fonts
 		ttfBytes = goregular.TTF
 	} else {
