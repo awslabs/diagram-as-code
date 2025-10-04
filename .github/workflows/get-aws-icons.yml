@@ -33,9 +33,9 @@ jobs:
           echo "Downloading: $FILENAME"
           curl -L "$DOWNLOAD_URL" -o "${FILENAME}.zip"
           
-          # Extract to wiki under AssetPackage directory
+          # Extract to wiki under AssetPackage directory (overwrite existing)
           mkdir -p ".wiki/AssetPackage/${FILENAME}"
-          unzip -q "${FILENAME}.zip" -d ".wiki/AssetPackage/${FILENAME}"
+          unzip -oq "${FILENAME}.zip" -d ".wiki/AssetPackage/${FILENAME}"
           
           # Create docs directory
           mkdir -p .wiki/AssetPackage/docs
