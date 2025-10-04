@@ -81,6 +81,10 @@ jobs:
             done
           done
           
+          # Debug: Check what files were created
+          echo "Debug: Files in docs directory:"
+          ls -la .wiki/AssetPackage/docs/ || echo "docs directory not found"
+          
           # Add Architecture Service Icons section
           echo "" >> ".wiki/AssetPackage/docs/${FILENAME}.md"
           echo "## Architecture Service Icons" >> ".wiki/AssetPackage/docs/${FILENAME}.md"
