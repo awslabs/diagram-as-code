@@ -38,7 +38,7 @@ jobs:
           unzip -o -q asset-package.zip -d .wiki/
           
           # Create main index markdown file
-          mkdir -p .wiki/AssetPackage
+          mkdir -p ".wiki/AssetPackage/${FILENAME}"
           cat > ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
           # AWS Asset Package
           
@@ -58,7 +58,7 @@ jobs:
           EOF
           find .wiki -name "Architecture-Service-Icons*" -type d | while read dir; do
             category=$(basename "$dir")
-            echo "- [$category]($category)" >> ".wiki/AssetPackage/${FILENAME}.md"
+            echo "- [$category]($FILENAME/Architecture-Service-Icons/$category)" >> ".wiki/AssetPackage/${FILENAME}.md"
           done
           
           cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
@@ -68,7 +68,7 @@ jobs:
           find .wiki/Resource-Icons* -name "Res_*" -type d | sort | while read dir; do
             category=$(basename "$dir")
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
-            echo "- [$display_name](Resource-Icons-$category)" >> ".wiki/AssetPackage/${FILENAME}.md"
+            echo "- [$display_name]($FILENAME/Resource-Icons/$category)" >> ".wiki/AssetPackage/${FILENAME}.md"
           done
           
           cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
@@ -77,18 +77,19 @@ jobs:
           EOF
           find .wiki -name "Architecture-Group-Icons*" -type d | while read dir; do
             category=$(basename "$dir")
-            echo "- [$category]($category)" >> ".wiki/AssetPackage/${FILENAME}.md"
+            echo "- [$category]($FILENAME/Architecture-Group-Icons/$category)" >> ".wiki/AssetPackage/${FILENAME}.md"
           done
           
           # Generate category-specific pages for Resource Icons
+          mkdir -p ".wiki/AssetPackage/${FILENAME}/Resource-Icons"
           find .wiki/Resource-Icons* -name "Res_*" -type d | sort | while read dir; do
             category=$(basename "$dir")
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
             
-            cat > ".wiki/AssetPackage/Resource-Icons-${category}.md" << EOF
+            cat > ".wiki/AssetPackage/${FILENAME}/Resource-Icons/${category}.md" << EOF
           # Resource Icons: $display_name
           
-          [← Back to Asset Package](${FILENAME})
+          [← Back to Asset Package](../../${FILENAME})
           
           | Image | Path |
           |-------|------|
@@ -97,7 +98,49 @@ jobs:
             find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
               rel_path=${file#.wiki/}
               raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
-              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/Resource-Icons-${category}.md"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}/Resource-Icons/${category}.md"
+            done
+          done
+          
+          # Generate category-specific pages for Architecture Service Icons
+          mkdir -p ".wiki/AssetPackage/${FILENAME}/Architecture-Service-Icons"
+          find .wiki -name "Architecture-Service-Icons*" -type d | while read dir; do
+            category=$(basename "$dir")
+            
+            cat > ".wiki/AssetPackage/${FILENAME}/Architecture-Service-Icons/${category}.md" << EOF
+          # Architecture Service Icons: $category
+          
+          [← Back to Asset Package](../../${FILENAME})
+          
+          | Image | Path |
+          |-------|------|
+          EOF
+            
+            find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+              rel_path=${file#.wiki/}
+              raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}/Architecture-Service-Icons/${category}.md"
+            done
+          done
+          
+          # Generate category-specific pages for Architecture Group Icons
+          mkdir -p ".wiki/AssetPackage/${FILENAME}/Architecture-Group-Icons"
+          find .wiki -name "Architecture-Group-Icons*" -type d | while read dir; do
+            category=$(basename "$dir")
+            
+            cat > ".wiki/AssetPackage/${FILENAME}/Architecture-Group-Icons/${category}.md" << EOF
+          # Architecture Group Icons: $category
+          
+          [← Back to Asset Package](../../${FILENAME})
+          
+          | Image | Path |
+          |-------|------|
+          EOF
+            
+            find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+              rel_path=${file#.wiki/}
+              raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}/Architecture-Group-Icons/${category}.md"
             done
           done
 
