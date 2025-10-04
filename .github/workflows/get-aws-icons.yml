@@ -138,12 +138,12 @@ jobs:
           done
 
       - name: Staging the changes
-        working-directory: .wiki
+        working-directory: main/.wiki
         run: |
           git add .
 
       - name: Commit and push changes
-        working-directory: .wiki
+        working-directory: main/.wiki
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
