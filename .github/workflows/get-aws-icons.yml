@@ -65,7 +65,7 @@ jobs:
           
           ### Resource Icons
           EOF
-          find .wiki -name "Res_*" -type d | sort | while read dir; do
+          find .wiki/Resource-Icons* -name "Res_*" -type d | sort | while read dir; do
             category=$(basename "$dir")
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
             echo "- [$display_name](Resource-Icons-$category)" >> ".wiki/AssetPackage/${FILENAME}.md"
@@ -81,7 +81,7 @@ jobs:
           done
           
           # Generate category-specific pages for Resource Icons
-          find .wiki -name "Res_*" -type d | sort | while read dir; do
+          find .wiki/Resource-Icons* -name "Res_*" -type d | sort | while read dir; do
             category=$(basename "$dir")
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
             
