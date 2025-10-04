@@ -37,7 +37,7 @@ jobs:
           curl -L "$ASSET_URL" -o asset-package.zip
           unzip -o -q asset-package.zip -d .wiki/
           
-          # Create markdown file with image table
+          # Create main index markdown file
           mkdir -p .wiki/AssetPackage
           cat > ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
           # AWS Asset Package
@@ -52,17 +52,53 @@ jobs:
           echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ".wiki/AssetPackage/${FILENAME}.md"
           cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
           
-          ## Image Gallery
+          ## Categories
+          
+          ### Architecture Service Icons
+          EOF
+          find .wiki -name "Architecture-Service-Icons*" -type d | while read dir; do
+            category=$(basename "$dir")
+            echo "- [$category]($category)" >> ".wiki/AssetPackage/${FILENAME}.md"
+          done
+          
+          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          
+          ### Resource Icons
+          EOF
+          find .wiki -name "Res_*" -type d | sort | while read dir; do
+            category=$(basename "$dir")
+            display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
+            echo "- [$display_name](Resource-Icons-$category)" >> ".wiki/AssetPackage/${FILENAME}.md"
+          done
+          
+          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          
+          ### Architecture Group Icons
+          EOF
+          find .wiki -name "Architecture-Group-Icons*" -type d | while read dir; do
+            category=$(basename "$dir")
+            echo "- [$category]($category)" >> ".wiki/AssetPackage/${FILENAME}.md"
+          done
+          
+          # Generate category-specific pages for Resource Icons
+          find .wiki -name "Res_*" -type d | sort | while read dir; do
+            category=$(basename "$dir")
+            display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
+            
+            cat > ".wiki/AssetPackage/Resource-Icons-${category}.md" << EOF
+          # Resource Icons: $display_name
+          
+          [← Back to Asset Package](${FILENAME})
           
           | Image | Path |
           |-------|------|
           EOF
-          
-          # Generate image table
-          find .wiki -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
-            rel_path=${file#.wiki/}
-            raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
-            echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}.md"
+            
+            find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+              rel_path=${file#.wiki/}
+              raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/Resource-Icons-${category}.md"
+            done
           done
 
       - name: Staging the changes
