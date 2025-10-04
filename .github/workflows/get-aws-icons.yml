@@ -4,79 +4,158 @@ permissions:
   contents: write
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
       - '.github/workflows/get-aws-icons.yml'
   schedule:
     - cron: '0 0 * * 1'  # Weekly on Monday
-  workflow_dispatch:
 
 jobs:
   get-icons:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout main
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          path: main
 
       - name: Checkout wiki
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "${{ github.repository }}.wiki"
           path: .wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get AWS Asset Package and extract to wiki
         run: |
+          cd main
+          
+          # Get the latest AWS Asset Package
           ASSET_URL=$(curl -s "https://aws.amazon.com/jp/architecture/icons/" | \
             sed -n '/<script type="application\/json">/,/<\/script>/p' | \
             grep -o 'https://[^"]*Asset-Package[^"]*\.zip')
+          DOWNLOAD_URL=$(curl -s "$ASSET_URL" -w "%{url_effective}" -o /dev/null)
+          FILENAME=$(basename "$DOWNLOAD_URL" .zip)
           
-          FILENAME=$(basename "$ASSET_URL" .zip)
+          echo "Downloading: $FILENAME"
+          curl -L "$DOWNLOAD_URL" -o "${FILENAME}.zip"
           
-          # Download and extract ZIP
-          curl -L "$ASSET_URL" -o asset-package.zip
-          unzip -o -q asset-package.zip -d .wiki/
+          # Extract to wiki under AssetPackage directory (overwrite existing)
+          mkdir -p "../.wiki/AssetPackage/${FILENAME}"
+          unzip -oq "${FILENAME}.zip" -d "../.wiki/AssetPackage/${FILENAME}"
           
-          # Create markdown file with image table
-          mkdir -p .wiki/AssetPackage
-          cat > ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          # Create docs directory
+          mkdir -p ../.wiki/
+          
+          # Generate main asset package page
+          cat > "../.wiki/${FILENAME}.md" << EOF
           # AWS Asset Package
           
           ## Download Link
-          EOF
-          echo "[$FILENAME]($ASSET_URL)" >> ".wiki/AssetPackage/${FILENAME}.md"
-          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          [${FILENAME}](https://d1.awsstatic.com/webteam/architecture-icons/q1-2025/${FILENAME}.zip)
           
           ## Updated
-          EOF
-          echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ".wiki/AssetPackage/${FILENAME}.md"
-          cat >> ".wiki/AssetPackage/${FILENAME}.md" << 'EOF'
+          $(date -u '+%Y-%m-%d %H:%M:%S UTC')
           
-          ## Image Gallery
+          ## Resource Icons
+          EOF
+          
+          # Generate markdown files for each Resource Icons category
+          echo "Debug: Looking in .wiki/AssetPackage/${FILENAME}"
+          ls -la ".wiki/AssetPackage/${FILENAME}" || echo "Directory not found"
+          find "../.wiki/AssetPackage/${FILENAME}" -name "Resource-Icons*" -type d | grep -v __MACOSX | while read resource_dir; do
+            echo "Found Resource-Icons directory: $resource_dir"
+            find "$resource_dir" -maxdepth 1 -name "Res_*" -type d | grep -v __MACOSX | sort | while read dir; do
+            category=$(basename "$dir")
+            display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
+            
+            cat > "../.wiki/${FILENAME}_Resource-Icons_${category#Res_}.md" << EOF
+          # Resource Icons: $display_name
+          
+          [← Back to Asset Package](${FILENAME})
           
           | Image | Path |
           |-------|------|
           EOF
+            
+            find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+              rel_path=${file#../.wiki/}
+              raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> "../.wiki/${FILENAME}_Resource-Icons_${category#Res_}.md"
+            done
+            
+            echo "- [Resource Icons: $display_name](${FILENAME}_Resource-Icons_${category#Res_})" >> "../.wiki/${FILENAME}.md"
+            done
+          done
           
-          # Generate image table
-          find .wiki -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
-            rel_path=${file#.wiki/}
-            raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
-            echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/${FILENAME}.md"
+          # Debug: Check what files were created
+          echo "Debug: Files in docs directory:"
+          ls -la ../.wiki/*.md || echo "markdown files not found"
+          
+          # Add Architecture Service Icons section
+          echo "" >> "../.wiki/${FILENAME}.md"
+          echo "## Architecture Service Icons" >> "../.wiki/${FILENAME}.md"
+          
+          # Generate markdown files for Architecture Service Icons
+          find "../.wiki/AssetPackage/${FILENAME}" -name "Architecture-Service-Icons*" -type d | grep -v __MACOSX | while read dir; do
+            category=$(basename "$dir")
+            
+            cat > "../.wiki/${FILENAME}_${category}.md" << EOF
+          # Architecture Service Icons: $category
+          
+          [← Back to Asset Package](${FILENAME})
+          
+          | Image | Path |
+          |-------|------|
+          EOF
+            
+            find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+              rel_path=${file#../.wiki/}
+              raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> "../.wiki/${FILENAME}_${category}.md"
+            done
+            
+            echo "- [$category](${FILENAME}_${category})" >> "../.wiki/${FILENAME}.md"
+          done
+          
+          # Add Architecture Group Icons section
+          echo "" >> "../.wiki/${FILENAME}.md"
+          echo "## Architecture Group Icons" >> "../.wiki/${FILENAME}.md"
+          
+          # Generate markdown files for Architecture Group Icons
+          find "../.wiki/AssetPackage/${FILENAME}" -name "Architecture-Group-Icons*" -type d | grep -v __MACOSX | while read dir; do
+            category=$(basename "$dir")
+            
+            cat > "../.wiki/${FILENAME}_${category}.md" << EOF
+          # Architecture Group Icons: $category
+          
+          [← Back to Asset Package](${FILENAME})
+          
+          | Image | Path |
+          |-------|------|
+          EOF
+            
+            find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
+              rel_path=${file#../.wiki/}
+              raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> "../.wiki/${FILENAME}_${category}.md"
+            done
+            
+            echo "- [$category](${FILENAME}_${category})" >> "../.wiki/${FILENAME}.md"
           done
 
       - name: Staging the changes
         working-directory: .wiki
-        id: staging
         run: |
           git add .
-          echo "CHANGES=$(git diff --staged --name-only | wc -l)" >> $GITHUB_OUTPUT
 
-      - name: Publish wiki
+      - name: Commit and push changes
         working-directory: .wiki
-        if: steps.staging.outputs.CHANGES > 0
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git commit -m "Update AWS Asset Package with extracted contents [$(date -u +"%Y-%m-%d")]"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Update AWS Asset Package icons with new docs structure" || exit 0
           git push
