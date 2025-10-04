@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_Amazon-Kinesis-Data-Streams_16</title>
+    <g id="Icon-Architecture/16/Arch_Amazon-Kinesis-Data-Streams_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Analytics" fill="#8C4FFF">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/Amazon-Kinesis-Data-Streams" transform="translate(6.000000, 4.000000)" fill="#FFFFFF">
+            <path d="M11.359,11.942 C11.359,10.257 9.989,8.887 8.304,8.887 C7.529,8.887 6.828,9.187 6.289,9.665 L8.749,9.665 L8.749,10.665 L5.539,10.665 C5.358,11.054 5.25,11.484 5.25,11.942 C5.25,13.627 6.62,14.997 8.304,14.997 C9.112,14.997 9.841,14.676 10.388,14.163 L7.86,14.163 L7.86,13.163 L11.1,13.163 C11.265,12.789 11.359,12.377 11.359,11.942 M12.359,11.942 C12.359,14.178 10.54,15.997 8.304,15.997 C6.069,15.997 4.25,14.178 4.25,11.942 C4.25,9.706 6.069,7.887 8.304,7.887 C10.54,7.887 12.359,9.706 12.359,11.942 M6.23,7.344 C1.877,8.132 1.314,9.907 1.314,11.368 L2.314,11.368 C2.314,10.782 2.324,9.705 4.286,8.91 C4.794,8.239 5.456,7.695 6.23,7.344 M1,2.155 L0,2.155 C0,3.603 0.722,4.975 4.765,5.684 C0.722,6.392 0,7.764 0,9.213 L1,9.213 C1,8.306 1,6.184 12.36,6.184 L12.36,5.184 C1,5.184 1,3.061 1,2.155 M12.36,3.46 L12.36,4.46 C2.627,4.46 1.314,2.205 1.314,0 L2.314,0 C2.314,1.035 2.314,3.46 12.36,3.46" id="Amazon-Kinesis-Data-Streams_Icon_16_Squid"></path>
+        </g>
+    </g>
+</svg>

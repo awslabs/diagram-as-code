@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-CodeArtifact_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-CodeArtifact_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Developer-Tools" fill="#C925D1">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/AWS-CodeArtifact_16" transform="translate(5.000700, 3.999900)" fill="#FFFFFF">
+            <path d="M5.282,10.65 L7.837,4.942 L8.749,5.35 L6.194,11.058 L5.282,10.65 Z M10.218,8.094 L8.922,6.78 L9.635,6.078 L11.337,7.805 C11.438,7.909 11.49,8.052 11.478,8.197 C11.467,8.342 11.392,8.474 11.275,8.56 L9.337,9.975 L8.747,9.168 L10.218,8.094 Z M5.131,6.824 L3.638,7.914 L4.938,9.228 L4.227,9.931 L2.519,8.204 C2.417,8.101 2.365,7.958 2.377,7.813 C2.388,7.668 2.463,7.535 2.58,7.449 L4.541,6.017 L5.131,6.824 Z M12.855,11.457 L6.897,14.845 L1,11.389 L1,4.541 L6.887,1.155 L12.855,4.615 L12.855,11.457 Z M6.889,0 L0,3.962 L0,11.962 L6.889,16 L13.855,12.039 L13.855,4.039 L6.889,0 Z" id="AWS-CodeArtifact_Icon_16_Squid"></path>
+        </g>
+    </g>
+</svg>

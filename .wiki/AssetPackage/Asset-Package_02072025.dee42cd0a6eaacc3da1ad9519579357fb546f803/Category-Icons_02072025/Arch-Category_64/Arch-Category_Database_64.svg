@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Database_64</title>
+    <g id="Icon-Architecture-Category/64/Database_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#C925D1" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-8" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Database_64" transform="translate(26.000000, 17.000000)" fill="#FFFFFF">
+            <path d="M19,27.982 C8.981,27.982 2,24.822 2,21.986 L2,11.667 C5.057,14.275 11.357,15.991 19,15.991 C26.643,15.991 32.943,14.275 36,11.667 L36,21.986 C36,24.822 29.019,27.982 19,27.982 M19,41.727 C8.981,41.727 2,38.567 2,35.732 L2,25.658 C5.057,28.267 11.357,29.982 19,29.982 C26.643,29.982 32.943,28.267 36,25.658 L36,35.732 C36,38.567 29.019,41.727 19,41.727 M19,54 C8.981,54 2,50.84 2,48.004 L2,39.403 C5.057,42.012 11.357,43.727 19,43.727 C26.643,43.727 32.943,42.012 36,39.403 L36,48.004 C36,50.84 29.019,54 19,54 M19,2 C29.019,2 36,5.16 36,7.996 C36,10.831 29.019,13.991 19,13.991 C8.981,13.991 2,10.831 2,7.996 C2,5.16 8.981,2 19,2 M19,0 C8.168,0 0,3.438 0,7.996 L0,48.004 C0,52.563 8.168,56 19,56 C29.832,56 38,52.563 38,48.004 L38,7.996 C38,3.438 29.832,0 19,0" id="Database_Category-Icon_64_Squid--"></path>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/16/Management-Governance_16</title>
+    <g id="Icon-Architecture-Category/16/Management-Governance_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#E7157B" x="4" y="4" width="24" height="24"></rect>
+        <rect id="#879196-Border-Copy-15" stroke="#879196" stroke-width="2" x="1" y="1" width="30" height="30"></rect>
+        <g id="Icon-Category/16/Management-Governance_16" transform="translate(8.000000, 8.000000)" fill="#FFFFFF">
+            <path d="M3,9 L2,9 L2,8 L3,8 L3,7 L4,7 L4,8 L9,8 L9,9 L4,9 L4,10 L3,10 L3,9 Z M8,2 L11,2 L11,1 L8,1 L8,2 Z M14.463,1 L12,1 L12,0.5 C12,0.224 11.776,0 11.5,0 L7.5,0 C7.224,0 7,0.224 7,0.5 L7,1 L4.537,1 C3.689,1 3,1.689 3,2.537 L3,4 L4,4 L4,2.537 C4,2.241 4.241,2 4.537,2 L7,2 L7,2.5 C7,2.776 7.224,3 7.5,3 L11.5,3 C11.776,3 12,2.776 12,2.5 L12,2 L14.463,2 C14.754,2 15,2.282 15,2.617 L15,14.383 C15,14.718 14.754,15 14.463,15 L4.537,15 C4.246,15 4,14.718 4,14.383 L4,13 L3,13 L3,14.383 C3,15.275 3.689,16 4.537,16 L14.463,16 C15.311,16 16,15.275 16,14.383 L16,2.617 C16,1.725 15.311,1 14.463,1 L14.463,1 Z M1,11 L10,11 L10,6 L1,6 L1,11 Z M11,11.5 L11,5.5 C11,5.224 10.776,5 10.5,5 L0.5,5 C0.224,5 0,5.224 0,5.5 L0,11.5 C0,11.776 0.224,12 0.5,12 L10.5,12 C10.776,12 11,11.776 11,11.5 L11,11.5 Z" id="Management-Governance_Category-Icon_16_Squid"></path>
+        </g>
+    </g>
+</svg>

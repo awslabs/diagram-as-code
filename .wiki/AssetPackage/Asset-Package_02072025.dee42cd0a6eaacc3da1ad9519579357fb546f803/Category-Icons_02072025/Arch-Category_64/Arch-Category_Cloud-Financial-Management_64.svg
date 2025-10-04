@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Cloud-Financial-Management_64</title>
+    <g id="Icon-Architecture-Category/64/Cloud-Financial-Management_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#7AA116" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-2" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Cloud-Financial-Management_64" transform="translate(22.000000, 17.000000)" fill="#FFFFFF">
+            <path d="M19,51 L26,51 L26,49 L19,49 L19,51 Z M7,51 L14,51 L14,49 L7,49 L7,51 Z M19,45 L26,45 L26,43 L19,43 L19,45 Z M7,45 L14,45 L14,43 L7,43 L7,45 Z M19,37 L26,37 L26,35 L19,35 L19,37 Z M7,37 L14,37 L14,35 L7,35 L7,37 Z M33,49 L37,49 L37,37 L33,37 L33,49 Z M38,35 L32,35 C31.447,35 31,35.448 31,36 L31,50 C31,50.552 31.447,51 32,51 L38,51 C38.553,51 39,50.552 39,50 L39,36 C39,35.448 38.553,35 38,35 L38,35 Z M8,30 L37,30 L37,23 L8,23 L8,30 Z M7,21 C6.447,21 6,21.448 6,22 L6,31 C6,31.552 6.447,32 7,32 L38,32 C38.553,32 39,31.552 39,31 L39,22 C39,21.448 38.553,21 38,21 L7,21 Z M44,54 L2,54 L2,15 L13,15 L13,17 C13,17.552 13.447,18 14,18 L32,18 C32.553,18 33,17.552 33,17 L33,15 L44,15 L44,54 Z M13.88,2 L26,2 C28.458,2 31,3.496 31,6 L31,13 L31,15 L31,16 L15,16 L15,15 L15,13 L15,6 C15,4.559 14.641,3.112 13.88,2 L13.88,2 Z M7.5,8 L7.5,5.959 C7.5,2.47 8.764,2 10,2 C12.783,2 13,5.062 13,6 L13,8 L7.5,8 Z M45,13 L33,13 L33,6 C33,2.244 29.44,0 26,0 L10,0 C7.947,0 5.5,1.034 5.5,5.959 L5.5,9 C5.5,9.552 5.947,10 6.5,10 L13,10 L13,13 L1,13 C0.447,13 0,13.448 0,14 L0,55 C0,55.552 0.447,56 1,56 L45,56 C45.553,56 46,55.552 46,55 L46,14 C46,13.448 45.553,13 45,13 L45,13 Z" id="Fill-3"></path>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-Service-Management-Connector_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-Service-Management-Connector_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Management-Governance" fill="#E7157B">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <path d="M13,11.167 L13,12 L10,12 L10,11.167 C10,10.044 11.349,10.001 11.498,10 C11.651,10.001 13,10.044 13,11.167 M14.357,5.064 L13.977,5.989 C16.468,7.016 18.047,9.422 17.999,12.12 C17.938,15.529 15.006,18.451 11.596,18.5 C9.839,18.524 8.187,17.86 6.937,16.629 C5.687,15.398 5,13.754 5,12 C5,8.584 7.648,5.776 11,5.52 L11,9.05 C10.123,9.198 9,9.745 9,11.167 L9,12.5 C9,12.777 9.224,13 9.5,13 L10,13 L10,15 L11,15 L11,13 L12,13 L12,15 L13,15 L13,13 L13.5,13 C13.776,13 14,12.777 14,12.5 L14,11.167 C14,9.745 12.877,9.198 12,9.05 L12,5 C12,4.724 11.776,4.5 11.5,4.5 C7.364,4.5 4,7.865 4,12 C4,14.024 4.794,15.921 6.235,17.342 C7.649,18.736 9.515,19.5 11.499,19.5 C11.535,19.5 11.572,19.5 11.609,19.5 C15.612,19.442 18.927,16.14 18.999,12.137 C19.054,9.026 17.232,6.25 14.357,5.064" id="Fill-5" fill="#FFFFFF"></path>
+    </g>
+</svg>

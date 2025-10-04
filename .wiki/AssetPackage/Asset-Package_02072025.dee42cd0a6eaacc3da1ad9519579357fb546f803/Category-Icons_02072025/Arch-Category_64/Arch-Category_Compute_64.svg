@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Compute_64</title>
+    <g id="Icon-Architecture-Category/64/Compute_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#ED7100" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-5" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Compute_64" transform="translate(18.000000, 17.000000)" fill="#FFFFFF">
+            <path d="M17,38 L38,38 L38,17 L17,17 L17,38 Z M16,40 L39,40 C39.553,40 40,39.552 40,39 L40,16 C40,15.448 39.553,15 39,15 L16,15 C15.447,15 15,15.448 15,16 L15,39 C15,39.552 15.447,40 16,40 L16,40 Z M9,46 L46,46 L46,9 L9,9 L9,46 Z M55,11 L55,9 L48,9 L48,8 C48,7.448 47.553,7 47,7 L46,7 L46,0 L44,0 L44,7 L39,7 L39,0 L37,0 L37,7 L32,7 L32,0 L30,0 L30,7 L25,7 L25,0 L23,0 L23,7 L18,7 L18,0 L16,0 L16,7 L11,7 L11,0 L9,0 L9,7 L8,7 C7.447,7 7,7.448 7,8 L7,9 L0,9 L0,11 L7,11 L7,16 L0,16 L0,18 L7,18 L7,23 L0,23 L0,25 L7,25 L7,30 L0,30 L0,32 L7,32 L7,37 L0,37 L0,39 L7,39 L7,44 L0,44 L0,46 L7,46 L7,47 C7,47.552 7.447,48 8,48 L9,48 L9,55 L11,55 L11,48 L16,48 L16,55 L18,55 L18,48 L23,48 L23,55 L25,55 L25,48 L30,48 L30,55 L32,55 L32,48 L37,48 L37,55 L39,55 L39,48 L44,48 L44,55 L46,55 L46,48 L47,48 C47.553,48 48,47.552 48,47 L48,46 L55,46 L55,44 L48,44 L48,39 L55,39 L55,37 L48,37 L48,32 L55,32 L55,30 L48,30 L48,25 L55,25 L55,23 L48,23 L48,18 L55,18 L55,16 L48,16 L48,11 L55,11 Z" id="Fill-3"></path>
+        </g>
+    </g>
+</svg>

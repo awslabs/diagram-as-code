@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/32/Cloud-Financial-Management_32</title>
+    <g id="Icon-Architecture-Category/32/Cloud-Financial-Management_32" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#7AA116" x="4" y="4" width="40" height="40"></rect>
+        <rect id="#879196-Border-Copy-3" stroke="#879196" stroke-width="2" x="1" y="1" width="46" height="46"></rect>
+        <g id="Icon-Category/32/Cloud-Financial-Management_32" transform="translate(12.000000, 10.000000)" fill="#FFFFFF">
+            <path d="M9,25 L12,25 L12,24 L9,24 L9,25 Z M4,25 L7,25 L7,24 L4,24 L4,25 Z M9,22 L12,22 L12,21 L9,21 L9,22 Z M4,22 L7,22 L7,21 L4,21 L4,22 Z M9,18 L12,18 L12,17 L9,17 L9,18 Z M4,18 L7,18 L7,17 L4,17 L4,18 Z M16,24 L19,24 L19,18 L16,18 L16,24 Z M19.5,17 L15.5,17 C15.224,17 15,17.224 15,17.5 L15,24.5 C15,24.776 15.224,25 15.5,25 L19.5,25 C19.776,25 20,24.776 20,24.5 L20,17.5 C20,17.224 19.776,17 19.5,17 L19.5,17 Z M5,14 L19,14 L19,11 L5,11 L5,14 Z M4.5,10 C4.224,10 4,10.224 4,10.5 L4,14.5 C4,14.776 4.224,15 4.5,15 L19.5,15 C19.776,15 20,14.776 20,14.5 L20,10.5 C20,10.224 19.776,10 19.5,10 L4.5,10 Z M23,27 L1,27 L1,8 L7,8 L7,8.5 C7,8.776 7.224,9 7.5,9 L15.5,9 C15.771,9 15.993,8.784 16,8.512 L16.013,8 L23,8 L23,27 Z M7.587,1 L13.5,1 C14.708,1 15.139,1.976 15.139,2.877 L15.013,8 L8,8 L8,7 L8,2.5 C8,1.867 7.842,1.375 7.587,1 L7.587,1 Z M4,4 L4,2.5 C4,1.464 4.753,1 5.5,1 C6.061,1 7,1.195 7,2.5 L7,4 L4,4 Z M23.5,7 L16.037,7 L16.139,2.89 C16.139,1.161 15.078,0 13.5,0 L6,0 L6,0.042 C4.56,-0.202 3,0.643 3,2.5 L3,4.5 C3,4.776 3.224,5 3.5,5 L7,5 L7,7 L0.5,7 C0.224,7 0,7.224 0,7.5 L0,27.5 C0,27.776 0.224,28 0.5,28 L23.5,28 C23.776,28 24,27.776 24,27.5 L24,7.5 C24,7.224 23.776,7 23.5,7 L23.5,7 Z" id="Fill-4"></path>
+        </g>
+    </g>
+</svg>

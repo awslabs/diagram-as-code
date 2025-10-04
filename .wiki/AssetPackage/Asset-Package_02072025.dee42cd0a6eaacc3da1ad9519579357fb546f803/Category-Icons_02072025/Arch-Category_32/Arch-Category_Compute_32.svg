@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/32/Compute_32</title>
+    <g id="Icon-Architecture-Category/32/Compute_32" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#ED7100" x="4" y="4" width="40" height="40"></rect>
+        <rect id="#879196-Border-Copy-6" stroke="#879196" stroke-width="2" x="1" y="1" width="46" height="46"></rect>
+        <g id="Icon-Category/32/Compute_32" transform="translate(10.000000, 10.000000)" fill="#FFFFFF">
+            <path d="M8,20 L20,20 L20,8 L8,8 L8,20 Z M20.5,7 L7.5,7 C7.224,7 7,7.224 7,7.5 L7,20.5 C7,20.776 7.224,21 7.5,21 L20.5,21 C20.776,21 21,20.776 21,20.5 L21,7.5 C21,7.224 20.776,7 20.5,7 L20.5,7 Z M24,9 L24,10 L24,12 L24,13 L24,15 L24,16 L24,18 L24,19 L24,21 L24,22 L24,24 L22,24 L21,24 L19,24 L18,24 L16,24 L15,24 L13,24 L12,24 L10,24 L9,24 L7,24 L6,24 L4,24 L4,22 L4,21 L4,19 L4,18 L4,16 L4,15 L4,13 L4,12 L4,10 L4,9 L4,7 L4,6 L4,4 L6,4 L7,4 L9,4 L10,4 L12,4 L13,4 L15,4 L16,4 L18,4 L19,4 L21,4 L22,4 L24,4 L24,6 L24,7 L24,9 Z M25,3.5 C25,3.224 24.776,3 24.5,3 L22,3 L22,0 L21,0 L21,3 L19,3 L19,0 L18,0 L18,3 L16,3 L16,0 L15,0 L15,3 L13,3 L13,0 L12,0 L12,3 L10,3 L10,0 L9,0 L9,3 L7,3 L7,0 L6,0 L6,3 L3.5,3 C3.224,3 3,3.224 3,3.5 L3,6 L0,6 L0,7 L3,7 L3,9 L0,9 L0,10 L3,10 L3,12 L0,12 L0,13 L3,13 L3,15 L0,15 L0,16 L3,16 L3,18 L0,18 L0,19 L3,19 L3,21 L0,21 L0,22 L3,22 L3,24.5 C3,24.776 3.224,25 3.5,25 L6,25 L6,28 L7,28 L7,25 L9,25 L9,28 L10,28 L10,25 L12,25 L12,28 L13,28 L13,25 L15,25 L15,28 L16,28 L16,25 L18,25 L18,28 L19,28 L19,25 L21,25 L21,28 L22,28 L22,25 L24.5,25 C24.776,25 25,24.776 25,24.5 L25,22 L28,22 L28,21 L25,21 L25,19 L28,19 L28,18 L25,18 L25,16 L28,16 L28,15 L25,15 L25,13 L28,13 L28,12 L25,12 L25,10 L28,10 L28,9 L25,9 L25,7 L28,7 L28,6 L25,6 L25,3.5 Z" id="Fill-5"></path>
+        </g>
+    </g>
+</svg>

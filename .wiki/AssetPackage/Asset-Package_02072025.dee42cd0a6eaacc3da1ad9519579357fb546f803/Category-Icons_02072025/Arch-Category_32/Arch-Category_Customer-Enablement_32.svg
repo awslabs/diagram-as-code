@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/32/Customer-Enablement_32</title>
+    <g id="Icon-Architecture-Category/32/Customer-Enablement_32" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#C925D1" x="4" y="4" width="40" height="40"></rect>
+        <rect id="#879196-Border-Copy-8" stroke="#879196" stroke-width="2" x="1" y="1" width="46" height="46"></rect>
+        <g id="Icon-Category/32/Customer-Enablement_32" transform="translate(11.000000, 9.000000)" fill="#FFFFFF">
+            <path d="M25,20.936 L20.391,23.649 C19.895,19.715 17.755,16.67 14.982,15.675 C16.536,14.965 17.624,13.405 17.624,11.588 C17.624,9.106 15.605,7.088 13.124,7.088 C10.643,7.088 8.624,9.106 8.624,11.588 C8.624,13.372 9.676,14.903 11.184,15.63 C8.33,16.575 6.097,19.687 5.607,23.648 L1,20.936 L1,8.225 L13,1.161 L25,8.225 L25,20.936 Z M9.624,11.588 C9.624,9.658 11.194,8.088 13.124,8.088 C15.054,8.088 16.624,9.658 16.624,11.588 C16.624,13.518 15.054,15.088 13.124,15.088 C11.194,15.088 9.624,13.518 9.624,11.588 L9.624,11.588 Z M13,28 L6.438,24.138 L6.551,24.148 C6.959,19.688 9.731,16.326 13,16.326 C16.165,16.326 18.925,19.589 19.42,23.917 L20.061,23.844 L13,28 Z M13,0 L0,7.654 L0,21.507 L13,29.161 L26,21.507 L26,7.654 L13,0 Z" id="Fill-3"></path>
+        </g>
+    </g>
+</svg>

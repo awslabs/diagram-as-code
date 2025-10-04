@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/64/Arch_Amazon-AppFlow_64</title>
+    <g id="Icon-Architecture/64/Arch_Amazon-AppFlow_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/64/Application-Integration" fill="#E7157B">
+            <rect id="Rectangle" x="0" y="0" width="80" height="80"></rect>
+        </g>
+        <g id="Icon-Service/64/Amazon-AppFlow_64" transform="translate(12.000000, 19.000000)" fill="#FFFFFF">
+            <path d="M29.657,0 L13.963,26.387 L12.925,22.515 L10.994,23.033 L12.948,30.327 L20.242,28.372 L19.725,26.441 L15.6,27.545 L30.794,2.001 L45.809,2.001 L53.315,15 L45.809,28 L37.963,28 L37.963,30.001 L46.963,30.001 L55.624,15 L46.963,0 L29.657,0 Z M34.541,13.628 L35.059,15.56 L39.232,14.441 L24.815,40.001 L9.815,40.001 L2.309,27 L9.815,14 L15.964,14 L15.964,12.001 L8.661,12.001 L0,27 L8.661,42 L25.983,42 L40.837,15.669 L41.859,19.485 L43.791,18.967 L41.836,11.674 L34.541,13.628 Z" id="Amazon-AppFlow_64"></path>
+        </g>
+    </g>
+</svg>

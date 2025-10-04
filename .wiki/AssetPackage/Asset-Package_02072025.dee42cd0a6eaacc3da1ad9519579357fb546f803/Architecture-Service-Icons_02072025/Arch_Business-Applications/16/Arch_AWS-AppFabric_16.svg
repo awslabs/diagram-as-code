@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-AppFabric_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-AppFabric_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Business-Applications" fill="#DD344C">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/AWS-AppFabric_16" transform="translate(4.000000, 4.000000)" fill="#FFFFFF">
+            <path d="M14.818,9.292 C16.384,7.726 16.384,5.177 14.818,3.61 C14.059,2.852 13.05,2.433 11.976,2.433 C10.903,2.433 9.894,2.852 9.135,3.61 L5.903,6.843 C4.878,7.869 4.484,9.375 4.876,10.773 L5.839,10.503 C5.544,9.452 5.839,8.321 6.61,7.55 L9.842,4.317 C11.019,3.141 12.932,3.14 14.111,4.317 C15.287,5.494 15.287,7.408 14.111,8.585 L7.405,15.29 L8.112,15.997 L14.818,9.292 Z M4.017,13.451 C2.988,13.451 1.96,13.06 1.176,12.277 C0.418,11.518 0,10.509 0,9.436 C0,8.363 0.418,7.354 1.176,6.595 L7.772,0 L8.479,0.707 L1.883,7.302 C1.313,7.872 1,8.63 1,9.436 C1,10.242 1.313,11 1.883,11.57 C3.059,12.746 4.975,12.746 6.151,11.57 L9.384,8.337 C10.244,7.478 10.504,6.194 10.047,5.067 L10.974,4.691 C11.582,6.192 11.235,7.9 10.091,9.044 L6.858,12.277 C6.075,13.06 5.046,13.451 4.017,13.451 L4.017,13.451 Z" id="Fill-3"></path>
+        </g>
+    </g>
+</svg>

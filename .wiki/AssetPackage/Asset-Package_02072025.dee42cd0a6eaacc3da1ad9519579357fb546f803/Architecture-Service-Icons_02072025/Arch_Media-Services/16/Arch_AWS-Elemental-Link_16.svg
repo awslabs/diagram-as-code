@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-Elemental-Link_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-Elemental-Link_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Media-Services" fill="#ED7100">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/AWS-Elemental-Link_16" transform="translate(3.999700, 4.000000)" fill="#FFFFFF">
+            <path d="M6.22,1.929 L5.781,1.031 L7.781,0.051 C7.919,-0.017 8.081,-0.017 8.22,0.051 L10.22,1.031 L9.781,1.929 L8,1.056 L6.22,1.929 Z M9,12.175 L7.5,12.992 L6,12.175 L6,11.5 L6,10.589 L7.5,9.771 L9,10.589 L9,12.175 Z M10,10.292 C10,10.109 9.901,9.94 9.74,9.853 L7.74,8.763 C7.591,8.682 7.409,8.682 7.261,8.763 L5.261,9.853 C5.1,9.94 5,10.109 5,10.292 L5,10.5 L0,10.5 L0,11.5 L5,11.5 L5,12.471 C5,12.655 5.1,12.823 5.261,12.91 L7,13.858 L7,15.5 L8,15.5 L8,13.858 L9.74,12.91 C9.901,12.823 10,12.655 10,12.471 L10,11.5 L16,11.5 L16,10.5 L10,10.5 L10,10.292 Z M11,5.5 L14,5.5 L14,4.5 L11,4.5 L11,5.5 Z M2,5.5 L9,5.5 L9,4.5 L2,4.5 L2,5.5 Z M1,6.5 L15,6.5 L15,3.5 L1,3.5 L1,6.5 Z M15.5,2.5 L0.5,2.5 C0.224,2.5 0,2.723 0,3 L0,7 C0,7.276 0.224,7.5 0.5,7.5 L15.5,7.5 C15.777,7.5 16,7.276 16,7 L16,3 C16,2.723 15.777,2.5 15.5,2.5 L15.5,2.5 Z" id="AWS-Elemental-Link_Icon_16_Squid"></path>
+        </g>
+    </g>
+</svg>

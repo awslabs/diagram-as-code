@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Storage_64</title>
+    <g id="Icon-Architecture-Category/64/Storage_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#7AA116" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-23" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Storage_64" transform="translate(19.000000, 17.000000)" fill="#FFFFFF">
+            <path d="M17,38 L35,38 L35.001,43 L17,43 L17,38 Z M17,45 L35,45 C36.103,45 37,44.103 37,43 L37,38 C37,36.897 36.103,36 35,36 L17,36 C15.897,36 15,36.897 15,38 L15,43 C15,44.103 15.897,45 17,45 L17,45 Z M15,23 L36,23 L36,21 L15,21 L15,23 Z M15,10 L23,10 L23,8 L15,8 L15,10 Z M15,16 L24,16 L24,14 L15,14 L15,16 Z M50,52.034 C50,53.118 49.118,54 48.034,54 L3.966,54 C2.882,54 2,53.118 2,52.034 L2,31 L50,31 L50,52.034 Z M11,2 L30,2 L30,12 C30,12.552 30.447,13 31,13 L41,13 L41,29 L11,29 L11,2 Z M32,3.414 L39.586,11 L32,11 L32,3.414 Z M51,29 L43,29 L43,12 L42.991,12 C42.99,11.74 42.898,11.484 42.707,11.293 L31.707,0.293 C31.516,0.102 31.26,0.01 31,0.01 L31,0 L10,0 C9.447,0 9,0.448 9,1 L9,29 L1,29 C0.447,29 0,29.448 0,30 L0,52.034 C0,54.221 1.779,56 3.966,56 L48.034,56 C50.221,56 52,54.221 52,52.034 L52,30 C52,29.448 51.553,29 51,29 L51,29 Z" id="Storage_Category-Icon_64_Squid"></path>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Front-End-Web-Mobile_64</title>
+    <g id="Icon-Architecture-Category/64/Front-End-Web-Mobile_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#DD344C" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-17" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Mobile_64" transform="translate(17.000000, 17.000000)" fill="#FFFFFF">
+            <path d="M40,51 L47,51 L47,49 L40,49 L40,51 Z M33,54 L54.001,54 L54.001,46 L33,46 L33,54 Z M33,16 L33,44 L54.001,44 L54,16 L33,16 Z M56,16 L56,54 C56,55.103 55.103,56 54,56 L33,56 C31.897,56 31,55.103 31,54 L31,16 C31,14.897 31.897,14 33,14 L54,14 C55.103,14 56,14.897 56,16 L56,16 Z M8,8 L32,8 L32,12 L34,12 L34,7 C34,6.448 33.553,6 33,6 L7,6 C6.447,6 6,6.448 6,7 L6,45 C6,45.552 6.447,46 7,46 L29,46 L29,44 L8,44 L8,8 Z M3.814,50 L29,50 L29,52 L3.814,52 C1.711,52 0,50.269 0,48.141 L0,3.859 C0,1.731 1.711,0 3.814,0 L36.186,0 C38.289,0 40,1.731 40,3.859 L40,12 L38,12 L38,3.859 C38,2.834 37.187,2 36.186,2 L3.814,2 C2.813,2 2,2.834 2,3.859 L2,48.141 C2,49.166 2.813,50 3.814,50 L3.814,50 Z" id="Fill-4"></path>
+        </g>
+    </g>
+</svg>

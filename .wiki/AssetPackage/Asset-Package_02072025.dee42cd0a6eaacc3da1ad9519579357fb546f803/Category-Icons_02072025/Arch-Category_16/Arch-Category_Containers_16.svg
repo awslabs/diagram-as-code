@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/16/Containers_16</title>
+    <g id="Icon-Architecture-Category/16/Containers_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#ED7100" x="4" y="4" width="24" height="24"></rect>
+        <rect id="#879196-Border-Copy-7" stroke="#879196" stroke-width="2" x="1" y="1" width="30" height="30"></rect>
+        <g id="Icon-Category/16/Containers_16" transform="translate(8.000000, 8.000000)" fill="#FFFFFF">
+            <path d="M2,13 L13,13 L13,8 L2,8 L2,13 Z M14,14 L13,14 L2,14 L1,14 L1,15 L14,15 L14,14 Z M1,7 L14,7 L14,6 L1,6 L1,7 Z M14,8 L14,13 L14.5,13 C14.776,13 15,13.224 15,13.5 L15,15.5 C15,15.776 14.776,16 14.5,16 L0.5,16 C0.224,16 0,15.776 0,15.5 L0,13.5 C0,13.224 0.224,13 0.5,13 L1,13 L1,8 L0.5,8 C0.224,8 0,7.776 0,7.5 L0,5.5 C0,5.321 0.099,5.172 0.239,5.084 L0.234,5.076 L5.354,1.872 L5.885,2.72 L2.242,5 L12.758,5 L9.115,2.72 L9.646,1.872 L14.766,5.076 L14.761,5.084 C14.901,5.172 15,5.321 15,5.5 L15,7.5 C15,7.776 14.776,8 14.5,8 L14,8 Z M7,3 L8,3 L8,0 L7,0 L7,3 Z M4,12 L5,12 L5,9 L4,9 L4,12 Z M10,12 L11,12 L11,9 L10,9 L10,12 Z M7,12 L8,12 L8,9 L7,9 L7,12 Z" id="Fill-5"></path>
+        </g>
+    </g>
+</svg>

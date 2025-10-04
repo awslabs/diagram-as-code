@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/32/Security-Identity-Compliance_32</title>
+    <g id="Icon-Architecture-Category/32/Security-Identity-Compliance_32" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#DD344C" x="4" y="4" width="40" height="40"></rect>
+        <rect id="#879196-Border-Copy-23" stroke="#879196" stroke-width="2" x="1" y="1" width="46" height="46"></rect>
+        <g id="Icon-Category/32/Security-Identity-Compliance_32" transform="translate(14.000000, 10.000000)" fill="#FFFFFF">
+            <path d="M17,16.56675 C16.987,17.79575 16.618,23.76475 11,24.10975 L11,4.44275 L17,6.75575 L17,16.56675 Z M4,15.84475 L4,6.75575 L10,4.44275 L10,24.10475 C4.255,23.70575 4.008,16.66675 4,15.84475 L4,15.84475 Z M10.32,3.24775 L3.32,5.94575 C3.127,6.02075 3,6.20575 3,6.41275 L3,15.84975 C3.008,16.80075 3.289,25.14275 10.5,25.14275 C17.555,25.14275 17.985,18.00675 18,16.57175 L18,6.41275 C18,6.20575 17.873,6.02075 17.68,5.94575 L10.68,3.24775 C10.564,3.20375 10.436,3.20375 10.32,3.24775 L10.32,3.24775 Z M20,16.57175 C20,16.59775 19.986,19.26275 18.794,21.90175 C17.224,25.37975 14.433,27.14275 10.5,27.14275 C6.582,27.14275 3.797,25.27175 2.222,21.58075 C1.018,18.76075 1,15.88575 1,15.85775 L1,4.69675 L10.5,1.03575 L20,4.69675 L20,16.57175 Z M20.68,3.88675 L10.68,0.03375 C10.564,-0.01125 10.436,-0.01125 10.32,0.03375 L0.32,3.88675 C0.127,3.96175 0,4.14675 0,4.35375 L0,15.85775 C0,15.98075 0.12,28.14275 10.5,28.14275 C20.88,28.14275 21,16.68775 21,16.57175 L21,4.35375 C21,4.14675 20.873,3.96175 20.68,3.88675 L20.68,3.88675 Z" id="Security-Identity-Compliance_Category-Icon_32_Squid"></path>
+        </g>
+    </g>
+</svg>

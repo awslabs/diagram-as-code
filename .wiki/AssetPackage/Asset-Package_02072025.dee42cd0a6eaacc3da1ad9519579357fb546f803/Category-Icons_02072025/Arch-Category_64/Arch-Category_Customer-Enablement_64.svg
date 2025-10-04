@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Customer-Enablement_64</title>
+    <g id="Icon-Architecture-Category/64/Customer-Enablement_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#C925D1" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-7" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Customer-Enablement_64" transform="translate(18.000000, 16.000000)" fill="#FFFFFF">
+            <path d="M52,43.232 L42.111,48.282 C41.45,39.78 36.919,32.843 30.965,30.74 C33.99,29.288 36.089,26.203 36.089,22.629 C36.089,17.667 32.052,13.629 27.089,13.629 C22.126,13.629 18.089,17.667 18.089,22.629 C18.089,26.229 20.218,29.333 23.278,30.771 C17.307,32.914 12.868,39.84 12.275,48.48 L2,43.232 L2,15.013 L27,2.246 L52,15.013 L52,43.232 Z M27.089,29.629 C23.229,29.629 20.089,26.489 20.089,22.629 C20.089,18.77 23.229,15.629 27.089,15.629 C30.948,15.629 34.089,18.77 34.089,22.629 C34.089,26.489 30.948,29.629 27.089,29.629 L27.089,29.629 Z M27,56 L14.227,49.476 C14.58,39.665 20.187,32.064 27.197,32.064 C34.09,32.064 39.73,39.689 40.156,49.281 L27,56 Z M27,3.55271368e-15 L0,13.789 L0,44.457 L27,58.246 L54,44.457 L54,13.789 L27,3.55271368e-15 Z" id="Fill-5"></path>
+        </g>
+    </g>
+</svg>

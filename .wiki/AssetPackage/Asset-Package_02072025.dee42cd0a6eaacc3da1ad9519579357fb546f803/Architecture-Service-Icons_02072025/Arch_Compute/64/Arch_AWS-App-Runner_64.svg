@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/64/Arch_AWS-App-Runner_64</title>
+    <g id="Icon-Architecture/64/Arch_AWS-App-Runner_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/64/Compute" fill="#ED7100">
+            <rect id="Rectangle" x="0" y="0" width="80" height="80"></rect>
+        </g>
+        <g id="Icon-Service/64/AWS-Fusion_64" transform="translate(12.000000, 12.000000)" fill="#FFFFFF">
+            <path d="M15.707,41.707 L14.293,40.293 L2,52.586 L2,46 L0,46 L0,55 C0,55.552 0.447,56 1,56 L10,56 L10,54 L3.414,54 L15.707,41.707 Z M55,0 L46,0 L46,2 L52.586,2 L40.293,14.293 L41.707,15.707 L54,3.414 L54,10 L56,10 L56,1 C56,0.448 55.553,0 55,0 L55,0 Z M31,47 L47,47 L47,31 L31,31 L31,47 Z M49,30 L49,48 C49,48.552 48.553,49 48,49 L30,49 C29.447,49 29,48.552 29,48 L29,30 C29,29.448 29.447,29 30,29 L48,29 C48.553,29 49,29.448 49,30 L49,30 Z M9,25 L25,25 L25,9 L9,9 L9,25 Z M27,8 L27,26 C27,26.552 26.553,27 26,27 L8,27 C7.447,27 7,26.552 7,26 L7,8 C7,7.448 7.447,7 8,7 L26,7 C26.553,7 27,7.448 27,8 L27,8 Z M26,29 L8,29 C7.447,29 7,29.448 7,30 L7,44.757 L9,42.757 L9,31 L25,31 L25,47 L13.242,47 L11.242,49 L26,49 C26.553,49 27,48.552 27,48 L27,30 C27,29.448 26.553,29 26,29 L26,29 Z M47,13.242 L49,11.242 L49,26 C49,26.552 48.553,27 48,27 L30,27 C29.447,27 29,26.552 29,26 L29,8 C29,7.448 29.447,7 30,7 L44.758,7 L42.758,9 L31,9 L31,25 L47,25 L47,13.242 Z" id="Fill-5"></path>
+        </g>
+    </g>
+</svg>

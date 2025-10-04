@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/16/Customer-Enablement_16</title>
+    <g id="Icon-Architecture-Category/16/Customer-Enablement_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#C925D1" x="4" y="4" width="24" height="24"></rect>
+        <rect id="#879196-Border-Copy-8" stroke="#879196" stroke-width="2" x="1" y="1" width="30" height="30"></rect>
+        <g id="Icon-Category/16/Customer-Enablement_16" transform="translate(9.000000, 8.000000)" fill="#FFFFFF">
+            <path d="M13,11.444 L11.226,12.377 C10.796,10.715 9.836,9.424 8.621,8.801 C9.448,8.266 10,7.34 10,6.284 C10,4.63 8.654,3.284 7,3.284 C5.346,3.284 4,4.63 4,6.284 C4,7.328 4.537,8.247 5.349,8.784 C4.124,9.398 3.155,10.69 2.721,12.349 L1,11.444 L1,4.531 L7,1.148 L13,4.531 L13,11.444 Z M5,6.284 C5,5.181 5.897,4.284 7,4.284 C8.103,4.284 9,5.181 9,6.284 C9,7.387 8.103,8.284 7,8.284 C5.897,8.284 5,7.387 5,6.284 L5,6.284 Z M7,14.599 L3.64,12.832 C4.089,10.808 5.419,9.389 6.97,9.389 C8.502,9.389 9.852,10.844 10.302,12.863 L7,14.599 Z M14,3.947 L7,0 L0,3.947 L0,12.048 L7,15.729 L11.375,13.428 L11.419,13.423 C11.418,13.418 11.416,13.413 11.416,13.407 L14,12.048 L14,3.947 Z" id="Fill-8"></path>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/64/Arch_Amazon-FinSpace_64</title>
+    <g id="Icon-Architecture/64/Arch_Amazon-FinSpace_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/64/Analytics" fill="#8C4FFF">
+            <rect id="Rectangle" x="0" y="0" width="80" height="80"></rect>
+        </g>
+        <g id="Icon-Service/64/Amazon-FinSpace_64" transform="translate(12.000000, 13.000000)" fill="#FFFFFF">
+            <path d="M12,43 L16,43 L16,17.392 L12,20.12 L12,43 Z M23,12.62 L18,16.028 L18,43 L23,43 L23,12.62 Z M25,11.256 L25,43 L31,43 L31,11.256 L28,9.21 L25,11.256 Z M38,16.028 L33,12.62 L33,43 L38,43 L38,16.028 Z M44,20.12 L40,17.392 L40,43 L44,43 L44,20.12 Z M51,45 L5,45 L5,43 L10,43 L10,21.483 L6.563,23.826 L5.437,22.174 L27.437,7.174 C27.776,6.942 28.224,6.942 28.563,7.174 L50.563,22.174 L49.437,23.826 L46,21.483 L46,43 L51,43 L51,45 Z M3,50 L13,50 L13,48 L3,48 L3,50 Z M17,50 L39,50 L39,48 L17,48 L17,50 Z M43,50 L53,50 L53,48 L43,48 L43,50 Z M0,55 L25,55 L25,53 L0,53 L0,55 Z M31,55 L56,55 L56,53 L31,53 L31,55 Z M1.555,19.832 L0.445,18.168 L27.445,0.168 C27.781,-0.056 28.219,-0.056 28.555,0.168 L55.555,18.168 L54.445,19.832 L28,2.202 L1.555,19.832 Z" id="Fill-5"></path>
+        </g>
+    </g>
+</svg>

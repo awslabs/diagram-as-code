@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/64/Arch_Amazon-WorkDocs_64</title>
+    <g id="Icon-Architecture/64/Arch_Amazon-WorkDocs_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/64/Business-Applications" fill="#DD344C">
+            <rect id="Rectangle" x="0" y="0" width="80" height="80"></rect>
+        </g>
+        <g id="Icon-Service/64/Amazon-WorkDocs" transform="translate(12.000000, 12.000000)" fill="#FFFFFF">
+            <path d="M21,29 L24,29 L24,27 L21,27 L21,29 Z M27,49 L29,49 L29,46 L27,46 L27,49 Z M27,44 L29,44 L29,41 L27,41 L27,44 Z M27,34 L29,34 L29,31 L27,31 L27,34 Z M27,39 L29,39 L29,36 L27,36 L27,39 Z M16,29 L19,29 L19,27 L16,27 L16,29 Z M11,29 L14,29 L14,27 L11,27 L11,29 Z M6,29 L9,29 L9,27 L6,27 L6,29 Z M29,54 L29,51 L27,51 L27,54 L2,54 L2,29 L4,29 L4,27 L2,27 L2,2 L27,2 L27,27 L26,27 L26,29 L28,29 L29,29 L54,29 L54,54 L29,54 Z M29,3.414 L52.586,27 L29,27 L29,3.414 Z M56,28 C56,27.74 55.898,27.484 55.707,27.293 L28.707,0.293 C28.515,0.102 28.26,0 28,0 L1,0 C0.447,0 0,0.448 0,1 L0,55 C0,55.552 0.447,56 1,56 L55,56 C55.552,56 56,55.552 56,55 L56,28 Z" id="Amazon-WorkDocs_Icon_64_Squid"></path>
+        </g>
+    </g>
+</svg>

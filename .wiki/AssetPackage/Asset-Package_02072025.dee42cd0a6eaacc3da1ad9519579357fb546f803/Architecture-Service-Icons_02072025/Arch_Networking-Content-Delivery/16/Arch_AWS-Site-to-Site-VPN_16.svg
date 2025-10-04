@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-Site-to-Site-VPN_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-Site-to-Site-VPN_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Networking-Content-Delivery" fill="#8C4FFF">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/AWS-Site-to-Site-VPN_16" transform="translate(4.300000, 4.000000)" fill="#FFFFFF">
+            <path d="M4.707,4 L3.707,4 C3.707,1.794 5.501,0 7.707,0 C9.913,0 11.707,1.794 11.707,4 L10.707,4 C10.707,2.346 9.361,1 7.707,1 C6.053,1 4.707,2.346 4.707,4 L4.707,4 Z M2.353,7.854 L8.8817842e-16,5.5 L2.353,3.146 L3.061,3.854 L1.914,5 L13.5,5 L12.353,3.854 L13.061,3.146 L15.414,5.5 L13.061,7.854 L12.353,7.146 L13.5,6 L1.914,6 L3.061,7.146 L2.353,7.854 Z M2.707,15 L12.707,15 L12.707,10 L2.707,10 L2.707,15 Z M13.207,9 L11.707,9 L11.707,7 L10.707,7 L10.707,9 L4.707,9 L4.707,7 L3.707,7 L3.707,9 L2.207,9 C1.931,9 1.707,9.224 1.707,9.5 L1.707,15.5 C1.707,15.776 1.931,16 2.207,16 L13.207,16 C13.483,16 13.707,15.776 13.707,15.5 L13.707,9.5 C13.707,9.224 13.483,9 13.207,9 L13.207,9 Z" id="AWS-Site-to-Site-VPN_16_Squid"></path>
+        </g>
+    </g>
+</svg>

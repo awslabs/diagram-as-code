@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-Billing-Conductor_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-Billing-Conductor_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/AWS-Cost-Management" fill="#7AA116">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/AWS-Billing-Conductor_16" transform="translate(4.000000, 5.000000)" fill="#FFFFFF">
+            <path d="M12,11 L14,11 L14,10 L12,10 L12,11 Z M9,11 L11,11 L11,10 L9,10 L9,11 Z M6,11 L8,11 L8,10 L6,10 L6,11 Z M12,9 L14,9 L14,8 L12,8 L12,9 Z M9,9 L11,9 L11,8 L9,8 L9,9 Z M6,9 L8,9 L8,8 L6,8 L6,9 Z M7,5 L13,5 L13,3 L7,3 L7,5 Z M6,5.5 L6,2.5 C6,2.224 6.224,2 6.5,2 L13.5,2 C13.776,2 14,2.224 14,2.5 L14,5.5 C14,5.776 13.776,6 13.5,6 L6.5,6 C6.224,6 6,5.776 6,5.5 L6,5.5 Z M5,13 L15,13 L15,1 L5,1 L5,13 Z M16,0.5 L16,13.5 C16,13.776 15.776,14 15.5,14 L4.5,14 C4.224,14 4,13.776 4,13.5 L4,0.5 C4,0.224 4.224,0 4.5,0 L15.5,0 C15.776,0 16,0.224 16,0.5 L16,0.5 Z M0,9 L3,9 L3,8 L0,8 L0,9 Z M1,7 L3,7 L3,6 L1,6 L1,7 Z M0,5 L3,5 L3,4 L0,4 L0,5 Z" id="Fill-1"></path>
+        </g>
+    </g>
+</svg>

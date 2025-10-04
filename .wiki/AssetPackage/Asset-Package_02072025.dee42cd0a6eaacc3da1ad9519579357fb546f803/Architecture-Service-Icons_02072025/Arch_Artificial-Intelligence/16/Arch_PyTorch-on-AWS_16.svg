@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_TorchServe_16</title>
+    <g id="Icon-Architecture/16/Arch_TorchServe_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Machine-Learning" fill="#01A88D">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/TorchServe_16" transform="translate(4.999600, 4.000000)" fill="#FFFFFF">
+            <path d="M8.724,3.273 C8.724,3.549 8.949,3.773 9.224,3.773 C9.499,3.773 9.724,3.549 9.724,3.273 C9.724,2.997 9.499,2.773 9.224,2.773 C8.949,2.773 8.724,2.997 8.724,3.273 M7.724,3.273 C7.724,2.446 8.397,1.773 9.224,1.773 C10.051,1.773 10.724,2.446 10.724,3.273 C10.724,4.1 10.051,4.773 9.224,4.773 C8.397,4.773 7.724,4.1 7.724,3.273 M13.448,8.961 C13.448,12.669 10.431,15.685 6.724,15.685 C3.017,15.685 0,12.669 0,8.961 C0,7.12 0.73,5.401 2.054,4.123 L6.363,-8.8817842e-16 L7.054,0.723 L2.747,4.844 C1.621,5.931 1,7.394 1,8.961 C1,12.117 3.568,14.685 6.724,14.685 C9.88,14.685 12.448,12.117 12.448,8.961 C12.448,7.377 11.816,5.904 10.668,4.813 L11.358,4.088 C12.705,5.37 13.448,7.1 13.448,8.961" id="TorchServe-Icon_16_Squid"></path>
+        </g>
+    </g>
+</svg>

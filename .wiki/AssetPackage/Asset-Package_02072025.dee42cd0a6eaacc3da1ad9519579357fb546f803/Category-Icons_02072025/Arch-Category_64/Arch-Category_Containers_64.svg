@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture-Category/64/Containers_64</title>
+    <g id="Icon-Architecture-Category/64/Containers_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#ED7100" x="5" y="5" width="80" height="80"></rect>
+        <rect id="#879196-Border-Copy-6" stroke="#879196" stroke-width="2" x="1" y="1" width="88" height="88"></rect>
+        <g id="Icon-Category/64/Containers_64" transform="translate(17.000000, 16.000000)" fill="#FFFFFF">
+            <path d="M4,49 L52,49 L52,30 L4,30 L4,49 Z M2,54 L54,54 L54,51 L2,51 L2,54 Z M54,30 L54,49 L55,49 C55.553,49 56,49.448 56,50 L56,55 C56,55.552 55.553,56 55,56 L1,56 C0.447,56 0,55.552 0,55 L0,50 C0,49.448 0.447,49 1,49 L2,49 L2,30 L1,30 C0.447,30 0,29.552 0,29 L0,24 C0,23.478 0.404,23.062 0.915,23.017 L21.47,10.152 L22.53,11.848 L4.712,23 L37,23 L37,25 L2,25 L2,28 L54,28 L54,25 L40,25 L40,23 L51.288,23 L33.47,11.848 L34.53,10.152 L55.085,23.017 C55.596,23.062 56,23.478 56,24 L56,29 C56,29.552 55.553,30 55,30 L54,30 Z M28,12 C30.206,12 32,10.206 32,8 L30,8 C30,9.103 29.103,10 28,10 C26.897,10 26,9.103 26,8 C26,6.897 26.897,6 28,6 C28.553,6 29,5.552 29,5 L29,0 L27,0 L27,4.126 C25.276,4.572 24,6.14 24,8 C24,10.206 25.794,12 28,12 L28,12 Z M9,46 L11,46 L11,33 L9,33 L9,46 Z M15,46 L17,46 L17,33 L15,33 L15,46 Z M21,46 L23,46 L23,33.143 L21,33.143 L21,46 Z M45,46 L47,46 L47,33.143 L45,33.143 L45,46 Z M39,46 L41,46 L41,33.143 L39,33.143 L39,46 Z M33,46 L35,46 L35,33.143 L33,33.143 L33,46 Z M27,46 L29,46 L29,33 L27,33 L27,46 Z" id="Fill-1"></path>
+        </g>
+    </g>
+</svg>

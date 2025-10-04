@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_AWS-B2B-Data-Interchange_16</title>
+    <g id="Icon-Architecture/16/Arch_AWS-B2B-Data-Interchange_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Application-Integration" fill="#E7157B">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/AWS-B2B-Data-Interchange_16" transform="translate(5.000000, 4.000000)" fill="#FFFFFF">
+            <path d="M5.861,7.851 L3.862,9.85 L3.155,9.143 L4.298,8 L3,8 C1.897,8 1,8.897 1,10 L1,14 L0,14 L0,10 C0,8.346 1.345,7 3,7 L4.303,7 L3.155,5.852 L3.862,5.145 L5.861,7.144 C6.056,7.339 6.056,7.656 5.861,7.851 L5.861,7.851 Z M7,14 L5.723,14 L6.867,15.144 L6.16,15.851 L4.161,13.852 C3.965,13.657 3.965,13.34 4.161,13.145 L6.16,11.145 L6.867,11.852 L5.72,13 L7,13 C8.102,13 9,12.103 9,11 L9,7 L10,7 L10,11 C10,12.654 8.654,14 7,14 L7,14 Z M9.989,1.719 L12.254,3.998 L9.989,3.998 L9.989,1.719 Z M13.854,4.19 L9.837,0.147 C9.743,0.053 9.615,0 9.482,0 L2.5,0 C2.223,0 2,0.224 2,0.5 L2,4 L3,4 L3,1 L8.989,1 L8.989,4.498 C8.989,4.775 9.213,4.998 9.489,4.998 L13,4.998 L13,15 L9.001,15 L9.001,16 L13.5,16 C13.776,16 14,15.776 14,15.5 L14,4.542 C14,4.411 13.947,4.284 13.854,4.19 L13.854,4.19 Z" id="Fill-7"></path>
+        </g>
+    </g>
+</svg>

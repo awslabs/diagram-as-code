@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon-Architecture/16/Arch_Elastic-Fabric-Adapter_16</title>
+    <g id="Icon-Architecture/16/Arch_Elastic-Fabric-Adapter_16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon-Architecture-BG/16/Compute" transform="translate(0.000000, 0.000000)" fill="#ED7100">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        </g>
+        <g id="Icon-Service/16/Elastic-Fabric-Adapter_16" transform="translate(4.000000, 5.000000)" fill="#FFFFFF">
+            <path d="M2.759,4.173 L1.866,3.722 C3.028,1.426 5.378,0 8,0 C10.6,0 13.015,1.475 14.152,3.757 L13.257,4.204 C12.287,2.257 10.224,1 8,1 C5.757,1 3.749,2.215 2.759,4.173 L2.759,4.173 Z M13.434,8.892 L14.395,9.17 C13.533,12.149 11.083,14 8,14 C4.872,14 2.3,12.05 1.6,9.148 L2.572,8.914 C3.171,11.396 5.302,13 8,13 C10.619,13 12.701,11.426 13.434,8.892 L13.434,8.892 Z M14,7 L15,7 L15,6 L14,6 L14,7 Z M15.066,5 L13.935,5 C13.419,5 13,5.419 13,5.934 L13,7.065 C13,7.58 13.419,8 13.935,8 L15.066,8 C15.581,8 16,7.58 16,7.065 L16,5.934 C16,5.419 15.581,5 15.066,5 L15.066,5 Z M1,7 L2,7 L2,6 L1,6 L1,7 Z M3,7.065 L3,5.934 C3,5.419 2.581,5 2.066,5 L0.935,5 C0.419,5 0,5.419 0,5.934 L0,7.065 C0,7.58 0.419,8 0.935,8 L2.066,8 C2.581,8 3,7.58 3,7.065 L3,7.065 Z M6.031,7 L9.969,7 L9.969,6 L6.031,6 L6.031,7 Z M5,5 L11,5 L11,8 L10,8 L10,9 L9,9 L9,8.031 L8,8.031 L8,9 L5,9 L5,5 Z M4,10 L11,10 L11,9 L12,9 L12,4 L4,4 L4,10 Z" id="Fill-8"></path>
+        </g>
+    </g>
+</svg>
