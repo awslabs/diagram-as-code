@@ -54,7 +54,8 @@ jobs:
           EOF
           
           # Generate markdown files for each Resource Icons category
-          find ".wiki/AssetPackage/${FILENAME}/Resource-Icons"* -name "Res_*" -type d | grep -v __MACOSX | sort | while read dir; do
+          find ".wiki/AssetPackage/${FILENAME}" -name "Resource-Icons*" -type d | grep -v __MACOSX | while read resource_dir; do
+            find "$resource_dir" -name "Res_*" -type d | grep -v __MACOSX | sort | while read dir; do
             category=$(basename "$dir")
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
             
@@ -74,6 +75,7 @@ jobs:
             done
             
             echo "- [Resource Icons: $display_name](${FILENAME}_Resource-Icons_${category#Res_})" >> ".wiki/AssetPackage/docs/${FILENAME}.md"
+            done
           done
           
           # Add Architecture Service Icons section
