@@ -88,10 +88,10 @@ jobs:
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
             parent_dir=$(dirname "$dir")
             
-            cat > "$parent_dir/${category}.md" << EOF
+            cat > ".wiki/AssetPackage/Resource-Icons-${category}.md" << EOF
           # Resource Icons: $display_name
           
-          [← Back to Asset Package](../../${FILENAME})
+          [← Back to Asset Package](${FILENAME})
           
           | Image | Path |
           |-------|------|
@@ -100,7 +100,7 @@ jobs:
             find "$dir" -name "*.png" -o -name "*.svg" | grep -v __MACOSX | sort | while read file; do
               rel_path=${file#.wiki/}
               raw_url="https://raw.githubusercontent.com/wiki/ugwis/diagram-as-code/$rel_path"
-              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> "$parent_dir/${category}.md"
+              echo "| ![$(basename "$file")]($raw_url) | \`$rel_path\` |" >> ".wiki/AssetPackage/Resource-Icons-${category}.md"
             done
           done
           
