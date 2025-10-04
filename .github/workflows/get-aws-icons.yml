@@ -1,9 +1,16 @@
 name: Get AWS Icons
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
-    branches: [ fix-wiki-sync ]
+    branches: [ main ]
+    paths:
+      - '.github/workflows/get-aws-icons.yml'
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday
 
 jobs:
   get-icons:
@@ -18,7 +25,7 @@ jobs:
       - name: Checkout wiki
         uses: actions/checkout@v4
         with:
-          repository: ugwis/diagram-as-code.wiki
+          repository: "${{ github.repository }}.wiki"
           path: .wiki
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -27,7 +34,10 @@ jobs:
           cd main
           
           # Get the latest AWS Asset Package
-          DOWNLOAD_URL=$(curl -s "https://d1.awsstatic.com/webteam/architecture-icons/q1-2025/Asset-Package_02072025.dee42cd0a6eaacc3da1ad9519579357fb546f803.zip" -w "%{url_effective}" -o /dev/null)
+          ASSET_URL=$(curl -s "https://aws.amazon.com/jp/architecture/icons/" | \
+            sed -n '/<script type="application\/json">/,/<\/script>/p' | \
+            grep -o 'https://[^"]*Asset-Package[^"]*\.zip')
+          DOWNLOAD_URL=$(curl -s "$ASSET_URL" -w "%{url_effective}" -o /dev/null)
           FILENAME=$(basename "$DOWNLOAD_URL" .zip)
           
           echo "Downloading: $FILENAME"
