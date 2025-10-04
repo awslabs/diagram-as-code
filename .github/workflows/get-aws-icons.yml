@@ -54,7 +54,10 @@ jobs:
           EOF
           
           # Generate markdown files for each Resource Icons category
+          echo "Debug: Looking in .wiki/AssetPackage/${FILENAME}"
+          ls -la ".wiki/AssetPackage/${FILENAME}" || echo "Directory not found"
           find ".wiki/AssetPackage/${FILENAME}" -name "Resource-Icons*" -type d | grep -v __MACOSX | while read resource_dir; do
+            echo "Found Resource-Icons directory: $resource_dir"
             find "$resource_dir" -name "Res_*" -type d | grep -v __MACOSX | sort | while read dir; do
             category=$(basename "$dir")
             display_name=$(echo "$category" | sed 's/Res_//g' | sed 's/-/ /g')
