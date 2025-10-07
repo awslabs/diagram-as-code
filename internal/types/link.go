@@ -17,9 +17,9 @@ import (
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
 	"github.com/awslabs/diagram-as-code/internal/vector"
-	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
+	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -178,21 +178,21 @@ func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (fo
 		}
 	}
 
-	ft, err := truetype.Parse(ttfBytes)
+	ft, err := opentype.Parse(ttfBytes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse font: %w", err)
 	}
 
-	opt := truetype.Options{
-		Size:              24,
-		DPI:               0,
-		Hinting:           0,
-		GlyphCacheEntries: 0,
-		SubPixelsX:        0,
-		SubPixelsY:        0,
+	face, err := opentype.NewFace(ft, &opentype.FaceOptions{
+		Size:    24,
+		DPI:     72,
+		Hinting: font.HintingNone,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create font face: %w", err)
 	}
 
-	return truetype.NewFace(ft, &opt), nil
+	return face, nil
 }
 
 func (l *Link) computeLabelPos(t, d, label vector.Vector) vector.Vector {

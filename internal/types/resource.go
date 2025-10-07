@@ -14,11 +14,11 @@ import (
 	"strings"
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
-	"github.com/golang/freetype/truetype"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
+	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -292,24 +292,26 @@ func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, 
 		}
 	}
 
-	ft, err := truetype.Parse(ttfBytes)
+	ft, err := opentype.Parse(ttfBytes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse font: %w", err)
 	}
 
-	opt := truetype.Options{
-		Size:              24,
-		DPI:               0,
-		Hinting:           0,
-		GlyphCacheEntries: 0,
-		SubPixelsX:        0,
-		SubPixelsY:        0,
-	}
+	size := 24.0
 	if hasChild {
-		opt.Size = 30
+		size = 30.0
 	}
 
-	return truetype.NewFace(ft, &opt), nil
+	face, err := opentype.NewFace(ft, &opentype.FaceOptions{
+		Size:    size,
+		DPI:     72,
+		Hinting: font.HintingNone,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create font face: %w", err)
+	}
+
+	return face, nil
 }
 
 func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
