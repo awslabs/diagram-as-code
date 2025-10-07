@@ -1747,6 +1747,7 @@ func TestDetourDirectionOrthogonalPath(t *testing.T) {
 
 	t.Log("=== End Detour Direction Test ===")
 }
+
 // TestIssue236OrthogonalDetourFix tests the fix for GitHub issue #236
 // Orthogonal link improvement: wrong control points with detour
 func TestIssue236OrthogonalDetourFix(t *testing.T) {
@@ -1856,7 +1857,7 @@ func TestCounterpartDetourConsideration(t *testing.T) {
 	// Verify target movement accounts for source detour
 	// Expected: Target moves 197px (249 - 52) instead of full 249px
 	expectedTargetY := 607 + 197 // 804
-	
+
 	// Find the control point where target converges
 	var targetConvergeY int
 	for _, pt := range controlPts {
@@ -1867,7 +1868,7 @@ func TestCounterpartDetourConsideration(t *testing.T) {
 	}
 
 	if targetConvergeY != expectedTargetY {
-		t.Errorf("Target should converge at Y=%d (accounting for detour), got Y=%d", 
+		t.Errorf("Target should converge at Y=%d (accounting for detour), got Y=%d",
 			expectedTargetY, targetConvergeY)
 	}
 
