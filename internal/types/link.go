@@ -563,7 +563,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 					} else {
 						// Non-parallel case: account for counterpart detour
 						if targetPenetration {
-							detourDistance := 64.0/2 + 20  // 52px
+							detourDistance := 64.0/2 + 20 // 52px
 							moveDistance = math.Abs(remaining.X) - detourDistance
 							if moveDistance < 0 {
 								moveDistance = 20.0
@@ -585,7 +585,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 					} else {
 						// Non-parallel case: account for counterpart detour
 						if targetPenetration {
-							detourDistance := 64.0/2 + 20  // 52px
+							detourDistance := 64.0/2 + 20 // 52px
 							moveDistance = math.Abs(remaining.Y) - detourDistance
 							if moveDistance < 0 {
 								moveDistance = 20.0
@@ -692,7 +692,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 					} else {
 						// Non-parallel case: account for counterpart detour
 						if sourcePenetration {
-							detourDistance := 64.0/2 + 20  // 52px
+							detourDistance := 64.0/2 + 20 // 52px
 							moveDistance = math.Abs(remaining.X) - detourDistance
 							if moveDistance < 0 {
 								moveDistance = 20.0
@@ -714,7 +714,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 					} else {
 						// Non-parallel case: account for counterpart detour
 						if sourcePenetration {
-							detourDistance := 64.0/2 + 20  // 52px
+							detourDistance := 64.0/2 + 20 // 52px
 							moveDistance = math.Abs(remaining.Y) - detourDistance
 							if moveDistance < 0 {
 								moveDistance = 20.0
