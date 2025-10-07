@@ -1747,3 +1747,131 @@ func TestDetourDirectionOrthogonalPath(t *testing.T) {
 
 	t.Log("=== End Detour Direction Test ===")
 }
+
+// TestIssue236OrthogonalDetourFix tests the fix for GitHub issue #236
+// Orthogonal link improvement: wrong control points with detour
+func TestIssue236OrthogonalDetourFix(t *testing.T) {
+	t.Log("=== Testing Issue #236 Fix: Orthogonal Detour ===")
+
+	// Test case from GitHub issue #236
+	// Administrator (E position) -> EC2A (S position)
+	// Before fix: [(626,856) (646,856) (646,804) (646,804) (646,856) (402,856) (402,607)]
+	// After fix:  [(626,856) (646,856) (646,804) (402,804) (402,607)]
+
+	source := image.Point{X: 626, Y: 856} // Administrator
+	target := image.Point{X: 402, Y: 607} // EC2A
+
+	link := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4, // E (East)
+		TargetPosition: 8, // S (South)
+	}
+
+	t.Logf("Source (Administrator): (%d,%d)", source.X, source.Y)
+	t.Logf("Target (EC2A): (%d,%d)", target.X, target.Y)
+
+	controlPts := link.calculateOrthogonalPath(source, target)
+	t.Logf("Actual control points: %v", controlPts)
+	t.Logf("Number of control points: %d", len(controlPts))
+
+	// Expected control points after fix
+	expected := []image.Point{
+		{646, 856}, // Source moves East 20px
+		{646, 804}, // Source detour North 52px
+		{402, 804}, // Target moves to same Y level (accounting for detour)
+	}
+
+	t.Logf("Expected control points: %v", expected)
+
+	// Verify we have the expected number of control points (3, not 5)
+	if len(controlPts) != len(expected) {
+		t.Errorf("Expected %d control points, got %d", len(expected), len(controlPts))
+	}
+
+	// Verify each control point matches expected
+	for i, expectedPt := range expected {
+		if i < len(controlPts) {
+			actualPt := controlPts[i]
+			if actualPt != expectedPt {
+				t.Errorf("Control point %d: expected %v, got %v", i, expectedPt, actualPt)
+			}
+		}
+	}
+
+	// Verify no duplicate control points
+	for i := 1; i < len(controlPts); i++ {
+		if controlPts[i] == controlPts[i-1] {
+			t.Errorf("Duplicate control point at index %d: %v", i, controlPts[i])
+		}
+	}
+
+	// Verify orthogonal movements
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1 := controlPts[i]
+		p2 := controlPts[i+1]
+
+		if p1.X != p2.X && p1.Y != p2.Y {
+			t.Errorf("Non-orthogonal movement from (%d,%d) to (%d,%d)", p1.X, p1.Y, p2.X, p2.Y)
+		}
+	}
+
+	// Verify Source → First control point orthogonality
+	if len(controlPts) > 0 {
+		first := controlPts[0]
+		if source.X != first.X && source.Y != first.Y {
+			t.Errorf("Non-orthogonal: Source (%d,%d) → First control point (%d,%d)",
+				source.X, source.Y, first.X, first.Y)
+		}
+	}
+
+	// Verify Last control point → Target orthogonality
+	if len(controlPts) > 0 {
+		last := controlPts[len(controlPts)-1]
+		if last.X != target.X && last.Y != target.Y {
+			t.Errorf("Non-orthogonal: Last control point (%d,%d) → Target (%d,%d)",
+				last.X, last.Y, target.X, target.Y)
+		}
+	}
+
+	t.Log("=== End Issue #236 Test ===")
+}
+
+// TestCounterpartDetourConsideration tests the core fix for non-parallel cases
+func TestCounterpartDetourConsideration(t *testing.T) {
+	t.Log("=== Testing Counterpart Detour Consideration ===")
+
+	// Test case: sourcePenetration && !targetPenetration
+	// Target should reduce movement by detour distance (52px)
+
+	source := image.Point{X: 626, Y: 856}
+	target := image.Point{X: 402, Y: 607}
+
+	link := &Link{
+		Type:           "orthogonal",
+		SourcePosition: 4, // E (East) - will have penetration
+		TargetPosition: 8, // S (South) - no penetration
+	}
+
+	controlPts := link.calculateOrthogonalPath(source, target)
+
+	// Verify target movement accounts for source detour
+	// Expected: Target moves 197px (249 - 52) instead of full 249px
+	expectedTargetY := 607 + 197 // 804
+
+	// Find the control point where target converges
+	var targetConvergeY int
+	for _, pt := range controlPts {
+		if pt.X == 402 { // Target X coordinate
+			targetConvergeY = pt.Y
+			break
+		}
+	}
+
+	if targetConvergeY != expectedTargetY {
+		t.Errorf("Target should converge at Y=%d (accounting for detour), got Y=%d",
+			expectedTargetY, targetConvergeY)
+	}
+
+	t.Logf("Target converged at Y=%d (expected %d)", targetConvergeY, expectedTargetY)
+	t.Log("=== End Counterpart Detour Test ===")
+}

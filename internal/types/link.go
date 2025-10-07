@@ -560,6 +560,15 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 							// Normal parallel: share distance
 							moveDistance = math.Abs(remaining.X) / 2.0
 						}
+					} else {
+						// Non-parallel case: account for counterpart detour
+						if targetPenetration {
+							detourDistance := 64.0/2 + 20 // 52px
+							moveDistance = math.Abs(remaining.X) - detourDistance
+							if moveDistance < 0 {
+								moveDistance = 20.0
+							}
+						}
 					}
 				} else {
 					moveDistance = math.Abs(remaining.Y)
@@ -572,6 +581,15 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 						} else {
 							// Normal parallel: share distance
 							moveDistance = math.Abs(remaining.Y) / 2.0
+						}
+					} else {
+						// Non-parallel case: account for counterpart detour
+						if targetPenetration {
+							detourDistance := 64.0/2 + 20 // 52px
+							moveDistance = math.Abs(remaining.Y) - detourDistance
+							if moveDistance < 0 {
+								moveDistance = 20.0
+							}
 						}
 					}
 				}
@@ -671,6 +689,15 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 							// Normal parallel: share distance
 							moveDistance = math.Abs(remaining.X) / 2.0
 						}
+					} else {
+						// Non-parallel case: account for counterpart detour
+						if sourcePenetration {
+							detourDistance := 64.0/2 + 20 // 52px
+							moveDistance = math.Abs(remaining.X) - detourDistance
+							if moveDistance < 0 {
+								moveDistance = 20.0
+							}
+						}
 					}
 				} else {
 					moveDistance = math.Abs(remaining.Y)
@@ -683,6 +710,15 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 						} else {
 							// Normal parallel: share distance
 							moveDistance = math.Abs(remaining.Y) / 2.0
+						}
+					} else {
+						// Non-parallel case: account for counterpart detour
+						if sourcePenetration {
+							detourDistance := 64.0/2 + 20 // 52px
+							moveDistance = math.Abs(remaining.Y) - detourDistance
+							if moveDistance < 0 {
+								moveDistance = 20.0
+							}
 						}
 					}
 				}
