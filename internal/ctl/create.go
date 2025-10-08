@@ -601,7 +601,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				return fmt.Errorf("resource %s not found for options", k)
 			}
 			if v.Options.GroupingOffset != nil {
-				resource.SetEnableGroupingOffset(*v.Options.GroupingOffset)
+				resource.SetGroupingOffset(*v.Options.GroupingOffset)
 			}
 		}
 	}

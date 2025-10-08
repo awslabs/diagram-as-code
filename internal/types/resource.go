@@ -225,7 +225,7 @@ func (r *Resource) SetIconFill(t ICON_FILL_TYPE, color *color.RGBA) {
 	}
 }
 
-func (r *Resource) SetEnableGroupingOffset(enable bool) {
+func (r *Resource) SetGroupingOffset(enable bool) {
 	r.enableGroupingOffset = enable
 }
 
