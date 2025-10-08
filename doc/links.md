@@ -29,7 +29,7 @@ Diagrams:
 
 ```yaml
 Links:
-  # Default behavior - auto-positioning (recommended)
+  # Default behavior - auto-positioning
   - Source: ALB
     Target: Instance1
     

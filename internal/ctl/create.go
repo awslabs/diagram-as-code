@@ -199,14 +199,14 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	if err := canvas.ZeroAdjust(); err != nil {
 		return fmt.Errorf("error adjusting diagram: %w", err)
 	}
-	
+
 	// Resolve auto-positions after layout is complete
 	for _, resource := range resources {
 		for _, link := range resource.GetLinks() {
 			link.ResolveAutoPositions()
 		}
 	}
-	
+
 	img, err := canvas.Draw(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error drawing diagram: %w", err)
@@ -734,7 +734,7 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) e
 		if err != nil {
 			return fmt.Errorf("failed to convert target windrose position: %w", err)
 		}
-		
+
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
 		link.SetType(v.Type)
 		link.SetLineStyle(v.LineStyle)

@@ -37,7 +37,7 @@ func ConvertWindrose(position string) (Windrose, error) {
 	if position == "" || position == "auto" {
 		return WINDROSE_AUTO, nil
 	}
-	
+
 	switch position {
 	case "N":
 		return WINDROSE_N, nil

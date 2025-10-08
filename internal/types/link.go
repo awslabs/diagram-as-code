@@ -86,7 +86,7 @@ func (l *Link) ResolveAutoPositions() {
 	if l.SourcePosition == WINDROSE_AUTO || l.TargetPosition == WINDROSE_AUTO {
 		log.Info("Resolving auto-positions after layout")
 		autoSourcePos, autoTargetPos := AutoCalculatePositions(l.Source, l.Target)
-		
+
 		if l.SourcePosition == WINDROSE_AUTO {
 			l.SourcePosition = autoSourcePos
 		}
@@ -95,7 +95,6 @@ func (l *Link) ResolveAutoPositions() {
 		}
 	}
 }
-
 
 func (l *Link) SetType(s string) {
 	l.Type = s
@@ -370,7 +369,7 @@ func (l *Link) Draw(img *image.RGBA) error {
 		log.Info("Link already drawn")
 		return nil
 	}
-	
+
 	log.Info("Link Drawing")
 	sourcePt := l.calcPositionWithOffset(source.GetBindings(), l.SourcePosition, l.Source, true)
 	targetPt := l.calcPositionWithOffset(target.GetBindings(), l.TargetPosition, l.Target, false)
@@ -843,7 +842,7 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Windrose) {
 	sourceBounds := source.GetBindings()
 	targetBounds := target.GetBindings()
-	
+
 	// Calculate centers
 	sourceCenter := image.Point{
 		X: sourceBounds.Min.X + sourceBounds.Dx()/2,
@@ -853,16 +852,16 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 		X: targetBounds.Min.X + targetBounds.Dx()/2,
 		Y: targetBounds.Min.Y + targetBounds.Dy()/2,
 	}
-	
-	log.Infof("Auto-positioning: Source center (%d, %d), Target center (%d, %d)", 
+
+	log.Infof("Auto-positioning: Source center (%d, %d), Target center (%d, %d)",
 		sourceCenter.X, sourceCenter.Y, targetCenter.X, targetCenter.Y)
-	
+
 	// Calculate differences
 	dx := targetCenter.X - sourceCenter.X
 	dy := targetCenter.Y - sourceCenter.Y
-	
+
 	log.Infof("Auto-positioning: dx=%d, dy=%d", dx, dy)
-	
+
 	// Determine direction based on larger absolute difference
 	if abs(dx) > abs(dy) {
 		// Horizontal connection
@@ -883,9 +882,9 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 			targetPos = WINDROSE_S
 		}
 	}
-	
+
 	log.Infof("Auto-positioning: Source=%v, Target=%v", sourcePos, targetPos)
-	
+
 	return sourcePos, targetPos
 }
 
