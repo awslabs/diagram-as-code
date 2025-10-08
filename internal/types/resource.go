@@ -41,26 +41,26 @@ const (
 )
 
 type Resource struct {
-	bindings             *image.Rectangle
-	iconImage            image.Image
-	iconBounds           image.Rectangle
-	borderColor          *color.RGBA
-	borderType           BORDER_TYPE
-	fillColor            color.RGBA
-	label                string
-	labelFont            string
-	labelColor           *color.RGBA
-	headerAlign          string // left(default) / center / right
-	margin               *Margin
-	padding              *Padding
-	direction            string
-	align                string
-	links                []*Link
-	children             []*Resource
-	borderChildren       []*BorderChild
-	iconfill             ResourceIconFill
-	drawn                bool
-	enableGroupingOffset bool // Flag: if true, enable grouping offset for links
+	bindings       *image.Rectangle
+	iconImage      image.Image
+	iconBounds     image.Rectangle
+	borderColor    *color.RGBA
+	borderType     BORDER_TYPE
+	fillColor      color.RGBA
+	label          string
+	labelFont      string
+	labelColor     *color.RGBA
+	headerAlign    string // left(default) / center / right
+	margin         *Margin
+	padding        *Padding
+	direction      string
+	align          string
+	links          []*Link
+	children       []*Resource
+	borderChildren []*BorderChild
+	iconfill       ResourceIconFill
+	drawn          bool
+	groupingOffset bool // Flag: if true, enable grouping offset for links
 }
 
 type ResourceIconFill struct {
@@ -226,7 +226,7 @@ func (r *Resource) SetIconFill(t ICON_FILL_TYPE, color *color.RGBA) {
 }
 
 func (r *Resource) SetGroupingOffset(enable bool) {
-	r.enableGroupingOffset = enable
+	r.groupingOffset = enable
 }
 
 func (r *Resource) AddLink(link *Link) {

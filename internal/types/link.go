@@ -826,7 +826,7 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 	pt, _ := calcPosition(bindings, position)
 
 	// Check if grouping offset is enabled for this resource
-	if !resource.enableGroupingOffset {
+	if !resource.groupingOffset {
 		log.Infof("Grouping offset disabled for resource %p, using original position: (%d, %d)", resource, pt.X, pt.Y)
 		return pt
 	}
