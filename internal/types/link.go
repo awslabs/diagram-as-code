@@ -831,7 +831,7 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 		return pt
 	}
 
-	// 同じ位置から出るリンク数とインデックスを取得
+	// Get link count and index from the same position
 	index, count := l.getLinkIndexAndCount(resource, position, isSource)
 	log.Infof("Link offset calculation - Resource: %p, Position: %v, IsSource: %v, Index: %d, Count: %d",
 		resource, position, isSource, index, count)
@@ -841,11 +841,11 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 		return pt
 	}
 
-	// オフセット計算: 中央を基準に左右に振り分け
+	// Offset calculation: distribute left and right from center
 	groupingOffset := int((float64(index) - float64(count-1)/2.0) * 10)
 	log.Infof("Calculated grouping offset: %d (index=%d, count=%d)", groupingOffset, index, count)
 
-	// 方向ベクトルの直交方向にオフセット
+	// Apply offset in perpendicular direction to direction vector
 	direction := l.getDirectionVector(int(position))
 	perpendicular := direction.Perpendicular()
 	offset := perpendicular.Scale(float64(groupingOffset))

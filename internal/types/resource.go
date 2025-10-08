@@ -639,7 +639,7 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 	}
 	r.drawn = true
 
-	// リンク描画前に事前ソート
+	// Pre-sort links before drawing
 	r.sortAllLinks()
 
 	for _, v := range r.links {
@@ -657,7 +657,7 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 func (r *Resource) sortAllLinks() {
 	log.Infof("=== Sorting links for resource %p ===", r)
 
-	// 同じ位置のリンクをグループ化
+	// Group links by same position
 	linkGroups := make(map[string][]*Link)
 
 	for _, link := range r.links {
@@ -678,7 +678,7 @@ func (r *Resource) sortAllLinks() {
 
 	log.Infof("Found %d link groups", len(linkGroups))
 
-	// 各グループをソートして元の配列を更新
+	// Sort each group and update original array
 	for key, links := range linkGroups {
 		if len(links) <= 1 {
 			log.Infof("Group %s: only %d link, no sorting needed", key, len(links))
@@ -695,7 +695,7 @@ func (r *Resource) sortAllLinks() {
 			position = links[0].TargetPosition
 		}
 
-		// ソート前の順序をログ
+		// Log order before sorting
 		for i, link := range links {
 			var otherResource *Resource
 			var otherPos Windrose
@@ -721,7 +721,7 @@ func (r *Resource) sortAllLinks() {
 				pt2, _ = calcPosition(links[j].Source.GetBindings(), links[j].SourcePosition)
 			}
 
-			// 方向ベクトルの直交方向でソート
+			// Sort by perpendicular direction of direction vector
 			direction := getDirectionVectorStatic(int(position))
 			perpendicular := direction.Perpendicular()
 
@@ -734,7 +734,7 @@ func (r *Resource) sortAllLinks() {
 			return proj1 < proj2
 		})
 
-		// ソート後の順序をログ
+		// Log order after sorting
 		for i, link := range links {
 			var otherResource *Resource
 			var otherPos Windrose
@@ -750,17 +750,17 @@ func (r *Resource) sortAllLinks() {
 				i, getResourceName(link.Source), getResourceName(link.Target), pt.X, pt.Y)
 		}
 
-		// ソート結果を元の配列に反映
+		// Apply sort results to original array
 		r.updateLinksOrder(links, key)
 	}
 	log.Infof("=== End sorting ===")
 }
 
 func (r *Resource) updateLinksOrder(sortedLinks []*Link, groupKey string) {
-	// 元の配列でソート対象のリンクを新しい順序で置き換え
+	// Replace links in original array with new order for sort targets
 	newLinks := make([]*Link, 0, len(r.links))
 
-	// ソート対象外のリンクを先に追加
+	// Add non-sort target links first
 	for _, link := range r.links {
 		var key string
 		if link.Source == r {
@@ -774,7 +774,7 @@ func (r *Resource) updateLinksOrder(sortedLinks []*Link, groupKey string) {
 		}
 	}
 
-	// ソート済みのリンクを追加
+	// Add sorted links
 	newLinks = append(newLinks, sortedLinks...)
 
 	r.links = newLinks
