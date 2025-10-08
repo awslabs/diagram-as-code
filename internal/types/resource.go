@@ -233,6 +233,10 @@ func (r *Resource) AddLink(link *Link) {
 	r.links = append(r.links, link)
 }
 
+func (r *Resource) GetLinks() []*Link {
+	return r.links
+}
+
 func (r *Resource) AddParent() {
 }
 

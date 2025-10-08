@@ -30,9 +30,14 @@ const (
 	WINDROSE_WNW
 	WINDROSE_NW
 	WINDROSE_NNW
+	WINDROSE_AUTO = -1 // Special value for auto-positioning
 )
 
 func ConvertWindrose(position string) (Windrose, error) {
+	if position == "" || position == "auto" {
+		return WINDROSE_AUTO, nil
+	}
+	
 	switch position {
 	case "N":
 		return WINDROSE_N, nil
@@ -67,7 +72,7 @@ func ConvertWindrose(position string) (Windrose, error) {
 	case "NNW":
 		return WINDROSE_NNW, nil
 	}
-	return 0, fmt.Errorf("unknown position: %s, supported positions are N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW", position)
+	return 0, fmt.Errorf("unknown position: %s, supported positions are N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW, auto", position)
 }
 
 type Margin struct {
