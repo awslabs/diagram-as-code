@@ -125,4 +125,48 @@ Link Labels add labels along the link
           Font: (optional, default: `` inherit from Source,Target font name)
 ```
 
+### Link Grouping Offset
+
+When multiple links originate from or terminate at the same position on a resource, they can be automatically spread apart to prevent overlap. This feature is **disabled by default** and must be explicitly enabled.
+
+**How it works:**
+- Links from the same position are offset by ±5px, ±10px, etc.
+- Links are sorted by target/source position for consistent ordering
+- Offset is applied perpendicular to the link direction
+- Calculation: `(index - (count-1)/2.0) * 10` pixels
+
+**Enable for specific resource:**
+```yaml
+Resources:
+  ELB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Options:
+      GroupingOffset: true  # Enable link grouping offset
+```
+
+**Example with multiple links:**
+```yaml
+Resources:
+  ELB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Options:
+      GroupingOffset: true
+      
+Links:
+  - Source: ELB
+    Target: Instance1
+    SourcePosition: S  # Multiple links from same position
+    TargetPosition: N
+  - Source: ELB
+    Target: Instance2
+    SourcePosition: S  # Will be automatically offset
+    TargetPosition: N
+  - Source: ELB
+    Target: Instance3
+    SourcePosition: S  # Will be automatically offset
+    TargetPosition: N
+```
+
+**Result:** Links will be spread horizontally (perpendicular to S direction) to prevent overlap.
+
 

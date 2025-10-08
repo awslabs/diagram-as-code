@@ -119,6 +119,11 @@ type Resource struct {
 	Children       []string          `yaml:"Children"`
 	BorderColor    string            `yaml:"BorderColor"`
 	BorderChildren []BorderChild     `yaml:"BorderChildren"`
+	Options        *ResourceOptions  `yaml:"Options"`
+}
+
+type ResourceOptions struct {
+	GroupingOffset *bool `yaml:"GroupingOffset"`
 }
 
 type ResourceIconFill struct {
@@ -587,6 +592,17 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				return fmt.Errorf("resource %s not found for border color", k)
 			}
 			resource.SetBorderColor(borderColor)
+		}
+
+		// Process Options
+		if v.Options != nil {
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for options", k)
+			}
+			if v.Options.GroupingOffset != nil {
+				resource.SetGroupingOffset(*v.Options.GroupingOffset)
+			}
 		}
 	}
 

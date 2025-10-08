@@ -1875,3 +1875,126 @@ func TestCounterpartDetourConsideration(t *testing.T) {
 	t.Logf("Target converged at Y=%d (expected %d)", targetConvergeY, expectedTargetY)
 	t.Log("=== End Counterpart Detour Test ===")
 }
+
+func TestGroupingOffset(t *testing.T) {
+	// Setup resources
+	source := new(Resource).Init()
+	source.SetBindings(image.Rect(0, 0, 64, 64))
+
+	target1 := new(Resource).Init()
+	target1.SetBindings(image.Rect(100, 0, 164, 64))
+
+	target2 := new(Resource).Init()
+	target2.SetBindings(image.Rect(200, 0, 264, 64))
+
+	// Create links from same source position
+	link1 := new(Link).Init(source, WINDROSE_S, ArrowHead{}, target1, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	link2 := new(Link).Init(source, WINDROSE_S, ArrowHead{}, target2, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	source.AddLink(link1)
+	source.AddLink(link2)
+	target1.AddLink(link1)
+	target2.AddLink(link2)
+
+	// Test normal grouping offset
+	t.Run("Normal grouping offset", func(t *testing.T) {
+		// Enable grouping offset
+		source.SetGroupingOffset(true)
+
+		// Sort links first
+		source.sortAllLinks()
+
+		// Test first link offset
+		index1, count1 := link1.getLinkIndexAndCount(source, WINDROSE_S, true)
+		if count1 != 2 {
+			t.Errorf("Expected count 2, got %d", count1)
+		}
+
+		// Calculate expected offset: (index - (count-1)/2.0) * 10
+		expectedOffset1 := int((float64(index1) - float64(count1-1)/2.0) * 10)
+
+		pt1 := link1.calcPositionWithOffset(source.GetBindings(), WINDROSE_S, source, true)
+		originalPt, _ := calcPosition(source.GetBindings(), WINDROSE_S)
+
+		// Check if offset was applied
+		if pt1.X == originalPt.X && pt1.Y == originalPt.Y && expectedOffset1 != 0 {
+			t.Errorf("Expected offset to be applied, but position unchanged")
+		}
+	})
+
+	// Test disabled grouping offset (default behavior)
+	t.Run("Disabled grouping offset", func(t *testing.T) {
+		// Explicitly disable grouping offset
+		source.SetGroupingOffset(false)
+
+		pt1 := link1.calcPositionWithOffset(source.GetBindings(), WINDROSE_S, source, true)
+		originalPt, _ := calcPosition(source.GetBindings(), WINDROSE_S)
+
+		// Should use original position when disabled
+		if pt1.X != originalPt.X || pt1.Y != originalPt.Y {
+			t.Errorf("Expected original position (%d, %d), got (%d, %d)",
+				originalPt.X, originalPt.Y, pt1.X, pt1.Y)
+		}
+	})
+}
+
+func TestLinkSorting(t *testing.T) {
+	// Setup resources with different X positions
+	source := new(Resource).Init()
+	source.SetBindings(image.Rect(100, 0, 164, 64))
+
+	target1 := new(Resource).Init()
+	target1.SetBindings(image.Rect(0, 100, 64, 164)) // Left target
+
+	target2 := new(Resource).Init()
+	target2.SetBindings(image.Rect(200, 100, 264, 164)) // Right target
+
+	// Create links
+	link1 := new(Link).Init(source, WINDROSE_S, ArrowHead{}, target1, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	link2 := new(Link).Init(source, WINDROSE_S, ArrowHead{}, target2, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	// Add in reverse order to test sorting
+	source.AddLink(link2) // Right target first
+	source.AddLink(link1) // Left target second
+
+	t.Run("Links sorted by target position", func(t *testing.T) {
+		// Enable grouping offset for this test
+		source.SetGroupingOffset(true)
+		source.sortAllLinks()
+
+		// After sorting, right target should come first (based on perpendicular projection)
+		index1, _ := link1.getLinkIndexAndCount(source, WINDROSE_S, true)
+		index2, _ := link2.getLinkIndexAndCount(source, WINDROSE_S, true)
+
+		// The sorting uses perpendicular projection, so right target (higher X) comes first
+		if index2 >= index1 {
+			t.Errorf("Expected link2 (right target) to have lower index than link1 (left target), got %d >= %d", index2, index1)
+		}
+	})
+}
+
+func TestGetLinkIndexAndCount(t *testing.T) {
+	source := new(Resource).Init()
+	target := new(Resource).Init()
+
+	// Create multiple links from different positions
+	linkS1 := new(Link).Init(source, WINDROSE_S, ArrowHead{}, target, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkS2 := new(Link).Init(source, WINDROSE_S, ArrowHead{}, target, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkE := new(Link).Init(source, WINDROSE_E, ArrowHead{}, target, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	source.AddLink(linkS1)
+	source.AddLink(linkS2)
+	source.AddLink(linkE)
+
+	t.Run("Count links from same position", func(t *testing.T) {
+		_, countS := linkS1.getLinkIndexAndCount(source, WINDROSE_S, true)
+		_, countE := linkE.getLinkIndexAndCount(source, WINDROSE_E, true)
+
+		if countS != 2 {
+			t.Errorf("Expected 2 links from S position, got %d", countS)
+		}
+		if countE != 1 {
+			t.Errorf("Expected 1 link from E position, got %d", countE)
+		}
+	})
+}
