@@ -116,3 +116,29 @@ func TestCalcPosition(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertWindrose(t *testing.T) {
+	// Test normal directions
+	pos, err := ConvertWindrose("N")
+	if err != nil || pos != WINDROSE_N {
+		t.Errorf("Expected WINDROSE_N, got %v, err: %v", pos, err)
+	}
+
+	// Test empty string (default to auto)
+	pos, err = ConvertWindrose("")
+	if err != nil || pos != WINDROSE_AUTO {
+		t.Errorf("Expected WINDROSE_AUTO for empty string, got %v, err: %v", pos, err)
+	}
+
+	// Test explicit "auto"
+	pos, err = ConvertWindrose("auto")
+	if err != nil || pos != WINDROSE_AUTO {
+		t.Errorf("Expected WINDROSE_AUTO for 'auto', got %v, err: %v", pos, err)
+	}
+
+	// Test invalid position
+	_, err = ConvertWindrose("invalid")
+	if err == nil {
+		t.Error("Expected error for invalid position")
+	}
+}

@@ -81,6 +81,21 @@ func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead Ar
 	return &gl
 }
 
+// ResolveAutoPositions converts WINDROSE_AUTO to actual positions after layout is complete
+func (l *Link) ResolveAutoPositions() {
+	if l.SourcePosition == WINDROSE_AUTO || l.TargetPosition == WINDROSE_AUTO {
+		log.Info("Resolving auto-positions after layout")
+		autoSourcePos, autoTargetPos := AutoCalculatePositions(l.Source, l.Target)
+
+		if l.SourcePosition == WINDROSE_AUTO {
+			l.SourcePosition = autoSourcePos
+		}
+		if l.TargetPosition == WINDROSE_AUTO {
+			l.TargetPosition = autoTargetPos
+		}
+	}
+}
+
 func (l *Link) SetType(s string) {
 	l.Type = s
 }
@@ -354,6 +369,7 @@ func (l *Link) Draw(img *image.RGBA) error {
 		log.Info("Link already drawn")
 		return nil
 	}
+
 	log.Info("Link Drawing")
 	sourcePt := l.calcPositionWithOffset(source.GetBindings(), l.SourcePosition, l.Source, true)
 	targetPt := l.calcPositionWithOffset(target.GetBindings(), l.TargetPosition, l.Target, false)
@@ -820,6 +836,64 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 	log.Infof("Final control points: %v", controlPts)
 	log.Infof("=== End Convergent Calculation ===")
 	return controlPts
+}
+
+// AutoCalculatePositions determines optimal source and target positions for a link
+func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Windrose) {
+	sourceBounds := source.GetBindings()
+	targetBounds := target.GetBindings()
+
+	// Calculate centers
+	sourceCenter := image.Point{
+		X: sourceBounds.Min.X + sourceBounds.Dx()/2,
+		Y: sourceBounds.Min.Y + sourceBounds.Dy()/2,
+	}
+	targetCenter := image.Point{
+		X: targetBounds.Min.X + targetBounds.Dx()/2,
+		Y: targetBounds.Min.Y + targetBounds.Dy()/2,
+	}
+
+	log.Infof("Auto-positioning: Source center (%d, %d), Target center (%d, %d)",
+		sourceCenter.X, sourceCenter.Y, targetCenter.X, targetCenter.Y)
+
+	// Calculate differences
+	dx := targetCenter.X - sourceCenter.X
+	dy := targetCenter.Y - sourceCenter.Y
+
+	log.Infof("Auto-positioning: dx=%d, dy=%d", dx, dy)
+
+	// Determine direction based on larger absolute difference
+	if abs(dx) > abs(dy) {
+		// Horizontal connection
+		if dx > 0 {
+			sourcePos = WINDROSE_E // Target is to the right
+			targetPos = WINDROSE_W
+		} else {
+			sourcePos = WINDROSE_W // Target is to the left
+			targetPos = WINDROSE_E
+		}
+	} else {
+		// Vertical connection
+		if dy > 0 {
+			sourcePos = WINDROSE_S // Target is below
+			targetPos = WINDROSE_N
+		} else {
+			sourcePos = WINDROSE_N // Target is above
+			targetPos = WINDROSE_S
+		}
+	}
+
+	log.Infof("Auto-positioning: Source=%v, Target=%v", sourcePos, targetPos)
+
+	return sourcePos, targetPos
+}
+
+// abs returns the absolute value of an integer
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
 
 func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windrose, resource *Resource, isSource bool) image.Point {

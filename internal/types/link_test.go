@@ -1998,3 +1998,41 @@ func TestGetLinkIndexAndCount(t *testing.T) {
 		}
 	})
 }
+
+func TestAutoCalculatePositions(t *testing.T) {
+	// Create mock resources with different positions
+	source := &Resource{}
+	target := &Resource{}
+
+	// Test horizontal layout (source left, target right)
+	sourceBounds := image.Rect(0, 0, 100, 100)
+	targetBounds := image.Rect(200, 0, 300, 100)
+	source.bindings = &sourceBounds
+	target.bindings = &targetBounds
+
+	sourcePos, targetPos := AutoCalculatePositions(source, target)
+
+	// dx=150, dy=0 -> horizontal connection, target to the right
+	if sourcePos != WINDROSE_E {
+		t.Errorf("Expected source position E, got %v", sourcePos)
+	}
+	if targetPos != WINDROSE_W {
+		t.Errorf("Expected target position W, got %v", targetPos)
+	}
+
+	// Test vertical layout (source top, target bottom)
+	sourceBounds2 := image.Rect(0, 0, 100, 100)
+	targetBounds2 := image.Rect(0, 200, 100, 300)
+	source.bindings = &sourceBounds2
+	target.bindings = &targetBounds2
+
+	sourcePos, targetPos = AutoCalculatePositions(source, target)
+
+	// dx=0, dy=150 -> vertical connection, target below
+	if sourcePos != WINDROSE_S {
+		t.Errorf("Expected source position S, got %v", sourcePos)
+	}
+	if targetPos != WINDROSE_N {
+		t.Errorf("Expected target position N, got %v", targetPos)
+	}
+}

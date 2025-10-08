@@ -23,6 +23,35 @@ Diagrams:
       LineStyle: `normal|dashed` (optional)
 ```
 
+### Auto-positioning
+
+**New Feature**: Links can automatically determine optimal connection points based on resource positions, eliminating the need to manually specify `SourcePosition` and `TargetPosition`.
+
+```yaml
+Links:
+  # Default behavior - auto-positioning
+  - Source: ALB
+    Target: Instance1
+    
+  # Explicit auto-positioning
+  - Source: ALB
+    SourcePosition: auto
+    Target: Instance2
+    TargetPosition: auto
+    
+  # Mixed positioning - manual source, auto target
+  - Source: ALB
+    SourcePosition: E
+    Target: Instance3
+    TargetPosition: auto
+    
+  # Traditional manual positioning (still supported)
+  - Source: ALB
+    SourcePosition: NNE
+    Target: Instance4
+    TargetPosition: S
+```
+
 ### Link type
 
 #### Straight
