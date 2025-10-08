@@ -668,6 +668,9 @@ func (r *Resource) sortAllLinks() {
 			key = fmt.Sprintf("target_%d", link.TargetPosition)
 		}
 		if key != "" {
+			if _, ok := linkGroups[key]; !ok {
+				linkGroups[key] = make([]*Link, 0)
+			}
 			linkGroups[key] = append(linkGroups[key], link)
 		}
 	}
