@@ -174,6 +174,8 @@ func calcPosition(bindings image.Rectangle, position Windrose) (image.Point, err
 		return image.Point{tx[0], ty[0]}, nil
 	case WINDROSE_NNW:
 		return image.Point{tx[1], ty[0]}, nil
+	case WINDROSE_AUTO:
+		return image.Point{tx[0], ty[0]}, fmt.Errorf("WINDROSE_AUTO should be resolved before calling calcPosition")
 	}
 	return image.Point{tx[0], ty[0]}, fmt.Errorf("unknown position: %d, supported positions are N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW", position)
 }
