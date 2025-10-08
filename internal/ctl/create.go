@@ -593,7 +593,7 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 			resource.SetBorderColor(borderColor)
 		}
-		
+
 		// Process Options
 		if v.Options != nil {
 			resource, exists := resources[k]

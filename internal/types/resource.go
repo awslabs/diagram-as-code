@@ -41,25 +41,25 @@ const (
 )
 
 type Resource struct {
-	bindings       *image.Rectangle
-	iconImage      image.Image
-	iconBounds     image.Rectangle
-	borderColor    *color.RGBA
-	borderType     BORDER_TYPE
-	fillColor      color.RGBA
-	label          string
-	labelFont      string
-	labelColor     *color.RGBA
-	headerAlign    string // left(default) / center / right
-	margin         *Margin
-	padding        *Padding
-	direction      string
-	align          string
-	links          []*Link
-	children       []*Resource
-	borderChildren []*BorderChild
-	iconfill       ResourceIconFill
-	drawn          bool
+	bindings              *image.Rectangle
+	iconImage             image.Image
+	iconBounds            image.Rectangle
+	borderColor           *color.RGBA
+	borderType            BORDER_TYPE
+	fillColor             color.RGBA
+	label                 string
+	labelFont             string
+	labelColor            *color.RGBA
+	headerAlign           string // left(default) / center / right
+	margin                *Margin
+	padding               *Padding
+	direction             string
+	align                 string
+	links                 []*Link
+	children              []*Resource
+	borderChildren        []*BorderChild
+	iconfill              ResourceIconFill
+	drawn                 bool
 	disableGroupingOffset bool // Flag: if true, disable grouping offset for links
 }
 
@@ -638,10 +638,10 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 		}
 	}
 	r.drawn = true
-	
+
 	// リンク描画前に事前ソート
 	r.sortAllLinks()
-	
+
 	for _, v := range r.links {
 		source := *v.Source
 		target := *v.Target
@@ -656,10 +656,10 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 
 func (r *Resource) sortAllLinks() {
 	log.Infof("=== Sorting links for resource %p ===", r)
-	
+
 	// 同じ位置のリンクをグループ化
 	linkGroups := make(map[string][]*Link)
-	
+
 	for _, link := range r.links {
 		var key string
 		if link.Source == r {
@@ -671,18 +671,18 @@ func (r *Resource) sortAllLinks() {
 			linkGroups[key] = append(linkGroups[key], link)
 		}
 	}
-	
+
 	log.Infof("Found %d link groups", len(linkGroups))
-	
+
 	// 各グループをソートして元の配列を更新
 	for key, links := range linkGroups {
 		if len(links) <= 1 {
 			log.Infof("Group %s: only %d link, no sorting needed", key, len(links))
 			continue
 		}
-		
+
 		log.Infof("Group %s: sorting %d links", key, len(links))
-		
+
 		isSource := strings.HasPrefix(key, "source_")
 		var position Windrose
 		if isSource {
@@ -690,7 +690,7 @@ func (r *Resource) sortAllLinks() {
 		} else {
 			position = links[0].TargetPosition
 		}
-		
+
 		// ソート前の順序をログ
 		for i, link := range links {
 			var otherResource *Resource
@@ -703,10 +703,10 @@ func (r *Resource) sortAllLinks() {
 				otherPos = link.SourcePosition
 			}
 			pt, _ := calcPosition(otherResource.GetBindings(), otherPos)
-			log.Infof("  Before sort [%d]: %s->%s, other pos: (%d, %d)", 
+			log.Infof("  Before sort [%d]: %s->%s, other pos: (%d, %d)",
 				i, getResourceName(link.Source), getResourceName(link.Target), pt.X, pt.Y)
 		}
-		
+
 		sort.Slice(links, func(i, j int) bool {
 			var pt1, pt2 image.Point
 			if isSource {
@@ -716,20 +716,20 @@ func (r *Resource) sortAllLinks() {
 				pt1, _ = calcPosition(links[i].Source.GetBindings(), links[i].SourcePosition)
 				pt2, _ = calcPosition(links[j].Source.GetBindings(), links[j].SourcePosition)
 			}
-			
+
 			// 方向ベクトルの直交方向でソート
 			direction := getDirectionVectorStatic(int(position))
 			perpendicular := direction.Perpendicular()
-			
+
 			proj1 := float64(pt1.X)*perpendicular.X + float64(pt1.Y)*perpendicular.Y
 			proj2 := float64(pt2.X)*perpendicular.X + float64(pt2.Y)*perpendicular.Y
-			
-			log.Infof("    Compare: pt1=(%d,%d) proj1=%.1f vs pt2=(%d,%d) proj2=%.1f -> %v", 
+
+			log.Infof("    Compare: pt1=(%d,%d) proj1=%.1f vs pt2=(%d,%d) proj2=%.1f -> %v",
 				pt1.X, pt1.Y, proj1, pt2.X, pt2.Y, proj2, proj1 < proj2)
-			
+
 			return proj1 < proj2
 		})
-		
+
 		// ソート後の順序をログ
 		for i, link := range links {
 			var otherResource *Resource
@@ -742,10 +742,10 @@ func (r *Resource) sortAllLinks() {
 				otherPos = link.SourcePosition
 			}
 			pt, _ := calcPosition(otherResource.GetBindings(), otherPos)
-			log.Infof("  After sort [%d]: %s->%s, other pos: (%d, %d)", 
+			log.Infof("  After sort [%d]: %s->%s, other pos: (%d, %d)",
 				i, getResourceName(link.Source), getResourceName(link.Target), pt.X, pt.Y)
 		}
-		
+
 		// ソート結果を元の配列に反映
 		r.updateLinksOrder(links, key)
 	}
@@ -755,7 +755,7 @@ func (r *Resource) sortAllLinks() {
 func (r *Resource) updateLinksOrder(sortedLinks []*Link, groupKey string) {
 	// 元の配列でソート対象のリンクを新しい順序で置き換え
 	newLinks := make([]*Link, 0, len(r.links))
-	
+
 	// ソート対象外のリンクを先に追加
 	for _, link := range r.links {
 		var key string
@@ -764,15 +764,15 @@ func (r *Resource) updateLinksOrder(sortedLinks []*Link, groupKey string) {
 		} else if link.Target == r {
 			key = fmt.Sprintf("target_%d", link.TargetPosition)
 		}
-		
+
 		if key != groupKey {
 			newLinks = append(newLinks, link)
 		}
 	}
-	
+
 	// ソート済みのリンクを追加
 	newLinks = append(newLinks, sortedLinks...)
-	
+
 	r.links = newLinks
 	log.Infof("Updated links order for group %s", groupKey)
 }
@@ -787,11 +787,16 @@ func getResourceName(r *Resource) string {
 func getDirectionVectorStatic(position int) vector.Vector {
 	fourWindrose := ((position + 2) % 16) / 4
 	switch fourWindrose {
-	case 0: return vector.New(0, -1) // North
-	case 1: return vector.New(1, 0)  // East  
-	case 2: return vector.New(0, 1)  // South
-	case 3: return vector.New(-1, 0) // West
-	default: return vector.New(0, -1)
+	case 0:
+		return vector.New(0, -1) // North
+	case 1:
+		return vector.New(1, 0) // East
+	case 2:
+		return vector.New(0, 1) // South
+	case 3:
+		return vector.New(-1, 0) // West
+	default:
+		return vector.New(0, -1)
 	}
 }
 
