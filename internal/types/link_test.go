@@ -1898,6 +1898,9 @@ func TestGroupingOffset(t *testing.T) {
 
 	// Test normal grouping offset
 	t.Run("Normal grouping offset", func(t *testing.T) {
+		// Enable grouping offset
+		source.SetEnableGroupingOffset(true)
+
 		// Sort links first
 		source.sortAllLinks()
 
@@ -1919,9 +1922,10 @@ func TestGroupingOffset(t *testing.T) {
 		}
 	})
 
-	// Test disabled grouping offset
+	// Test disabled grouping offset (default behavior)
 	t.Run("Disabled grouping offset", func(t *testing.T) {
-		source.SetDisableGroupingOffset(true)
+		// Explicitly disable grouping offset
+		source.SetEnableGroupingOffset(false)
 
 		pt1 := link1.calcPositionWithOffset(source.GetBindings(), WINDROSE_S, source, true)
 		originalPt, _ := calcPosition(source.GetBindings(), WINDROSE_S)
@@ -1954,6 +1958,8 @@ func TestLinkSorting(t *testing.T) {
 	source.AddLink(link1) // Left target second
 
 	t.Run("Links sorted by target position", func(t *testing.T) {
+		// Enable grouping offset for this test
+		source.SetEnableGroupingOffset(true)
 		source.sortAllLinks()
 
 		// After sorting, right target should come first (based on perpendicular projection)

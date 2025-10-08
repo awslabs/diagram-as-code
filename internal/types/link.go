@@ -825,8 +825,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windrose, resource *Resource, isSource bool) image.Point {
 	pt, _ := calcPosition(bindings, position)
 
-	// Check if grouping offset is disabled for this resource
-	if resource.disableGroupingOffset {
+	// Check if grouping offset is enabled for this resource
+	if !resource.enableGroupingOffset {
 		log.Infof("Grouping offset disabled for resource %p, using original position: (%d, %d)", resource, pt.X, pt.Y)
 		return pt
 	}
