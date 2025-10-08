@@ -355,8 +355,8 @@ func (l *Link) Draw(img *image.RGBA) error {
 		return nil
 	}
 	log.Info("Link Drawing")
-	sourcePt, _ := calcPosition(source.GetBindings(), l.SourcePosition)
-	targetPt, _ := calcPosition(target.GetBindings(), l.TargetPosition)
+	sourcePt := l.calcPositionWithOffset(source.GetBindings(), l.SourcePosition, l.Source, true)
+	targetPt := l.calcPositionWithOffset(target.GetBindings(), l.TargetPosition, l.Target, false)
 
 	if l.Type == "" || l.Type == "straight" {
 		l.drawLine(img, sourcePt, targetPt)
@@ -820,6 +820,70 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 	log.Infof("Final control points: %v", controlPts)
 	log.Infof("=== End Convergent Calculation ===")
 	return controlPts
+}
+
+func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windrose, resource *Resource, isSource bool) image.Point {
+	pt, _ := calcPosition(bindings, position)
+	
+	// Check if grouping offset is disabled for this resource
+	if resource.disableGroupingOffset {
+		log.Infof("Grouping offset disabled for resource %p, using original position: (%d, %d)", resource, pt.X, pt.Y)
+		return pt
+	}
+	
+	// 同じ位置から出るリンク数とインデックスを取得
+	index, count := l.getLinkIndexAndCount(resource, position, isSource)
+	log.Infof("Link offset calculation - Resource: %p, Position: %v, IsSource: %v, Index: %d, Count: %d", 
+		resource, position, isSource, index, count)
+	
+	if count <= 1 {
+		log.Infof("Single link, no offset needed - Position: (%d, %d)", pt.X, pt.Y)
+		return pt
+	}
+	
+	// オフセット計算: 中央を基準に左右に振り分け
+	groupingOffset := int((float64(index) - float64(count-1)/2.0) * 10)
+	log.Infof("Calculated grouping offset: %d (index=%d, count=%d)", groupingOffset, index, count)
+	
+	// 方向ベクトルの直交方向にオフセット
+	direction := l.getDirectionVector(int(position))
+	perpendicular := direction.Perpendicular()
+	offset := perpendicular.Scale(float64(groupingOffset))
+	
+	finalPt := image.Point{
+		X: pt.X + int(math.Round(offset.X)),
+		Y: pt.Y + int(math.Round(offset.Y)),
+	}
+	
+	log.Infof("Position offset applied - Original: (%d, %d), Direction: %v, Perpendicular: %v, Final: (%d, %d)", 
+		pt.X, pt.Y, direction, perpendicular, finalPt.X, finalPt.Y)
+	
+	return finalPt
+}
+
+func (l *Link) getLinkIndexAndCount(resource *Resource, position Windrose, isSource bool) (int, int) {
+	index := 0
+	count := 0
+	
+	for _, link := range resource.links {
+		var linkPosition Windrose
+		if isSource && link.Source == resource {
+			linkPosition = link.SourcePosition
+		} else if !isSource && link.Target == resource {
+			linkPosition = link.TargetPosition
+		} else {
+			continue
+		}
+		
+		if linkPosition == position {
+			if link == l {
+				index = count
+				log.Infof("Found current link at sorted index %d for position %v", index, position)
+			}
+			count++
+		}
+	}
+	return index, count
 }
 
 // getDirectionVector converts windrose position to unit direction vector
