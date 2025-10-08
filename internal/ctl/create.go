@@ -123,7 +123,7 @@ type Resource struct {
 }
 
 type ResourceOptions struct {
-	EnableGroupingOffset *bool `yaml:"EnableGroupingOffset"`
+	GroupingOffset *bool `yaml:"GroupingOffset"`
 }
 
 type ResourceIconFill struct {
@@ -600,8 +600,8 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			if !exists {
 				return fmt.Errorf("resource %s not found for options", k)
 			}
-			if v.Options.EnableGroupingOffset != nil {
-				resource.SetEnableGroupingOffset(*v.Options.EnableGroupingOffset)
+			if v.Options.GroupingOffset != nil {
+				resource.SetEnableGroupingOffset(*v.Options.GroupingOffset)
 			}
 		}
 	}

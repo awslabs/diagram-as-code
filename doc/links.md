@@ -141,7 +141,7 @@ Resources:
   ELB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Options:
-      EnableGroupingOffset: true  # Enable link grouping offset
+      GroupingOffset: true  # Enable link grouping offset
 ```
 
 **Example with multiple links:**
@@ -150,7 +150,7 @@ Resources:
   ELB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Options:
-      EnableGroupingOffset: true
+      GroupingOffset: true
       
 Links:
   - Source: ELB
