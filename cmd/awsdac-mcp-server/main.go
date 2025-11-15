@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 
 	"github.com/spf13/pflag"
 
@@ -213,7 +214,7 @@ TECHNICAL DETAILS:
 			mcp.DefaultString("png"),
 			mcp.Enum("png"), // Future support for other formats
 		),
-	), handleGenerateDiagram)
+	), withPanicRecovery("generateDiagram", handleGenerateDiagram))
 
 	// Add the diagram generation to file tool
 	mcpServer.AddTool(mcp.NewTool(string(GENERATE_DIAGRAM_TO_FILE),
@@ -226,12 +227,12 @@ TECHNICAL DETAILS:
 			mcp.Description("Path where the generated PNG file should be saved. Can be relative or absolute path. Parent directories will be created if they don't exist."),
 			mcp.Required(),
 		),
-	), handleGenerateDiagramToFile)
+	), withPanicRecovery("generateDiagramToFile", handleGenerateDiagramToFile))
 
 	// Add the tool to generate DAC YAML from user requirements
 	mcpServer.AddTool(mcp.NewTool(string(GET_DIAGRAM_AS_CODE_FORMAT),
 		mcp.WithDescription(GET_FORMAT_DESC),
-	), handleGenerateDacFromUserRequirements)
+	), withPanicRecovery("getDiagramAsCodeFormat", handleGenerateDacFromUserRequirements))
 
 	return mcpServer
 }
@@ -400,10 +401,56 @@ func handleGenerateDacFromUserRequirements(
 	}, nil
 }
 
+// withPanicRecovery wraps a tool handler with panic recovery to prevent server crashes.
+// It logs the panic details with stack trace and returns a user-friendly error response
+// while keeping the MCP server running.
+func withPanicRecovery(handlerName string, handler server.ToolHandlerFunc) server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (result *mcp.CallToolResult, err error) {
+		defer func() {
+			if r := recover(); r != nil {
+				// Log panic details with stack trace
+				log.WithFields(log.Fields{
+					"handler":      handlerName,
+					"panic_value":  r,
+					"request_name": request.Params.Name,
+				}).Errorf("Panic recovered in handler: %v\nStack trace:\n%s", r, debug.Stack())
+
+				// Create user-friendly error response
+				result = &mcp.CallToolResult{
+					Content: []mcp.Content{
+						mcp.TextContent{
+							Type: "text",
+							Text: "An unexpected error occurred while processing your request.\n\n" +
+								"The server has recovered and is ready to process new requests.\n" +
+								"Please check the server logs for detailed diagnostic information.",
+						},
+					},
+					IsError: true,
+				}
+				err = nil // Return nil error to prevent server termination
+			}
+		}()
+
+		return handler(ctx, request)
+	}
+}
+
 // createDiagramSafely wraps ctl.CreateDiagramFromDacFile with panic recovery
 func createDiagramSafely(inputFile string, outputFile *string, opts *ctl.CreateOptions) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
+			// Log panic details with structured fields and stack trace
+			log.WithFields(log.Fields{
+				"panic_value": r,
+				"input_file":  inputFile,
+				"output_file": func() string {
+					if outputFile != nil {
+						return *outputFile
+					}
+					return "<nil>"
+				}(),
+			}).Errorf("Panic in diagram creation: %v\nStack trace:\n%s", r, debug.Stack())
+
 			err = fmt.Errorf("panic occurred during diagram creation: %v", r)
 		}
 	}()
