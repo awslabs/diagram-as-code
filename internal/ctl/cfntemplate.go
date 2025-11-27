@@ -341,7 +341,7 @@ func generateDacFileFromCFnTemplate(template *TemplateStruct, outputfile string)
 
 	yamlData, err := yaml.Marshal(template)
 	if err != nil {
-		fmt.Printf("Error while marshaling data: %v", err)
+		log.Errorf("Error while marshaling data: %v", err)
 		return
 	}
 
@@ -350,7 +350,7 @@ func generateDacFileFromCFnTemplate(template *TemplateStruct, outputfile string)
 
 	err = os.WriteFile(outputYamlFile, yamlData, 0644)
 	if err != nil {
-		fmt.Printf("Error while writing to file: %v", err)
+		log.Errorf("Error while writing to file: %v", err)
 		return
 	}
 
@@ -388,7 +388,7 @@ func findRefs(t map[string]interface{}, fromName string) []string {
 					refs = append(refs, s)
 				}
 			default:
-				fmt.Printf("Malformed GetAtt: %T\n", v)
+				log.Warnf("Malformed GetAtt: %T\n", v)
 			}
 		case "Fn::Sub":
 			switch v := value.(type) {
@@ -399,7 +399,7 @@ func findRefs(t map[string]interface{}, fromName string) []string {
 			case []interface{}:
 				switch {
 				case len(v) != 2:
-					fmt.Printf("Malformed Sub: %T\n", v)
+					log.Warnf("Malformed Sub: %T\n", v)
 				default:
 					switch parts := v[1].(type) {
 					case map[string]interface{}:
@@ -408,15 +408,15 @@ func findRefs(t map[string]interface{}, fromName string) []string {
 							case map[string]interface{}:
 								refs = append(refs, findRefs(p, fromName)...)
 							default:
-								fmt.Printf("Malformed Sub: %T\n", v)
+								log.Warnf("Malformed Sub: %T\n", v)
 							}
 						}
 					default:
-						fmt.Printf("Malformed Sub: %T\n", v)
+						log.Warnf("Malformed Sub: %T\n", v)
 					}
 				}
 			default:
-				fmt.Printf("Malformed Sub: %T\n", v)
+				log.Warnf("Malformed Sub: %T\n", v)
 			}
 		default:
 			for _, tree := range findTrees(value) {
