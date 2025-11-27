@@ -220,7 +220,6 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	}
 
 	log.Infof("Save %s\n", *outputfile)
-	fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", *outputfile)
 	f, err := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return fmt.Errorf("error opening output file: %w", err)

@@ -72,6 +72,7 @@ func main() {
 				if err := ctl.CreateDiagramFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts); err != nil {
 					return fmt.Errorf("failed to create diagram from CloudFormation template: %w", err)
 				}
+				fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", outputFile)
 			} else {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:    isGoTemplate,
@@ -87,6 +88,7 @@ func main() {
 				if err := ctl.CreateDiagramFromDacFile(inputFile, &outputFile, &opts); err != nil {
 					return fmt.Errorf("failed to create diagram: %w", err)
 				}
+				fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", outputFile)
 			}
 
 			return nil
