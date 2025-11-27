@@ -21,6 +21,7 @@ func main() {
 	var cfnTemplate bool
 	var generateDacFile bool
 	var overrideDefFile string
+	var allowUntrustedDefinitions bool
 	var isGoTemplate bool
 	var force bool
 	var width int
@@ -60,9 +61,10 @@ func main() {
 
 			if cfnTemplate {
 				opts := ctl.CreateOptions{
-					OverrideDefFile: overrideDefFile,
-					Width:           width,
-					Height:          height,
+					OverrideDefFile:           overrideDefFile,
+					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+					Width:                     width,
+					Height:                    height,
 				}
 				if force {
 					opts.OverwriteMode = ctl.Force
@@ -75,10 +77,11 @@ func main() {
 				fmt.Printf("[Completed] AWS infrastructure diagram generated: %s\n", outputFile)
 			} else {
 				opts := ctl.CreateOptions{
-					IsGoTemplate:    isGoTemplate,
-					OverrideDefFile: overrideDefFile,
-					Width:           width,
-					Height:          height,
+					IsGoTemplate:              isGoTemplate,
+					OverrideDefFile:           overrideDefFile,
+					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+					Width:                     width,
+					Height:                    height,
 				}
 				if force {
 					opts.OverwriteMode = ctl.Force
@@ -100,6 +103,7 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&cfnTemplate, "cfn-template", "c", false, "[beta] Create diagram from CloudFormation template")
 	rootCmd.PersistentFlags().BoolVarP(&generateDacFile, "dac-file", "d", false, "[beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template")
 	rootCmd.PersistentFlags().StringVarP(&overrideDefFile, "override-def-file", "", "", "For testing purpose, override DefinitionFiles to another url/local file")
+	rootCmd.PersistentFlags().BoolVarP(&allowUntrustedDefinitions, "allow-untrusted-definitions", "", false, "Allow loading definition files from untrusted URLs (not from official repository)")
 	rootCmd.PersistentFlags().BoolVarP(&isGoTemplate, "template", "t", false, "Processes the input file as a template according to text/template.")
 	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Overwrite output file without confirmation")
 	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")

@@ -126,12 +126,13 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 			}
 			overrideDefTemplate.DefinitionFiles = append(overrideDefTemplate.DefinitionFiles, defFile)
 		}
-		if err := loadDefinitionFiles(&overrideDefTemplate, &ds); err != nil {
+		// OverrideDefFile is for testing, so allow untrusted URLs
+		if err := loadDefinitionFiles(&overrideDefTemplate, &ds, true); err != nil {
 			return fmt.Errorf("failed to load override definition files: %w", err)
 		}
 		log.Infof("overrideDefTemplate: %+v", overrideDefTemplate)
 	} else {
-		if err := loadDefinitionFiles(&template, &ds); err != nil {
+		if err := loadDefinitionFiles(&template, &ds, opts.AllowUntrustedDefinitions); err != nil {
 			return fmt.Errorf("failed to load definition files: %w", err)
 		}
 	}

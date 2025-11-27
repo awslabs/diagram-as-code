@@ -277,3 +277,56 @@ func TestLoadResourcesWithNoFallbackPossible(t *testing.T) {
 		t.Error("Canvas resource should still be created")
 	}
 }
+
+func TestIsAllowedDefinitionURL(t *testing.T) {
+	tests := []struct {
+		name    string
+		url     string
+		wantErr bool
+	}{
+		{
+			name:    "official raw.githubusercontent.com URL",
+			url:     "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml",
+			wantErr: false,
+		},
+		{
+			name:    "official github.com URL",
+			url:     "https://github.com/awslabs/diagram-as-code/releases/download/v1.0.0/definitions.yaml",
+			wantErr: false,
+		},
+		{
+			name:    "untrusted URL",
+			url:     "https://example.com/malicious-definitions.yaml",
+			wantErr: true,
+		},
+		{
+			name:    "localhost URL",
+			url:     "http://localhost:8080/definitions.yaml",
+			wantErr: true,
+		},
+		{
+			name:    "private IP URL",
+			url:     "http://192.168.1.1/definitions.yaml",
+			wantErr: true,
+		},
+		{
+			name:    "different github org",
+			url:     "https://raw.githubusercontent.com/other-org/diagram-as-code/main/definitions.yaml",
+			wantErr: true,
+		},
+		{
+			name:    "different github repo",
+			url:     "https://raw.githubusercontent.com/awslabs/other-repo/main/definitions.yaml",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := isAllowedDefinitionURL(tt.url)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("isAllowedDefinitionURL() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
