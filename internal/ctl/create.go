@@ -165,12 +165,13 @@ type LinkLabel struct {
 }
 
 type CreateOptions struct {
-	IsGoTemplate    bool
-	OverrideDefFile string
-	OverwriteMode   OverwriteMode
-	OverrideFont    string
-	Width           int
-	Height          int
+	IsGoTemplate              bool
+	OverrideDefFile           string
+	AllowUntrustedDefinitions bool
+	OverwriteMode             OverwriteMode
+	OverrideFont              string
+	Width                     int
+	Height                    int
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
@@ -276,12 +277,34 @@ func resizeImage(src *image.RGBA, width, height int) *image.RGBA {
 	return dst
 }
 
-func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure) error {
+func isAllowedDefinitionURL(url string) error {
+	// Allow only official repository
+	allowedPrefixes := []string{
+		"https://raw.githubusercontent.com/awslabs/diagram-as-code/",
+		"https://github.com/awslabs/diagram-as-code/",
+	}
+
+	for _, prefix := range allowedPrefixes {
+		if strings.HasPrefix(url, prefix) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("definition file URL must be from official repository (https://github.com/awslabs/diagram-as-code/), got: %s. Use --allow-untrusted-definitions to allow untrusted URLs", url)
+}
+
+func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure, allowUntrusted bool) error {
 
 	// Load definition files
 	for _, v := range template.DefinitionFiles {
 		switch v.Type {
 		case "URL":
+			// Validate URL unless untrusted definitions are explicitly allowed
+			if !allowUntrusted {
+				if err := isAllowedDefinitionURL(v.Url); err != nil {
+					return err
+				}
+			}
 			log.Infof("Fetch definition file from URL: %s\n", v.Url)
 			cacheFilePath, err := cache.FetchFile(v.Url)
 			if err != nil {
