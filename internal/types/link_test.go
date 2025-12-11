@@ -1905,7 +1905,7 @@ func TestGroupingOffset(t *testing.T) {
 		source.sortAllLinks()
 
 		// Test first link offset
-		index1, count1 := link1.getLinkIndexAndCount(source, WINDROSE_S, true)
+		index1, count1 := link1.getLinkIndexAndCount(source, WINDROSE_S)
 		if count1 != 2 {
 			t.Errorf("Expected count 2, got %d", count1)
 		}
@@ -1963,12 +1963,59 @@ func TestLinkSorting(t *testing.T) {
 		source.sortAllLinks()
 
 		// After sorting, right target should come first (based on perpendicular projection)
-		index1, _ := link1.getLinkIndexAndCount(source, WINDROSE_S, true)
-		index2, _ := link2.getLinkIndexAndCount(source, WINDROSE_S, true)
+		index1, _ := link1.getLinkIndexAndCount(source, WINDROSE_S)
+		index2, _ := link2.getLinkIndexAndCount(source, WINDROSE_S)
 
 		// The sorting uses perpendicular projection, so right target (higher X) comes first
 		if index2 >= index1 {
 			t.Errorf("Expected link2 (right target) to have lower index than link1 (left target), got %d >= %d", index2, index1)
+		}
+	})
+}
+
+func TestMixedSourceTargetSorting(t *testing.T) {
+	// Setup resources for A:S->B C->A:S pattern
+	resourceA := new(Resource).Init()
+	resourceA.SetBindings(image.Rect(100, 100, 164, 164))
+
+	resourceB := new(Resource).Init()
+	resourceB.SetBindings(image.Rect(200, 50, 264, 114)) // Right and up
+
+	resourceC := new(Resource).Init()
+	resourceC.SetBindings(image.Rect(50, 200, 114, 264)) // Left and down
+
+	// Create mixed source/target links at same position S on resourceA
+	linkAS_B := new(Link).Init(resourceA, WINDROSE_S, ArrowHead{}, resourceB, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkC_AS := new(Link).Init(resourceC, WINDROSE_N, ArrowHead{}, resourceA, WINDROSE_S, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	// Add links to resourceA
+	resourceA.AddLink(linkAS_B) // A as source
+	resourceA.AddLink(linkC_AS) // A as target
+
+	t.Run("Mixed source/target links sorted at same position", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+		resourceA.sortAllLinks()
+
+		// Both links should be in the same group and sorted together
+		index1, count1 := linkAS_B.getLinkIndexAndCount(resourceA, WINDROSE_S)
+		index2, count2 := linkC_AS.getLinkIndexAndCount(resourceA, WINDROSE_S)
+
+		// Both should see unified count of 2
+		if count1 != 2 {
+			t.Errorf("Expected count1=2, got %d", count1)
+		}
+		if count2 != 2 {
+			t.Errorf("Expected count2=2, got %d", count2)
+		}
+
+		// Indices should be different (0 and 1)
+		if index1 == index2 {
+			t.Errorf("Expected different indices, got both %d", index1)
+		}
+
+		// One should be 0, other should be 1
+		if (index1 != 0 && index1 != 1) || (index2 != 0 && index2 != 1) {
+			t.Errorf("Expected indices 0 and 1, got %d and %d", index1, index2)
 		}
 	})
 }
@@ -1987,14 +2034,327 @@ func TestGetLinkIndexAndCount(t *testing.T) {
 	source.AddLink(linkE)
 
 	t.Run("Count links from same position", func(t *testing.T) {
-		_, countS := linkS1.getLinkIndexAndCount(source, WINDROSE_S, true)
-		_, countE := linkE.getLinkIndexAndCount(source, WINDROSE_E, true)
+		_, countS := linkS1.getLinkIndexAndCount(source, WINDROSE_S)
+		_, countE := linkE.getLinkIndexAndCount(source, WINDROSE_E)
 
 		if countS != 2 {
 			t.Errorf("Expected 2 links from S position, got %d", countS)
 		}
 		if countE != 1 {
 			t.Errorf("Expected 1 link from E position, got %d", countE)
+		}
+	})
+}
+
+func TestGroupingOffsetMixedSourceTarget(t *testing.T) {
+	// Setup: A->B, C->A (A is both source and target)
+	resourceA := new(Resource).Init()
+	resourceA.SetBindings(image.Rect(100, 0, 164, 64))
+
+	resourceB := new(Resource).Init()
+	resourceB.SetBindings(image.Rect(200, 0, 264, 64))
+
+	resourceC := new(Resource).Init()
+	resourceC.SetBindings(image.Rect(0, 0, 64, 64))
+
+	// A->B (A as source, position S)
+	linkAB := new(Link).Init(resourceA, WINDROSE_S, ArrowHead{}, resourceB, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	// C->A (A as target, position N)
+	linkCA := new(Link).Init(resourceC, WINDROSE_S, ArrowHead{}, resourceA, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	resourceA.AddLink(linkAB)
+	resourceA.AddLink(linkCA)
+	resourceB.AddLink(linkAB)
+	resourceC.AddLink(linkCA)
+
+	t.Run("A as source with grouping offset", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+
+		// A->B: A is source at position S
+		indexAB, countAB := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_S)
+		if countAB != 1 {  // Only A:S->B at position S (C->A is at position N)
+			t.Errorf("Expected 1 link at A:S, got %d", countAB)
+		}
+		if indexAB != 0 {
+			t.Errorf("Expected index 0 for A->B, got %d", indexAB)
+		}
+
+		ptAB := linkAB.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_S, resourceA, true)
+		originalPt, _ := calcPosition(resourceA.GetBindings(), WINDROSE_S)
+
+		// Single link should have no offset
+		if ptAB.X != originalPt.X || ptAB.Y != originalPt.Y {
+			t.Errorf("Single link should have no offset: expected (%d,%d), got (%d,%d)",
+				originalPt.X, originalPt.Y, ptAB.X, ptAB.Y)
+		}
+	})
+
+	t.Run("A as target with grouping offset", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+
+		// C->A: A is target at position N (different position from S)
+		indexCA, countCA := linkCA.getLinkIndexAndCount(resourceA, WINDROSE_N)
+		if countCA != 1 {
+			t.Errorf("Expected 1 link to A:N, got %d", countCA)
+		}
+		if indexCA != 0 {
+			t.Errorf("Expected index 0 for C->A, got %d", indexCA)
+		}
+
+		ptCA := linkCA.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_N, resourceA, false)
+		originalPt, _ := calcPosition(resourceA.GetBindings(), WINDROSE_N)
+
+		// Single link should have no offset
+		if ptCA.X != originalPt.X || ptCA.Y != originalPt.Y {
+			t.Errorf("Single target link should have no offset: expected (%d,%d), got (%d,%d)",
+				originalPt.X, originalPt.Y, ptCA.X, ptCA.Y)
+		}
+	})
+
+	t.Run("Source and target positions are independent", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+
+		// Verify that different positions are counted separately
+		_, countSource := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_S)
+		_, countTarget := linkCA.getLinkIndexAndCount(resourceA, WINDROSE_N)
+
+		if countSource != 1 {
+			t.Errorf("Position S should have 1 link, got %d", countSource)
+		}
+		if countTarget != 1 {
+			t.Errorf("Position N should have 1 link, got %d", countTarget)
+		}
+	})
+}
+
+func TestGroupingOffsetSamePositionSourceAndTarget(t *testing.T) {
+	// Setup: A:S->B, C->A:S (both at position S - same position, different roles)
+	resourceA := new(Resource).Init()
+	resourceA.SetBindings(image.Rect(100, 100, 164, 164))
+
+	resourceB := new(Resource).Init()
+	resourceB.SetBindings(image.Rect(100, 200, 164, 264))
+
+	resourceC := new(Resource).Init()
+	resourceC.SetBindings(image.Rect(100, 0, 164, 64))
+
+	// A:S->B (A as source at position S)
+	linkAB := new(Link).Init(resourceA, WINDROSE_S, ArrowHead{}, resourceB, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	// C:S->A:S (C as source at position S, A as target at position S)
+	linkCA := new(Link).Init(resourceC, WINDROSE_S, ArrowHead{}, resourceA, WINDROSE_S, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	resourceA.AddLink(linkAB)
+	resourceA.AddLink(linkCA)
+	resourceB.AddLink(linkAB)
+	resourceC.AddLink(linkCA)
+
+	t.Run("Same position S with different roles", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+
+		// A:S->B: count at position S (unified count)
+		indexAB, countAB := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_S)
+		// C->A:S: count at position S (unified count)
+		indexCA, countCA := linkCA.getLinkIndexAndCount(resourceA, WINDROSE_S)
+
+		// Both should see unified count of 2
+		if countAB != 2 {
+			t.Errorf("Expected 2 links at A:S (unified count), got %d", countAB)
+		}
+		if countCA != 2 {
+			t.Errorf("Expected 2 links at A:S (unified count), got %d", countCA)
+		}
+
+		if indexAB < 0 || indexAB >= 2 {
+			t.Errorf("Expected index 0 or 1 for A:S->B, got %d", indexAB)
+		}
+		if indexCA < 0 || indexCA >= 2 {
+			t.Errorf("Expected index 0 or 1 for C->A:S, got %d", indexCA)
+		}
+
+		// Both should have offset applied (count=2)
+		ptAB := linkAB.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_S, resourceA, true)
+		ptCA := linkCA.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_S, resourceA, false)
+
+		// Should have different positions due to offset
+		if ptAB.X == ptCA.X && ptAB.Y == ptCA.Y {
+			t.Errorf("Two links at same position should have different offsets")
+		}
+	})
+}
+
+func TestGroupingOffsetMultipleOutgoingLinks(t *testing.T) {
+	// Setup: A->B, A->C (both from A:E - 2 outgoing links from same position)
+	resourceA := new(Resource).Init()
+	resourceA.SetBindings(image.Rect(100, 100, 164, 164))
+
+	resourceB := new(Resource).Init()
+	resourceB.SetBindings(image.Rect(200, 50, 264, 114))
+
+	resourceC := new(Resource).Init()
+	resourceC.SetBindings(image.Rect(200, 150, 264, 214))
+
+	// A->B, A->C (both from A:E)
+	linkAB := new(Link).Init(resourceA, WINDROSE_E, ArrowHead{}, resourceB, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkAC := new(Link).Init(resourceA, WINDROSE_E, ArrowHead{}, resourceC, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	resourceA.AddLink(linkAB)
+	resourceA.AddLink(linkAC)
+
+	t.Run("Two outgoing links with grouping offset", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+		resourceA.sortAllLinks()
+
+		_, countE := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_E)
+		if countE != 2 {
+			t.Errorf("Expected 2 outgoing links from A:E, got %d", countE)
+		}
+
+		ptAB := linkAB.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_E, resourceA, true)
+		ptAC := linkAC.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_E, resourceA, true)
+
+		// Two links should have different Y offsets
+		if ptAB.Y == ptAC.Y {
+			t.Errorf("Two outgoing links should have different Y offsets: both at Y=%d", ptAB.Y)
+		}
+
+		// Verify offset magnitude (should be ±5 for 2 links)
+		originalPt, _ := calcPosition(resourceA.GetBindings(), WINDROSE_E)
+		offsetAB := ptAB.Y - originalPt.Y
+		offsetAC := ptAC.Y - originalPt.Y
+
+		expectedOffsets := []int{-5, 5}
+		if !((offsetAB == expectedOffsets[0] && offsetAC == expectedOffsets[1]) ||
+			(offsetAB == expectedOffsets[1] && offsetAC == expectedOffsets[0])) {
+			t.Errorf("Expected offsets ±5, got %d and %d", offsetAB, offsetAC)
+		}
+	})
+}
+
+func TestGroupingOffsetMultipleIncomingLinks(t *testing.T) {
+	// Setup: B->A, C->A (both to A:W - 2 incoming links to same position)
+	resourceA := new(Resource).Init()
+	resourceA.SetBindings(image.Rect(100, 100, 164, 164))
+
+	resourceB := new(Resource).Init()
+	resourceB.SetBindings(image.Rect(0, 50, 64, 114))
+
+	resourceC := new(Resource).Init()
+	resourceC.SetBindings(image.Rect(0, 150, 64, 214))
+
+	// B->A, C->A (both to A:W)
+	linkBA := new(Link).Init(resourceB, WINDROSE_E, ArrowHead{}, resourceA, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkCA := new(Link).Init(resourceC, WINDROSE_E, ArrowHead{}, resourceA, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	resourceA.AddLink(linkBA)
+	resourceA.AddLink(linkCA)
+
+	t.Run("Two incoming links with grouping offset", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+		resourceA.sortAllLinks()
+
+		_, countW := linkBA.getLinkIndexAndCount(resourceA, WINDROSE_W)
+		if countW != 2 {
+			t.Errorf("Expected 2 incoming links to A:W, got %d", countW)
+		}
+
+		ptBA := linkBA.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_W, resourceA, false)
+		ptCA := linkCA.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_W, resourceA, false)
+
+		// Two links should have different Y offsets
+		if ptBA.Y == ptCA.Y {
+			t.Errorf("Two incoming links should have different Y offsets: both at Y=%d", ptBA.Y)
+		}
+
+		// Verify offset magnitude (should be ±5 for 2 links)
+		originalPt, _ := calcPosition(resourceA.GetBindings(), WINDROSE_W)
+		offsetBA := ptBA.Y - originalPt.Y
+		offsetCA := ptCA.Y - originalPt.Y
+
+		expectedOffsets := []int{-5, 5}
+		if !((offsetBA == expectedOffsets[0] && offsetCA == expectedOffsets[1]) ||
+			(offsetBA == expectedOffsets[1] && offsetCA == expectedOffsets[0])) {
+			t.Errorf("Expected offsets ±5, got %d and %d", offsetBA, offsetCA)
+		}
+	})
+}
+
+func TestGroupingOffsetMultipleMixedLinks(t *testing.T) {
+	// Setup: A->B, A->C, D->A, E->A (A has 2 outgoing and 2 incoming at same positions)
+	resourceA := new(Resource).Init()
+	resourceA.SetBindings(image.Rect(100, 100, 164, 164))
+
+	resourceB := new(Resource).Init()
+	resourceB.SetBindings(image.Rect(200, 50, 264, 114))
+
+	resourceC := new(Resource).Init()
+	resourceC.SetBindings(image.Rect(200, 150, 264, 214))
+
+	resourceD := new(Resource).Init()
+	resourceD.SetBindings(image.Rect(0, 50, 64, 114))
+
+	resourceE := new(Resource).Init()
+	resourceE.SetBindings(image.Rect(0, 150, 64, 214))
+
+	// A->B, A->C (both from A:E)
+	linkAB := new(Link).Init(resourceA, WINDROSE_E, ArrowHead{}, resourceB, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkAC := new(Link).Init(resourceA, WINDROSE_E, ArrowHead{}, resourceC, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	// D->A, E->A (both to A:W)
+	linkDA := new(Link).Init(resourceD, WINDROSE_E, ArrowHead{}, resourceA, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	linkEA := new(Link).Init(resourceE, WINDROSE_E, ArrowHead{}, resourceA, WINDROSE_W, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	resourceA.AddLink(linkAB)
+	resourceA.AddLink(linkAC)
+	resourceA.AddLink(linkDA)
+	resourceA.AddLink(linkEA)
+
+	t.Run("Multiple outgoing links with grouping offset", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+		resourceA.sortAllLinks()
+
+		_, countE := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_E)
+		if countE != 2 {
+			t.Errorf("Expected 2 outgoing links from A:E, got %d", countE)
+		}
+
+		ptAB := linkAB.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_E, resourceA, true)
+		ptAC := linkAC.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_E, resourceA, true)
+
+		// Two links should have different offsets
+		if ptAB.Y == ptAC.Y {
+			t.Errorf("Two outgoing links should have different Y offsets: both at Y=%d", ptAB.Y)
+		}
+	})
+
+	t.Run("Multiple incoming links with grouping offset", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+		resourceA.sortAllLinks()
+
+		_, countW := linkDA.getLinkIndexAndCount(resourceA, WINDROSE_W)
+		if countW != 2 {
+			t.Errorf("Expected 2 incoming links to A:W, got %d", countW)
+		}
+
+		ptDA := linkDA.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_W, resourceA, false)
+		ptEA := linkEA.calcPositionWithOffset(resourceA.GetBindings(), WINDROSE_W, resourceA, false)
+
+		// Two links should have different offsets
+		if ptDA.Y == ptEA.Y {
+			t.Errorf("Two incoming links should have different Y offsets: both at Y=%d", ptDA.Y)
+		}
+	})
+
+	t.Run("Outgoing and incoming counts are independent", func(t *testing.T) {
+		resourceA.SetGroupingOffset(true)
+
+		_, countOutgoing := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_E)
+		_, countIncoming := linkDA.getLinkIndexAndCount(resourceA, WINDROSE_W)
+
+		if countOutgoing != 2 {
+			t.Errorf("Expected 2 outgoing links, got %d", countOutgoing)
+		}
+		if countIncoming != 2 {
+			t.Errorf("Expected 2 incoming links, got %d", countIncoming)
 		}
 	})
 }
