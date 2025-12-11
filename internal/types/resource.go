@@ -12,6 +12,7 @@ import (
 	"math"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
@@ -667,9 +668,9 @@ func (r *Resource) sortAllLinks() {
 	for _, link := range r.links {
 		var key string
 		if link.Source == r {
-			key = fmt.Sprintf("source_%d", link.SourcePosition)
+			key = fmt.Sprintf("%d", link.SourcePosition)
 		} else if link.Target == r {
-			key = fmt.Sprintf("target_%d", link.TargetPosition)
+			key = fmt.Sprintf("%d", link.TargetPosition)
 		}
 		if key != "" {
 			links, ok := linkGroups[key]
@@ -691,19 +692,14 @@ func (r *Resource) sortAllLinks() {
 
 		log.Infof("Group %s: sorting %d links", key, len(links))
 
-		isSource := strings.HasPrefix(key, "source_")
-		var position Windrose
-		if isSource {
-			position = links[0].SourcePosition
-		} else {
-			position = links[0].TargetPosition
-		}
+		// Convert key to position
+		position, _ := strconv.Atoi(key)
 
 		// Log order before sorting
 		for i, link := range links {
 			var otherResource *Resource
 			var otherPos Windrose
-			if isSource {
+			if link.Source == r {
 				otherResource = link.Target
 				otherPos = link.TargetPosition
 			} else {
@@ -717,11 +713,14 @@ func (r *Resource) sortAllLinks() {
 
 		sort.Slice(links, func(i, j int) bool {
 			var pt1, pt2 image.Point
-			if isSource {
+			if links[i].Source == r {
 				pt1, _ = calcPosition(links[i].Target.GetBindings(), links[i].TargetPosition)
-				pt2, _ = calcPosition(links[j].Target.GetBindings(), links[j].TargetPosition)
 			} else {
 				pt1, _ = calcPosition(links[i].Source.GetBindings(), links[i].SourcePosition)
+			}
+			if links[j].Source == r {
+				pt2, _ = calcPosition(links[j].Target.GetBindings(), links[j].TargetPosition)
+			} else {
 				pt2, _ = calcPosition(links[j].Source.GetBindings(), links[j].SourcePosition)
 			}
 
@@ -742,7 +741,7 @@ func (r *Resource) sortAllLinks() {
 		for i, link := range links {
 			var otherResource *Resource
 			var otherPos Windrose
-			if isSource {
+			if link.Source == r {
 				otherResource = link.Target
 				otherPos = link.TargetPosition
 			} else {
@@ -768,9 +767,9 @@ func (r *Resource) updateLinksOrder(sortedLinks []*Link, groupKey string) {
 	for _, link := range r.links {
 		var key string
 		if link.Source == r {
-			key = fmt.Sprintf("source_%d", link.SourcePosition)
+			key = fmt.Sprintf("%d", link.SourcePosition)
 		} else if link.Target == r {
-			key = fmt.Sprintf("target_%d", link.TargetPosition)
+			key = fmt.Sprintf("%d", link.TargetPosition)
 		}
 
 		if key != groupKey {

@@ -905,10 +905,10 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 		return pt
 	}
 
-	// Get link count and index from the same position
-	index, count := l.getLinkIndexAndCount(resource, position, isSource)
-	log.Infof("Link offset calculation - Resource: %p, Position: %v, IsSource: %v, Index: %d, Count: %d",
-		resource, position, isSource, index, count)
+	// Get link count and index from the same position (unified counting)
+	index, count := l.getLinkIndexAndCount(resource, position)
+	log.Infof("Link offset calculation - Resource: %p, Position: %v, Index: %d, Count: %d",
+		resource, position, index, count)
 
 	if count <= 1 {
 		log.Infof("Single link, no offset needed - Position: (%d, %d)", pt.X, pt.Y)
@@ -935,15 +935,15 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 	return finalPt
 }
 
-func (l *Link) getLinkIndexAndCount(resource *Resource, position Windrose, isSource bool) (int, int) {
+func (l *Link) getLinkIndexAndCount(resource *Resource, position Windrose) (int, int) {
 	index := 0
 	count := 0
 
 	for _, link := range resource.links {
 		var linkPosition Windrose
-		if isSource && link.Source == resource {
+		if link.Source == resource {
 			linkPosition = link.SourcePosition
-		} else if !isSource && link.Target == resource {
+		} else if link.Target == resource {
 			linkPosition = link.TargetPosition
 		} else {
 			continue
@@ -952,7 +952,7 @@ func (l *Link) getLinkIndexAndCount(resource *Resource, position Windrose, isSou
 		if linkPosition == position {
 			if link == l {
 				index = count
-				log.Infof("Found current link at sorted index %d for position %v", index, position)
+				log.Infof("Found current link at sorted index %d for position %v (unified count)", index, position)
 			}
 			count++
 		}
