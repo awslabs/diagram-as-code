@@ -2072,7 +2072,7 @@ func TestGroupingOffsetMixedSourceTarget(t *testing.T) {
 
 		// A->B: A is source at position S
 		indexAB, countAB := linkAB.getLinkIndexAndCount(resourceA, WINDROSE_S)
-		if countAB != 1 {  // Only A:S->B at position S (C->A is at position N)
+		if countAB != 1 { // Only A:S->B at position S (C->A is at position N)
 			t.Errorf("Expected 1 link at A:S, got %d", countAB)
 		}
 		if indexAB != 0 {
