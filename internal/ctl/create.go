@@ -689,6 +689,44 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 	return nil
 }
 
+// checkUnusedResources warns about resources that are defined but not used in the diagram
+func checkUnusedResources(template *TemplateStruct) {
+	// Track which resources are referenced
+	usedResources := make(map[string]bool)
+
+	// Canvas is always used as the root
+	usedResources["Canvas"] = true
+
+	// Mark resources that are referenced as children or border children
+	for _, v := range template.Resources {
+		for _, child := range v.Children {
+			usedResources[child] = true
+		}
+		for _, borderChild := range v.BorderChildren {
+			usedResources[borderChild.Resource] = true
+		}
+	}
+
+	// Check for unused resources
+	var unusedResources []string
+	for resourceName := range template.Resources {
+		if _, ok := usedResources[resourceName]; !ok {
+			unusedResources = append(unusedResources, resourceName)
+		}
+	}
+
+	// Warn about unused resources
+	if len(unusedResources) > 0 {
+		log.Warnf("Found %d unused resource(s) that are defined but not referenced:", len(unusedResources))
+		for _, resourceName := range unusedResources {
+			if resource, ok := template.Resources[resourceName]; ok {
+				log.Warnf("  - %s (%s)", resourceName, resource.Type)
+			}
+		}
+		log.Warnf("These resources will not appear in the diagram. Consider removing them or adding them as children to other resources.")
+	}
+}
+
 func convertLabel(label *LinkLabel) (*types.LinkLabel, error) {
 	r := &types.LinkLabel{}
 	if label.Type != nil {

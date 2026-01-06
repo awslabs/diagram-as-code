@@ -128,6 +128,9 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 	log.Info("--- Associate children with parent resources ---")
 	associateCFnChildren(&template, ds, resources)
 
+	// Check for unused resources
+	checkUnusedResources(&template)
+
 	if generateDacFile {
 		log.Info("--- Generate dac file from CloudFormation template ---")
 		go generateDacFileFromCFnTemplate(&template, *outputfile)

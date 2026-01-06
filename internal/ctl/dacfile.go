@@ -147,6 +147,9 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 		return fmt.Errorf("failed to associate children: %w", err)
 	}
 
+	// Check for unused resources
+	checkUnusedResources(&template)
+
 	log.Info("Add Links section")
 	if err := loadLinks(&template, resources); err != nil {
 		return fmt.Errorf("failed to load links: %w", err)
