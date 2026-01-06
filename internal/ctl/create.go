@@ -710,7 +710,7 @@ func checkUnusedResources(template *TemplateStruct) {
 	// Check for unused resources
 	var unusedResources []string
 	for resourceName := range template.Resources {
-		if !usedResources[resourceName] {
+		if _, ok := usedResources[resourceName]; !ok {
 			unusedResources = append(unusedResources, resourceName)
 		}
 	}
@@ -719,8 +719,9 @@ func checkUnusedResources(template *TemplateStruct) {
 	if len(unusedResources) > 0 {
 		log.Warnf("Found %d unused resource(s) that are defined but not referenced:", len(unusedResources))
 		for _, resourceName := range unusedResources {
-			resourceType := template.Resources[resourceName].Type
-			log.Warnf("  - %s (%s)", resourceName, resourceType)
+			if resource, ok := template.Resources[resourceName]; ok {
+				log.Warnf("  - %s (%s)", resourceName, resource.Type)
+			}
 		}
 		log.Warnf("These resources will not appear in the diagram. Consider removing them or adding them as children to other resources.")
 	}
