@@ -693,10 +693,10 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 func checkUnusedResources(template *TemplateStruct) {
 	// Track which resources are referenced
 	usedResources := make(map[string]bool)
-	
+
 	// Canvas is always used as the root
 	usedResources["Canvas"] = true
-	
+
 	// Mark resources that are referenced as children or border children
 	for _, v := range template.Resources {
 		for _, child := range v.Children {
@@ -706,7 +706,7 @@ func checkUnusedResources(template *TemplateStruct) {
 			usedResources[borderChild.Resource] = true
 		}
 	}
-	
+
 	// Check for unused resources
 	var unusedResources []string
 	for resourceName := range template.Resources {
@@ -714,7 +714,7 @@ func checkUnusedResources(template *TemplateStruct) {
 			unusedResources = append(unusedResources, resourceName)
 		}
 	}
-	
+
 	// Warn about unused resources
 	if len(unusedResources) > 0 {
 		log.Warnf("Found %d unused resource(s) that are defined but not referenced:", len(unusedResources))
