@@ -82,8 +82,13 @@ func (l Link) Init(source *Resource, sourcePosition Windrose, sourceArrowHead Ar
 }
 
 // ResolveAutoPositions converts WINDROSE_AUTO to actual positions after layout is complete
-func (l *Link) ResolveAutoPositions() {
+func (l *Link) ResolveAutoPositions() error {
 	if l.SourcePosition == WINDROSE_AUTO || l.TargetPosition == WINDROSE_AUTO {
+		// Check for uninitialized resources
+		if l.Source.bindings == nil || l.Target.bindings == nil {
+			return fmt.Errorf("cannot calculate auto-positions for link: source or target resource is not properly initialized (possibly orphaned from Canvas hierarchy)")
+		}
+		
 		log.Info("Resolving auto-positions after layout")
 		autoSourcePos, autoTargetPos := AutoCalculatePositions(l.Source, l.Target)
 
@@ -94,6 +99,7 @@ func (l *Link) ResolveAutoPositions() {
 			l.TargetPosition = autoTargetPos
 		}
 	}
+	return nil
 }
 
 func (l *Link) SetType(s string) {

@@ -168,6 +168,9 @@ func (r *Resource) SetBindings(bindings image.Rectangle) {
 }
 
 func (r *Resource) GetBindings() image.Rectangle {
+	if r.bindings == nil {
+		return image.Rectangle{}
+	}
 	return *r.bindings
 }
 
