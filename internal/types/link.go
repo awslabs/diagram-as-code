@@ -88,7 +88,7 @@ func (l *Link) ResolveAutoPositions() error {
 		if l.Source.bindings == nil || l.Target.bindings == nil {
 			return fmt.Errorf("cannot calculate auto-positions for link: source or target resource is not properly initialized (possibly orphaned from Canvas hierarchy)")
 		}
-		
+
 		log.Info("Resolving auto-positions after layout")
 		autoSourcePos, autoTargetPos := AutoCalculatePositions(l.Source, l.Target)
 
