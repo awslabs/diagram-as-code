@@ -204,7 +204,9 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	// Resolve auto-positions after layout is complete
 	for _, resource := range resources {
 		for _, link := range resource.GetLinks() {
-			link.ResolveAutoPositions()
+			if err := link.ResolveAutoPositions(); err != nil {
+				return fmt.Errorf("failed to resolve auto-positions: %w", err)
+			}
 		}
 	}
 

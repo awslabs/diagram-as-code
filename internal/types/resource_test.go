@@ -429,3 +429,39 @@ func TestSetPadding(t *testing.T) {
 			result.Top, result.Right, result.Bottom, result.Left)
 	}
 }
+func TestGetBindings_NilCheck(t *testing.T) {
+	// Test case: bindings is nil (should return empty Rectangle)
+	r := &Resource{
+		bindings: nil,
+	}
+	
+	result := r.GetBindings()
+	expected := image.Rectangle{}
+	
+	if result != expected {
+		t.Errorf("Expected empty Rectangle for nil bindings, got %v", result)
+	}
+}
+
+func TestResolveAutoPositions_NilBindings(t *testing.T) {
+	// Test case: ResolveAutoPositions with nil bindings should return error
+	sourceResource := &Resource{bindings: nil}
+	targetResource := &Resource{bindings: nil}
+	
+	link := &Link{
+		Source:         sourceResource,
+		Target:         targetResource,
+		SourcePosition: WINDROSE_AUTO,
+		TargetPosition: WINDROSE_AUTO,
+	}
+	
+	err := link.ResolveAutoPositions()
+	if err == nil {
+		t.Error("Expected error for ResolveAutoPositions with nil bindings, got nil")
+	}
+	
+	expectedErrMsg := "cannot calculate auto-positions for link"
+	if !strings.Contains(err.Error(), expectedErrMsg) {
+		t.Errorf("Expected error message to contain '%s', got '%s'", expectedErrMsg, err.Error())
+	}
+}
