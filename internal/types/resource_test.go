@@ -468,26 +468,26 @@ func TestResolveAutoPositions_NilBindings(t *testing.T) {
 
 func TestCalculateTitleSize(t *testing.T) {
 	resource := new(Resource).Init()
-	
+
 	// Test with empty label
 	resource.label = ""
 	fontFace, err := resource.prepareFontFace(false, nil)
 	if err != nil {
 		t.Skipf("Skipping test due to font preparation error: %v", err)
 	}
-	
+
 	width, height := resource.calculateTitleSize(fontFace)
 	if width != 0 || height != 0 {
 		t.Errorf("Expected (0, 0) for empty label, got (%d, %d)", width, height)
 	}
-	
+
 	// Test with single line label
 	resource.label = "Test Label"
 	width, height = resource.calculateTitleSize(fontFace)
 	if width <= 0 || height <= 0 {
 		t.Errorf("Expected positive dimensions for single line label, got (%d, %d)", width, height)
 	}
-	
+
 	// Test with multi-line label
 	resource.label = "Line 1\nLine 2\nLine 3"
 	width2, height2 := resource.calculateTitleSize(fontFace)

@@ -912,7 +912,7 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 			bindingsWithTitle.Max.Y += titleHeight
 		}
 	}
-	
+
 	pt, _ := calcPosition(bindingsWithTitle, position)
 
 	// Check if grouping offset is enabled for this resource

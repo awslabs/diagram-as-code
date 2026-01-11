@@ -590,7 +590,7 @@ func (r *Resource) calculateTitleSize(fontFace font.Face) (textWidth, textHeight
 	if r.label == "" {
 		return 0, 0
 	}
-	
+
 	textHeight = 10
 	texts := strings.Split(r.label, "\n")
 	for _, line := range texts {
