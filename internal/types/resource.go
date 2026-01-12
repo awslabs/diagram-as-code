@@ -361,15 +361,7 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 	if err != nil {
 		return fmt.Errorf("failed to prepare font face: %w", err)
 	}
-	if r.label != "" {
-		textHeight = 10
-		texts := strings.Split(r.label, "\n")
-		for _, line := range texts {
-			textBindings, _ := font.BoundString(fontFace, line)
-			textWidth = max(textWidth, textBindings.Max.X.Floor()-textBindings.Min.X.Ceil()+20)
-			textHeight += textBindings.Max.Y.Floor() - textBindings.Min.Y.Ceil() + 10
-		}
-	}
+	textWidth, textHeight = r.calculateTitleSize(fontFace)
 	if r.bindings == nil {
 		r.bindings = defaultResourceValues(hasChildren, hasIcon).bindings
 	}
@@ -592,6 +584,21 @@ func (r *Resource) ZeroAdjust() error {
 
 func (r *Resource) IsDrawn() bool {
 	return r.drawn
+}
+
+func (r *Resource) calculateTitleSize(fontFace font.Face) (textWidth, textHeight int) {
+	if r.label == "" {
+		return 0, 0
+	}
+
+	textHeight = 10
+	texts := strings.Split(r.label, "\n")
+	for _, line := range texts {
+		textBindings, _ := font.BoundString(fontFace, line)
+		textWidth = max(textWidth, textBindings.Max.X.Floor()-textBindings.Min.X.Ceil()+20)
+		textHeight += textBindings.Max.Y.Floor() - textBindings.Min.Y.Ceil() + 10
+	}
+	return textWidth, textHeight
 }
 
 func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) {

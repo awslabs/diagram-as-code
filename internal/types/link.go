@@ -903,7 +903,17 @@ func abs(x int) int {
 }
 
 func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windrose, resource *Resource, isSource bool) image.Point {
-	pt, _ := calcPosition(bindings, position)
+	// Adjust bindings for SSE/S/SSW positions to include title height
+	bindingsWithTitle := bindings
+	if position == WINDROSE_SSE || position == WINDROSE_S || position == WINDROSE_SSW {
+		fontFace, err := resource.prepareFontFace(len(resource.children) > 0, nil)
+		if err == nil {
+			_, titleHeight := resource.calculateTitleSize(fontFace)
+			bindingsWithTitle.Max.Y += titleHeight
+		}
+	}
+
+	pt, _ := calcPosition(bindingsWithTitle, position)
 
 	// Check if grouping offset is enabled for this resource
 	if !resource.groupingOffset {

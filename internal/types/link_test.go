@@ -2396,3 +2396,54 @@ func TestAutoCalculatePositions(t *testing.T) {
 		t.Errorf("Expected target position N, got %v", targetPos)
 	}
 }
+
+func TestCalcPositionWithOffset_TitleHeight(t *testing.T) {
+	// Create a resource with a title
+	resource := new(Resource).Init()
+	resource.label = "Test Resource\nMulti-line"
+
+	// Set up resource bindings
+	bindings := image.Rect(100, 100, 200, 200)
+	resource.bindings = &bindings
+
+	// Create a link
+	link := &Link{}
+
+	// Test SSE position (should include title height)
+	point := link.calcPositionWithOffset(bindings, WINDROSE_SSE, resource, true)
+
+	// The Y coordinate should be greater than the original binding due to title height
+	if point.Y <= bindings.Max.Y {
+		t.Errorf("Expected Y coordinate to be adjusted for title height, got %d (original max Y: %d)", point.Y, bindings.Max.Y)
+	}
+
+	// Test S position (should include title height)
+	point = link.calcPositionWithOffset(bindings, WINDROSE_S, resource, true)
+	if point.Y <= bindings.Max.Y {
+		t.Errorf("Expected Y coordinate to be adjusted for title height for S position, got %d", point.Y)
+	}
+
+	// Test SSW position (should include title height)
+	point = link.calcPositionWithOffset(bindings, WINDROSE_SSW, resource, true)
+	if point.Y <= bindings.Max.Y {
+		t.Errorf("Expected Y coordinate to be adjusted for title height for SSW position, got %d", point.Y)
+	}
+
+	// Test N position (should NOT include title height)
+	point = link.calcPositionWithOffset(bindings, WINDROSE_N, resource, true)
+	expectedY := bindings.Min.Y
+	if point.Y != expectedY {
+		t.Errorf("Expected Y coordinate %d for N position (no title adjustment), got %d", expectedY, point.Y)
+	}
+
+	// Test with resource without title
+	resourceNoTitle := new(Resource).Init()
+	resourceNoTitle.label = ""
+	resourceNoTitle.bindings = &bindings
+
+	pointNoTitle := link.calcPositionWithOffset(bindings, WINDROSE_S, resourceNoTitle, true)
+	expectedYNoTitle := bindings.Max.Y
+	if pointNoTitle.Y != expectedYNoTitle {
+		t.Errorf("Expected Y coordinate %d for S position with no title, got %d", expectedYNoTitle, pointNoTitle.Y)
+	}
+}
