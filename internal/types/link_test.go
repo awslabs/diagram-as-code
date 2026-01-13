@@ -2396,7 +2396,7 @@ func TestGroupingOffsetDirectionCoordinateSelection(t *testing.T) {
 	t.Run("Vertical position uses X coordinate", func(t *testing.T) {
 		// Create sources with different X coordinates
 		source1 := new(Resource).Init()
-		source1.SetIconBounds(image.Rect(50, 200, 114, 264))  // X center: 82
+		source1.SetIconBounds(image.Rect(50, 200, 114, 264)) // X center: 82
 
 		source2 := new(Resource).Init()
 		source2.SetIconBounds(image.Rect(150, 200, 214, 264)) // X center: 182
@@ -2428,7 +2428,7 @@ func TestGroupingOffsetDirectionCoordinateSelection(t *testing.T) {
 
 		// Create sources with different Y coordinates
 		source1 := new(Resource).Init()
-		source1.SetIconBounds(image.Rect(200, 50, 264, 114))  // Y center: 82
+		source1.SetIconBounds(image.Rect(200, 50, 264, 114)) // Y center: 82
 
 		source2 := new(Resource).Init()
 		source2.SetIconBounds(image.Rect(200, 150, 264, 214)) // Y center: 182

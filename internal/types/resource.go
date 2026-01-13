@@ -42,21 +42,21 @@ const (
 )
 
 type Resource struct {
-	parent         *Resource // 親リソースへの参照
-	bindings       *image.Rectangle
-	iconImage      image.Image
-	iconBounds     image.Rectangle
-	borderColor    *color.RGBA
-	borderType     BORDER_TYPE
-	fillColor      color.RGBA
-	label          string
-	labelFont      string
-	labelColor     *color.RGBA
-	headerAlign    string // left(default) / center / right
-	margin         *Margin
-	padding        *Padding
-	direction      string
-	align          string
+	parent                  *Resource // 親リソースへの参照
+	bindings                *image.Rectangle
+	iconImage               image.Image
+	iconBounds              image.Rectangle
+	borderColor             *color.RGBA
+	borderType              BORDER_TYPE
+	fillColor               color.RGBA
+	label                   string
+	labelFont               string
+	labelColor              *color.RGBA
+	headerAlign             string // left(default) / center / right
+	margin                  *Margin
+	padding                 *Padding
+	direction               string
+	align                   string
 	links                   []*Link
 	children                []*Resource
 	borderChildren          []*BorderChild
