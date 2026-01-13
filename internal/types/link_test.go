@@ -2447,6 +2447,7 @@ func TestCalcPositionWithOffset_TitleHeight(t *testing.T) {
 		t.Errorf("Expected Y coordinate %d for S position with no title, got %d", expectedYNoTitle, pointNoTitle.Y)
 	}
 }
+
 // Tests for layout-aware auto-positioning
 
 func TestFindLowestCommonAncestor(t *testing.T) {
@@ -2455,29 +2456,29 @@ func TestFindLowestCommonAncestor(t *testing.T) {
 	parent := &Resource{direction: "horizontal", parent: root}
 	child1 := &Resource{parent: parent}
 	child2 := &Resource{parent: parent}
-	
+
 	// Test case 1: Same resource
 	result := findLowestCommonAncestor(child1, child1)
 	if result != child1 {
 		t.Errorf("Expected child1, got %v", result)
 	}
-	
+
 	// Test case 2: Siblings
 	result = findLowestCommonAncestor(child1, child2)
 	if result != parent {
 		t.Errorf("Expected parent, got %v", result)
 	}
-	
+
 	// Test case 3: Parent-child relationship
 	result = findLowestCommonAncestor(parent, child1)
 	if result != parent {
 		t.Errorf("Expected parent, got %v", result)
 	}
-	
+
 	// Test case 4: Different branches
 	otherParent := &Resource{direction: "vertical", parent: root}
 	otherChild := &Resource{parent: otherParent}
-	
+
 	result = findLowestCommonAncestor(child1, otherChild)
 	if result != root {
 		t.Errorf("Expected root, got %v", result)
@@ -2489,11 +2490,11 @@ func TestAutoCalculatePositionsVerticalLayout(t *testing.T) {
 	vpc := &Resource{direction: "vertical"}
 	elb := &Resource{parent: vpc}
 	instance := &Resource{parent: vpc}
-	
+
 	// Mock GetBindings for positioning
 	elb.bindings = &image.Rectangle{Min: image.Point{100, 50}, Max: image.Point{164, 114}}
 	instance.bindings = &image.Rectangle{Min: image.Point{50, 150}, Max: image.Point{114, 214}}
-	
+
 	// Test vertical layout (should use S->N)
 	sourcePos, targetPos := AutoCalculatePositions(elb, instance)
 	if sourcePos != WINDROSE_S || targetPos != WINDROSE_N {
@@ -2506,11 +2507,11 @@ func TestAutoCalculatePositionsHorizontalLayout(t *testing.T) {
 	container := &Resource{direction: "horizontal"}
 	source := &Resource{parent: container}
 	target := &Resource{parent: container}
-	
+
 	// Mock GetBindings for positioning (dx > dy)
 	source.bindings = &image.Rectangle{Min: image.Point{50, 100}, Max: image.Point{114, 164}}
 	target.bindings = &image.Rectangle{Min: image.Point{200, 100}, Max: image.Point{264, 164}}
-	
+
 	// Test horizontal layout (should use E->W)
 	sourcePos, targetPos := AutoCalculatePositions(source, target)
 	if sourcePos != WINDROSE_E || targetPos != WINDROSE_W {
@@ -2522,11 +2523,11 @@ func TestAutoCalculatePositionsNoCommonAncestor(t *testing.T) {
 	// Create resources with no common ancestor
 	source := &Resource{}
 	target := &Resource{}
-	
+
 	// Mock GetBindings for distance-based calculation
 	source.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{114, 114}}
 	target.bindings = &image.Rectangle{Min: image.Point{200, 50}, Max: image.Point{264, 114}}
-	
+
 	// Should fall back to distance-based logic (dx > dy)
 	sourcePos, targetPos := AutoCalculatePositions(source, target)
 	if sourcePos != WINDROSE_E || targetPos != WINDROSE_W {

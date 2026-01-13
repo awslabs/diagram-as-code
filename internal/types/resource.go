@@ -42,7 +42,7 @@ const (
 )
 
 type Resource struct {
-	parent         *Resource     // 親リソースへの参照
+	parent         *Resource // 親リソースへの参照
 	bindings       *image.Rectangle
 	iconImage      image.Image
 	iconBounds     image.Rectangle
@@ -254,7 +254,7 @@ func (r *Resource) AddChild(child *Resource) error {
 	if child == nil {
 		return fmt.Errorf("unknown child resource - please see debug logs with -v flag")
 	}
-	child.parent = r  // 親ポインタを設定
+	child.parent = r // 親ポインタを設定
 	r.children = append(r.children, child)
 	return nil
 }

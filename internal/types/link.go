@@ -872,7 +872,7 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 	if commonAncestor := findLowestCommonAncestor(source, target); commonAncestor != nil {
 		direction := commonAncestor.direction
 		log.Infof("Auto-positioning: Found common ancestor with direction=%s", direction)
-		
+
 		if direction == "vertical" {
 			// VerticalStack: use vertical connections
 			if dy > 0 {

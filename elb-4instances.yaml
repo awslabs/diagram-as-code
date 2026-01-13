@@ -1,0 +1,80 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - VPC
+    
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - ELB
+        - InstanceGroup
+    
+    ELB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Title: "Application Load Balancer"
+    
+    InstanceGroup:
+      Type: AWS::Diagram::HorizontalStack
+      Align: center
+      Children:
+        - Instance1
+        - Instance2
+        - Instance3
+        - Instance4
+    
+    Instance1:
+      Type: AWS::EC2::Instance
+      Title: "Web Server 1"
+    
+    Instance2:
+      Type: AWS::EC2::Instance
+      Title: "Web Server 2"
+    
+    Instance3:
+      Type: AWS::EC2::Instance
+      Title: "Web Server 3"
+    
+    Instance4:
+      Type: AWS::EC2::Instance
+      Title: "Web Server 4"
+
+  Links:
+    - Source: ELB
+      Target: Instance1
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ELB
+      Target: Instance2
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ELB
+      Target: Instance3
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ELB
+      Target: Instance4
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open
