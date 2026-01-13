@@ -492,15 +492,15 @@ func (l *Link) Draw(img *image.RGBA) error {
 	if l.Type == "orthogonal" {
 		controlPts = l.calculateOrthogonalPath(sourcePt, targetPt)
 	}
-	
+
 	autoPt1, autoPt2 := l.calculateAutoLabelPoints(sourcePt, targetPt, controlPts)
-	
+
 	// Determine appropriate pos based on line direction
 	autoPos := Windrose(4) // Default: East
 	if autoPt1.Y == autoPt2.Y {
 		// Horizontal line: use East/West for vertical label placement
 		if autoPt1.X < autoPt2.X {
-			autoPos = 4  // East for left-to-right horizontal line
+			autoPos = 4 // East for left-to-right horizontal line
 		} else {
 			autoPos = 12 // West for right-to-left horizontal line
 		}
@@ -512,7 +512,7 @@ func (l *Link) Draw(img *image.RGBA) error {
 			autoPos = 8 // South for bottom-to-top vertical line
 		}
 	}
-	
+
 	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
 		return fmt.Errorf("failed to draw auto right label: %w", err)
 	}
@@ -1035,7 +1035,7 @@ func (l *Link) getDirectionVector(position int) vector.Vector {
 func (l *Link) findLongestHorizontalSegment(controlPts []image.Point) (start, end image.Point, length int) {
 	maxLength := 0
 	var bestStart, bestEnd image.Point
-	
+
 	for i := 0; i < len(controlPts)-1; i++ {
 		p1, p2 := controlPts[i], controlPts[i+1]
 		if p1.Y == p2.Y { // horizontal segment
