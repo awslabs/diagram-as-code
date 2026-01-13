@@ -155,6 +155,8 @@ type LinkLabels struct {
 	SourceLeft  *LinkLabel `yaml:"SourceLeft"`
 	TargetRight *LinkLabel `yaml:"TargetRight"`
 	TargetLeft  *LinkLabel `yaml:"TargetLeft"`
+	Right       *LinkLabel `yaml:"Right"`
+	Left        *LinkLabel `yaml:"Left"`
 }
 
 type LinkLabel struct {
@@ -827,6 +829,20 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) e
 				return fmt.Errorf("failed to convert target left label: %w", err)
 			}
 			link.Labels.TargetLeft = label
+		}
+		if v.Labels.Right != nil {
+			label, err := convertLabel(v.Labels.Right)
+			if err != nil {
+				return fmt.Errorf("failed to convert auto right label: %w", err)
+			}
+			link.Labels.Right = label
+		}
+		if v.Labels.Left != nil {
+			label, err := convertLabel(v.Labels.Left)
+			if err != nil {
+				return fmt.Errorf("failed to convert auto left label: %w", err)
+			}
+			link.Labels.Left = label
 		}
 		source.AddLink(link)
 		target.AddLink(link)
