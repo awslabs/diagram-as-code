@@ -1051,25 +1051,127 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 func (l *Link) getLinkIndexAndCount(resource *Resource, position Windrose) (int, int) {
 	index := 0
 	count := 0
+	
+	// Determine if current link is incoming or outgoing for this resource
+	currentIsIncoming := (l.Target == resource)
 
 	for _, link := range resource.links {
 		var linkPosition Windrose
+		var isIncoming bool
+		
 		if link.Source == resource {
 			linkPosition = link.SourcePosition
+			isIncoming = false // outgoing
 		} else if link.Target == resource {
 			linkPosition = link.TargetPosition
+			isIncoming = true // incoming
 		} else {
 			continue
 		}
 
-		if linkPosition == position {
-			if link == l {
-				index = count
-				log.Infof("Found current link at sorted index %d for position %v (unified count)", index, position)
-			}
+		// Check if this link should be counted
+		shouldCount := linkPosition == position
+		if resource.groupingOffsetDirection {
+			// Directional grouping: only count links with same direction
+			shouldCount = shouldCount && (isIncoming == currentIsIncoming)
+		}
+
+		if shouldCount {
 			count++
 		}
 	}
+	
+	// For directional grouping, determine group order based on opposite coordinate averages
+	if resource.groupingOffsetDirection && count > 0 {
+		// Calculate average coordinates for both groups
+		var incomingAvg, outgoingAvg float64
+		var incomingCount, outgoingCount int
+		
+		for _, link := range resource.links {
+			var linkPosition Windrose
+			var isIncoming bool
+			
+			if link.Source == resource {
+				linkPosition = link.SourcePosition
+				isIncoming = false
+			} else if link.Target == resource {
+				linkPosition = link.TargetPosition
+				isIncoming = true
+			} else {
+				continue
+			}
+			
+			if linkPosition == position {
+				var coord float64
+				if isIncoming {
+					// Incoming: use source coordinate
+					if position == WINDROSE_N || position == WINDROSE_S {
+						// Vertical direction: use X coordinate
+						coord = float64(link.Source.iconBounds.Min.X + link.Source.iconBounds.Max.X) / 2.0
+					} else {
+						// Horizontal direction: use Y coordinate
+						coord = float64(link.Source.iconBounds.Min.Y + link.Source.iconBounds.Max.Y) / 2.0
+					}
+					incomingAvg += coord
+					incomingCount++
+				} else {
+					// Outgoing: use target coordinate
+					if position == WINDROSE_N || position == WINDROSE_S {
+						// Vertical direction: use X coordinate
+						coord = float64(link.Target.iconBounds.Min.X + link.Target.iconBounds.Max.X) / 2.0
+					} else {
+						// Horizontal direction: use Y coordinate
+						coord = float64(link.Target.iconBounds.Min.Y + link.Target.iconBounds.Max.Y) / 2.0
+					}
+					outgoingAvg += coord
+					outgoingCount++
+				}
+			}
+		}
+		
+		if incomingCount > 0 {
+			incomingAvg /= float64(incomingCount)
+		}
+		if outgoingCount > 0 {
+			outgoingAvg /= float64(outgoingCount)
+		}
+		
+		// Determine index based on group order (left/top group gets index 0)
+		if currentIsIncoming {
+			index = 0
+			if outgoingCount > 0 && incomingAvg >= outgoingAvg {
+				index = 1
+			}
+			log.Infof("Found current link at group index %d for position %v (incoming, avg=%.1f)", index, position, incomingAvg)
+		} else {
+			index = 0
+			if incomingCount > 0 && outgoingAvg > incomingAvg {
+				index = 1
+			}
+			log.Infof("Found current link at group index %d for position %v (outgoing, avg=%.1f)", index, position, outgoingAvg)
+		}
+	} else {
+		// Original behavior: sequential indexing
+		for _, link := range resource.links {
+			var linkPosition Windrose
+			if link.Source == resource {
+				linkPosition = link.SourcePosition
+			} else if link.Target == resource {
+				linkPosition = link.TargetPosition
+			} else {
+				continue
+			}
+
+			if linkPosition == position {
+				if link == l {
+					log.Infof("Found current link at sorted index %d for position %v (unified count)", index, position)
+					break
+				}
+				index++
+			}
+		}
+	}
+	
 	return index, count
 }
 
