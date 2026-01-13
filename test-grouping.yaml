@@ -1,0 +1,39 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Children:
+        - HNS
+        - Source1
+        - Source2
+        - Target1
+    HNS:
+      Type: AWS::Diagram::Resource
+      Title: Host Network Service (HNS)
+      Preset: Toolkit
+      Options:
+        GroupingOffset: true
+        GroupingOffsetDirection: true
+    Source1:
+      Type: AWS::EC2::Instance
+      Title: Source 1
+    Source2:
+      Type: AWS::EC2::Instance
+      Title: Source 2
+    Target1:
+      Type: AWS::EC2::Instance
+      Title: Target 1
+  Links:
+    - Source: Source1
+      Target: HNS
+    - Source: Source2
+      Target: HNS
+    - Source: HNS
+      Target: Target1

@@ -1034,9 +1034,9 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 		// index 0 = smaller coordinate average (minus side)
 		// index 1 = larger coordinate average (plus side)
 		if index == 0 {
-			groupingOffset = -5  // Minus side group
+			groupingOffset = -5 // Minus side group
 		} else {
-			groupingOffset = 5   // Plus side group
+			groupingOffset = 5 // Plus side group
 		}
 	} else {
 		// Original GroupingOffset: distribute links within group
