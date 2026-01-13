@@ -1023,13 +1023,25 @@ func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windros
 	log.Infof("Link offset calculation - Resource: %p, Position: %v, Index: %d, Count: %d",
 		resource, position, index, count)
 
-	if count <= 1 {
+	if count <= 1 && !resource.groupingOffsetDirection {
 		log.Infof("Single link, no offset needed - Position: (%d, %d)", pt.X, pt.Y)
 		return pt
 	}
 
-	// Offset calculation: distribute left and right from center
-	groupingOffset := int((float64(index) - float64(count-1)/2.0) * 10)
+	var groupingOffset int
+	if resource.groupingOffsetDirection {
+		// GroupingOffsetDirection: Apply group-based offset only
+		// index 0 = smaller coordinate average (minus side)
+		// index 1 = larger coordinate average (plus side)
+		if index == 0 {
+			groupingOffset = -5  // Minus side group
+		} else {
+			groupingOffset = 5   // Plus side group
+		}
+	} else {
+		// Original GroupingOffset: distribute links within group
+		groupingOffset = int((float64(index) - float64(count-1)/2.0) * 10)
+	}
 	log.Infof("Calculated grouping offset: %d (index=%d, count=%d)", groupingOffset, index, count)
 
 	// Apply offset in perpendicular direction to direction vector
