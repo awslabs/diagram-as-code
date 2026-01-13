@@ -513,11 +513,55 @@ func (l *Link) Draw(img *image.RGBA) error {
 		}
 	}
 
-	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
-		return fmt.Errorf("failed to draw auto right label: %w", err)
-	}
-	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
-		return fmt.Errorf("failed to draw auto left label: %w", err)
+	// For orthogonal links, check acute angle sides and adjust label placement
+	if l.Type == "orthogonal" && len(controlPts) > 0 {
+		// Create complete path including source and target points
+		fullPath := make([]image.Point, 0, len(controlPts)+2)
+		fullPath = append(fullPath, sourcePt)
+		fullPath = append(fullPath, controlPts...)
+		fullPath = append(fullPath, targetPt)
+		
+		leftIsAcute, rightIsAcute := l.getAcuteAngleSide(fullPath)
+		
+		// Left label: move to "n to n+1" side if Left side has acute angle
+		if l.Labels.Left != nil {
+			if leftIsAcute {
+				// Left side has acute angle → reverse source/target and Right/Left to move to "n to n+1" side
+				reversedAutoPos := Windrose((int(autoPos) + 8) % 16)
+				if err := l.drawLabel(img, reversedAutoPos, l.Target, l.Source, autoPt2, autoPt1, "Right", l.Labels.Left); err != nil {
+					return fmt.Errorf("failed to draw auto left label (reversed): %w", err)
+				}
+			} else {
+				// No acute angle on Left side → default placement ("n-1 to n" side)
+				if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
+					return fmt.Errorf("failed to draw auto left label: %w", err)
+				}
+			}
+		}
+
+		// Right label: move to "n to n+1" side if Right side has acute angle
+		if l.Labels.Right != nil {
+			if rightIsAcute {
+				// Right side has acute angle → reverse source/target and Right/Left to move to "n to n+1" side
+				reversedAutoPos := Windrose((int(autoPos) + 8) % 16)
+				if err := l.drawLabel(img, reversedAutoPos, l.Target, l.Source, autoPt2, autoPt1, "Left", l.Labels.Right); err != nil {
+					return fmt.Errorf("failed to draw auto right label (reversed): %w", err)
+				}
+			} else {
+				// No acute angle on Right side → default placement ("n-1 to n" side)
+				if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
+					return fmt.Errorf("failed to draw auto right label: %w", err)
+				}
+			}
+		}
+	} else {
+		// Non-orthogonal or no control points, use default placement
+		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
+			return fmt.Errorf("failed to draw auto right label: %w", err)
+		}
+		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
+			return fmt.Errorf("failed to draw auto left label: %w", err)
+		}
 	}
 
 	l.drawn = true
@@ -1110,10 +1154,85 @@ func (l *Link) findLongestHorizontalSegment(controlPts []image.Point) (start, en
 	return bestStart, bestEnd, maxLength
 }
 
+// findPerpendicularSegments finds if the segment after the longest horizontal segment forms acute angles
+// Returns: hasLeftAcute=true if Left side has acute angle, hasRightAcute=true if Right side has acute angle
+func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute, hasRightAcute bool) {
+	if len(controlPts) < 3 {
+		return false, false
+	}
+
+	// Find the longest horizontal segment index
+	maxLength := 0
+	bestIndex := -1
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1, p2 := controlPts[i], controlPts[i+1]
+		if p1.Y == p2.Y { // horizontal segment
+			segLength := int(math.Abs(float64(p2.X - p1.X)))
+			if segLength > maxLength {
+				maxLength = segLength
+				bestIndex = i
+			}
+		}
+	}
+
+	if bestIndex == -1 {
+		return false, false
+	}
+
+	// Check segment[n] to segment[n+1] for acute angles
+	if bestIndex+1 < len(controlPts)-1 {
+		// segment[n]: controlPts[bestIndex] -> controlPts[bestIndex+1]
+		// segment[n+1]: controlPts[bestIndex+1] -> controlPts[bestIndex+2]
+		seg1 := vector.New(
+			float64(controlPts[bestIndex+1].X-controlPts[bestIndex].X),
+			float64(controlPts[bestIndex+1].Y-controlPts[bestIndex].Y),
+		)
+		seg2 := vector.New(
+			float64(controlPts[bestIndex+2].X-controlPts[bestIndex+1].X),
+			float64(controlPts[bestIndex+2].Y-controlPts[bestIndex+1].Y),
+		)
+
+		seg1Norm := seg1.Normalize()
+		seg2Norm := seg2.Normalize()
+		crossProduct := seg1Norm.Cross(seg2Norm)
+		dotProduct := seg1Norm.Dot(seg2Norm)
+		
+		// Debug output
+		log.Infof("Acute check: seg1=%v, seg2=%v, dotProduct=%f, crossProduct=%f", seg1, seg2, dotProduct, crossProduct)
+		
+		// Check if it's a 90-degree turn (perpendicular)
+		if math.Abs(dotProduct) < 0.1 {
+			// Right side acute: crossProduct > 0 (90-degree counterclockwise)
+			if crossProduct > 0 {
+				hasRightAcute = true
+			}
+			// Left side acute: crossProduct < 0 (90-degree clockwise, 270-degree counterclockwise)
+			if crossProduct < 0 {
+				hasLeftAcute = true
+			}
+		}
+	}
+
+	return hasLeftAcute, hasRightAcute
+}
+
+// getAcuteAngleSide determines which sides of the longest horizontal segment have acute angles
+// Returns: leftIsAcute=true if Left side has acute angle, rightIsAcute=true if Right side has acute angle
+func (l *Link) getAcuteAngleSide(controlPts []image.Point) (leftIsAcute, rightIsAcute bool) {
+	hasLeftAcute, hasRightAcute := l.findPerpendicularSegments(controlPts)
+	return hasLeftAcute, hasRightAcute
+}
+
 // calculateAutoLabelPoints calculates points for auto label positioning
 func (l *Link) calculateAutoLabelPoints(sourcePt, targetPt image.Point, controlPts []image.Point) (image.Point, image.Point) {
 	if l.Type == "orthogonal" && len(controlPts) > 0 {
-		start, end, length := l.findLongestHorizontalSegment(controlPts)
+		// Create complete path including source and target points
+		fullPath := make([]image.Point, 0, len(controlPts)+2)
+		fullPath = append(fullPath, sourcePt)
+		fullPath = append(fullPath, controlPts...)
+		fullPath = append(fullPath, targetPt)
+		
+		start, end, length := l.findLongestHorizontalSegment(fullPath)
 		if length > 0 {
 			return start, end
 		}
