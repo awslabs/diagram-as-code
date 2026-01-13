@@ -520,9 +520,9 @@ func (l *Link) Draw(img *image.RGBA) error {
 		fullPath = append(fullPath, sourcePt)
 		fullPath = append(fullPath, controlPts...)
 		fullPath = append(fullPath, targetPt)
-		
+
 		leftIsAcute, rightIsAcute := l.getAcuteAngleSide(fullPath)
-		
+
 		// AutoLeft label: move to "n to n+1" side if Left side has acute angle
 		if l.Labels.AutoLeft != nil {
 			if leftIsAcute {
@@ -1196,10 +1196,10 @@ func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute
 		seg2Norm := seg2.Normalize()
 		crossProduct := seg1Norm.Cross(seg2Norm)
 		dotProduct := seg1Norm.Dot(seg2Norm)
-		
+
 		// Debug output
 		log.Infof("Acute check: seg1=%v, seg2=%v, dotProduct=%f, crossProduct=%f", seg1, seg2, dotProduct, crossProduct)
-		
+
 		// Check if it's a 90-degree turn (perpendicular)
 		if math.Abs(dotProduct) < 0.1 {
 			// Right side acute: crossProduct > 0 (90-degree counterclockwise)
@@ -1231,7 +1231,7 @@ func (l *Link) calculateAutoLabelPoints(sourcePt, targetPt image.Point, controlP
 		fullPath = append(fullPath, sourcePt)
 		fullPath = append(fullPath, controlPts...)
 		fullPath = append(fullPath, targetPt)
-		
+
 		start, end, length := l.findLongestHorizontalSegment(fullPath)
 		if length > 0 {
 			return start, end

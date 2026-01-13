@@ -2610,26 +2610,26 @@ func TestFindPerpendicularSegments(t *testing.T) {
 	// segment[2]: vertical down (200,100) -> (200,200)
 	controlPts1 := []image.Point{
 		{X: 0, Y: 0},
-		{X: 0, Y: 100},    // end of segment[0]
-		{X: 200, Y: 100},  // end of segment[1] (longest horizontal)
-		{X: 200, Y: 200},  // end of segment[2]
+		{X: 0, Y: 100},   // end of segment[0]
+		{X: 200, Y: 100}, // end of segment[1] (longest horizontal)
+		{X: 200, Y: 200}, // end of segment[2]
 	}
 
 	t.Logf("Test case 1 - Perfect 90-degree segments:")
 	t.Logf("Control points: %v", controlPts1)
-	t.Logf("Segment[0]: (%d,%d) -> (%d,%d) = vector(%d,%d)", 
+	t.Logf("Segment[0]: (%d,%d) -> (%d,%d) = vector(%d,%d)",
 		controlPts1[0].X, controlPts1[0].Y, controlPts1[1].X, controlPts1[1].Y,
 		controlPts1[1].X-controlPts1[0].X, controlPts1[1].Y-controlPts1[0].Y)
-	t.Logf("Segment[1]: (%d,%d) -> (%d,%d) = vector(%d,%d)", 
+	t.Logf("Segment[1]: (%d,%d) -> (%d,%d) = vector(%d,%d)",
 		controlPts1[1].X, controlPts1[1].Y, controlPts1[2].X, controlPts1[2].Y,
 		controlPts1[2].X-controlPts1[1].X, controlPts1[2].Y-controlPts1[1].Y)
-	t.Logf("Segment[2]: (%d,%d) -> (%d,%d) = vector(%d,%d)", 
+	t.Logf("Segment[2]: (%d,%d) -> (%d,%d) = vector(%d,%d)",
 		controlPts1[2].X, controlPts1[2].Y, controlPts1[3].X, controlPts1[3].Y,
 		controlPts1[3].X-controlPts1[2].X, controlPts1[3].Y-controlPts1[2].Y)
 
 	hasLeft90, hasRight90 := link.findPerpendicularSegments(controlPts1)
 	t.Logf("Result: hasLeft90=%v, hasRight90=%v", hasLeft90, hasRight90)
-	
+
 	// Left側は90度時計回り(270度反時計回り)なので false、Right側は90度反時計回りなので true
 	if hasLeft90 {
 		t.Errorf("Expected no left 90-degree segment (actually 270-degree counterclockwise), got true")
@@ -2651,19 +2651,19 @@ func TestFindPerpendicularSegments(t *testing.T) {
 
 	t.Logf("\nTest case 2 - 270-degree segments:")
 	t.Logf("Control points: %v", controlPts2)
-	t.Logf("Segment[0]: (%d,%d) -> (%d,%d) = vector(%d,%d)", 
+	t.Logf("Segment[0]: (%d,%d) -> (%d,%d) = vector(%d,%d)",
 		controlPts2[0].X, controlPts2[0].Y, controlPts2[1].X, controlPts2[1].Y,
 		controlPts2[1].X-controlPts2[0].X, controlPts2[1].Y-controlPts2[0].Y)
-	t.Logf("Segment[1]: (%d,%d) -> (%d,%d) = vector(%d,%d)", 
+	t.Logf("Segment[1]: (%d,%d) -> (%d,%d) = vector(%d,%d)",
 		controlPts2[1].X, controlPts2[1].Y, controlPts2[2].X, controlPts2[2].Y,
 		controlPts2[2].X-controlPts2[1].X, controlPts2[2].Y-controlPts2[1].Y)
-	t.Logf("Segment[2]: (%d,%d) -> (%d,%d) = vector(%d,%d)", 
+	t.Logf("Segment[2]: (%d,%d) -> (%d,%d) = vector(%d,%d)",
 		controlPts2[2].X, controlPts2[2].Y, controlPts2[3].X, controlPts2[3].Y,
 		controlPts2[3].X-controlPts2[2].X, controlPts2[3].Y-controlPts2[2].Y)
 
 	hasLeft90_2, hasRight90_2 := link.findPerpendicularSegments(controlPts2)
 	t.Logf("Result: hasLeft90=%v, hasRight90=%v", hasLeft90_2, hasRight90_2)
-	
+
 	// 修正: Left側は垂直下向き→水平右向きで90度反時計回りなので true
 	// Right側は水平右向き→垂直下向きで270度反時計回りなので false
 	if !hasLeft90_2 {
@@ -2685,7 +2685,7 @@ func TestFindPerpendicularSegments(t *testing.T) {
 	t.Logf("Control points: %v", controlPts3)
 	hasLeft90_3, hasRight90_3 := link.findPerpendicularSegments(controlPts3)
 	t.Logf("Result: hasLeft90=%v, hasRight90=%v", hasLeft90_3, hasRight90_3)
-	
+
 	// segment[1]: 水平右向き {200, 0}
 	// segment[2]: 垂直下向き {0, -100}
 	// crossProduct = 200 * (-100) - 0 * 0 = -20000 < 0 → Left側鋭角
@@ -2747,15 +2747,15 @@ func TestGetAcuteAngleSide(t *testing.T) {
 
 	// Test case 1: Left side has acute angle (90-degree)
 	controlPts1 := []image.Point{
-		{X: 0, Y: 100},   // start
-		{X: 0, Y: 0},     // end of segment[0] (vertical down)
-		{X: 200, Y: 0},   // end of segment[1] (horizontal right, longest)
+		{X: 0, Y: 100},    // start
+		{X: 0, Y: 0},      // end of segment[0] (vertical down)
+		{X: 200, Y: 0},    // end of segment[1] (horizontal right, longest)
 		{X: 200, Y: -100}, // end of segment[2] (vertical down)
 	}
 
 	leftIsAcute1, rightIsAcute1 := link.getAcuteAngleSide(controlPts1)
 	t.Logf("Test case 1 - Left acute: leftIsAcute=%v, rightIsAcute=%v", leftIsAcute1, rightIsAcute1)
-	
+
 	if !leftIsAcute1 {
 		t.Errorf("Expected left side to be acute (90-degree), got false")
 	}
@@ -2773,7 +2773,7 @@ func TestGetAcuteAngleSide(t *testing.T) {
 
 	leftIsAcute2, rightIsAcute2 := link.getAcuteAngleSide(controlPts2)
 	t.Logf("Test case 2 - Right acute: leftIsAcute=%v, rightIsAcute=%v", leftIsAcute2, rightIsAcute2)
-	
+
 	if leftIsAcute2 {
 		t.Errorf("Expected left side not to be acute, got true")
 	}
@@ -2783,15 +2783,15 @@ func TestGetAcuteAngleSide(t *testing.T) {
 
 	// Test case 3: Both sides have acute angles
 	controlPts3 := []image.Point{
-		{X: 0, Y: 0},     // start
-		{X: 0, Y: -100},  // end of segment[0] (vertical down)
+		{X: 0, Y: 0},      // start
+		{X: 0, Y: -100},   // end of segment[0] (vertical down)
 		{X: 200, Y: -100}, // end of segment[1] (horizontal right, longest)
-		{X: 200, Y: 0},   // end of segment[2] (vertical up)
+		{X: 200, Y: 0},    // end of segment[2] (vertical up)
 	}
 
 	leftIsAcute3, rightIsAcute3 := link.getAcuteAngleSide(controlPts3)
 	t.Logf("Test case 3 - Right acute only: leftIsAcute=%v, rightIsAcute=%v", leftIsAcute3, rightIsAcute3)
-	
+
 	if leftIsAcute3 {
 		t.Errorf("Expected left side not to be acute, got true")
 	}
@@ -2804,7 +2804,7 @@ func TestAcuteAngleLabelPlacement(t *testing.T) {
 	// Create mock resources
 	source := &Resource{}
 	target := &Resource{}
-	
+
 	// Set up resource bounds
 	sourceBounds := image.Rect(0, 0, 100, 50)
 	targetBounds := image.Rect(300, 150, 400, 200)
@@ -2824,10 +2824,10 @@ func TestAcuteAngleLabelPlacement(t *testing.T) {
 
 	// Test with control points where left side is acute
 	controlPts := []image.Point{
-		{X: 50, Y: 100},  // start
-		{X: 50, Y: 50},   // end of segment[0] (vertical down)
-		{X: 250, Y: 50},  // end of segment[1] (horizontal right, longest)
-		{X: 250, Y: 0},   // end of segment[2] (vertical down)
+		{X: 50, Y: 100}, // start
+		{X: 50, Y: 50},  // end of segment[0] (vertical down)
+		{X: 250, Y: 50}, // end of segment[1] (horizontal right, longest)
+		{X: 250, Y: 0},  // end of segment[2] (vertical down)
 	}
 
 	leftIsAcute, rightIsAcute := link.getAcuteAngleSide(controlPts)
