@@ -50,8 +50,8 @@ type LinkLabels struct {
 	SourceLeft  *LinkLabel
 	TargetRight *LinkLabel
 	TargetLeft  *LinkLabel
-	Right       *LinkLabel
-	Left        *LinkLabel
+	AutoRight   *LinkLabel
+	AutoLeft    *LinkLabel
 }
 
 type LinkLabel struct {
@@ -523,43 +523,43 @@ func (l *Link) Draw(img *image.RGBA) error {
 		
 		leftIsAcute, rightIsAcute := l.getAcuteAngleSide(fullPath)
 		
-		// Left label: move to "n to n+1" side if Left side has acute angle
-		if l.Labels.Left != nil {
+		// AutoLeft label: move to "n to n+1" side if Left side has acute angle
+		if l.Labels.AutoLeft != nil {
 			if leftIsAcute {
 				// Left side has acute angle → reverse source/target and Right/Left to move to "n to n+1" side
 				reversedAutoPos := Windrose((int(autoPos) + 8) % 16)
-				if err := l.drawLabel(img, reversedAutoPos, l.Target, l.Source, autoPt2, autoPt1, "Right", l.Labels.Left); err != nil {
+				if err := l.drawLabel(img, reversedAutoPos, l.Target, l.Source, autoPt2, autoPt1, "Right", l.Labels.AutoLeft); err != nil {
 					return fmt.Errorf("failed to draw auto left label (reversed): %w", err)
 				}
 			} else {
 				// No acute angle on Left side → default placement ("n-1 to n" side)
-				if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
+				if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.AutoLeft); err != nil {
 					return fmt.Errorf("failed to draw auto left label: %w", err)
 				}
 			}
 		}
 
-		// Right label: move to "n to n+1" side if Right side has acute angle
-		if l.Labels.Right != nil {
+		// AutoRight label: move to "n to n+1" side if Right side has acute angle
+		if l.Labels.AutoRight != nil {
 			if rightIsAcute {
 				// Right side has acute angle → reverse source/target and Right/Left to move to "n to n+1" side
 				reversedAutoPos := Windrose((int(autoPos) + 8) % 16)
-				if err := l.drawLabel(img, reversedAutoPos, l.Target, l.Source, autoPt2, autoPt1, "Left", l.Labels.Right); err != nil {
+				if err := l.drawLabel(img, reversedAutoPos, l.Target, l.Source, autoPt2, autoPt1, "Left", l.Labels.AutoRight); err != nil {
 					return fmt.Errorf("failed to draw auto right label (reversed): %w", err)
 				}
 			} else {
 				// No acute angle on Right side → default placement ("n-1 to n" side)
-				if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
+				if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.AutoRight); err != nil {
 					return fmt.Errorf("failed to draw auto right label: %w", err)
 				}
 			}
 		}
 	} else {
 		// Non-orthogonal or no control points, use default placement
-		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
+		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.AutoRight); err != nil {
 			return fmt.Errorf("failed to draw auto right label: %w", err)
 		}
-		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
+		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.AutoLeft); err != nil {
 			return fmt.Errorf("failed to draw auto left label: %w", err)
 		}
 	}
