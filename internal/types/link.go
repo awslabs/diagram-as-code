@@ -922,7 +922,7 @@ func findLowestCommonAncestor(source, target *Resource) *Resource {
 	// Step 2: Traverse target's ancestors and find first match
 	current = target
 	for current != nil {
-		if ancestors[current] {
+		if _, ok := ancestors[current]; ok {
 			return current // First match is LCA
 		}
 		current = current.GetParent()
