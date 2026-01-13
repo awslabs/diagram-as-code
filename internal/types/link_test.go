@@ -2447,3 +2447,69 @@ func TestCalcPositionWithOffset_TitleHeight(t *testing.T) {
 		t.Errorf("Expected Y coordinate %d for S position with no title, got %d", expectedYNoTitle, pointNoTitle.Y)
 	}
 }
+
+func TestFindLongestHorizontalSegment(t *testing.T) {
+	link := &Link{}
+
+	// Test case 1: Single horizontal segment
+	controlPts1 := []image.Point{
+		{X: 100, Y: 200},
+		{X: 300, Y: 200}, // horizontal: length 200
+		{X: 300, Y: 400},
+	}
+	start, end, length := link.findLongestHorizontalSegment(controlPts1)
+	expectedStart := image.Point{X: 100, Y: 200}
+	expectedEnd := image.Point{X: 300, Y: 200}
+	expectedLength := 200
+
+	if start != expectedStart || end != expectedEnd || length != expectedLength {
+		t.Errorf("Expected start=%v, end=%v, length=%d, got start=%v, end=%v, length=%d",
+			expectedStart, expectedEnd, expectedLength, start, end, length)
+	}
+
+	// Test case 2: Multiple horizontal segments, find longest
+	controlPts2 := []image.Point{
+		{X: 100, Y: 200},
+		{X: 200, Y: 200}, // horizontal: length 100
+		{X: 200, Y: 300},
+		{X: 500, Y: 300}, // horizontal: length 300 (longest)
+		{X: 500, Y: 400},
+		{X: 600, Y: 400}, // horizontal: length 100
+	}
+	start2, end2, length2 := link.findLongestHorizontalSegment(controlPts2)
+	expectedStart2 := image.Point{X: 200, Y: 300}
+	expectedEnd2 := image.Point{X: 500, Y: 300}
+	expectedLength2 := 300
+
+	if start2 != expectedStart2 || end2 != expectedEnd2 || length2 != expectedLength2 {
+		t.Errorf("Expected start=%v, end=%v, length=%d, got start=%v, end=%v, length=%d",
+			expectedStart2, expectedEnd2, expectedLength2, start2, end2, length2)
+	}
+
+	// Test case 3: No horizontal segments
+	controlPts3 := []image.Point{
+		{X: 100, Y: 200},
+		{X: 100, Y: 300}, // vertical
+		{X: 200, Y: 300},
+		{X: 200, Y: 400}, // vertical
+	}
+	start3, end3, length3 := link.findLongestHorizontalSegment(controlPts3)
+	expectedStart3 := image.Point{X: 100, Y: 300}
+	expectedEnd3 := image.Point{X: 200, Y: 300}
+	expectedLength3 := 100
+
+	if start3 != expectedStart3 || end3 != expectedEnd3 || length3 != expectedLength3 {
+		t.Errorf("Expected start=%v, end=%v, length=%d, got start=%v, end=%v, length=%d",
+			expectedStart3, expectedEnd3, expectedLength3, start3, end3, length3)
+	}
+
+	// Test case 4: Empty control points
+	controlPts4 := []image.Point{}
+	start4, end4, length4 := link.findLongestHorizontalSegment(controlPts4)
+	expectedZero := image.Point{}
+
+	if start4 != expectedZero || end4 != expectedZero || length4 != 0 {
+		t.Errorf("Expected zero values for empty input, got start=%v, end=%v, length=%d",
+			start4, end4, length4)
+	}
+}
