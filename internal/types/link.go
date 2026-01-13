@@ -50,6 +50,8 @@ type LinkLabels struct {
 	SourceLeft  *LinkLabel
 	TargetRight *LinkLabel
 	TargetLeft  *LinkLabel
+	Right       *LinkLabel
+	Left        *LinkLabel
 }
 
 type LinkLabel struct {
@@ -484,6 +486,40 @@ func (l *Link) Draw(img *image.RGBA) error {
 	} else {
 		return fmt.Errorf("unknown link type: %s", l.Type)
 	}
+
+	// Draw auto-positioned labels
+	var controlPts []image.Point
+	if l.Type == "orthogonal" {
+		controlPts = l.calculateOrthogonalPath(sourcePt, targetPt)
+	}
+
+	autoPt1, autoPt2 := l.calculateAutoLabelPoints(sourcePt, targetPt, controlPts)
+
+	// Determine appropriate pos based on line direction
+	autoPos := Windrose(4) // Default: East
+	if autoPt1.Y == autoPt2.Y {
+		// Horizontal line: use East/West for vertical label placement
+		if autoPt1.X < autoPt2.X {
+			autoPos = 4 // East for left-to-right horizontal line
+		} else {
+			autoPos = 12 // West for right-to-left horizontal line
+		}
+	} else if autoPt1.X == autoPt2.X {
+		// Vertical line: use North/South for horizontal label placement
+		if autoPt1.Y > autoPt2.Y {
+			autoPos = 0 // North for top-to-bottom vertical line
+		} else {
+			autoPos = 8 // South for bottom-to-top vertical line
+		}
+	}
+
+	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
+		return fmt.Errorf("failed to draw auto right label: %w", err)
+	}
+	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
+		return fmt.Errorf("failed to draw auto left label: %w", err)
+	}
+
 	l.drawn = true
 	return nil
 }
@@ -993,4 +1029,34 @@ func (l *Link) getDirectionVector(position int) vector.Vector {
 	default:
 		return vector.New(0, -1) // Default to North
 	}
+}
+
+// findLongestHorizontalSegment finds the longest horizontal segment in control points
+func (l *Link) findLongestHorizontalSegment(controlPts []image.Point) (start, end image.Point, length int) {
+	maxLength := 0
+	var bestStart, bestEnd image.Point
+
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1, p2 := controlPts[i], controlPts[i+1]
+		if p1.Y == p2.Y { // horizontal segment
+			segLength := int(math.Abs(float64(p2.X - p1.X)))
+			if segLength > maxLength {
+				maxLength = segLength
+				bestStart, bestEnd = p1, p2
+			}
+		}
+	}
+	return bestStart, bestEnd, maxLength
+}
+
+// calculateAutoLabelPoints calculates points for auto label positioning
+func (l *Link) calculateAutoLabelPoints(sourcePt, targetPt image.Point, controlPts []image.Point) (image.Point, image.Point) {
+	if l.Type == "orthogonal" && len(controlPts) > 0 {
+		start, end, length := l.findLongestHorizontalSegment(controlPts)
+		if length > 0 {
+			return start, end
+		}
+	}
+	// Fallback to straight line points
+	return sourcePt, targetPt
 }
