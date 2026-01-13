@@ -42,27 +42,28 @@ const (
 )
 
 type Resource struct {
-	parent         *Resource // 親リソースへの参照
-	bindings       *image.Rectangle
-	iconImage      image.Image
-	iconBounds     image.Rectangle
-	borderColor    *color.RGBA
-	borderType     BORDER_TYPE
-	fillColor      color.RGBA
-	label          string
-	labelFont      string
-	labelColor     *color.RGBA
-	headerAlign    string // left(default) / center / right
-	margin         *Margin
-	padding        *Padding
-	direction      string
-	align          string
-	links          []*Link
-	children       []*Resource
-	borderChildren []*BorderChild
-	iconfill       ResourceIconFill
-	drawn          bool
-	groupingOffset bool // Flag: if true, enable grouping offset for links
+	parent                  *Resource // 親リソースへの参照
+	bindings                *image.Rectangle
+	iconImage               image.Image
+	iconBounds              image.Rectangle
+	borderColor             *color.RGBA
+	borderType              BORDER_TYPE
+	fillColor               color.RGBA
+	label                   string
+	labelFont               string
+	labelColor              *color.RGBA
+	headerAlign             string // left(default) / center / right
+	margin                  *Margin
+	padding                 *Padding
+	direction               string
+	align                   string
+	links                   []*Link
+	children                []*Resource
+	borderChildren          []*BorderChild
+	iconfill                ResourceIconFill
+	drawn                   bool
+	groupingOffset          bool // Flag: if true, enable grouping offset for links
+	groupingOffsetDirection bool // Flag: if true, enable directional grouping offset for links
 }
 
 type ResourceIconFill struct {
@@ -232,6 +233,10 @@ func (r *Resource) SetIconFill(t ICON_FILL_TYPE, color *color.RGBA) {
 
 func (r *Resource) SetGroupingOffset(enable bool) {
 	r.groupingOffset = enable
+}
+
+func (r *Resource) SetGroupingOffsetDirection(enable bool) {
+	r.groupingOffsetDirection = enable
 }
 
 func (r *Resource) AddLink(link *Link) {

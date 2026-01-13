@@ -2278,6 +2278,178 @@ func TestGroupingOffsetMultipleIncomingLinks(t *testing.T) {
 	})
 }
 
+func TestGroupingOffsetDirection(t *testing.T) {
+	// Setup ELB resource
+	elb := new(Resource).Init()
+	elb.SetBindings(image.Rect(100, 100, 164, 164))
+	elb.SetIconBounds(image.Rect(100, 100, 164, 164))
+
+	// Setup source resources
+	source1 := new(Resource).Init()
+	source1.SetBindings(image.Rect(0, 200, 64, 264))
+	source1.SetIconBounds(image.Rect(0, 200, 64, 264))
+
+	source2 := new(Resource).Init()
+	source2.SetBindings(image.Rect(200, 200, 264, 264))
+	source2.SetIconBounds(image.Rect(200, 200, 264, 264))
+
+	// Setup target resources
+	target1 := new(Resource).Init()
+	target1.SetBindings(image.Rect(0, 300, 64, 364))
+	target1.SetIconBounds(image.Rect(0, 300, 64, 364))
+
+	target2 := new(Resource).Init()
+	target2.SetBindings(image.Rect(200, 300, 264, 364))
+	target2.SetIconBounds(image.Rect(200, 300, 264, 364))
+
+	// Create incoming links (Source -> ELB)
+	incomingLink1 := new(Link).Init(source1, WINDROSE_N, ArrowHead{}, elb, WINDROSE_S, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	incomingLink2 := new(Link).Init(source2, WINDROSE_N, ArrowHead{}, elb, WINDROSE_S, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	// Create outgoing links (ELB -> Target)
+	outgoingLink1 := new(Link).Init(elb, WINDROSE_S, ArrowHead{}, target1, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+	outgoingLink2 := new(Link).Init(elb, WINDROSE_S, ArrowHead{}, target2, WINDROSE_N, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+	// Add links to resources
+	elb.AddLink(incomingLink1)
+	elb.AddLink(incomingLink2)
+	elb.AddLink(outgoingLink1)
+	elb.AddLink(outgoingLink2)
+
+	t.Run("Without directional grouping", func(t *testing.T) {
+		// Enable basic grouping offset only
+		elb.SetGroupingOffset(true)
+		elb.SetGroupingOffsetDirection(false)
+
+		// Sort links
+		elb.sortAllLinks()
+
+		// All links should get sequential indexes
+		index1, count1 := incomingLink1.getLinkIndexAndCount(elb, WINDROSE_S)
+		index2, count2 := incomingLink2.getLinkIndexAndCount(elb, WINDROSE_S)
+		index3, count3 := outgoingLink1.getLinkIndexAndCount(elb, WINDROSE_S)
+		index4, count4 := outgoingLink2.getLinkIndexAndCount(elb, WINDROSE_S)
+
+		if count1 != 4 || count2 != 4 || count3 != 4 || count4 != 4 {
+			t.Errorf("Expected all counts to be 4, got %d, %d, %d, %d", count1, count2, count3, count4)
+		}
+
+		// All indexes should be different
+		indexes := []int{index1, index2, index3, index4}
+		for i := 0; i < len(indexes); i++ {
+			for j := i + 1; j < len(indexes); j++ {
+				if indexes[i] == indexes[j] {
+					t.Errorf("Found duplicate indexes: %d and %d both have index %d", i, j, indexes[i])
+				}
+			}
+		}
+	})
+
+	t.Run("With directional grouping", func(t *testing.T) {
+		// Enable directional grouping offset
+		elb.SetGroupingOffset(true)
+		elb.SetGroupingOffsetDirection(true)
+
+		// Sort links
+		elb.sortAllLinks()
+
+		// Incoming links should be grouped together
+		inIndex1, inCount1 := incomingLink1.getLinkIndexAndCount(elb, WINDROSE_S)
+		inIndex2, inCount2 := incomingLink2.getLinkIndexAndCount(elb, WINDROSE_S)
+
+		// Outgoing links should be grouped together
+		outIndex1, outCount1 := outgoingLink1.getLinkIndexAndCount(elb, WINDROSE_S)
+		outIndex2, outCount2 := outgoingLink2.getLinkIndexAndCount(elb, WINDROSE_S)
+
+		// Each group should have count of 2
+		if inCount1 != 2 || inCount2 != 2 {
+			t.Errorf("Expected incoming link counts to be 2, got %d, %d", inCount1, inCount2)
+		}
+		if outCount1 != 2 || outCount2 != 2 {
+			t.Errorf("Expected outgoing link counts to be 2, got %d, %d", outCount1, outCount2)
+		}
+
+		// Incoming and outgoing groups should have different group indexes
+		if inIndex1 == outIndex1 && inIndex2 == outIndex2 {
+			t.Errorf("Incoming and outgoing groups should have different indexes")
+		}
+
+		// Links within same group should have same index
+		if inIndex1 != inIndex2 {
+			t.Errorf("Incoming links should have same index, got %d and %d", inIndex1, inIndex2)
+		}
+		if outIndex1 != outIndex2 {
+			t.Errorf("Outgoing links should have same index, got %d and %d", outIndex1, outIndex2)
+		}
+	})
+}
+
+func TestGroupingOffsetDirectionCoordinateSelection(t *testing.T) {
+	// Test that correct coordinate axis is used for different positions
+	elb := new(Resource).Init()
+	elb.SetBindings(image.Rect(100, 100, 164, 164))
+	elb.SetIconBounds(image.Rect(100, 100, 164, 164))
+	elb.SetGroupingOffset(true)
+	elb.SetGroupingOffsetDirection(true)
+
+	// Test vertical position (should use X coordinate)
+	t.Run("Vertical position uses X coordinate", func(t *testing.T) {
+		// Create sources with different X coordinates
+		source1 := new(Resource).Init()
+		source1.SetIconBounds(image.Rect(50, 200, 114, 264)) // X center: 82
+
+		source2 := new(Resource).Init()
+		source2.SetIconBounds(image.Rect(150, 200, 214, 264)) // X center: 182
+
+		link1 := new(Link).Init(source1, WINDROSE_N, ArrowHead{}, elb, WINDROSE_S, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+		link2 := new(Link).Init(source2, WINDROSE_N, ArrowHead{}, elb, WINDROSE_S, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+		elb.AddLink(link1)
+		elb.AddLink(link2)
+
+		// The algorithm should use X coordinates to determine order
+		index1, _ := link1.getLinkIndexAndCount(elb, WINDROSE_S)
+		index2, _ := link2.getLinkIndexAndCount(elb, WINDROSE_S)
+
+		// Since source1 has smaller X coordinate (82 < 182), it should get index 1
+		// and source2 should get index 1 (both incoming, same group)
+		if index1 != index2 {
+			t.Errorf("Both incoming links should have same index, got %d and %d", index1, index2)
+		}
+	})
+
+	// Test horizontal position (should use Y coordinate)
+	t.Run("Horizontal position uses Y coordinate", func(t *testing.T) {
+		elb2 := new(Resource).Init()
+		elb2.SetBindings(image.Rect(100, 100, 164, 164))
+		elb2.SetIconBounds(image.Rect(100, 100, 164, 164))
+		elb2.SetGroupingOffset(true)
+		elb2.SetGroupingOffsetDirection(true)
+
+		// Create sources with different Y coordinates
+		source1 := new(Resource).Init()
+		source1.SetIconBounds(image.Rect(200, 50, 264, 114)) // Y center: 82
+
+		source2 := new(Resource).Init()
+		source2.SetIconBounds(image.Rect(200, 150, 264, 214)) // Y center: 182
+
+		link1 := new(Link).Init(source1, WINDROSE_W, ArrowHead{}, elb2, WINDROSE_E, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+		link2 := new(Link).Init(source2, WINDROSE_W, ArrowHead{}, elb2, WINDROSE_E, ArrowHead{}, 2, color.RGBA{0, 0, 0, 255})
+
+		elb2.AddLink(link1)
+		elb2.AddLink(link2)
+
+		// The algorithm should use Y coordinates to determine order
+		index1, _ := link1.getLinkIndexAndCount(elb2, WINDROSE_E)
+		index2, _ := link2.getLinkIndexAndCount(elb2, WINDROSE_E)
+
+		// Both should be in same group (incoming)
+		if index1 != index2 {
+			t.Errorf("Both incoming links should have same index, got %d and %d", index1, index2)
+		}
+	})
+}
+
 func TestGroupingOffsetMultipleMixedLinks(t *testing.T) {
 	// Setup: A->B, A->C, D->A, E->A (A has 2 outgoing and 2 incoming at same positions)
 	resourceA := new(Resource).Init()
