@@ -2532,7 +2532,7 @@ func TestAutoCalculatePositionsNoCommonAncestor(t *testing.T) {
 	sourcePos, targetPos := AutoCalculatePositions(source, target)
 	if sourcePos != WINDROSE_E || targetPos != WINDROSE_W {
 		t.Errorf("Expected E->W for distance-based horizontal, got %v->%v", sourcePos, targetPos)
-  }
+	}
 }
 
 func TestFindLongestHorizontalSegment(t *testing.T) {
