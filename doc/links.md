@@ -98,6 +98,8 @@ Links:
       Type: orthogonal
 ```
 
+For orthogonal links with auto-positioning labels (`Right` and `Left`), the system automatically detects the longest horizontal segment among the control points and places labels along that segment for optimal readability.
+
 
 ### Arrow head
 
@@ -150,6 +152,16 @@ Link Labels add labels along the link
         TargetRight: (optional)
           Type: (optional, default: horizontal, allowed: horizontal) 
           Title: (required on TargetRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        Right: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on Right, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        Left: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on Left, default: ``)
           Color: (optional, default: `` inherit from Source,Target font color)
           Font: (optional, default: `` inherit from Source,Target font name)
 ```
