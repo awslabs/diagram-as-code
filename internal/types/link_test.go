@@ -2817,8 +2817,8 @@ func TestAcuteAngleLabelPlacement(t *testing.T) {
 		Target: target,
 		Type:   "orthogonal",
 		Labels: LinkLabels{
-			Right: &LinkLabel{Title: "Right Label"},
-			Left:  &LinkLabel{Title: "Left Label"},
+			AutoRight: &LinkLabel{Title: "Right Label"},
+			AutoLeft:  &LinkLabel{Title: "Left Label"},
 		},
 	}
 
