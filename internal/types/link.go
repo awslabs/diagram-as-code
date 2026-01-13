@@ -904,29 +904,90 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 
 	log.Infof("Auto-positioning: dx=%d, dy=%d", dx, dy)
 
-	// Determine direction based on larger absolute difference
+	// Check for common ancestor layout
+	if commonAncestor := findLowestCommonAncestor(source, target); commonAncestor != nil {
+		direction := commonAncestor.direction
+		log.Infof("Auto-positioning: Found common ancestor with direction=%s", direction)
+
+		if direction == "vertical" {
+			// VerticalStack: use vertical connections
+			if dy > 0 {
+				sourcePos = WINDROSE_S
+				targetPos = WINDROSE_N
+			} else {
+				sourcePos = WINDROSE_N
+				targetPos = WINDROSE_S
+			}
+		} else if direction == "horizontal" {
+			// HorizontalStack: use horizontal connections
+			if dx > 0 {
+				sourcePos = WINDROSE_E
+				targetPos = WINDROSE_W
+			} else {
+				sourcePos = WINDROSE_W
+				targetPos = WINDROSE_E
+			}
+		} else {
+			// Unknown direction: fall back to distance-based logic
+			sourcePos, targetPos = calculateByDistance(dx, dy)
+		}
+	} else {
+		// No common ancestor: use distance-based logic
+		sourcePos, targetPos = calculateByDistance(dx, dy)
+	}
+
+	log.Infof("Auto-positioning: Source=%v, Target=%v", sourcePos, targetPos)
+
+	return sourcePos, targetPos
+}
+
+// findLowestCommonAncestor finds the lowest common ancestor using set method
+func findLowestCommonAncestor(source, target *Resource) *Resource {
+	if source == target {
+		return source
+	}
+
+	// Step 1: Store all ancestors of source in a set
+	ancestors := make(map[*Resource]bool)
+	current := source
+	for current != nil {
+		ancestors[current] = true
+		current = current.GetParent()
+	}
+
+	// Step 2: Traverse target's ancestors and find first match
+	current = target
+	for current != nil {
+		if _, ok := ancestors[current]; ok {
+			return current // First match is LCA
+		}
+		current = current.GetParent()
+	}
+
+	return nil // No common ancestor
+}
+
+// calculateByDistance uses the original distance-based logic
+func calculateByDistance(dx, dy int) (sourcePos, targetPos Windrose) {
 	if abs(dx) > abs(dy) {
 		// Horizontal connection
 		if dx > 0 {
-			sourcePos = WINDROSE_E // Target is to the right
+			sourcePos = WINDROSE_E
 			targetPos = WINDROSE_W
 		} else {
-			sourcePos = WINDROSE_W // Target is to the left
+			sourcePos = WINDROSE_W
 			targetPos = WINDROSE_E
 		}
 	} else {
 		// Vertical connection
 		if dy > 0 {
-			sourcePos = WINDROSE_S // Target is below
+			sourcePos = WINDROSE_S
 			targetPos = WINDROSE_N
 		} else {
-			sourcePos = WINDROSE_N // Target is above
+			sourcePos = WINDROSE_N
 			targetPos = WINDROSE_S
 		}
 	}
-
-	log.Infof("Auto-positioning: Source=%v, Target=%v", sourcePos, targetPos)
-
 	return sourcePos, targetPos
 }
 
