@@ -50,8 +50,8 @@ type LinkLabels struct {
 	SourceLeft  *LinkLabel
 	TargetRight *LinkLabel
 	TargetLeft  *LinkLabel
-	Right       *LinkLabel
-	Left        *LinkLabel
+	AutoRight   *LinkLabel
+	AutoLeft    *LinkLabel
 }
 
 type LinkLabel struct {
@@ -513,11 +513,79 @@ func (l *Link) Draw(img *image.RGBA) error {
 		}
 	}
 
-	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.Right); err != nil {
-		return fmt.Errorf("failed to draw auto right label: %w", err)
-	}
-	if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.Left); err != nil {
-		return fmt.Errorf("failed to draw auto left label: %w", err)
+	// For orthogonal links, check acute angle sides and adjust label placement
+	if l.Type == "orthogonal" && len(controlPts) > 0 {
+		// Create complete path including source and target points
+		fullPath := make([]image.Point, 0, len(controlPts)+2)
+		fullPath = append(fullPath, sourcePt)
+		fullPath = append(fullPath, controlPts...)
+		fullPath = append(fullPath, targetPt)
+
+		// AutoLeft label: find best segment for Left side
+		if l.Labels.AutoLeft != nil {
+			leftStart, leftEnd, acutePos := l.findBestSegmentForSideWithPosition(fullPath, "Left")
+			if leftStart.X != 0 || leftStart.Y != 0 { // valid segment found
+				// Calculate autoPos for this specific segment
+				leftAutoPos := Windrose(4) // Default: East
+				if leftStart.Y == leftEnd.Y {
+					// Horizontal segment
+					if leftStart.X < leftEnd.X {
+						leftAutoPos = 4 // East
+					} else {
+						leftAutoPos = 12 // West
+					}
+				} else if leftStart.X == leftEnd.X {
+					// Vertical segment
+					if leftStart.Y < leftEnd.Y {
+						leftAutoPos = 8 // South
+					} else {
+						leftAutoPos = 0 // North
+					}
+				}
+
+				// Always use normal placement (no reversal)
+				if err := l.drawLabel(img, leftAutoPos, l.Source, l.Target, leftStart, leftEnd, "Left", l.Labels.AutoLeft); err != nil {
+					return fmt.Errorf("failed to draw auto left label: %w (acutePos=%s)", err, acutePos)
+				}
+			}
+		}
+
+		// AutoRight label: find best segment for Right side
+		if l.Labels.AutoRight != nil {
+			rightStart, rightEnd, acutePos := l.findBestSegmentForSideWithPosition(fullPath, "Right")
+			if rightStart.X != 0 || rightStart.Y != 0 { // valid segment found
+				// Calculate autoPos for this specific segment
+				rightAutoPos := Windrose(4) // Default: East
+				if rightStart.Y == rightEnd.Y {
+					// Horizontal segment
+					if rightStart.X < rightEnd.X {
+						rightAutoPos = 4 // East
+					} else {
+						rightAutoPos = 12 // West
+					}
+				} else if rightStart.X == rightEnd.X {
+					// Vertical segment
+					if rightStart.Y < rightEnd.Y {
+						rightAutoPos = 8 // South
+					} else {
+						rightAutoPos = 0 // North
+					}
+				}
+
+				// Always use normal placement (no reversal)
+				if err := l.drawLabel(img, rightAutoPos, l.Source, l.Target, rightStart, rightEnd, "Right", l.Labels.AutoRight); err != nil {
+					return fmt.Errorf("failed to draw auto right label: %w (acutePos=%s)", err, acutePos)
+				}
+			}
+		}
+	} else {
+		// Non-orthogonal or no control points, use default placement
+		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Right", l.Labels.AutoRight); err != nil {
+			return fmt.Errorf("failed to draw auto right label: %w", err)
+		}
+		if err := l.drawLabel(img, autoPos, l.Source, l.Target, autoPt1, autoPt2, "Left", l.Labels.AutoLeft); err != nil {
+			return fmt.Errorf("failed to draw auto left label: %w", err)
+		}
 	}
 
 	l.drawn = true
@@ -1224,10 +1292,266 @@ func (l *Link) findLongestHorizontalSegment(controlPts []image.Point) (start, en
 	return bestStart, bestEnd, maxLength
 }
 
+// findPerpendicularSegments finds if the segment after the longest horizontal segment forms acute angles
+// Returns: hasLeftAcute=true if Left side has acute angle, hasRightAcute=true if Right side has acute angle
+func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute, hasRightAcute bool) {
+	if len(controlPts) < 3 {
+		return false, false
+	}
+
+	// Find the longest horizontal segment index, preferring segments with acute angles
+	maxLength := 0
+	bestIndex := -1
+	bestHasAcute := false
+
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1, p2 := controlPts[i], controlPts[i+1]
+		if p1.Y == p2.Y { // horizontal segment
+			segLength := int(math.Abs(float64(p2.X - p1.X)))
+
+			// Check if this segment has acute angles (before or after)
+			hasAcute := false
+
+			// Check segment[i-1] to segment[i] (before the horizontal segment)
+			if i > 0 {
+				seg1 := vector.New(
+					float64(controlPts[i].X-controlPts[i-1].X),
+					float64(controlPts[i].Y-controlPts[i-1].Y),
+				)
+				seg2 := vector.New(
+					float64(controlPts[i+1].X-controlPts[i].X),
+					float64(controlPts[i+1].Y-controlPts[i].Y),
+				)
+
+				seg1Norm := seg1.Normalize()
+				seg2Norm := seg2.Normalize()
+				crossProduct := seg1Norm.Cross(seg2Norm)
+				dotProduct := seg1Norm.Dot(seg2Norm)
+
+				// Check if it's a 90-degree turn (perpendicular) with acute angles
+				if math.Abs(dotProduct) < 0.1 && math.Abs(crossProduct) > 0.1 {
+					hasAcute = true
+				}
+			}
+
+			// Check segment[i] to segment[i+1] (after the horizontal segment)
+			if !hasAcute && i+1 < len(controlPts)-1 {
+				seg1 := vector.New(
+					float64(controlPts[i+1].X-controlPts[i].X),
+					float64(controlPts[i+1].Y-controlPts[i].Y),
+				)
+				seg2 := vector.New(
+					float64(controlPts[i+2].X-controlPts[i+1].X),
+					float64(controlPts[i+2].Y-controlPts[i+1].Y),
+				)
+
+				seg1Norm := seg1.Normalize()
+				seg2Norm := seg2.Normalize()
+				crossProduct := seg1Norm.Cross(seg2Norm)
+				dotProduct := seg1Norm.Dot(seg2Norm)
+
+				// Check if it's a 90-degree turn (perpendicular) with acute angles
+				if math.Abs(dotProduct) < 0.1 && math.Abs(crossProduct) > 0.1 {
+					hasAcute = true
+				}
+			}
+
+			// Select this segment if:
+			// 1. It's longer than current best, OR
+			// 2. Same length but this one has acute angles and current best doesn't
+			if segLength > maxLength || (segLength == maxLength && hasAcute && !bestHasAcute) {
+				maxLength = segLength
+				bestIndex = i
+				bestHasAcute = hasAcute
+			}
+		}
+	}
+
+	if bestIndex == -1 {
+		return false, false
+	}
+
+	// Check segment[n] to segment[n+1] for acute angles
+	if bestIndex+1 < len(controlPts)-1 {
+		// segment[n]: controlPts[bestIndex] -> controlPts[bestIndex+1]
+		// segment[n+1]: controlPts[bestIndex+1] -> controlPts[bestIndex+2]
+		seg1 := vector.New(
+			float64(controlPts[bestIndex+1].X-controlPts[bestIndex].X),
+			float64(controlPts[bestIndex+1].Y-controlPts[bestIndex].Y),
+		)
+		seg2 := vector.New(
+			float64(controlPts[bestIndex+2].X-controlPts[bestIndex+1].X),
+			float64(controlPts[bestIndex+2].Y-controlPts[bestIndex+1].Y),
+		)
+
+		seg1Norm := seg1.Normalize()
+		seg2Norm := seg2.Normalize()
+		crossProduct := seg1Norm.Cross(seg2Norm)
+		dotProduct := seg1Norm.Dot(seg2Norm)
+
+		// Debug output
+		log.Infof("Acute check: seg1=%v, seg2=%v, dotProduct=%f, crossProduct=%f", seg1, seg2, dotProduct, crossProduct)
+
+		// Check if it's a 90-degree turn (perpendicular)
+		if math.Abs(dotProduct) < 0.1 {
+			// Right side acute: crossProduct > 0 (90-degree counterclockwise)
+			if crossProduct > 0 {
+				hasRightAcute = true
+			}
+			// Left side acute: crossProduct < 0 (90-degree clockwise, 270-degree counterclockwise)
+			if crossProduct < 0 {
+				hasLeftAcute = true
+			}
+		}
+	}
+
+	return hasLeftAcute, hasRightAcute
+}
+
+// getAcuteAngleSide determines which sides of the longest horizontal segment have acute angles
+// Returns: leftIsAcute=true if Left side has acute angle, rightIsAcute=true if Right side has acute angle
+func (l *Link) getAcuteAngleSide(controlPts []image.Point) (leftIsAcute, rightIsAcute bool) {
+	hasLeftAcute, hasRightAcute := l.findPerpendicularSegments(controlPts)
+	return hasLeftAcute, hasRightAcute
+}
+
+// findBestSegmentForSide finds the best horizontal segment for a specific side (Left or Right)
+// Returns: segment start/end points and whether that side has an acute angle
+func (l *Link) findBestSegmentForSide(controlPts []image.Point, side string) (start, end image.Point, hasAcute bool) {
+	start, end, acutePos := l.findBestSegmentForSideWithPosition(controlPts, side)
+	return start, end, acutePos != ""
+}
+
+// findBestSegmentForSideWithPosition finds the best horizontal segment for a specific side
+// Returns: segment start/end points and acute angle position ("before", "after", or "")
+func (l *Link) findBestSegmentForSideWithPosition(controlPts []image.Point, side string) (start, end image.Point, acutePos string) {
+	if len(controlPts) < 3 {
+		return image.Point{}, image.Point{}, ""
+	}
+
+	maxLength := 0
+	bestIndex := -1
+	bestAcutePos := ""
+
+	log.Infof("Finding best segment for %s side (with position):", side)
+
+	for i := 0; i < len(controlPts)-1; i++ {
+		p1, p2 := controlPts[i], controlPts[i+1]
+		if p1.Y != p2.Y { // skip non-horizontal segments
+			continue
+		}
+
+		segLength := int(math.Abs(float64(p2.X - p1.X)))
+		acutePosition := ""
+
+		// Check after: segment[i] -> segment[i+1] (horizontal) -> segment[i+2]
+		// If acute angle found, use segment[i+1] (next segment after the turn)
+		if i+1 < len(controlPts)-1 {
+			seg1 := vector.New(
+				float64(controlPts[i+1].X-controlPts[i].X),
+				float64(controlPts[i+1].Y-controlPts[i].Y),
+			)
+			seg2 := vector.New(
+				float64(controlPts[i+2].X-controlPts[i+1].X),
+				float64(controlPts[i+2].Y-controlPts[i+1].Y),
+			)
+
+			seg1Norm := seg1.Normalize()
+			seg2Norm := seg2.Normalize()
+			crossProduct := seg1Norm.Cross(seg2Norm)
+			dotProduct := seg1Norm.Dot(seg2Norm)
+
+			if math.Abs(dotProduct) < 0.1 {
+				if side == "Right" && crossProduct > 0 {
+					acutePosition = "after"
+					log.Infof("  Segment %d: length=%d, %s acute=after (cross=%f)", i, segLength, side, crossProduct)
+				} else if side == "Left" && crossProduct < 0 {
+					acutePosition = "after"
+					log.Infof("  Segment %d: length=%d, %s acute=after (cross=%f)", i, segLength, side, crossProduct)
+				}
+			}
+		}
+
+		// Check before: segment[i-1] -> segment[i] (horizontal) -> segment[i+1]
+		// If acute angle found, use segment[i] (current segment)
+		if acutePosition == "" && i > 0 {
+			seg1 := vector.New(
+				float64(controlPts[i].X-controlPts[i-1].X),
+				float64(controlPts[i].Y-controlPts[i-1].Y),
+			)
+			seg2 := vector.New(
+				float64(controlPts[i+1].X-controlPts[i].X),
+				float64(controlPts[i+1].Y-controlPts[i].Y),
+			)
+
+			seg1Norm := seg1.Normalize()
+			seg2Norm := seg2.Normalize()
+			crossProduct := seg1Norm.Cross(seg2Norm)
+			dotProduct := seg1Norm.Dot(seg2Norm)
+
+			if math.Abs(dotProduct) < 0.1 {
+				if side == "Right" && crossProduct > 0 {
+					acutePosition = "before"
+					log.Infof("  Segment %d: length=%d, %s acute=before (cross=%f)", i, segLength, side, crossProduct)
+				} else if side == "Left" && crossProduct < 0 {
+					acutePosition = "before"
+					log.Infof("  Segment %d: length=%d, %s acute=before (cross=%f)", i, segLength, side, crossProduct)
+				}
+			}
+		}
+
+		if acutePosition == "" {
+			log.Infof("  Segment %d: length=%d, %s acute=none", i, segLength, side)
+		}
+
+		// Select this segment if:
+		// 1. It's longer than current best, OR
+		// 2. Same length but this one has acute angle and current best doesn't
+		hasAcute := acutePosition != ""
+		bestHasAcute := bestAcutePos != ""
+
+		if segLength > maxLength || (segLength == maxLength && hasAcute && !bestHasAcute) {
+			maxLength = segLength
+			bestIndex = i
+			bestAcutePos = acutePosition
+			log.Infof("  → New best segment: index=%d, length=%d, acutePos=%s", bestIndex, maxLength, bestAcutePos)
+		}
+	}
+
+	if bestIndex == -1 {
+		log.Infof("  No horizontal segment found for %s side", side)
+		return image.Point{}, image.Point{}, ""
+	}
+
+	// Select segment based on acute angle position:
+	// - "before" (n-1 to n has acute): use segment n (current horizontal segment)
+	// - "after" (n to n+1 has acute): use segment n+1 (next segment, can be vertical)
+	selectedIndex := bestIndex
+	if bestAcutePos == "after" && bestIndex+1 < len(controlPts)-1 {
+		// Use the next segment (n+1)
+		selectedIndex = bestIndex + 1
+		log.Infof("  Acute angle is 'after' → selecting next segment (n+1): index=%d, points=(%d,%d)->(%d,%d)",
+			selectedIndex, controlPts[selectedIndex].X, controlPts[selectedIndex].Y,
+			controlPts[selectedIndex+1].X, controlPts[selectedIndex+1].Y)
+	}
+
+	log.Infof("  Final best segment for %s: index=%d, points=(%d,%d)->(%d,%d), acutePos=%s",
+		side, selectedIndex, controlPts[selectedIndex].X, controlPts[selectedIndex].Y,
+		controlPts[selectedIndex+1].X, controlPts[selectedIndex+1].Y, bestAcutePos)
+
+	return controlPts[selectedIndex], controlPts[selectedIndex+1], bestAcutePos
+}
+
 // calculateAutoLabelPoints calculates points for auto label positioning
 func (l *Link) calculateAutoLabelPoints(sourcePt, targetPt image.Point, controlPts []image.Point) (image.Point, image.Point) {
 	if l.Type == "orthogonal" && len(controlPts) > 0 {
-		start, end, length := l.findLongestHorizontalSegment(controlPts)
+		// Create complete path including source and target points
+		fullPath := make([]image.Point, 0, len(controlPts)+2)
+		fullPath = append(fullPath, sourcePt)
+		fullPath = append(fullPath, controlPts...)
+		fullPath = append(fullPath, targetPt)
+
+		start, end, length := l.findLongestHorizontalSegment(fullPath)
 		if length > 0 {
 			return start, end
 		}

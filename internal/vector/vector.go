@@ -37,6 +37,13 @@ func (v Vector) Dot(other Vector) float64 {
 	return v.X*other.X + v.Y*other.Y
 }
 
+// Cross returns the cross product of two 2D vectors (scalar result)
+// Positive result indicates counterclockwise rotation from v to other
+// Negative result indicates clockwise rotation from v to other
+func (v Vector) Cross(other Vector) float64 {
+	return v.X*other.Y - v.Y*other.X
+}
+
 // Length returns the magnitude of the vector
 func (v Vector) Length() float64 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y)
