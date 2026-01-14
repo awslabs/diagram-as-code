@@ -2843,3 +2843,60 @@ func TestAcuteAngleLabelPlacement(t *testing.T) {
 
 	t.Logf("Acute angle label placement test completed successfully")
 }
+
+func TestSegmentSelectionBasedOnAcutePosition(t *testing.T) {
+	// Create mock resources
+	source := &Resource{}
+	target := &Resource{}
+
+	// Set up resource bounds
+	sourceBounds := image.Rect(0, 0, 100, 50)
+	targetBounds := image.Rect(500, 100, 600, 150)
+	source.bindings = &sourceBounds
+	target.bindings = &targetBounds
+
+	// Create link
+	link := &Link{
+		Source: source,
+		Target: target,
+		Type:   "orthogonal",
+	}
+
+	// Test case: L-shaped path with two horizontal segments of equal length
+	// Path: (254,187) → (486,187) → (486,145) → (486,102) → (718,102)
+	controlPts := []image.Point{
+		{X: 254, Y: 187}, // start (source)
+		{X: 486, Y: 187}, // end of segment[0] (horizontal right, 232px)
+		{X: 486, Y: 145}, // end of segment[1] (vertical up)
+		{X: 486, Y: 102}, // end of segment[2] (vertical up)
+		{X: 718, Y: 102}, // end of segment[3] (horizontal right, 232px)
+	}
+
+	// Test AutoLeft: segment 0 has "after" acute, should select segment 1 (vertical)
+	leftStart, leftEnd, leftAcutePos := link.findBestSegmentForSideWithPosition(controlPts, "Left")
+	t.Logf("AutoLeft: start=(%d,%d), end=(%d,%d), acutePos=%s", leftStart.X, leftStart.Y, leftEnd.X, leftEnd.Y, leftAcutePos)
+	
+	if leftAcutePos != "after" {
+		t.Errorf("Expected Left acute position to be 'after', got '%s'", leftAcutePos)
+	}
+	// Should select segment 1 (vertical) because segment 0 has "after" acute
+	if leftStart.X != 486 || leftStart.Y != 187 || leftEnd.X != 486 || leftEnd.Y != 145 {
+		t.Errorf("Expected Left to select segment 1 (486,187)->(486,145), got (%d,%d)->(%d,%d)",
+			leftStart.X, leftStart.Y, leftEnd.X, leftEnd.Y)
+	}
+
+	// Test AutoRight: segment 3 has "before" acute, should select segment 3 (horizontal)
+	rightStart, rightEnd, rightAcutePos := link.findBestSegmentForSideWithPosition(controlPts, "Right")
+	t.Logf("AutoRight: start=(%d,%d), end=(%d,%d), acutePos=%s", rightStart.X, rightStart.Y, rightEnd.X, rightEnd.Y, rightAcutePos)
+	
+	if rightAcutePos != "before" {
+		t.Errorf("Expected Right acute position to be 'before', got '%s'", rightAcutePos)
+	}
+	// Should select segment 3 (horizontal) because it has "before" acute
+	if rightStart.X != 486 || rightStart.Y != 102 || rightEnd.X != 718 || rightEnd.Y != 102 {
+		t.Errorf("Expected Right to select segment 3 (486,102)->(718,102), got (%d,%d)->(%d,%d)",
+			rightStart.X, rightStart.Y, rightEnd.X, rightEnd.Y)
+	}
+
+	t.Logf("Segment selection based on acute position test completed successfully")
+}
