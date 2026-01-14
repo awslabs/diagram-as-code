@@ -1161,16 +1161,70 @@ func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute
 		return false, false
 	}
 
-	// Find the longest horizontal segment index
+	// Find the longest horizontal segment index, preferring segments with acute angles
 	maxLength := 0
 	bestIndex := -1
+	bestHasAcute := false
+	
 	for i := 0; i < len(controlPts)-1; i++ {
 		p1, p2 := controlPts[i], controlPts[i+1]
 		if p1.Y == p2.Y { // horizontal segment
 			segLength := int(math.Abs(float64(p2.X - p1.X)))
-			if segLength > maxLength {
+			
+			// Check if this segment has acute angles (before or after)
+			hasAcute := false
+			
+			// Check segment[i-1] to segment[i] (before the horizontal segment)
+			if i > 0 {
+				seg1 := vector.New(
+					float64(controlPts[i].X-controlPts[i-1].X),
+					float64(controlPts[i].Y-controlPts[i-1].Y),
+				)
+				seg2 := vector.New(
+					float64(controlPts[i+1].X-controlPts[i].X),
+					float64(controlPts[i+1].Y-controlPts[i].Y),
+				)
+
+				seg1Norm := seg1.Normalize()
+				seg2Norm := seg2.Normalize()
+				crossProduct := seg1Norm.Cross(seg2Norm)
+				dotProduct := seg1Norm.Dot(seg2Norm)
+				
+				// Check if it's a 90-degree turn (perpendicular) with acute angles
+				if math.Abs(dotProduct) < 0.1 && math.Abs(crossProduct) > 0.1 {
+					hasAcute = true
+				}
+			}
+			
+			// Check segment[i] to segment[i+1] (after the horizontal segment)
+			if !hasAcute && i+1 < len(controlPts)-1 {
+				seg1 := vector.New(
+					float64(controlPts[i+1].X-controlPts[i].X),
+					float64(controlPts[i+1].Y-controlPts[i].Y),
+				)
+				seg2 := vector.New(
+					float64(controlPts[i+2].X-controlPts[i+1].X),
+					float64(controlPts[i+2].Y-controlPts[i+1].Y),
+				)
+
+				seg1Norm := seg1.Normalize()
+				seg2Norm := seg2.Normalize()
+				crossProduct := seg1Norm.Cross(seg2Norm)
+				dotProduct := seg1Norm.Dot(seg2Norm)
+				
+				// Check if it's a 90-degree turn (perpendicular) with acute angles
+				if math.Abs(dotProduct) < 0.1 && math.Abs(crossProduct) > 0.1 {
+					hasAcute = true
+				}
+			}
+			
+			// Select this segment if:
+			// 1. It's longer than current best, OR
+			// 2. Same length but this one has acute angles and current best doesn't
+			if segLength > maxLength || (segLength == maxLength && hasAcute && !bestHasAcute) {
 				maxLength = segLength
 				bestIndex = i
+				bestHasAcute = hasAcute
 			}
 		}
 	}
