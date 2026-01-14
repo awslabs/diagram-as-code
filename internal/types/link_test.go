@@ -2811,17 +2811,17 @@ func TestCalculateLCABasedMidpoint(t *testing.T) {
 		innerVertical := new(Resource).Init()
 		innerVertical.direction = "vertical"
 		innerVertical.parent = verticalStacks[i]
-		
+
 		resources[i] = new(Resource).Init()
 		resources[i].parent = innerVertical
-		
+
 		verticalStacks[i].children = []*Resource{innerVertical}
 		innerVertical.children = []*Resource{resources[i]}
-		
+
 		// Set actual bindings for each vertical stack (horizontal layout)
 		x := i * 100 // Each stack is 100px wide
 		verticalStacks[i].SetBindings(image.Rect(x, 0, x+80, 100))
-		
+
 		// Set bindings for inner vertical and resources
 		innerVertical.SetBindings(image.Rect(x+10, 10, x+70, 90))
 		resources[i].SetBindings(image.Rect(x+20, 20, x+60, 80))
@@ -2883,7 +2883,7 @@ func TestCalculateLCABasedMidpoint(t *testing.T) {
 	vert2.parent = vertRoot
 	vert2.SetBindings(image.Rect(0, 100, 100, 180))
 	vertRoot.children = []*Resource{vert1, vert2}
-	
+
 	vertLink := &Link{Source: vert1, Target: vert2}
 	vertResult := vertLink.calculateLCABasedMidpoint(image.Point{X: 50, Y: 40}, image.Point{X: 50, Y: 140})
 	if vertResult.Y != 90 {

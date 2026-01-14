@@ -1015,7 +1015,7 @@ func abs(x int) int {
 func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.Point {
 	log.Infof("=== LCA-based Midpoint Calculation ===")
 	log.Infof("Source: %v, Target: %v", sourcePt, targetPt)
-	
+
 	// Find LCA between source and target
 	lca := findLowestCommonAncestor(l.Source, l.Target)
 	if lca == nil {
@@ -1025,32 +1025,32 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 			Y: (sourcePt.Y + targetPt.Y) / 2,
 		}
 	}
-	
+
 	log.Infof("LCA found: %s (direction: %s)", getResourceName(lca), lca.direction)
-	
+
 	// Get LCA children list
 	children := lca.children
 	log.Infof("LCA has %d children:", len(children))
 	for i, child := range children {
 		log.Infof("  Child[%d]: %s", i, getResourceName(child))
 	}
-	
+
 	// Find which LCA child each source/target belongs to
 	sourceChild := findChildAncestorInLCA(lca, l.Source)
 	targetChild := findChildAncestorInLCA(lca, l.Target)
-	
+
 	if sourceChild != nil {
 		log.Infof("Source %s belongs to LCA child: %s", getResourceName(l.Source), getResourceName(sourceChild))
 	} else {
 		log.Infof("Source %s: no LCA child found", getResourceName(l.Source))
 	}
-	
+
 	if targetChild != nil {
 		log.Infof("Target %s belongs to LCA child: %s", getResourceName(l.Target), getResourceName(targetChild))
 	} else {
 		log.Infof("Target %s: no LCA child found", getResourceName(l.Target))
 	}
-	
+
 	// Find indices of source and target children in LCA children list
 	sourceIndex := -1
 	targetIndex := -1
@@ -1062,9 +1062,9 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 			targetIndex = i
 		}
 	}
-	
+
 	log.Infof("Source child index: %d, Target child index: %d", sourceIndex, targetIndex)
-	
+
 	// Find previous child before target (without loop)
 	if sourceIndex != -1 && targetIndex != -1 && sourceIndex != targetIndex {
 		// Initialize midpoint with 50% default
@@ -1072,9 +1072,9 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 			X: (sourcePt.X + targetPt.X) / 2,
 			Y: (sourcePt.Y + targetPt.Y) / 2,
 		}
-		
+
 		var previousChild *Resource = nil
-		
+
 		if sourceIndex < targetIndex {
 			// Forward iteration: previous is targetIndex-1
 			if targetIndex > 0 {
@@ -1086,17 +1086,17 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 				previousChild = children[targetIndex+1]
 			}
 		}
-		
+
 		if previousChild != nil {
 			log.Infof("Previous child before target: %s", getResourceName(previousChild))
-			
+
 			// Get bindings of previous child and target child
 			previousBounds := previousChild.GetBindings()
 			targetChildBounds := targetChild.GetBindings()
-			
+
 			log.Infof("Previous child bounds: %v", previousBounds)
 			log.Infof("Target child bounds: %v", targetChildBounds)
-			
+
 			// Calculate gap-based midpoint based on LCA direction
 			if lca.direction == "horizontal" {
 				// Horizontal layout: calculate X coordinate between bounds
@@ -1126,20 +1126,20 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 		} else {
 			log.Infof("No previous child found (at boundary)")
 		}
-		
+
 		log.Infof("Calculated midpoint: %v", midPt)
 		return midPt
 	} else {
 		log.Infof("Source and target are same child or invalid indices")
 	}
-	
+
 	// Fallback: return 50% midpoint
 	midPt := image.Point{
 		X: (sourcePt.X + targetPt.X) / 2,
 		Y: (sourcePt.Y + targetPt.Y) / 2,
 	}
 	log.Infof("Calculated midpoint: %v", midPt)
-	
+
 	return midPt
 }
 
