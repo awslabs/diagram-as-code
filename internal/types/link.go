@@ -542,7 +542,7 @@ func (l *Link) Draw(img *image.RGBA) error {
 						leftAutoPos = 0 // North
 					}
 				}
-				
+
 				// Always use normal placement (no reversal)
 				if err := l.drawLabel(img, leftAutoPos, l.Source, l.Target, leftStart, leftEnd, "Left", l.Labels.AutoLeft); err != nil {
 					return fmt.Errorf("failed to draw auto left label: %w (acutePos=%s)", err, acutePos)
@@ -571,7 +571,7 @@ func (l *Link) Draw(img *image.RGBA) error {
 						rightAutoPos = 0 // North
 					}
 				}
-				
+
 				// Always use normal placement (no reversal)
 				if err := l.drawLabel(img, rightAutoPos, l.Source, l.Target, rightStart, rightEnd, "Right", l.Labels.AutoRight); err != nil {
 					return fmt.Errorf("failed to draw auto right label: %w (acutePos=%s)", err, acutePos)
@@ -1189,15 +1189,15 @@ func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute
 	maxLength := 0
 	bestIndex := -1
 	bestHasAcute := false
-	
+
 	for i := 0; i < len(controlPts)-1; i++ {
 		p1, p2 := controlPts[i], controlPts[i+1]
 		if p1.Y == p2.Y { // horizontal segment
 			segLength := int(math.Abs(float64(p2.X - p1.X)))
-			
+
 			// Check if this segment has acute angles (before or after)
 			hasAcute := false
-			
+
 			// Check segment[i-1] to segment[i] (before the horizontal segment)
 			if i > 0 {
 				seg1 := vector.New(
@@ -1213,13 +1213,13 @@ func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute
 				seg2Norm := seg2.Normalize()
 				crossProduct := seg1Norm.Cross(seg2Norm)
 				dotProduct := seg1Norm.Dot(seg2Norm)
-				
+
 				// Check if it's a 90-degree turn (perpendicular) with acute angles
 				if math.Abs(dotProduct) < 0.1 && math.Abs(crossProduct) > 0.1 {
 					hasAcute = true
 				}
 			}
-			
+
 			// Check segment[i] to segment[i+1] (after the horizontal segment)
 			if !hasAcute && i+1 < len(controlPts)-1 {
 				seg1 := vector.New(
@@ -1235,13 +1235,13 @@ func (l *Link) findPerpendicularSegments(controlPts []image.Point) (hasLeftAcute
 				seg2Norm := seg2.Normalize()
 				crossProduct := seg1Norm.Cross(seg2Norm)
 				dotProduct := seg1Norm.Dot(seg2Norm)
-				
+
 				// Check if it's a 90-degree turn (perpendicular) with acute angles
 				if math.Abs(dotProduct) < 0.1 && math.Abs(crossProduct) > 0.1 {
 					hasAcute = true
 				}
 			}
-			
+
 			// Select this segment if:
 			// 1. It's longer than current best, OR
 			// 2. Same length but this one has acute angles and current best doesn't
@@ -1318,18 +1318,18 @@ func (l *Link) findBestSegmentForSideWithPosition(controlPts []image.Point, side
 	maxLength := 0
 	bestIndex := -1
 	bestAcutePos := ""
-	
+
 	log.Infof("Finding best segment for %s side (with position):", side)
-	
+
 	for i := 0; i < len(controlPts)-1; i++ {
 		p1, p2 := controlPts[i], controlPts[i+1]
 		if p1.Y != p2.Y { // skip non-horizontal segments
 			continue
 		}
-		
+
 		segLength := int(math.Abs(float64(p2.X - p1.X)))
 		acutePosition := ""
-		
+
 		// Check after: segment[i] -> segment[i+1] (horizontal) -> segment[i+2]
 		// If acute angle found, use segment[i+1] (next segment after the turn)
 		if i+1 < len(controlPts)-1 {
@@ -1346,7 +1346,7 @@ func (l *Link) findBestSegmentForSideWithPosition(controlPts []image.Point, side
 			seg2Norm := seg2.Normalize()
 			crossProduct := seg1Norm.Cross(seg2Norm)
 			dotProduct := seg1Norm.Dot(seg2Norm)
-			
+
 			if math.Abs(dotProduct) < 0.1 {
 				if side == "Right" && crossProduct > 0 {
 					acutePosition = "after"
@@ -1357,7 +1357,7 @@ func (l *Link) findBestSegmentForSideWithPosition(controlPts []image.Point, side
 				}
 			}
 		}
-		
+
 		// Check before: segment[i-1] -> segment[i] (horizontal) -> segment[i+1]
 		// If acute angle found, use segment[i] (current segment)
 		if acutePosition == "" && i > 0 {
@@ -1374,7 +1374,7 @@ func (l *Link) findBestSegmentForSideWithPosition(controlPts []image.Point, side
 			seg2Norm := seg2.Normalize()
 			crossProduct := seg1Norm.Cross(seg2Norm)
 			dotProduct := seg1Norm.Dot(seg2Norm)
-			
+
 			if math.Abs(dotProduct) < 0.1 {
 				if side == "Right" && crossProduct > 0 {
 					acutePosition = "before"
@@ -1385,17 +1385,17 @@ func (l *Link) findBestSegmentForSideWithPosition(controlPts []image.Point, side
 				}
 			}
 		}
-		
+
 		if acutePosition == "" {
 			log.Infof("  Segment %d: length=%d, %s acute=none", i, segLength, side)
 		}
-		
+
 		// Select this segment if:
 		// 1. It's longer than current best, OR
 		// 2. Same length but this one has acute angle and current best doesn't
 		hasAcute := acutePosition != ""
 		bestHasAcute := bestAcutePos != ""
-		
+
 		if segLength > maxLength || (segLength == maxLength && hasAcute && !bestHasAcute) {
 			maxLength = segLength
 			bestIndex = i

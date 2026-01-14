@@ -2875,7 +2875,7 @@ func TestSegmentSelectionBasedOnAcutePosition(t *testing.T) {
 	// Test AutoLeft: segment 0 has "after" acute, should select segment 1 (vertical)
 	leftStart, leftEnd, leftAcutePos := link.findBestSegmentForSideWithPosition(controlPts, "Left")
 	t.Logf("AutoLeft: start=(%d,%d), end=(%d,%d), acutePos=%s", leftStart.X, leftStart.Y, leftEnd.X, leftEnd.Y, leftAcutePos)
-	
+
 	if leftAcutePos != "after" {
 		t.Errorf("Expected Left acute position to be 'after', got '%s'", leftAcutePos)
 	}
@@ -2888,7 +2888,7 @@ func TestSegmentSelectionBasedOnAcutePosition(t *testing.T) {
 	// Test AutoRight: segment 3 has "before" acute, should select segment 3 (horizontal)
 	rightStart, rightEnd, rightAcutePos := link.findBestSegmentForSideWithPosition(controlPts, "Right")
 	t.Logf("AutoRight: start=(%d,%d), end=(%d,%d), acutePos=%s", rightStart.X, rightStart.Y, rightEnd.X, rightEnd.Y, rightAcutePos)
-	
+
 	if rightAcutePos != "before" {
 		t.Errorf("Expected Right acute position to be 'before', got '%s'", rightAcutePos)
 	}
