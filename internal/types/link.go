@@ -30,6 +30,21 @@ const (
 	// [TODO] LINK_LABEL_TYPE_ALONG_PATH
 )
 
+// Segment represents a line segment for overlap detection
+type Segment struct {
+	X1, Y1, X2, Y2 int   // Start and end coordinates
+	Link           *Link // Link that created this segment
+	AppliedOffset  int   // Offset that was applied to this segment
+}
+
+// Global slice to track all convergence segments
+var allConvergenceSegments []Segment
+
+// ResetConvergencePointSegments clears the global segment tracking
+func ResetConvergencePointSegments() {
+	allConvergenceSegments = []Segment{}
+}
+
 type Link struct {
 	Source          *Resource
 	SourcePosition  Windrose
@@ -1196,6 +1211,10 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 		}
 
 		log.Infof("Calculated midpoint: %v", midPt)
+		
+		// Check for segment overlap and apply offset if needed
+		midPt = l.applySegmentBasedOffset(midPt, sourcePt, targetPt, lca)
+		
 		return midPt
 	} else {
 		log.Infof("Source and target are same child or invalid indices")
@@ -1209,6 +1228,141 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 	log.Infof("Calculated midpoint: %v", midPt)
 
 	return midPt
+}
+
+// applySegmentBasedOffset checks for segment overlap and applies offset if needed
+func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lca *Resource) image.Point {
+	// Create the convergence segment based on layout direction
+	var newSegment Segment
+	
+	if lca.direction == "horizontal" {
+		// Horizontal layout: vertical line at X=midPt.X from min(sourcePt.Y, targetPt.Y) to max(sourcePt.Y, targetPt.Y)
+		minY := sourcePt.Y
+		maxY := targetPt.Y
+		if minY > maxY {
+			minY, maxY = maxY, minY
+		}
+		newSegment = Segment{
+			X1:   midPt.X,
+			Y1:   minY,
+			X2:   midPt.X,
+			Y2:   maxY,
+			Link: l,
+		}
+		log.Infof("New segment: X=%d, Y range [%d-%d] (Source: %s -> Target: %s)", 
+			midPt.X, minY, maxY, getResourceName(l.Source), getResourceName(l.Target))
+	} else {
+		// Vertical layout: horizontal line at Y=midPt.Y from min(sourcePt.X, targetPt.X) to max(sourcePt.X, targetPt.X)
+		minX := sourcePt.X
+		maxX := targetPt.X
+		if minX > maxX {
+			minX, maxX = maxX, minX
+		}
+		newSegment = Segment{
+			X1:   minX,
+			Y1:   midPt.Y,
+			X2:   maxX,
+			Y2:   midPt.Y,
+			Link: l,
+		}
+		log.Infof("New segment: Y=%d, X range [%d-%d] (Source: %s -> Target: %s)", 
+			midPt.Y, minX, maxX, getResourceName(l.Source), getResourceName(l.Target))
+	}
+	
+	// Check for overlaps with existing segments
+	maxOffset := 0
+	overlapCount := 0
+	for i, existing := range allConvergenceSegments {
+		if segmentsOverlap(newSegment, existing) {
+			// Check if this overlap should be counted based on GroupingOffset settings
+			shouldCount := false
+			reason := ""
+			
+			// Check if same Target + TargetPosition
+			if l.Target == existing.Link.Target && l.TargetPosition == existing.Link.TargetPosition {
+				if l.Target.groupingOffset && !l.Target.groupingOffsetDirection {
+					shouldCount = true
+					reason = "same Target+Position, Target GroupingOffset enabled, GroupingOffsetDirection disabled"
+				} else {
+					reason = "same Target+Position, Target GroupingOffset or GroupingOffsetDirection condition not met"
+				}
+			} else if l.Source == existing.Link.Source && l.SourcePosition == existing.Link.SourcePosition {
+				// Check if same Source + SourcePosition
+				if l.Source.groupingOffset && !l.Source.groupingOffsetDirection {
+					shouldCount = true
+					reason = "same Source+Position, Source GroupingOffset enabled, GroupingOffsetDirection disabled"
+				} else {
+					reason = "same Source+Position, Source GroupingOffset or GroupingOffsetDirection condition not met"
+				}
+			} else {
+				// Different Source/Target, always count
+				shouldCount = true
+				reason = "different Source/Target"
+			}
+			
+			if shouldCount {
+				overlapCount++
+				// Track maximum offset from overlapping segments
+				if existing.AppliedOffset > maxOffset {
+					maxOffset = existing.AppliedOffset
+				}
+				log.Infof("  Overlap with segment[%d]: X[%d-%d] Y[%d-%d] (%s, offset: %d) ✓ COUNTED", 
+					i, existing.X1, existing.X2, existing.Y1, existing.Y2, reason, existing.AppliedOffset)
+			} else {
+				log.Infof("  Overlap with segment[%d]: X[%d-%d] Y[%d-%d] (%s) ✗ NOT COUNTED", 
+					i, existing.X1, existing.X2, existing.Y1, existing.Y2, reason)
+			}
+		}
+	}
+	
+	// Apply offset if overlap detected
+	var appliedOffset int
+	if overlapCount > 0 {
+		// Use max offset + 15 instead of count * 15
+		appliedOffset = maxOffset + 15
+		if lca.direction == "horizontal" {
+			midPt.X += appliedOffset
+			newSegment.X1 += appliedOffset
+			newSegment.X2 += appliedOffset
+			log.Infof("✓ Applied X offset %d (X: %d -> %d) based on max offset %d + 15", 
+				appliedOffset, midPt.X-appliedOffset, midPt.X, maxOffset)
+		} else {
+			midPt.Y += appliedOffset
+			newSegment.Y1 += appliedOffset
+			newSegment.Y2 += appliedOffset
+			log.Infof("✓ Applied Y offset %d (Y: %d -> %d) based on max offset %d + 15", 
+				appliedOffset, midPt.Y-appliedOffset, midPt.Y, maxOffset)
+		}
+	} else {
+		log.Infof("✗ No overlap detected, no offset applied")
+	}
+	
+	// Set applied offset in segment
+	newSegment.AppliedOffset = appliedOffset
+	
+	// Register this segment
+	allConvergenceSegments = append(allConvergenceSegments, newSegment)
+	
+	return midPt
+}
+
+// segmentsOverlap checks if two segments overlap (excluding boundary-only contact)
+func segmentsOverlap(s1, s2 Segment) bool {
+	// Check if both are vertical lines (same X)
+	if s1.X1 == s1.X2 && s2.X1 == s2.X2 && s1.X1 == s2.X1 {
+		// Both vertical on same X, check Y range overlap
+		// Use < instead of <= to exclude boundary-only contact
+		return !(s1.Y2 <= s2.Y1 || s2.Y2 <= s1.Y1)
+	}
+	
+	// Check if both are horizontal lines (same Y)
+	if s1.Y1 == s1.Y2 && s2.Y1 == s2.Y2 && s1.Y1 == s2.Y1 {
+		// Both horizontal on same Y, check X range overlap
+		// Use < instead of <= to exclude boundary-only contact
+		return !(s1.X2 <= s2.X1 || s2.X2 <= s1.X1)
+	}
+	
+	return false
 }
 
 // findChildAncestorInLCA finds which direct child of LCA contains the given resource
