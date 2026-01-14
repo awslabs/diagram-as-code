@@ -530,6 +530,10 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 	log.Infof("Source: %v (Position: %v)", sourcePt, l.SourcePosition)
 	log.Infof("Target: %v (Position: %v)", targetPt, l.TargetPosition)
 
+	// Calculate LCA-based midpoint for convergence
+	lcaMidpoint := l.calculateLCABasedMidpoint(sourcePt, targetPt)
+	log.Infof("LCA-based convergence point: %v", lcaMidpoint)
+
 	// 1. Get direction vectors from positions
 	sourceDir := l.getDirectionVector(int(l.SourcePosition))
 	targetDir := l.getDirectionVector(int(l.TargetPosition))
@@ -615,8 +619,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 							// Counterpart has detour: use full distance + 20 for efficiency
 							moveDistance = math.Abs(remaining.X) + 20.0
 						} else {
-							// Normal parallel: share distance
-							moveDistance = math.Abs(remaining.X) / 2.0
+							// LCA-based convergence: use LCA midpoint instead of 50%
+							moveDistance = math.Abs(float64(lcaMidpoint.X) - sourceCurrent.X)
 						}
 					} else {
 						// Non-parallel case: account for counterpart detour
@@ -637,8 +641,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 							// Counterpart has detour: use full distance + 20 for efficiency
 							moveDistance = math.Abs(remaining.Y) + 20.0
 						} else {
-							// Normal parallel: share distance
-							moveDistance = math.Abs(remaining.Y) / 2.0
+							// LCA-based convergence: use LCA midpoint instead of 50%
+							moveDistance = math.Abs(float64(lcaMidpoint.Y) - sourceCurrent.Y)
 						}
 					} else {
 						// Non-parallel case: account for counterpart detour
@@ -662,10 +666,11 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			detourDistance := 64.0/2 + 20 // Minimum 52px
 			if math.Abs(sourceDir.X) > 0.5 {
 				// Horizontal position: vertical detour
-				// Calculate adaptive distance: max(52px, remaining/2)
+				// Calculate adaptive distance: max(52px, LCA-based distance)
 				adaptiveDistance := math.Abs(remaining.Y)
 				if isParallel {
-					adaptiveDistance = math.Abs(remaining.Y) / 2.0
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					adaptiveDistance = math.Abs(float64(lcaMidpoint.Y) - sourceCurrent.Y)
 				}
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
@@ -679,10 +684,11 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				log.Infof("  Source detour Y-move: %v (distance: %v)", sourceCurrent, detourOffset)
 			} else {
 				// Vertical position: horizontal detour
-				// Calculate adaptive distance: max(52px, remaining/2)
+				// Calculate adaptive distance: max(52px, LCA-based distance)
 				adaptiveDistance := math.Abs(remaining.X)
 				if isParallel {
-					adaptiveDistance = math.Abs(remaining.X) / 2.0
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					adaptiveDistance = math.Abs(float64(lcaMidpoint.X) - sourceCurrent.X)
 				}
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
@@ -700,7 +706,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			if sourceUseX {
 				moveDistance := remaining.X
 				if isParallel {
-					moveDistance = remaining.X / 2.0 // Half for parallel directions
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					moveDistance = float64(lcaMidpoint.X) - sourceCurrent.X
 				}
 				// Apply minimum distance for step 0
 				if step == 0 && math.Abs(moveDistance) < 20.0 {
@@ -711,7 +718,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			} else {
 				moveDistance := remaining.Y
 				if isParallel {
-					moveDistance = remaining.Y / 2.0 // Half for parallel directions
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					moveDistance = float64(lcaMidpoint.Y) - sourceCurrent.Y
 				}
 				// Apply minimum distance for step 0
 				if step == 0 && math.Abs(moveDistance) < 20.0 {
@@ -744,8 +752,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 							// Counterpart has detour: use full distance + 20 for efficiency
 							moveDistance = math.Abs(remaining.X) + 20.0
 						} else {
-							// Normal parallel: share distance
-							moveDistance = math.Abs(remaining.X) / 2.0
+							// LCA-based convergence: use LCA midpoint instead of 50%
+							moveDistance = math.Abs(float64(lcaMidpoint.X) - targetCurrent.X)
 						}
 					} else {
 						// Non-parallel case: account for counterpart detour
@@ -766,8 +774,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 							// Counterpart has detour: use full distance + 20 for efficiency
 							moveDistance = math.Abs(remaining.Y) + 20.0
 						} else {
-							// Normal parallel: share distance
-							moveDistance = math.Abs(remaining.Y) / 2.0
+							// LCA-based convergence: use LCA midpoint instead of 50%
+							moveDistance = math.Abs(float64(lcaMidpoint.Y) - targetCurrent.Y)
 						}
 					} else {
 						// Non-parallel case: account for counterpart detour
@@ -791,10 +799,11 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			detourDistance := 64.0/2 + 20 // Minimum 52px
 			if math.Abs(targetDir.X) > 0.5 {
 				// Horizontal position: vertical detour
-				// Calculate adaptive distance: max(52px, remaining/2)
+				// Calculate adaptive distance: max(52px, LCA-based distance)
 				adaptiveDistance := math.Abs(remaining.Y)
 				if isParallel {
-					adaptiveDistance = math.Abs(remaining.Y) / 2.0
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					adaptiveDistance = math.Abs(float64(lcaMidpoint.Y) - targetCurrent.Y)
 				}
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
@@ -808,10 +817,11 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 				log.Infof("  Target detour Y-move: %v (distance: %v)", targetCurrent, detourOffset)
 			} else {
 				// Vertical position: horizontal detour
-				// Calculate adaptive distance: max(52px, remaining/2)
+				// Calculate adaptive distance: max(52px, LCA-based distance)
 				adaptiveDistance := math.Abs(remaining.X)
 				if isParallel {
-					adaptiveDistance = math.Abs(remaining.X) / 2.0
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					adaptiveDistance = math.Abs(float64(lcaMidpoint.X) - targetCurrent.X)
 				}
 				if adaptiveDistance > detourDistance {
 					detourDistance = adaptiveDistance
@@ -829,7 +839,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			if targetUseX {
 				moveDistance := remaining.X
 				if isParallel {
-					moveDistance = remaining.X / 2.0 // Half for parallel directions
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					moveDistance = targetCurrent.X - float64(lcaMidpoint.X)
 				}
 				// Apply minimum distance for step 0
 				if step == 0 && math.Abs(moveDistance) < 20.0 {
@@ -840,7 +851,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 			} else {
 				moveDistance := remaining.Y
 				if isParallel {
-					moveDistance = remaining.Y / 2.0 // Half for parallel directions
+					// LCA-based convergence: use LCA midpoint instead of 50%
+					moveDistance = targetCurrent.Y - float64(lcaMidpoint.Y)
 				}
 				// Apply minimum distance for step 0
 				if step == 0 && math.Abs(moveDistance) < 20.0 {
@@ -997,6 +1009,157 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+// calculateLCABasedMidpoint calculates midpoint using LCA information
+func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.Point {
+	log.Infof("=== LCA-based Midpoint Calculation ===")
+	log.Infof("Source: %v, Target: %v", sourcePt, targetPt)
+	
+	// Find LCA between source and target
+	lca := findLowestCommonAncestor(l.Source, l.Target)
+	if lca == nil {
+		log.Infof("No LCA found, using default 50%% midpoint")
+		return image.Point{
+			X: (sourcePt.X + targetPt.X) / 2,
+			Y: (sourcePt.Y + targetPt.Y) / 2,
+		}
+	}
+	
+	log.Infof("LCA found: %s (direction: %s)", getResourceName(lca), lca.direction)
+	
+	// Get LCA children list
+	children := lca.children
+	log.Infof("LCA has %d children:", len(children))
+	for i, child := range children {
+		log.Infof("  Child[%d]: %s", i, getResourceName(child))
+	}
+	
+	// Find which LCA child each source/target belongs to
+	sourceChild := findChildAncestorInLCA(lca, l.Source)
+	targetChild := findChildAncestorInLCA(lca, l.Target)
+	
+	if sourceChild != nil {
+		log.Infof("Source %s belongs to LCA child: %s", getResourceName(l.Source), getResourceName(sourceChild))
+	} else {
+		log.Infof("Source %s: no LCA child found", getResourceName(l.Source))
+	}
+	
+	if targetChild != nil {
+		log.Infof("Target %s belongs to LCA child: %s", getResourceName(l.Target), getResourceName(targetChild))
+	} else {
+		log.Infof("Target %s: no LCA child found", getResourceName(l.Target))
+	}
+	
+	// Find indices of source and target children in LCA children list
+	sourceIndex := -1
+	targetIndex := -1
+	for i, child := range children {
+		if child == sourceChild {
+			sourceIndex = i
+		}
+		if child == targetChild {
+			targetIndex = i
+		}
+	}
+	
+	log.Infof("Source child index: %d, Target child index: %d", sourceIndex, targetIndex)
+	
+	// Find previous child before target (without loop)
+	if sourceIndex != -1 && targetIndex != -1 && sourceIndex != targetIndex {
+		// Initialize midpoint with 50% default
+		midPt := image.Point{
+			X: (sourcePt.X + targetPt.X) / 2,
+			Y: (sourcePt.Y + targetPt.Y) / 2,
+		}
+		
+		var previousChild *Resource = nil
+		
+		if sourceIndex < targetIndex {
+			// Forward iteration: previous is targetIndex-1
+			if targetIndex > 0 {
+				previousChild = children[targetIndex-1]
+			}
+		} else {
+			// Reverse iteration: previous is targetIndex+1
+			if targetIndex < len(children)-1 {
+				previousChild = children[targetIndex+1]
+			}
+		}
+		
+		if previousChild != nil {
+			log.Infof("Previous child before target: %s", getResourceName(previousChild))
+			
+			// Get bindings of previous child and target child
+			previousBounds := previousChild.GetBindings()
+			targetChildBounds := targetChild.GetBindings()
+			
+			log.Infof("Previous child bounds: %v", previousBounds)
+			log.Infof("Target child bounds: %v", targetChildBounds)
+			
+			// Calculate gap-based midpoint based on LCA direction
+			if lca.direction == "horizontal" {
+				// Horizontal layout: calculate X coordinate between bounds
+				var gapX int
+				if sourceIndex < targetIndex {
+					// Forward: target.Min.X and previous.Max.X
+					gapX = (targetChildBounds.Min.X + previousBounds.Max.X) / 2
+				} else {
+					// Reverse: target.Max.X and previous.Min.X
+					gapX = (targetChildBounds.Max.X + previousBounds.Min.X) / 2
+				}
+				midPt.X = gapX
+				log.Infof("Horizontal gap X: %d", gapX)
+			} else {
+				// Vertical layout: calculate Y coordinate between bounds
+				var gapY int
+				if sourceIndex < targetIndex {
+					// Forward: target.Min.Y and previous.Max.Y
+					gapY = (targetChildBounds.Min.Y + previousBounds.Max.Y) / 2
+				} else {
+					// Reverse: target.Max.Y and previous.Min.Y
+					gapY = (targetChildBounds.Max.Y + previousBounds.Min.Y) / 2
+				}
+				midPt.Y = gapY
+				log.Infof("Vertical gap Y: %d", gapY)
+			}
+		} else {
+			log.Infof("No previous child found (at boundary)")
+		}
+		
+		log.Infof("Calculated midpoint: %v", midPt)
+		return midPt
+	} else {
+		log.Infof("Source and target are same child or invalid indices")
+	}
+	
+	// Fallback: return 50% midpoint
+	midPt := image.Point{
+		X: (sourcePt.X + targetPt.X) / 2,
+		Y: (sourcePt.Y + targetPt.Y) / 2,
+	}
+	log.Infof("Calculated midpoint: %v", midPt)
+	
+	return midPt
+}
+
+// findChildAncestorInLCA finds which direct child of LCA contains the given resource
+func findChildAncestorInLCA(lca *Resource, resource *Resource) *Resource {
+	// Traverse up from resource until we find a direct child of LCA
+	current := resource
+	for current != nil {
+		parent := current.GetParent()
+		if parent == lca {
+			// current is a direct child of LCA
+			return current
+		}
+		if parent == nil {
+			// Reached root without finding LCA
+			break
+		}
+		current = parent
+	}
+	return nil
 }
 
 func (l *Link) calcPositionWithOffset(bindings image.Rectangle, position Windrose, resource *Resource, isSource bool) image.Point {
