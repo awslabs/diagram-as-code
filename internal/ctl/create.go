@@ -213,6 +213,9 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 		}
 	}
 
+	// Reset convergence point tracking before drawing
+	types.ResetConvergencePointSegments()
+
 	img, err := canvas.Draw(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error drawing diagram: %w", err)

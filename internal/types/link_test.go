@@ -2773,6 +2773,124 @@ func TestFindLongestHorizontalSegment(t *testing.T) {
 	}
 }
 
+func TestCalculateLCABasedMidpoint(t *testing.T) {
+	// Create complex nested structure:
+	// HorizontalStack{
+	//   HorizontalStack{
+	//     VerticalStack{VerticalStack{Resource1}},
+	//     VerticalStack{VerticalStack{Resource2}},
+	//     VerticalStack{VerticalStack{Resource3}},
+	//     VerticalStack{VerticalStack{Resource4}},
+	//     VerticalStack{VerticalStack{Resource5}},
+	//     VerticalStack{VerticalStack{Resource6}}
+	//   }
+	// }
+
+	// Root HorizontalStack
+	root := new(Resource).Init()
+	root.direction = "horizontal"
+
+	// Inner HorizontalStack
+	innerHorizontal := new(Resource).Init()
+	innerHorizontal.direction = "horizontal"
+	innerHorizontal.parent = root
+	root.children = []*Resource{innerHorizontal}
+
+	// Create 6 VerticalStacks
+	verticalStacks := make([]*Resource, 6)
+	for i := 0; i < 6; i++ {
+		verticalStacks[i] = new(Resource).Init()
+		verticalStacks[i].direction = "vertical"
+		verticalStacks[i].parent = innerHorizontal
+	}
+	innerHorizontal.children = verticalStacks
+
+	// Create inner VerticalStacks and Resources
+	resources := make([]*Resource, 6)
+	for i := 0; i < 6; i++ {
+		innerVertical := new(Resource).Init()
+		innerVertical.direction = "vertical"
+		innerVertical.parent = verticalStacks[i]
+
+		resources[i] = new(Resource).Init()
+		resources[i].parent = innerVertical
+
+		verticalStacks[i].children = []*Resource{innerVertical}
+		innerVertical.children = []*Resource{resources[i]}
+
+		// Set actual bindings for each vertical stack (horizontal layout)
+		x := i * 100 // Each stack is 100px wide
+		verticalStacks[i].SetBindings(image.Rect(x, 0, x+80, 100))
+
+		// Set bindings for inner vertical and resources
+		innerVertical.SetBindings(image.Rect(x+10, 10, x+70, 90))
+		resources[i].SetBindings(image.Rect(x+20, 20, x+60, 80))
+	}
+
+	// Test LCA detection: Resource2 and Resource5 should have innerHorizontal as LCA
+	lca := findLowestCommonAncestor(resources[1], resources[4])
+	if lca != innerHorizontal {
+		t.Errorf("Expected LCA to be innerHorizontal, got %v", lca)
+	}
+
+	// Test Resource2 -> Resource5 (forward)
+	link := &Link{
+		Source: resources[1], // Resource2
+		Target: resources[4], // Resource5
+	}
+
+	sourcePt := image.Point{X: 200, Y: 100}
+	targetPt := image.Point{X: 500, Y: 100}
+
+	result := link.calculateLCABasedMidpoint(sourcePt, targetPt)
+	if result.X == 0 && result.Y == 0 {
+		t.Error("Expected non-zero midpoint result for Resource2->Resource5")
+	}
+
+	// Test Resource5 -> Resource2 (reverse)
+	reverseLink := &Link{
+		Source: resources[4], // Resource5
+		Target: resources[1], // Resource2
+	}
+
+	result2 := reverseLink.calculateLCABasedMidpoint(targetPt, sourcePt)
+	if result2.X == 0 && result2.Y == 0 {
+		t.Error("Expected non-zero midpoint result for Resource5->Resource2")
+	}
+
+	// Test edge case: no LCA (fallback to 50%)
+	orphan := new(Resource).Init()
+	noLCALink := &Link{Source: resources[0], Target: orphan}
+	fallback := noLCALink.calculateLCABasedMidpoint(image.Point{X: 100, Y: 100}, image.Point{X: 300, Y: 200})
+	if fallback.X != 200 || fallback.Y != 150 {
+		t.Errorf("Expected 50%% fallback (200,150), got (%d,%d)", fallback.X, fallback.Y)
+	}
+
+	// Test edge case: same child (should use fallback)
+	sameChildLink := &Link{Source: resources[0], Target: resources[0]}
+	samePt := sameChildLink.calculateLCABasedMidpoint(image.Point{X: 50, Y: 50}, image.Point{X: 70, Y: 70})
+	if samePt.X != 60 || samePt.Y != 60 {
+		t.Errorf("Expected same child fallback (60,60), got (%d,%d)", samePt.X, samePt.Y)
+	}
+
+	// Test vertical layout
+	vertRoot := new(Resource).Init()
+	vertRoot.direction = "vertical"
+	vert1 := new(Resource).Init()
+	vert1.parent = vertRoot
+	vert1.SetBindings(image.Rect(0, 0, 100, 80))
+	vert2 := new(Resource).Init()
+	vert2.parent = vertRoot
+	vert2.SetBindings(image.Rect(0, 100, 100, 180))
+	vertRoot.children = []*Resource{vert1, vert2}
+
+	vertLink := &Link{Source: vert1, Target: vert2}
+	vertResult := vertLink.calculateLCABasedMidpoint(image.Point{X: 50, Y: 40}, image.Point{X: 50, Y: 140})
+	if vertResult.Y != 90 {
+		t.Errorf("Expected vertical gap Y=90, got Y=%d", vertResult.Y)
+	}
+}
+
 func TestFindPerpendicularSegments(t *testing.T) {
 	link := &Link{}
 
