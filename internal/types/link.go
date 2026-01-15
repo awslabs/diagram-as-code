@@ -1211,10 +1211,10 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 		}
 
 		log.Infof("Calculated midpoint: %v", midPt)
-		
+
 		// Check for segment overlap and apply offset if needed
 		midPt = l.applySegmentBasedOffset(midPt, sourcePt, targetPt, lca)
-		
+
 		return midPt
 	} else {
 		log.Infof("Source and target are same child or invalid indices")
@@ -1234,7 +1234,7 @@ func (l *Link) calculateLCABasedMidpoint(sourcePt, targetPt image.Point) image.P
 func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lca *Resource) image.Point {
 	// Create the convergence segment based on layout direction
 	var newSegment Segment
-	
+
 	if lca.direction == "horizontal" {
 		// Horizontal layout: vertical line at X=midPt.X from min(sourcePt.Y, targetPt.Y) to max(sourcePt.Y, targetPt.Y)
 		minY := sourcePt.Y
@@ -1249,7 +1249,7 @@ func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lc
 			Y2:   maxY,
 			Link: l,
 		}
-		log.Infof("New segment: X=%d, Y range [%d-%d] (Source: %s -> Target: %s)", 
+		log.Infof("New segment: X=%d, Y range [%d-%d] (Source: %s -> Target: %s)",
 			midPt.X, minY, maxY, getResourceName(l.Source), getResourceName(l.Target))
 	} else {
 		// Vertical layout: horizontal line at Y=midPt.Y from min(sourcePt.X, targetPt.X) to max(sourcePt.X, targetPt.X)
@@ -1265,10 +1265,10 @@ func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lc
 			Y2:   midPt.Y,
 			Link: l,
 		}
-		log.Infof("New segment: Y=%d, X range [%d-%d] (Source: %s -> Target: %s)", 
+		log.Infof("New segment: Y=%d, X range [%d-%d] (Source: %s -> Target: %s)",
 			midPt.Y, minX, maxX, getResourceName(l.Source), getResourceName(l.Target))
 	}
-	
+
 	// Check for overlaps with existing segments
 	maxOffset := 0
 	overlapCount := 0
@@ -1277,7 +1277,7 @@ func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lc
 			// Check if this overlap should be counted based on GroupingOffset settings
 			shouldCount := false
 			reason := ""
-			
+
 			// Check if same Target + TargetPosition
 			if l.Target == existing.Link.Target && l.TargetPosition == existing.Link.TargetPosition {
 				if l.Target.groupingOffset && !l.Target.groupingOffsetDirection {
@@ -1299,22 +1299,22 @@ func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lc
 				shouldCount = true
 				reason = "different Source/Target"
 			}
-			
+
 			if shouldCount {
 				overlapCount++
 				// Track maximum offset from overlapping segments
 				if existing.AppliedOffset > maxOffset {
 					maxOffset = existing.AppliedOffset
 				}
-				log.Infof("  Overlap with segment[%d]: X[%d-%d] Y[%d-%d] (%s, offset: %d) ✓ COUNTED", 
+				log.Infof("  Overlap with segment[%d]: X[%d-%d] Y[%d-%d] (%s, offset: %d) ✓ COUNTED",
 					i, existing.X1, existing.X2, existing.Y1, existing.Y2, reason, existing.AppliedOffset)
 			} else {
-				log.Infof("  Overlap with segment[%d]: X[%d-%d] Y[%d-%d] (%s) ✗ NOT COUNTED", 
+				log.Infof("  Overlap with segment[%d]: X[%d-%d] Y[%d-%d] (%s) ✗ NOT COUNTED",
 					i, existing.X1, existing.X2, existing.Y1, existing.Y2, reason)
 			}
 		}
 	}
-	
+
 	// Apply offset if overlap detected
 	var appliedOffset int
 	if overlapCount > 0 {
@@ -1324,25 +1324,25 @@ func (l *Link) applySegmentBasedOffset(midPt, sourcePt, targetPt image.Point, lc
 			midPt.X += appliedOffset
 			newSegment.X1 += appliedOffset
 			newSegment.X2 += appliedOffset
-			log.Infof("✓ Applied X offset %d (X: %d -> %d) based on max offset %d + 15", 
+			log.Infof("✓ Applied X offset %d (X: %d -> %d) based on max offset %d + 15",
 				appliedOffset, midPt.X-appliedOffset, midPt.X, maxOffset)
 		} else {
 			midPt.Y += appliedOffset
 			newSegment.Y1 += appliedOffset
 			newSegment.Y2 += appliedOffset
-			log.Infof("✓ Applied Y offset %d (Y: %d -> %d) based on max offset %d + 15", 
+			log.Infof("✓ Applied Y offset %d (Y: %d -> %d) based on max offset %d + 15",
 				appliedOffset, midPt.Y-appliedOffset, midPt.Y, maxOffset)
 		}
 	} else {
 		log.Infof("✗ No overlap detected, no offset applied")
 	}
-	
+
 	// Set applied offset in segment
 	newSegment.AppliedOffset = appliedOffset
-	
+
 	// Register this segment
 	allConvergenceSegments = append(allConvergenceSegments, newSegment)
-	
+
 	return midPt
 }
 
@@ -1354,14 +1354,14 @@ func segmentsOverlap(s1, s2 Segment) bool {
 		// Use < instead of <= to exclude boundary-only contact
 		return !(s1.Y2 <= s2.Y1 || s2.Y2 <= s1.Y1)
 	}
-	
+
 	// Check if both are horizontal lines (same Y)
 	if s1.Y1 == s1.Y2 && s2.Y1 == s2.Y2 && s1.Y1 == s2.Y1 {
 		// Both horizontal on same Y, check X range overlap
 		// Use < instead of <= to exclude boundary-only contact
 		return !(s1.X2 <= s2.X1 || s2.X2 <= s1.X1)
 	}
-	
+
 	return false
 }
 
