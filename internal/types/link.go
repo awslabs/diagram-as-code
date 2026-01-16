@@ -1877,7 +1877,6 @@ func (l *Link) calculateAutoLabelPoints(sourcePt, targetPt image.Point, controlP
 	return sourcePt, targetPt
 }
 
-
 // ReorderChildrenByLinks reorders children based on link connections to minimize overlap
 func ReorderChildrenByLinks(canvas *Resource, links []*Link) {
 	for _, link := range links {
@@ -1917,7 +1916,7 @@ func ReorderChildrenByLinks(canvas *Resource, links []*Link) {
 		// Step 6: Reorder intermediate resources
 		// Traverse from source to LCA
 		reorderPathToLCA(link.Source, lca, sourceMovesRight)
-		
+
 		// Traverse from target to LCA (opposite direction)
 		reorderPathToLCA(link.Target, lca, !sourceMovesRight)
 
@@ -1955,7 +1954,7 @@ func reorderPathToLCA(resource *Resource, lca *Resource, moveToEnd bool) {
 			// Stop before reaching LCA - LCA reordering is handled separately in Step 7
 			break
 		}
-		
+
 		// Find which child of parent contains current
 		var childToMove *Resource
 		for _, child := range parent.children {
@@ -1964,12 +1963,12 @@ func reorderPathToLCA(resource *Resource, lca *Resource, moveToEnd bool) {
 				break
 			}
 		}
-		
+
 		if childToMove != nil && parent.unorderedChildren {
 			if parent.direction == lca.direction {
 				// Same direction: move to edge based on moveToEnd
-				log.Infof("Reordering in %s (same direction): moving %s to %v (moveToEnd=%v)", 
-					parent.label, childToMove.label, 
+				log.Infof("Reordering in %s (same direction): moving %s to %v (moveToEnd=%v)",
+					parent.label, childToMove.label,
 					map[bool]string{true: "end", false: "start"}[moveToEnd], moveToEnd)
 				if moveToEnd {
 					// Move to rightmost/bottom (last position)
@@ -1980,12 +1979,12 @@ func reorderPathToLCA(resource *Resource, lca *Resource, moveToEnd bool) {
 				}
 			} else {
 				// Different direction: move to first position
-				log.Infof("Reordering in %s (different direction): moving %s to start", 
+				log.Infof("Reordering in %s (different direction): moving %s to start",
 					parent.label, childToMove.label)
 				moveChildToPosition(parent, childToMove, 0)
 			}
 		}
-		
+
 		current = parent
 	}
 }
@@ -2017,13 +2016,13 @@ func moveChildToPosition(parent *Resource, child *Resource, targetPos int) {
 		log.Warnf("Child %s not found in parent %s", child.label, parent.label)
 		return
 	}
-	
+
 	if currentPos == targetPos {
 		log.Infof("Child %s already at position %d in parent %s", child.label, targetPos, parent.label)
 		return
 	}
 
-	log.Infof("Moving %s from position %d to %d in %s (before: %v)", 
+	log.Infof("Moving %s from position %d to %d in %s (before: %v)",
 		child.label, currentPos, targetPos, parent.label, getResourceNames(parent.children))
 
 	// Create new slice without the child
@@ -2047,9 +2046,9 @@ func moveChildToPosition(parent *Resource, child *Resource, targetPos int) {
 		result = append(result, child)
 		result = append(result, newChildren[targetPos:]...)
 	}
-	
+
 	parent.children = result
-	
+
 	log.Infof("After move: %v", getResourceNames(parent.children))
 }
 

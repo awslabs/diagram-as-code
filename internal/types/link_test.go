@@ -3191,7 +3191,6 @@ func TestSegmentSelectionBasedOnAcutePosition(t *testing.T) {
 	t.Logf("Segment selection based on acute position test completed successfully")
 }
 
-
 // TestUnorderedChildrenExample tests the example scenario from doc/unordered-children.md
 // This test verifies link overlap with multiple resources before UnorderedChildren implementation
 func TestUnorderedChildrenExample(t *testing.T) {
@@ -3419,16 +3418,6 @@ func TestUnorderedChildrenExample(t *testing.T) {
 	t.Logf("✓ ResourceD moved adjacent to ResourceB in ResourceA")
 }
 
-// Helper function to get resource names for logging
-func getResourceNames(resources []*Resource) []string {
-	names := make([]string, len(resources))
-	for i, r := range resources {
-		names[i] = r.label
-	}
-	return names
-}
-
-
 // TestUnorderedChildrenMultipleLinks tests reordering with multiple links
 func TestUnorderedChildrenMultipleLinks(t *testing.T) {
 	// Create resource hierarchy
@@ -3561,7 +3550,6 @@ func TestUnorderedChildrenMultipleLinks(t *testing.T) {
 	t.Logf("✓ Resource2 and Resource1 reordered in Horizontal1")
 	t.Logf("✓ Resource3 and Resource4 reordered in Horizontal2")
 }
-
 
 // TestUnorderedChildrenDisabled tests that reordering does NOT happen when unorderedChildren is false
 func TestUnorderedChildrenDisabled(t *testing.T) {
