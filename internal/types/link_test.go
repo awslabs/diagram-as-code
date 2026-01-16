@@ -3190,3 +3190,497 @@ func TestSegmentSelectionBasedOnAcutePosition(t *testing.T) {
 
 	t.Logf("Segment selection based on acute position test completed successfully")
 }
+
+// TestUnorderedChildrenExample tests the example scenario from doc/unordered-children.md
+// This test verifies link overlap with multiple resources before UnorderedChildren implementation
+func TestUnorderedChildrenExample(t *testing.T) {
+	// Create resource hierarchy matching doc/static/unordered-children-before.yaml
+	canvas := new(Resource).Init()
+	canvas.direction = "vertical"
+
+	awsCloud := new(Resource).Init()
+	awsCloud.direction = "vertical"
+	awsCloud.parent = canvas
+
+	// ResourceA (LCA) - horizontal layout
+	resourceA := new(Resource).Init()
+	resourceA.direction = "horizontal"
+	resourceA.label = "ResourceA (LCA)"
+	resourceA.parent = awsCloud
+	resourceA.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{950, 400}}
+
+	// ResourceB - contains Resource1, Resource2
+	resourceB := new(Resource).Init()
+	resourceB.direction = "horizontal"
+	resourceB.label = "ResourceB"
+	resourceB.parent = resourceA
+	resourceB.bindings = &image.Rectangle{Min: image.Point{70, 100}, Max: image.Point{270, 350}}
+
+	resource1 := new(Resource).Init()
+	resource1.label = "Resource1"
+	resource1.parent = resourceB
+	resource1.bindings = &image.Rectangle{Min: image.Point{90, 150}, Max: image.Point{154, 214}}
+
+	resource2 := new(Resource).Init()
+	resource2.label = "Resource2"
+	resource2.parent = resourceB
+	resource2.bindings = &image.Rectangle{Min: image.Point{186, 150}, Max: image.Point{250, 214}}
+
+	// ResourceC - contains Resource3, Resource4
+	resourceC := new(Resource).Init()
+	resourceC.direction = "horizontal"
+	resourceC.label = "ResourceC"
+	resourceC.parent = resourceA
+	resourceC.bindings = &image.Rectangle{Min: image.Point{370, 100}, Max: image.Point{570, 350}}
+
+	resource3 := new(Resource).Init()
+	resource3.label = "Resource3"
+	resource3.parent = resourceC
+	resource3.bindings = &image.Rectangle{Min: image.Point{390, 150}, Max: image.Point{454, 214}}
+
+	resource4 := new(Resource).Init()
+	resource4.label = "Resource4"
+	resource4.parent = resourceC
+	resource4.bindings = &image.Rectangle{Min: image.Point{486, 150}, Max: image.Point{550, 214}}
+
+	// ResourceD - contains Resource5, Resource6
+	resourceD := new(Resource).Init()
+	resourceD.direction = "horizontal"
+	resourceD.label = "ResourceD"
+	resourceD.parent = resourceA
+	resourceD.bindings = &image.Rectangle{Min: image.Point{670, 100}, Max: image.Point{870, 350}}
+
+	resource5 := new(Resource).Init()
+	resource5.label = "Resource5"
+	resource5.parent = resourceD
+	resource5.bindings = &image.Rectangle{Min: image.Point{690, 150}, Max: image.Point{754, 214}}
+
+	resource6 := new(Resource).Init()
+	resource6.label = "Resource6"
+	resource6.parent = resourceD
+	resource6.bindings = &image.Rectangle{Min: image.Point{786, 150}, Max: image.Point{850, 214}}
+
+	// Add children
+	resourceA.children = []*Resource{resourceB, resourceC, resourceD}
+	resourceB.children = []*Resource{resource1, resource2}
+	resourceC.children = []*Resource{resource3, resource4}
+	resourceD.children = []*Resource{resource5, resource6}
+
+	// Create link from Resource1 to Resource6
+	link := &Link{
+		Source:         resource1,
+		SourcePosition: WINDROSE_E, // East
+		Target:         resource6,
+		TargetPosition: WINDROSE_W, // West
+		Type:           "orthogonal",
+	}
+
+	// Test LCA finding
+	lca := findLowestCommonAncestor(resource1, resource6)
+	if lca != resourceA {
+		t.Errorf("Expected LCA to be ResourceA, got %v", lca)
+	}
+	t.Logf("LCA found: %s", lca.label)
+
+	// Test LCA children identification
+	sourceChild := findChildAncestorInLCA(lca, resource1)
+	targetChild := findChildAncestorInLCA(lca, resource6)
+
+	if sourceChild != resourceB {
+		t.Errorf("Expected source child to be ResourceB, got %v", sourceChild)
+	}
+	if targetChild != resourceD {
+		t.Errorf("Expected target child to be ResourceD, got %v", targetChild)
+	}
+	t.Logf("Source belongs to: %s", sourceChild.label)
+	t.Logf("Target belongs to: %s", targetChild.label)
+
+	// Test order determination
+	sourceIndex := -1
+	targetIndex := -1
+	for i, child := range lca.children {
+		if child == sourceChild {
+			sourceIndex = i
+		}
+		if child == targetChild {
+			targetIndex = i
+		}
+	}
+
+	if sourceIndex == -1 || targetIndex == -1 {
+		t.Fatalf("Failed to find source or target in LCA children")
+	}
+
+	t.Logf("Source index: %d, Target index: %d", sourceIndex, targetIndex)
+
+	// Verify pattern: [*, SourceParent, *, TargetParent, *]
+	if sourceIndex >= targetIndex {
+		t.Errorf("Expected source index (%d) to be less than target index (%d)", sourceIndex, targetIndex)
+	}
+
+	// Calculate orthogonal path
+	sourcePt := image.Point{X: 154, Y: 182} // Resource1 east edge
+	targetPt := image.Point{X: 786, Y: 182} // Resource6 west edge
+
+	controlPoints := link.calculateOrthogonalPath(sourcePt, targetPt)
+	t.Logf("Control points: %v", controlPoints)
+
+	// Verify orthogonality
+	allPoints := append([]image.Point{sourcePt}, controlPoints...)
+	allPoints = append(allPoints, targetPt)
+
+	for i := 0; i < len(allPoints)-1; i++ {
+		p1 := allPoints[i]
+		p2 := allPoints[i+1]
+		if p1.X != p2.X && p1.Y != p2.Y {
+			t.Errorf("Non-orthogonal segment: (%d,%d) -> (%d,%d)", p1.X, p1.Y, p2.X, p2.Y)
+		}
+	}
+
+	// Document the overlap problem
+	t.Logf("=== Overlap Analysis ===")
+	t.Logf("Link path crosses:")
+	t.Logf("1. Resource2 bounds: %v (if Resource2 is right of Resource1)", resource2.bindings)
+	t.Logf("2. ResourceC bounds: %v", resourceC.bindings)
+	t.Logf("3. Resource3 bounds: %v", resource3.bindings)
+	t.Logf("4. Resource4 bounds: %v", resource4.bindings)
+	t.Logf("5. Resource5 bounds: %v (if Resource5 is left of Resource6)", resource5.bindings)
+	t.Logf("")
+	t.Logf("UnorderedChildren feature will reorder:")
+	t.Logf("- ResourceB children: Move Resource1 to rightmost")
+	t.Logf("- ResourceD children: Move Resource6 to leftmost")
+	t.Logf("- ResourceA children: Move ResourceD adjacent to ResourceB")
+
+	// Enable UnorderedChildren
+	resourceA.unorderedChildren = true
+	resourceB.unorderedChildren = true
+	resourceD.unorderedChildren = true
+
+	// Verify initial order
+	t.Logf("\n=== Before Reordering ===")
+	t.Logf("ResourceA children: %v", getResourceNames(resourceA.children))
+	t.Logf("ResourceB children: %v", getResourceNames(resourceB.children))
+	t.Logf("ResourceD children: %v", getResourceNames(resourceD.children))
+
+	if len(resourceA.children) != 3 {
+		t.Fatalf("Expected ResourceA to have 3 children, got %d", len(resourceA.children))
+	}
+	if resourceA.children[0] != resourceB || resourceA.children[1] != resourceC || resourceA.children[2] != resourceD {
+		t.Errorf("Initial ResourceA order incorrect")
+	}
+	if len(resourceB.children) != 2 || resourceB.children[0] != resource1 || resourceB.children[1] != resource2 {
+		t.Errorf("Initial ResourceB order incorrect")
+	}
+	if len(resourceD.children) != 2 || resourceD.children[0] != resource5 || resourceD.children[1] != resource6 {
+		t.Errorf("Initial ResourceD order incorrect")
+	}
+
+	// Call reordering function
+	links := []*Link{link}
+	ReorderChildrenByLinks(canvas, links)
+
+	// Verify reordered state
+	t.Logf("\n=== After Reordering ===")
+	t.Logf("ResourceA children: %v", getResourceNames(resourceA.children))
+	t.Logf("ResourceB children: %v", getResourceNames(resourceB.children))
+	t.Logf("ResourceD children: %v", getResourceNames(resourceD.children))
+
+	// Expected: ResourceB children reordered - Resource1 at rightmost
+	if len(resourceB.children) != 2 {
+		t.Fatalf("Expected ResourceB to have 2 children after reordering, got %d", len(resourceB.children))
+	}
+	if resourceB.children[0] != resource2 || resourceB.children[1] != resource1 {
+		t.Errorf("Expected ResourceB children [Resource2, Resource1], got [%s, %s]",
+			resourceB.children[0].label, resourceB.children[1].label)
+	}
+
+	// Expected: ResourceD children reordered - Resource6 at leftmost
+	if len(resourceD.children) != 2 {
+		t.Fatalf("Expected ResourceD to have 2 children after reordering, got %d", len(resourceD.children))
+	}
+	if resourceD.children[0] != resource6 || resourceD.children[1] != resource5 {
+		t.Errorf("Expected ResourceD children [Resource6, Resource5], got [%s, %s]",
+			resourceD.children[0].label, resourceD.children[1].label)
+	}
+
+	// Expected: ResourceA children reordered - ResourceD adjacent to ResourceB
+	if len(resourceA.children) != 3 {
+		t.Fatalf("Expected ResourceA to have 3 children after reordering, got %d", len(resourceA.children))
+	}
+	if resourceA.children[0] != resourceB || resourceA.children[1] != resourceD || resourceA.children[2] != resourceC {
+		t.Errorf("Expected ResourceA children [ResourceB, ResourceD, ResourceC], got [%s, %s, %s]",
+			resourceA.children[0].label, resourceA.children[1].label, resourceA.children[2].label)
+	}
+
+	t.Logf("\n=== Reordering Successful ===")
+	t.Logf("✓ Resource1 moved to rightmost in ResourceB")
+	t.Logf("✓ Resource6 moved to leftmost in ResourceD")
+	t.Logf("✓ ResourceD moved adjacent to ResourceB in ResourceA")
+}
+
+// TestUnorderedChildrenMultipleLinks tests reordering with multiple links
+func TestUnorderedChildrenMultipleLinks(t *testing.T) {
+	// Create resource hierarchy
+	canvas := new(Resource).Init()
+	canvas.direction = "vertical"
+
+	awsCloud := new(Resource).Init()
+	awsCloud.direction = "vertical"
+	awsCloud.parent = canvas
+
+	// VPC (LCA) - vertical layout
+	vpc := new(Resource).Init()
+	vpc.direction = "vertical"
+	vpc.label = "VPC"
+	vpc.parent = awsCloud
+	vpc.unorderedChildren = true
+	vpc.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{950, 600}}
+
+	// Horizontal groups
+	horizontal1 := new(Resource).Init()
+	horizontal1.direction = "horizontal"
+	horizontal1.label = "Horizontal1"
+	horizontal1.parent = vpc
+	horizontal1.unorderedChildren = true
+	horizontal1.bindings = &image.Rectangle{Min: image.Point{70, 100}, Max: image.Point{870, 250}}
+
+	resource1 := new(Resource).Init()
+	resource1.label = "Resource1"
+	resource1.parent = horizontal1
+	resource1.bindings = &image.Rectangle{Min: image.Point{90, 150}, Max: image.Point{154, 214}}
+
+	resource2 := new(Resource).Init()
+	resource2.label = "Resource2"
+	resource2.parent = horizontal1
+	resource2.bindings = &image.Rectangle{Min: image.Point{786, 150}, Max: image.Point{850, 214}}
+
+	horizontal2 := new(Resource).Init()
+	horizontal2.direction = "horizontal"
+	horizontal2.label = "Horizontal2"
+	horizontal2.parent = vpc
+	horizontal2.unorderedChildren = true
+	horizontal2.bindings = &image.Rectangle{Min: image.Point{70, 350}, Max: image.Point{870, 500}}
+
+	resource3 := new(Resource).Init()
+	resource3.label = "Resource3"
+	resource3.parent = horizontal2
+	resource3.bindings = &image.Rectangle{Min: image.Point{90, 400}, Max: image.Point{154, 464}}
+
+	resource4 := new(Resource).Init()
+	resource4.label = "Resource4"
+	resource4.parent = horizontal2
+	resource4.bindings = &image.Rectangle{Min: image.Point{786, 400}, Max: image.Point{850, 464}}
+
+	// Add children
+	vpc.children = []*Resource{horizontal1, horizontal2}
+	horizontal1.children = []*Resource{resource1, resource2}
+	horizontal2.children = []*Resource{resource3, resource4}
+
+	// Create two links that cross
+	// Link1: Resource1 -> Resource4
+	link1 := &Link{
+		Source:         resource1,
+		SourcePosition: WINDROSE_S,
+		Target:         resource4,
+		TargetPosition: WINDROSE_N,
+		Type:           "orthogonal",
+	}
+
+	// Link2: Resource2 -> Resource3
+	link2 := &Link{
+		Source:         resource2,
+		SourcePosition: WINDROSE_S,
+		Target:         resource3,
+		TargetPosition: WINDROSE_N,
+		Type:           "orthogonal",
+	}
+
+	t.Logf("\n=== Before Reordering ===")
+	t.Logf("VPC children: %v", getResourceNames(vpc.children))
+	t.Logf("Horizontal1 children: %v", getResourceNames(horizontal1.children))
+	t.Logf("Horizontal2 children: %v", getResourceNames(horizontal2.children))
+
+	// Initial state
+	if len(horizontal1.children) != 2 || horizontal1.children[0] != resource1 || horizontal1.children[1] != resource2 {
+		t.Errorf("Initial Horizontal1 order incorrect")
+	}
+	if len(horizontal2.children) != 2 || horizontal2.children[0] != resource3 || horizontal2.children[1] != resource4 {
+		t.Errorf("Initial Horizontal2 order incorrect")
+	}
+
+	// Call reordering with multiple links
+	links := []*Link{link1, link2}
+	ReorderChildrenByLinks(canvas, links)
+
+	t.Logf("\n=== After Reordering ===")
+	t.Logf("VPC children: %v", getResourceNames(vpc.children))
+	t.Logf("Horizontal1 children: %v", getResourceNames(horizontal1.children))
+	t.Logf("Horizontal2 children: %v", getResourceNames(horizontal2.children))
+
+	// Expected results after processing both links:
+	// Link1 (Resource1 -> Resource4):
+	//   - Horizontal1: Resource1 moves to first (already there)
+	//   - Horizontal2: Resource4 moves to first
+	// Link2 (Resource2 -> Resource3):
+	//   - Horizontal1: Resource2 moves to first
+	//   - Horizontal2: Resource3 moves to first (already there after Link1)
+
+	// Final expected state:
+	// Horizontal1: [Resource2, Resource1] (Resource2 moved to first by Link2)
+	// Horizontal2: [Resource3, Resource4] (Resource3 at first, Resource4 moved by Link1)
+
+	if len(horizontal1.children) != 2 {
+		t.Fatalf("Expected Horizontal1 to have 2 children, got %d", len(horizontal1.children))
+	}
+	if horizontal1.children[0] != resource2 || horizontal1.children[1] != resource1 {
+		t.Errorf("Expected Horizontal1 children [Resource2, Resource1], got [%s, %s]",
+			horizontal1.children[0].label, horizontal1.children[1].label)
+	}
+
+	if len(horizontal2.children) != 2 {
+		t.Fatalf("Expected Horizontal2 to have 2 children, got %d", len(horizontal2.children))
+	}
+	if horizontal2.children[0] != resource3 || horizontal2.children[1] != resource4 {
+		t.Errorf("Expected Horizontal2 children [Resource3, Resource4], got [%s, %s]",
+			horizontal2.children[0].label, horizontal2.children[1].label)
+	}
+
+	t.Logf("\n=== Multiple Links Reordering Successful ===")
+	t.Logf("✓ Links no longer cross each other")
+	t.Logf("✓ Resource2 and Resource1 reordered in Horizontal1")
+	t.Logf("✓ Resource3 and Resource4 reordered in Horizontal2")
+}
+
+// TestUnorderedChildrenDisabled tests that reordering does NOT happen when unorderedChildren is false
+func TestUnorderedChildrenDisabled(t *testing.T) {
+	// Create resource hierarchy similar to the main example
+	canvas := new(Resource).Init()
+	canvas.direction = "vertical"
+
+	awsCloud := new(Resource).Init()
+	awsCloud.direction = "vertical"
+	awsCloud.parent = canvas
+
+	// ResourceA (LCA) - horizontal layout, UnorderedChildren = FALSE
+	resourceA := new(Resource).Init()
+	resourceA.direction = "horizontal"
+	resourceA.label = "ResourceA (LCA)"
+	resourceA.parent = awsCloud
+	resourceA.unorderedChildren = false // Explicitly disabled
+	resourceA.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{950, 400}}
+
+	// ResourceB - UnorderedChildren = FALSE
+	resourceB := new(Resource).Init()
+	resourceB.direction = "horizontal"
+	resourceB.label = "ResourceB"
+	resourceB.parent = resourceA
+	resourceB.unorderedChildren = false // Explicitly disabled
+	resourceB.bindings = &image.Rectangle{Min: image.Point{70, 100}, Max: image.Point{270, 350}}
+
+	resource1 := new(Resource).Init()
+	resource1.label = "Resource1"
+	resource1.parent = resourceB
+	resource1.bindings = &image.Rectangle{Min: image.Point{90, 150}, Max: image.Point{154, 214}}
+
+	resource2 := new(Resource).Init()
+	resource2.label = "Resource2"
+	resource2.parent = resourceB
+	resource2.bindings = &image.Rectangle{Min: image.Point{186, 150}, Max: image.Point{250, 214}}
+
+	// ResourceC
+	resourceC := new(Resource).Init()
+	resourceC.direction = "horizontal"
+	resourceC.label = "ResourceC"
+	resourceC.parent = resourceA
+	resourceC.bindings = &image.Rectangle{Min: image.Point{370, 100}, Max: image.Point{570, 350}}
+
+	// ResourceD - UnorderedChildren = FALSE
+	resourceD := new(Resource).Init()
+	resourceD.direction = "horizontal"
+	resourceD.label = "ResourceD"
+	resourceD.parent = resourceA
+	resourceD.unorderedChildren = false // Explicitly disabled
+	resourceD.bindings = &image.Rectangle{Min: image.Point{670, 100}, Max: image.Point{870, 350}}
+
+	resource5 := new(Resource).Init()
+	resource5.label = "Resource5"
+	resource5.parent = resourceD
+	resource5.bindings = &image.Rectangle{Min: image.Point{690, 150}, Max: image.Point{754, 214}}
+
+	resource6 := new(Resource).Init()
+	resource6.label = "Resource6"
+	resource6.parent = resourceD
+	resource6.bindings = &image.Rectangle{Min: image.Point{786, 150}, Max: image.Point{850, 214}}
+
+	// Add children
+	resourceA.children = []*Resource{resourceB, resourceC, resourceD}
+	resourceB.children = []*Resource{resource1, resource2}
+	resourceD.children = []*Resource{resource5, resource6}
+
+	// Create link from Resource1 to Resource6
+	link := &Link{
+		Source:         resource1,
+		SourcePosition: WINDROSE_E,
+		Target:         resource6,
+		TargetPosition: WINDROSE_W,
+		Type:           "orthogonal",
+	}
+
+	t.Logf("\n=== Before Reordering (UnorderedChildren=false) ===")
+	t.Logf("ResourceA children: %v", getResourceNames(resourceA.children))
+	t.Logf("ResourceB children: %v", getResourceNames(resourceB.children))
+	t.Logf("ResourceD children: %v", getResourceNames(resourceD.children))
+
+	// Store initial state
+	initialAChildren := make([]*Resource, len(resourceA.children))
+	copy(initialAChildren, resourceA.children)
+	initialBChildren := make([]*Resource, len(resourceB.children))
+	copy(initialBChildren, resourceB.children)
+	initialDChildren := make([]*Resource, len(resourceD.children))
+	copy(initialDChildren, resourceD.children)
+
+	// Call reordering function
+	links := []*Link{link}
+	ReorderChildrenByLinks(canvas, links)
+
+	t.Logf("\n=== After Reordering (UnorderedChildren=false) ===")
+	t.Logf("ResourceA children: %v", getResourceNames(resourceA.children))
+	t.Logf("ResourceB children: %v", getResourceNames(resourceB.children))
+	t.Logf("ResourceD children: %v", getResourceNames(resourceD.children))
+
+	// Verify NO changes occurred
+	if len(resourceA.children) != len(initialAChildren) {
+		t.Errorf("ResourceA children count changed")
+	}
+	for i := range resourceA.children {
+		if resourceA.children[i] != initialAChildren[i] {
+			t.Errorf("ResourceA children order changed at index %d: expected %s, got %s",
+				i, initialAChildren[i].label, resourceA.children[i].label)
+		}
+	}
+
+	if len(resourceB.children) != len(initialBChildren) {
+		t.Errorf("ResourceB children count changed")
+	}
+	for i := range resourceB.children {
+		if resourceB.children[i] != initialBChildren[i] {
+			t.Errorf("ResourceB children order changed at index %d: expected %s, got %s",
+				i, initialBChildren[i].label, resourceB.children[i].label)
+		}
+	}
+
+	if len(resourceD.children) != len(initialDChildren) {
+		t.Errorf("ResourceD children count changed")
+	}
+	for i := range resourceD.children {
+		if resourceD.children[i] != initialDChildren[i] {
+			t.Errorf("ResourceD children order changed at index %d: expected %s, got %s",
+				i, initialDChildren[i].label, resourceD.children[i].label)
+		}
+	}
+
+	t.Logf("\n=== Verification Successful ===")
+	t.Logf("✓ ResourceA children unchanged (UnorderedChildren=false)")
+	t.Logf("✓ ResourceB children unchanged (UnorderedChildren=false)")
+	t.Logf("✓ ResourceD children unchanged (UnorderedChildren=false)")
+}

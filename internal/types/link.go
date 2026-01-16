@@ -1876,3 +1876,222 @@ func (l *Link) calculateAutoLabelPoints(sourcePt, targetPt image.Point, controlP
 	// Fallback to straight line points
 	return sourcePt, targetPt
 }
+
+// ReorderChildrenByLinks reorders children based on link connections to minimize overlap
+func ReorderChildrenByLinks(canvas *Resource, links []*Link) {
+	for _, link := range links {
+		// Find LCA
+		lca := findLowestCommonAncestor(link.Source, link.Target)
+		if lca == nil || lca.direction == "" {
+			continue
+		}
+
+		// Find which LCA children contain source and target
+		sourceChild := findChildAncestorInLCA(lca, link.Source)
+		targetChild := findChildAncestorInLCA(lca, link.Target)
+
+		if sourceChild == nil || targetChild == nil || sourceChild == targetChild {
+			continue
+		}
+
+		// Find indices
+		sourceIndex := -1
+		targetIndex := -1
+		for i, child := range lca.children {
+			if child == sourceChild {
+				sourceIndex = i
+			}
+			if child == targetChild {
+				targetIndex = i
+			}
+		}
+
+		if sourceIndex == -1 || targetIndex == -1 {
+			continue
+		}
+
+		// Determine movement direction based on order
+		sourceMovesRight := sourceIndex < targetIndex
+
+		// Step 6: Reorder intermediate resources
+		// Traverse from source to LCA
+		reorderPathToLCA(link.Source, lca, sourceMovesRight)
+
+		// Traverse from target to LCA (opposite direction)
+		reorderPathToLCA(link.Target, lca, !sourceMovesRight)
+
+		// Step 7: Reorder at LCA level
+		if lca.unorderedChildren {
+			// Move targetChild adjacent to sourceChild
+			if sourceIndex < targetIndex {
+				// Pattern: [*, sourceChild, *, targetChild, *]
+				// Move targetChild to right of sourceChild
+				moveChildAdjacent(lca, targetChild, sourceChild, true)
+			} else {
+				// Pattern: [*, targetChild, *, sourceChild, *]
+				// Move targetChild to left of sourceChild
+				moveChildAdjacent(lca, targetChild, sourceChild, false)
+			}
+		}
+	}
+}
+
+// getResourceNames returns a slice of resource labels for logging
+func getResourceNames(resources []*Resource) []string {
+	names := make([]string, len(resources))
+	for i, r := range resources {
+		names[i] = r.label
+	}
+	return names
+}
+
+// reorderPathToLCA reorders children along the path from resource to LCA (excluding LCA itself)
+func reorderPathToLCA(resource *Resource, lca *Resource, moveToEnd bool) {
+	current := resource
+	for current != nil && current != lca {
+		parent := current.GetParent()
+		if parent == nil || parent == lca {
+			// Stop before reaching LCA - LCA reordering is handled separately in Step 7
+			break
+		}
+
+		// Find which child of parent contains current
+		var childToMove *Resource
+		for _, child := range parent.children {
+			if child == current || isAncestorOf(child, current) {
+				childToMove = child
+				break
+			}
+		}
+
+		if childToMove != nil && parent.unorderedChildren {
+			if parent.direction == lca.direction {
+				// Same direction: move to edge based on moveToEnd
+				positionStr := "start"
+				if moveToEnd {
+					positionStr = "end"
+				}
+				log.Infof("Reordering in %s (same direction): moving %s to %v (moveToEnd=%v)",
+					parent.label, childToMove.label, positionStr, moveToEnd)
+				if moveToEnd {
+					// Move to rightmost/bottom (last position)
+					moveChildToPosition(parent, childToMove, len(parent.children)-1)
+				} else {
+					// Move to leftmost/top (first position)
+					moveChildToPosition(parent, childToMove, 0)
+				}
+			} else {
+				// Different direction: move to first position
+				log.Infof("Reordering in %s (different direction): moving %s to start",
+					parent.label, childToMove.label)
+				moveChildToPosition(parent, childToMove, 0)
+			}
+		}
+
+		current = parent
+	}
+}
+
+// isAncestorOf checks if ancestor is an ancestor of descendant
+func isAncestorOf(ancestor *Resource, descendant *Resource) bool {
+	current := descendant
+	for current != nil {
+		if current == ancestor {
+			return true
+		}
+		current = current.GetParent()
+	}
+	return false
+}
+
+// moveChildToPosition moves a child to the specified position in parent's children list
+func moveChildToPosition(parent *Resource, child *Resource, targetPos int) {
+	// Find current position
+	currentPos := -1
+	for i, c := range parent.children {
+		if c == child {
+			currentPos = i
+			break
+		}
+	}
+
+	if currentPos == -1 {
+		log.Warnf("Child %s not found in parent %s", child.label, parent.label)
+		return
+	}
+
+	if currentPos == targetPos {
+		log.Infof("Child %s already at position %d in parent %s", child.label, targetPos, parent.label)
+		return
+	}
+
+	log.Infof("Moving %s from position %d to %d in %s (before: %v)",
+		child.label, currentPos, targetPos, parent.label, getResourceNames(parent.children))
+
+	// Create new slice without the child
+	newChildren := make([]*Resource, 0, len(parent.children))
+	for i, c := range parent.children {
+		if i != currentPos {
+			newChildren = append(newChildren, c)
+		}
+	}
+
+	// Insert at target position
+	result := make([]*Resource, 0, len(parent.children))
+	if targetPos == 0 {
+		result = append(result, child)
+		result = append(result, newChildren...)
+	} else if targetPos >= len(newChildren) {
+		result = append(result, newChildren...)
+		result = append(result, child)
+	} else {
+		result = append(result, newChildren[:targetPos]...)
+		result = append(result, child)
+		result = append(result, newChildren[targetPos:]...)
+	}
+
+	parent.children = result
+
+	log.Infof("After move: %v", getResourceNames(parent.children))
+}
+
+// moveChildAdjacent moves child to be adjacent to anchor (either right or left)
+func moveChildAdjacent(parent *Resource, child *Resource, anchor *Resource, toRight bool) {
+	// Find positions
+	childPos := -1
+	anchorPos := -1
+	for i, c := range parent.children {
+		if c == child {
+			childPos = i
+		}
+		if c == anchor {
+			anchorPos = i
+		}
+	}
+
+	if childPos == -1 || anchorPos == -1 {
+		return
+	}
+
+	// Remove child from current position
+	parent.children = append(parent.children[:childPos], parent.children[childPos+1:]...)
+
+	// Recalculate anchor position after removal
+	anchorPos = -1
+	for i, c := range parent.children {
+		if c == anchor {
+			anchorPos = i
+			break
+		}
+	}
+
+	// Insert adjacent to anchor
+	var targetPos int
+	if toRight {
+		targetPos = anchorPos + 1
+	} else {
+		targetPos = anchorPos
+	}
+
+	parent.children = append(parent.children[:targetPos], append([]*Resource{child}, parent.children[targetPos:]...)...)
+}

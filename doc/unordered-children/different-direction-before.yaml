@@ -1,0 +1,78 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Preset: AWSCloudNoLogo
+      Children:
+        - VPC
+    
+    # VPC (vertical layout)
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Title: "VPC (vertical)"
+      Children:
+        - Horizontal1
+        - Horizontal2
+    
+    # Horizontal1 (horizontal layout)
+    Horizontal1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Direction: horizontal
+      Title: "Horizontal1"
+      Children:
+        - Resource1
+        - Resource2
+    
+    # Horizontal2 (horizontal layout)
+    Horizontal2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Direction: horizontal
+      Title: "Horizontal2"
+      Children:
+        - Resource3
+        - Resource4
+    
+    # Resources
+    Resource1:
+      Type: AWS::EC2::Instance
+      Title: "Resource1"
+    
+    Resource2:
+      Type: AWS::EC2::Instance
+      Title: "Resource2"
+    
+    Resource3:
+      Type: AWS::EC2::Instance
+      Title: "Resource3"
+    
+    Resource4:
+      Type: AWS::EC2::Instance
+      Title: "Resource4"
+
+  Links:
+    - Source: Resource1
+      Target: Resource4
+      Type: orthogonal
+      LineColor: "rgba(255,0,0,255)"
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: Resource2
+      Target: Resource3
+      Type: orthogonal
+      LineColor: "rgba(0,0,255,255)"
+      TargetArrowHead:
+        Type: Open
