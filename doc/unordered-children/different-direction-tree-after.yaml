@@ -1,0 +1,154 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Title
+        - Hierarchy
+    
+    Title:
+      Type: AWS::Diagram::Resource
+      Title: "After: Different Direction Case\n(VPC vertical, Horizontal1/2 horizontal)\nReordered: VPC[H1,H2], H1[2,1], H2[3,4]"
+    
+    Hierarchy:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - VPC
+        - HorizontalLevel
+        - LeafLevel
+    
+    # Top level - VPC (vertical)
+    VPC:
+      Type: AWS::EC2::VPC
+      Title: "VPC (vertical)"
+    
+    # Horizontal level (unchanged)
+    HorizontalLevel:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Horizontal1
+        - Horizontal2
+    
+    Horizontal1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "Horizontal1 (horizontal)"
+      BorderColor: "rgba(0,0,255,255)"
+    
+    Horizontal2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "Horizontal2 (horizontal)"
+      BorderColor: "rgba(0,0,255,255)"
+    
+    # Leaf level - REORDERED: 2,1,3,4
+    LeafLevel:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Resource2
+        - Resource1
+        - Resource3
+        - Resource4
+    
+    Resource1:
+      Type: AWS::EC2::Instance
+      Title: "Resource1"
+    
+    Resource2:
+      Type: AWS::EC2::Instance
+      Title: "Resource2"
+    
+    Resource3:
+      Type: AWS::EC2::Instance
+      Title: "Resource3"
+    
+    Resource4:
+      Type: AWS::EC2::Instance
+      Title: "Resource4"
+
+  Links:
+    # Hierarchy links - REORDERED
+    - Source: VPC
+      Target: Horizontal1
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: VPC
+      Target: Horizontal2
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: Horizontal1
+      Target: Resource2
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: Horizontal1
+      Target: Resource1
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: Horizontal2
+      Target: Resource3
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: Horizontal2
+      Target: Resource4
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    # Swap indicator
+    - Source: Resource1
+      Target: Resource2
+      LineColor: "rgba(0,200,0,255)"
+      LineWidth: 3
+      LineStyle: dashed
+      SourceArrowHead:
+        Type: Open
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Swapped"
+          Color: "rgba(0,200,0,255)"
+    
+    # Actual links - no longer cross!
+    - Source: Resource1
+      Target: Resource4
+      LineColor: "rgba(255,0,0,255)"
+      LineWidth: 4
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Link 1"
+          Color: "rgba(255,0,0,255)"
+    
+    - Source: Resource2
+      Target: Resource3
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 4
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Link 2 (no crossing!)"
+          Color: "rgba(0,0,255,255)"

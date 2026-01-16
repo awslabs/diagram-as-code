@@ -1,0 +1,97 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Preset: AWSCloudNoLogo
+      Children:
+        - ResourceA
+    
+    # LCA - horizontal layout with UnorderedChildren
+    ResourceA:
+      Type: AWS::EC2::VPC
+      Direction: horizontal
+      Title: "ResourceA (LCA)"
+      Options:
+        UnorderedChildren: true
+      Children:
+        - ResourceB
+        - ResourceC
+        - ResourceD
+    
+    # Source container - horizontal layout with UnorderedChildren
+    ResourceB:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Direction: horizontal
+      Title: "ResourceB"
+      Options:
+        UnorderedChildren: true
+      Children:
+        - Resource1
+        - Resource2
+    
+    # Intermediate container
+    ResourceC:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Direction: horizontal
+      Title: "ResourceC"
+      Children:
+        - Resource3
+        - Resource4
+    
+    # Target container - horizontal layout with UnorderedChildren
+    ResourceD:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Direction: horizontal
+      Title: "ResourceD"
+      Options:
+        UnorderedChildren: true
+      Children:
+        - Resource5
+        - Resource6
+    
+    # Resources
+    Resource1:
+      Type: AWS::EC2::Instance
+      Title: "Resource1"
+    
+    Resource2:
+      Type: AWS::EC2::Instance
+      Title: "Resource2"
+    
+    Resource3:
+      Type: AWS::EC2::Instance
+      Title: "Resource3"
+    
+    Resource4:
+      Type: AWS::EC2::Instance
+      Title: "Resource4"
+    
+    Resource5:
+      Type: AWS::EC2::Instance
+      Title: "Resource5"
+    
+    Resource6:
+      Type: AWS::EC2::Instance
+      Title: "Resource6"
+
+  Links:
+    - Source: Resource1
+      SourcePosition: E
+      Target: Resource6
+      TargetPosition: W
+      Type: orthogonal
+      TargetArrowHead:
+        Type: Open

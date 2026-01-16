@@ -125,6 +125,7 @@ type Resource struct {
 type ResourceOptions struct {
 	GroupingOffset          *bool `yaml:"GroupingOffset"`
 	GroupingOffsetDirection *bool `yaml:"GroupingOffsetDirection"`
+	UnorderedChildren       *bool `yaml:"UnorderedChildren"`
 }
 
 type ResourceIconFill struct {
@@ -643,6 +644,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 			if v.Options.GroupingOffsetDirection != nil {
 				resource.SetGroupingOffsetDirection(*v.Options.GroupingOffsetDirection)
+			}
+			if v.Options.UnorderedChildren != nil {
+				resource.SetUnorderedChildren(*v.Options.UnorderedChildren)
 			}
 		}
 	}

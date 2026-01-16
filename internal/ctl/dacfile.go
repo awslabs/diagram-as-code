@@ -155,6 +155,18 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 		return fmt.Errorf("failed to load links: %w", err)
 	}
 
+	// Reorder children based on links (UnorderedChildren feature)
+	log.Info("Reorder children based on links")
+	canvas, exists := resources["Canvas"]
+	if exists {
+		// Collect all links from all resources
+		var allLinks []*types.Link
+		for _, resource := range resources {
+			allLinks = append(allLinks, resource.GetLinks()...)
+		}
+		types.ReorderChildrenByLinks(canvas, allLinks)
+	}
+
 	if err := createDiagram(resources, outputfile, opts); err != nil {
 		return fmt.Errorf("failed to create diagram: %w", err)
 	}

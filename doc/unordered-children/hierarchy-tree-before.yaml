@@ -1,0 +1,164 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Title
+        - Hierarchy
+    
+    Title:
+      Type: AWS::Diagram::Resource
+      Title: "Before: Without UnorderedChildren\n(Original YAML order: A[B,C,D], B[1,2], D[5,6])"
+    
+    Hierarchy:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - ResourceA
+        - ParentLevel
+        - LeafLevel
+    
+    # Top level - VPC
+    ResourceA:
+      Type: AWS::EC2::VPC
+      Title: "ResourceA (LCA)"
+    
+    # Parent level - Subnets
+    ParentLevel:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ResourceB
+        - ResourceC
+        - ResourceD
+    
+    ResourceB:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "ResourceB"
+    
+    ResourceC:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "ResourceC"
+    
+    ResourceD:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "ResourceD"
+    
+    # Leaf level - EC2 Instances
+    LeafLevel:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Resource1
+        - Resource2
+        - Resource3
+        - Resource4
+        - Resource5
+        - Resource6
+    
+    Resource1:
+      Type: AWS::EC2::Instance
+      Title: "Resource1"
+    
+    Resource2:
+      Type: AWS::EC2::Instance
+      Title: "Resource2"
+    
+    Resource3:
+      Type: AWS::EC2::Instance
+      Title: "Resource3"
+    
+    Resource4:
+      Type: AWS::EC2::Instance
+      Title: "Resource4"
+    
+    Resource5:
+      Type: AWS::EC2::Instance
+      Title: "Resource5"
+    
+    Resource6:
+      Type: AWS::EC2::Instance
+      Title: "Resource6"
+
+  Links:
+    # Hierarchy links (parent-child relationships)
+    - Source: ResourceA
+      Target: ResourceB
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceA
+      Target: ResourceC
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceA
+      Target: ResourceD
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceB
+      Target: Resource1
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceB
+      Target: Resource2
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceC
+      Target: Resource3
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceC
+      Target: Resource4
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceD
+      Target: Resource5
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceD
+      Target: Resource6
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    # The actual link that causes overlap
+    - Source: Resource1
+      Target: Resource6
+      Type: orthogonal
+      LineColor: "rgba(255,0,0,255)"
+      LineWidth: 4
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Link crosses 2,3,4,5"
+          Color: "rgba(255,0,0,255)"

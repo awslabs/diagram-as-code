@@ -1,0 +1,209 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Title
+        - Hierarchy
+    
+    Title:
+      Type: AWS::Diagram::Resource
+      Title: "After: With UnorderedChildren\n(Reordered: A[B,D,C], B[2,1], D[6,5])"
+    
+    Hierarchy:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - ResourceA
+        - ParentLevel
+        - LeafLevel
+    
+    # Top level - VPC
+    ResourceA:
+      Type: AWS::EC2::VPC
+      Title: "ResourceA (LCA)"
+      BorderColor: "rgba(0,0,255,255)"
+    
+    # Parent level - Subnets (REORDERED: B, D, C)
+    ParentLevel:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ResourceB
+        - ResourceD
+        - ResourceC
+    
+    ResourceB:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "ResourceB"
+      BorderColor: "rgba(0,0,255,255)"
+    
+    ResourceC:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: "ResourceC"
+    
+    ResourceD:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: "ResourceD"
+      BorderColor: "rgba(0,0,255,255)"
+    
+    # Leaf level - EC2 Instances (REORDERED: 2,1,6,5,3,4)
+    LeafLevel:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Resource2
+        - Resource1
+        - Resource6
+        - Resource5
+        - Resource3
+        - Resource4
+    
+    Resource1:
+      Type: AWS::EC2::Instance
+      Title: "Resource1"
+    
+    Resource2:
+      Type: AWS::EC2::Instance
+      Title: "Resource2"
+    
+    Resource3:
+      Type: AWS::EC2::Instance
+      Title: "Resource3"
+    
+    Resource4:
+      Type: AWS::EC2::Instance
+      Title: "Resource4"
+    
+    Resource5:
+      Type: AWS::EC2::Instance
+      Title: "Resource5"
+    
+    Resource6:
+      Type: AWS::EC2::Instance
+      Title: "Resource6"
+
+  Links:
+    # Hierarchy links (parent-child relationships) - REORDERED
+    - Source: ResourceA
+      Target: ResourceB
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceA
+      Target: ResourceD
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceA
+      Target: ResourceC
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceB
+      Target: Resource2
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceB
+      Target: Resource1
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceC
+      Target: Resource3
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceC
+      Target: Resource4
+      LineColor: "rgba(100,100,100,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceD
+      Target: Resource6
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    - Source: ResourceD
+      Target: Resource5
+      LineColor: "rgba(0,0,255,255)"
+      LineWidth: 2
+      TargetArrowHead:
+        Type: Open
+    
+    # Reordering indicator links (show what was swapped)
+    - Source: ResourceC
+      Target: ResourceD
+      LineColor: "rgba(0,200,0,255)"
+      LineWidth: 3
+      LineStyle: dashed
+      SourceArrowHead:
+        Type: Open
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Swapped"
+          Color: "rgba(0,200,0,255)"
+    
+    - Source: Resource1
+      Target: Resource2
+      LineColor: "rgba(0,200,0,255)"
+      LineWidth: 3
+      LineStyle: dashed
+      SourceArrowHead:
+        Type: Open
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Swapped"
+          Color: "rgba(0,200,0,255)"
+    
+    - Source: Resource5
+      Target: Resource6
+      LineColor: "rgba(0,200,0,255)"
+      LineWidth: 3
+      LineStyle: dashed
+      SourceArrowHead:
+        Type: Open
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Swapped"
+          Color: "rgba(0,200,0,255)"
+    
+    # The actual link - now optimized!
+    - Source: Resource1
+      Target: Resource6
+      LineColor: "rgba(255,0,0,255)"
+      LineWidth: 4
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        AutoRight:
+          Title: "Link optimized!"
+          Color: "rgba(255,0,0,255)"

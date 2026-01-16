@@ -64,6 +64,7 @@ type Resource struct {
 	drawn                   bool
 	groupingOffset          bool // Flag: if true, enable grouping offset for links
 	groupingOffsetDirection bool // Flag: if true, enable directional grouping offset for links
+	unorderedChildren       bool // Flag: if true, children order can be rearranged based on links
 }
 
 type ResourceIconFill struct {
@@ -237,6 +238,14 @@ func (r *Resource) SetGroupingOffset(enable bool) {
 
 func (r *Resource) SetGroupingOffsetDirection(enable bool) {
 	r.groupingOffsetDirection = enable
+}
+
+func (r *Resource) SetUnorderedChildren(enable bool) {
+	r.unorderedChildren = enable
+}
+
+func (r *Resource) GetUnorderedChildren() bool {
+	return r.unorderedChildren
 }
 
 func (r *Resource) AddLink(link *Link) {
