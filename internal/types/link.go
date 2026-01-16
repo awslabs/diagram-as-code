@@ -1967,9 +1967,12 @@ func reorderPathToLCA(resource *Resource, lca *Resource, moveToEnd bool) {
 		if childToMove != nil && parent.unorderedChildren {
 			if parent.direction == lca.direction {
 				// Same direction: move to edge based on moveToEnd
+				positionStr := "start"
+				if moveToEnd {
+					positionStr = "end"
+				}
 				log.Infof("Reordering in %s (same direction): moving %s to %v (moveToEnd=%v)",
-					parent.label, childToMove.label,
-					map[bool]string{true: "end", false: "start"}[moveToEnd], moveToEnd)
+					parent.label, childToMove.label, positionStr, moveToEnd)
 				if moveToEnd {
 					// Move to rightmost/bottom (last position)
 					moveChildToPosition(parent, childToMove, len(parent.children)-1)
