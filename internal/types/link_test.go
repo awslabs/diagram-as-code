@@ -2842,15 +2842,15 @@ func TestAutoCalculatePositionsPerpendicularSelection(t *testing.T) {
 	// VPC3 {vertical: [Left, Right]} - horizontal layout within VPC
 	vpc3 := &Resource{direction: "horizontal", parent: lca}
 	lca.children = []*Resource{vpc3}
-	
+
 	left := &Resource{parent: vpc3}
 	right := &Resource{parent: vpc3}
 	vpc3.children = []*Resource{left, right}
-	
+
 	vpc3.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{550, 350}}
 	left.bindings = &image.Rectangle{Min: image.Point{100, 150}, Max: image.Point{164, 214}}
 	right.bindings = &image.Rectangle{Min: image.Point{400, 250}, Max: image.Point{464, 314}}
-	
+
 	// Left -> Right: dx > 0, dy > 0
 	// LCA direction=horizontal, preferred=E/W
 	// If both E/W have equal counts, should choose E (dx > 0)

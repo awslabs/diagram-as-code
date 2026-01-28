@@ -1017,7 +1017,7 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 		// Count resources in each direction (from resource to LCA child)
 		sourceCounts := countResourcesInDirections(source, sourceChild)
 		targetCounts := countResourcesInDirections(target, targetChild)
-		
+
 		log.Infof("Auto-positioning: Source counts (before adjustment): N=%d, E=%d, W=%d, S=%d",
 			sourceCounts.North, sourceCounts.East, sourceCounts.West, sourceCounts.South)
 		log.Infof("Auto-positioning: Target counts (before adjustment): N=%d, E=%d, W=%d, S=%d",
@@ -1080,7 +1080,7 @@ func selectOptimalPosition(counts DirectionCounts, lcaDirection string, dx, dy i
 
 	// Multiple candidates: prioritize based on LCA direction
 	// Priority: LCA direction (preferred) -> perpendicular (based on dx/dy) -> opposite (avoid)
-	
+
 	if lcaDirection == "vertical" {
 		// Preferred: N or S (based on dy)
 		// Perpendicular: E or W (based on dx)
@@ -1094,16 +1094,16 @@ func selectOptimalPosition(counts DirectionCounts, lcaDirection string, dx, dy i
 			preferred = WINDROSE_N
 			opposite = WINDROSE_S
 		}
-		
+
 		// Check preferred direction
 		if containsWindrose(candidates, preferred) {
 			return preferred
 		}
-		
+
 		// Check perpendicular (E/W) - choose based on dx
 		hasE := containsWindrose(candidates, WINDROSE_E)
 		hasW := containsWindrose(candidates, WINDROSE_W)
-		
+
 		if hasE && hasW {
 			// Both perpendicular directions available, choose based on dx
 			if dx > 0 {
@@ -1115,12 +1115,12 @@ func selectOptimalPosition(counts DirectionCounts, lcaDirection string, dx, dy i
 		} else if hasW {
 			return WINDROSE_W
 		}
-		
+
 		// Last resort: opposite
 		if containsWindrose(candidates, opposite) {
 			return opposite
 		}
-		
+
 	} else if lcaDirection == "horizontal" {
 		// Preferred: E or W (based on dx)
 		// Perpendicular: N or S (based on dy)
@@ -1134,16 +1134,16 @@ func selectOptimalPosition(counts DirectionCounts, lcaDirection string, dx, dy i
 			preferred = WINDROSE_W
 			opposite = WINDROSE_E
 		}
-		
+
 		// Check preferred direction
 		if containsWindrose(candidates, preferred) {
 			return preferred
 		}
-		
+
 		// Check perpendicular (N/S) - choose based on dy
 		hasN := containsWindrose(candidates, WINDROSE_N)
 		hasS := containsWindrose(candidates, WINDROSE_S)
-		
+
 		if hasN && hasS {
 			// Both perpendicular directions available, choose based on dy
 			if dy > 0 {
@@ -1155,12 +1155,12 @@ func selectOptimalPosition(counts DirectionCounts, lcaDirection string, dx, dy i
 		} else if hasS {
 			return WINDROSE_S
 		}
-		
+
 		// Last resort: opposite
 		if containsWindrose(candidates, opposite) {
 			return opposite
 		}
-		
+
 	} else {
 		// Unknown direction: fall back to distance-based
 		if abs(dx) > abs(dy) {
