@@ -3973,4 +3973,3 @@ func TestAutoCalculatePositions_BorderChild(t *testing.T) {
 	}
 	t.Logf("Test 3 passed: NATGW->IGW, both use inside positions")
 }
-

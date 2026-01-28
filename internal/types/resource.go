@@ -289,7 +289,7 @@ func (r *Resource) GetBorderChildInfo() (*Resource, Windrose, bool) {
 	if r.parent == nil {
 		return nil, 0, false
 	}
-	
+
 	for _, bc := range r.parent.borderChildren {
 		if bc.Resource == r {
 			return r.parent, bc.Position, true
