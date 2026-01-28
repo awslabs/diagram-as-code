@@ -1004,28 +1004,36 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 		direction := commonAncestor.direction
 		log.Infof("Auto-positioning: Found common ancestor with direction=%s", direction)
 
-		if direction == "vertical" {
-			// VerticalStack: use vertical connections
-			if dy > 0 {
-				sourcePos = WINDROSE_S
-				targetPos = WINDROSE_N
-			} else {
-				sourcePos = WINDROSE_N
-				targetPos = WINDROSE_S
-			}
-		} else if direction == "horizontal" {
-			// HorizontalStack: use horizontal connections
-			if dx > 0 {
-				sourcePos = WINDROSE_E
-				targetPos = WINDROSE_W
-			} else {
-				sourcePos = WINDROSE_W
-				targetPos = WINDROSE_E
-			}
-		} else {
-			// Unknown direction: fall back to distance-based logic
+		// Find LCA direct children that contain source and target
+		sourceChild := findChildAncestorInLCA(commonAncestor, source)
+		targetChild := findChildAncestorInLCA(commonAncestor, target)
+
+		if sourceChild == nil || targetChild == nil {
+			log.Warnf("Could not find LCA child ancestors, falling back to distance-based")
 			sourcePos, targetPos = calculateByDistance(dx, dy)
+			return sourcePos, targetPos
 		}
+
+		// Count resources in each direction (from resource to LCA child)
+		sourceCounts := countResourcesInDirections(source, sourceChild)
+		targetCounts := countResourcesInDirections(target, targetChild)
+
+		log.Infof("Auto-positioning: Source counts (before adjustment): N=%d, E=%d, W=%d, S=%d",
+			sourceCounts.North, sourceCounts.East, sourceCounts.West, sourceCounts.South)
+		log.Infof("Auto-positioning: Target counts (before adjustment): N=%d, E=%d, W=%d, S=%d",
+			targetCounts.North, targetCounts.East, targetCounts.West, targetCounts.South)
+
+		// Adjust counts based on LCA children relationship
+		adjustCountsForLCAChildren(commonAncestor, sourceChild, targetChild, &sourceCounts, &targetCounts)
+
+		log.Infof("Auto-positioning: Source counts (after adjustment): N=%d, E=%d, W=%d, S=%d",
+			sourceCounts.North, sourceCounts.East, sourceCounts.West, sourceCounts.South)
+		log.Infof("Auto-positioning: Target counts (after adjustment): N=%d, E=%d, W=%d, S=%d",
+			targetCounts.North, targetCounts.East, targetCounts.West, targetCounts.South)
+
+		// Select optimal positions based on counts and direction
+		sourcePos = selectOptimalPosition(sourceCounts, direction, dx, dy, true)
+		targetPos = selectOptimalPosition(targetCounts, direction, -dx, -dy, false)
 	} else {
 		// No common ancestor: use distance-based logic
 		sourcePos, targetPos = calculateByDistance(dx, dy)
@@ -1034,6 +1042,229 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 	log.Infof("Auto-positioning: Source=%v, Target=%v", sourcePos, targetPos)
 
 	return sourcePos, targetPos
+}
+
+// selectOptimalPosition selects the best position based on resource counts and LCA direction
+func selectOptimalPosition(counts DirectionCounts, lcaDirection string, dx, dy int, isSource bool) Windrose {
+	// Find minimum count
+	minCount := counts.North
+	if counts.East < minCount {
+		minCount = counts.East
+	}
+	if counts.West < minCount {
+		minCount = counts.West
+	}
+	if counts.South < minCount {
+		minCount = counts.South
+	}
+
+	// Collect directions with minimum count
+	candidates := []Windrose{}
+	if counts.North == minCount {
+		candidates = append(candidates, WINDROSE_N)
+	}
+	if counts.East == minCount {
+		candidates = append(candidates, WINDROSE_E)
+	}
+	if counts.West == minCount {
+		candidates = append(candidates, WINDROSE_W)
+	}
+	if counts.South == minCount {
+		candidates = append(candidates, WINDROSE_S)
+	}
+
+	// If only one candidate, return it
+	if len(candidates) == 1 {
+		return candidates[0]
+	}
+
+	// Multiple candidates: prioritize based on LCA direction
+	// Priority: LCA direction (preferred) -> perpendicular (based on dx/dy) -> opposite (avoid)
+
+	if lcaDirection == "vertical" {
+		// Preferred: N or S (based on dy)
+		// Perpendicular: E or W (based on dx)
+		// Opposite: opposite of preferred
+		var preferred Windrose
+		var opposite Windrose
+		if dy > 0 {
+			preferred = WINDROSE_S
+			opposite = WINDROSE_N
+		} else {
+			preferred = WINDROSE_N
+			opposite = WINDROSE_S
+		}
+
+		// Check preferred direction
+		if containsWindrose(candidates, preferred) {
+			return preferred
+		}
+
+		// Check perpendicular (E/W) - choose based on dx
+		hasE := containsWindrose(candidates, WINDROSE_E)
+		hasW := containsWindrose(candidates, WINDROSE_W)
+
+		if hasE && hasW {
+			// Both perpendicular directions available, choose based on dx
+			if dx > 0 {
+				return WINDROSE_E
+			}
+			return WINDROSE_W
+		} else if hasE {
+			return WINDROSE_E
+		} else if hasW {
+			return WINDROSE_W
+		}
+
+		// Last resort: opposite
+		if containsWindrose(candidates, opposite) {
+			return opposite
+		}
+
+	} else if lcaDirection == "horizontal" {
+		// Preferred: E or W (based on dx)
+		// Perpendicular: N or S (based on dy)
+		// Opposite: opposite of preferred
+		var preferred Windrose
+		var opposite Windrose
+		if dx > 0 {
+			preferred = WINDROSE_E
+			opposite = WINDROSE_W
+		} else {
+			preferred = WINDROSE_W
+			opposite = WINDROSE_E
+		}
+
+		// Check preferred direction
+		if containsWindrose(candidates, preferred) {
+			return preferred
+		}
+
+		// Check perpendicular (N/S) - choose based on dy
+		hasN := containsWindrose(candidates, WINDROSE_N)
+		hasS := containsWindrose(candidates, WINDROSE_S)
+
+		if hasN && hasS {
+			// Both perpendicular directions available, choose based on dy
+			if dy > 0 {
+				return WINDROSE_S
+			}
+			return WINDROSE_N
+		} else if hasN {
+			return WINDROSE_N
+		} else if hasS {
+			return WINDROSE_S
+		}
+
+		// Last resort: opposite
+		if containsWindrose(candidates, opposite) {
+			return opposite
+		}
+
+	} else {
+		// Unknown direction: fall back to distance-based
+		if abs(dx) > abs(dy) {
+			if dx > 0 {
+				if containsWindrose(candidates, WINDROSE_E) {
+					return WINDROSE_E
+				}
+			} else {
+				if containsWindrose(candidates, WINDROSE_W) {
+					return WINDROSE_W
+				}
+			}
+		} else {
+			if dy > 0 {
+				if containsWindrose(candidates, WINDROSE_S) {
+					return WINDROSE_S
+				}
+			} else {
+				if containsWindrose(candidates, WINDROSE_N) {
+					return WINDROSE_N
+				}
+			}
+		}
+	}
+
+	// Fallback: return first candidate
+	return candidates[0]
+}
+
+// containsWindrose checks if a slice contains a Windrose value
+func containsWindrose(slice []Windrose, value Windrose) bool {
+	for _, v := range slice {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+// adjustCountsForLCAChildren adjusts counts based on LCA children relationship
+// Example: LCA{V1{R1}, V2{R2}, V3{R3}}, R3->R1 link
+// LCA children: V3->V1, with V2 in between
+// If LCA.direction = "horizontal": V3.West += 1 (V2), V1.East += 1 (V2)
+// If LCA.direction = "vertical": V3.North += 1 (V2), V1.South += 1 (V2)
+func adjustCountsForLCAChildren(lca, sourceChild, targetChild *Resource, sourceCounts, targetCounts *DirectionCounts) {
+	if lca == nil || sourceChild == nil || targetChild == nil {
+		return
+	}
+
+	// Find indices of source and target children in LCA
+	sourceIndex := -1
+	targetIndex := -1
+	for i, child := range lca.children {
+		if child == sourceChild {
+			sourceIndex = i
+		}
+		if child == targetChild {
+			targetIndex = i
+		}
+	}
+
+	if sourceIndex == -1 || targetIndex == -1 || sourceIndex == targetIndex {
+		return
+	}
+
+	// Count resources between source and target children
+	var betweenCount int
+	if sourceIndex < targetIndex {
+		betweenCount = targetIndex - sourceIndex - 1
+	} else {
+		betweenCount = sourceIndex - targetIndex - 1
+	}
+
+	if betweenCount <= 0 {
+		return
+	}
+
+	log.Infof("Adjusting counts: %d resources between LCA children (sourceIndex=%d, targetIndex=%d)",
+		betweenCount, sourceIndex, targetIndex)
+
+	// Adjust counts based on LCA direction
+	if lca.direction == "horizontal" {
+		// Horizontal: West->East order
+		if sourceIndex < targetIndex {
+			// Source is West of Target
+			sourceCounts.East += betweenCount
+			targetCounts.West += betweenCount
+		} else {
+			// Source is East of Target
+			sourceCounts.West += betweenCount
+			targetCounts.East += betweenCount
+		}
+	} else if lca.direction == "vertical" {
+		// Vertical: North->South order
+		if sourceIndex < targetIndex {
+			// Source is North of Target
+			sourceCounts.South += betweenCount
+			targetCounts.North += betweenCount
+		} else {
+			// Source is South of Target
+			sourceCounts.North += betweenCount
+			targetCounts.South += betweenCount
+		}
+	}
 }
 
 // findLowestCommonAncestor finds the lowest common ancestor using set method
@@ -1092,6 +1323,62 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+// DirectionCounts holds the count of resources in each direction
+type DirectionCounts struct {
+	North int
+	East  int
+	West  int
+	South int
+}
+
+// countResourcesInDirections counts resources between target and LCA in each direction
+// VerticalStack: North->South order, HorizontalStack: West->East order
+func countResourcesInDirections(target, lca *Resource) DirectionCounts {
+	counts := DirectionCounts{}
+
+	if target == lca {
+		return counts
+	}
+
+	// Traverse from target to LCA
+	current := target
+	for current != nil && current != lca {
+		parent := current.GetParent()
+		if parent == nil {
+			break
+		}
+
+		// Find current's index in parent's children
+		currentIndex := -1
+		for i, child := range parent.children {
+			if child == current {
+				currentIndex = i
+				break
+			}
+		}
+
+		if currentIndex == -1 {
+			current = parent
+			continue
+		}
+
+		// Count siblings based on parent's direction
+		if parent.direction == "vertical" {
+			// VerticalStack: North->South order
+			counts.North += currentIndex
+			counts.South += len(parent.children) - currentIndex - 1
+		} else if parent.direction == "horizontal" {
+			// HorizontalStack: West->East order
+			counts.West += currentIndex
+			counts.East += len(parent.children) - currentIndex - 1
+		}
+
+		current = parent
+	}
+
+	return counts
 }
 
 // calculateLCABasedMidpoint calculates midpoint using LCA information

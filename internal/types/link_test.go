@@ -2657,6 +2657,213 @@ func TestFindLowestCommonAncestor(t *testing.T) {
 	}
 }
 
+func TestCountResourcesInDirections(t *testing.T) {
+	// Create test hierarchy:
+	// LCA {horizontal: [V1, V2, V3]}
+	//   V2 {vertical: [R1, R2, R3]}
+	lca := &Resource{direction: "horizontal"}
+	v1 := &Resource{parent: lca}
+	v2 := &Resource{direction: "vertical", parent: lca}
+	v3 := &Resource{parent: lca}
+	lca.children = []*Resource{v1, v2, v3}
+
+	r1 := &Resource{parent: v2}
+	r2 := &Resource{parent: v2}
+	r3 := &Resource{parent: v2}
+	v2.children = []*Resource{r1, r2, r3}
+
+	// Test case 1: R2 to LCA
+	// Expected: N=1 (R1), S=1 (R3), W=1 (V1), E=1 (V3)
+	counts := countResourcesInDirections(r2, lca)
+	if counts.North != 1 {
+		t.Errorf("Expected North=1, got %d", counts.North)
+	}
+	if counts.South != 1 {
+		t.Errorf("Expected South=1, got %d", counts.South)
+	}
+	if counts.West != 1 {
+		t.Errorf("Expected West=1, got %d", counts.West)
+	}
+	if counts.East != 1 {
+		t.Errorf("Expected East=1, got %d", counts.East)
+	}
+
+	// Test case 2: R1 to LCA
+	// Expected: N=0, S=2 (R2, R3), W=1 (V1), E=1 (V3)
+	counts = countResourcesInDirections(r1, lca)
+	if counts.North != 0 {
+		t.Errorf("Expected North=0, got %d", counts.North)
+	}
+	if counts.South != 2 {
+		t.Errorf("Expected South=2, got %d", counts.South)
+	}
+	if counts.West != 1 {
+		t.Errorf("Expected West=1, got %d", counts.West)
+	}
+	if counts.East != 1 {
+		t.Errorf("Expected East=1, got %d", counts.East)
+	}
+
+	// Test case 3: V1 to LCA (direct child)
+	// Expected: N=0, S=0, W=0, E=2 (V2, V3)
+	counts = countResourcesInDirections(v1, lca)
+	if counts.North != 0 {
+		t.Errorf("Expected North=0, got %d", counts.North)
+	}
+	if counts.South != 0 {
+		t.Errorf("Expected South=0, got %d", counts.South)
+	}
+	if counts.West != 0 {
+		t.Errorf("Expected West=0, got %d", counts.West)
+	}
+	if counts.East != 2 {
+		t.Errorf("Expected East=2, got %d", counts.East)
+	}
+
+	// Test case 4: target == LCA
+	// Expected: all zeros
+	counts = countResourcesInDirections(lca, lca)
+	if counts.North != 0 || counts.South != 0 || counts.West != 0 || counts.East != 0 {
+		t.Errorf("Expected all zeros when target==LCA, got %+v", counts)
+	}
+}
+
+func TestAutoCalculatePositionsWithResourceCounts(t *testing.T) {
+	// Create test hierarchy:
+	// LCA {horizontal: [V1, V2, V3]}
+	//   V2 {vertical: [R1, R2, R3]}
+	lca := &Resource{direction: "horizontal"}
+	v1 := &Resource{parent: lca}
+	v2 := &Resource{direction: "vertical", parent: lca}
+	v3 := &Resource{parent: lca}
+	lca.children = []*Resource{v1, v2, v3}
+
+	r1 := &Resource{parent: v2}
+	r2 := &Resource{parent: v2}
+	r3 := &Resource{parent: v2}
+	v2.children = []*Resource{r1, r2, r3}
+
+	// Set bindings for all resources
+	lca.bindings = &image.Rectangle{Min: image.Point{0, 0}, Max: image.Point{400, 300}}
+	v1.bindings = &image.Rectangle{Min: image.Point{10, 100}, Max: image.Point{74, 164}}
+	v2.bindings = &image.Rectangle{Min: image.Point{150, 50}, Max: image.Point{250, 250}}
+	v3.bindings = &image.Rectangle{Min: image.Point{320, 100}, Max: image.Point{384, 164}}
+	r1.bindings = &image.Rectangle{Min: image.Point{180, 60}, Max: image.Point{244, 124}}
+	r2.bindings = &image.Rectangle{Min: image.Point{180, 140}, Max: image.Point{244, 204}}
+	r3.bindings = &image.Rectangle{Min: image.Point{180, 220}, Max: image.Point{244, 284}}
+
+	// Test case 1: R2 to V1
+	// R2 counts: N=1, S=1, W=1, E=1
+	// V1 counts: N=0, S=0, W=0, E=2
+	// R2 should prefer W (least count=1, aligned with LCA horizontal)
+	// V1 should prefer E (least count=0, perpendicular to LCA)
+	sourcePos, targetPos := AutoCalculatePositions(r2, v1)
+	if sourcePos != WINDROSE_W {
+		t.Errorf("Expected R2->V1 source=W, got %v", sourcePos)
+	}
+	if targetPos != WINDROSE_E {
+		t.Errorf("Expected R2->V1 target=E, got %v", targetPos)
+	}
+
+	// Test case 2: R1 to R3 (within same vertical stack, but with intermediate resource)
+	// R1 counts: N=0, E=0, W=0, S=0 (R1 is direct child of V2)
+	// R3 counts: N=0, E=0, W=0, S=0 (R3 is direct child of V2)
+	// After adjustment: R1.S += 1 (R2 between), R3.N += 1 (R2 between)
+	// R1: min=0 (N,E,W), after adjustment min=0 (N,E,W), S=1
+	// R3: min=0 (E,W,S), after adjustment min=0 (E,W), N=1, S=0
+	// LCA (V2) direction=vertical, dy>0 → R1 should prefer S, R3 should prefer N
+	// But with equal counts, it falls back to distance-based or first candidate
+	sourcePos, targetPos = AutoCalculatePositions(r1, r3)
+	// With adjustment, R1 has N=0,E=0,W=0,S=1 → min=0, candidates: N,E,W
+	// LCA vertical, dy>0 → prefer S (not in candidates), then perpendicular E/W
+	// With adjustment, R3 has N=1,E=0,W=0,S=0 → min=0, candidates: E,W,S
+	// LCA vertical, dy<0 (from R3 perspective) → prefer N (not in candidates), then perpendicular E/W
+	// Both should pick E or W (perpendicular to vertical)
+	if sourcePos != WINDROSE_E && sourcePos != WINDROSE_W {
+		t.Errorf("Expected R1->R3 source=E or W, got %v", sourcePos)
+	}
+	if targetPos != WINDROSE_E && targetPos != WINDROSE_W {
+		t.Errorf("Expected R1->R3 target=E or W, got %v", targetPos)
+	}
+}
+
+func TestAutoCalculatePositionsPerpendicularSelection(t *testing.T) {
+	// Test perpendicular direction selection based on dx/dy
+	// LCA {horizontal: [VPC1, VPC2]}
+	//   VPC1 {vertical: [TopLeft, BottomLeft]}
+	//   VPC2 {vertical: [TopRight, BottomRight]}
+	lca := &Resource{direction: "horizontal"}
+	vpc1 := &Resource{direction: "vertical", parent: lca}
+	vpc2 := &Resource{direction: "vertical", parent: lca}
+	lca.children = []*Resource{vpc1, vpc2}
+
+	topLeft := &Resource{parent: vpc1}
+	bottomLeft := &Resource{parent: vpc1}
+	vpc1.children = []*Resource{topLeft, bottomLeft}
+
+	topRight := &Resource{parent: vpc2}
+	bottomRight := &Resource{parent: vpc2}
+	vpc2.children = []*Resource{topRight, bottomRight}
+
+	// Set bindings
+	lca.bindings = &image.Rectangle{Min: image.Point{0, 0}, Max: image.Point{600, 400}}
+	vpc1.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{250, 350}}
+	vpc2.bindings = &image.Rectangle{Min: image.Point{350, 50}, Max: image.Point{550, 350}}
+	topLeft.bindings = &image.Rectangle{Min: image.Point{100, 80}, Max: image.Point{164, 144}}
+	bottomLeft.bindings = &image.Rectangle{Min: image.Point{100, 250}, Max: image.Point{164, 314}}
+	topRight.bindings = &image.Rectangle{Min: image.Point{400, 80}, Max: image.Point{464, 144}}
+	bottomRight.bindings = &image.Rectangle{Min: image.Point{400, 250}, Max: image.Point{464, 314}}
+
+	// Test case 1: TopLeft -> TopRight (same height, dy ≈ 0)
+	// LCA horizontal (E/W preferred), perpendicular N/S have equal counts
+	// Should prefer E/W (LCA direction)
+	sourcePos, targetPos := AutoCalculatePositions(topLeft, topRight)
+	if sourcePos != WINDROSE_E {
+		t.Errorf("TopLeft->TopRight: expected source=E, got %v", sourcePos)
+	}
+	if targetPos != WINDROSE_W {
+		t.Errorf("TopLeft->TopRight: expected target=W, got %v", targetPos)
+	}
+
+	// Test case 2: TopLeft -> BottomRight (diagonal, dy > 0)
+	// If perpendicular N/S are candidates with equal count, should prefer S (dy > 0)
+	// But LCA direction E/W should be preferred first
+	sourcePos, targetPos = AutoCalculatePositions(topLeft, bottomRight)
+	// Source should prefer E (LCA direction) or S (perpendicular, dy > 0)
+	if sourcePos != WINDROSE_E && sourcePos != WINDROSE_S {
+		t.Errorf("TopLeft->BottomRight: expected source=E or S, got %v", sourcePos)
+	}
+	// Target should prefer W (LCA direction) or N (perpendicular, dy < 0 from target perspective)
+	if targetPos != WINDROSE_W && targetPos != WINDROSE_N {
+		t.Errorf("TopLeft->BottomRight: expected target=W or N, got %v", targetPos)
+	}
+
+	// Test case 3: Create scenario where perpendicular is chosen
+	// VPC3 {vertical: [Left, Right]} - horizontal layout within VPC
+	vpc3 := &Resource{direction: "horizontal", parent: lca}
+	lca.children = []*Resource{vpc3}
+
+	left := &Resource{parent: vpc3}
+	right := &Resource{parent: vpc3}
+	vpc3.children = []*Resource{left, right}
+
+	vpc3.bindings = &image.Rectangle{Min: image.Point{50, 50}, Max: image.Point{550, 350}}
+	left.bindings = &image.Rectangle{Min: image.Point{100, 150}, Max: image.Point{164, 214}}
+	right.bindings = &image.Rectangle{Min: image.Point{400, 250}, Max: image.Point{464, 314}}
+
+	// Left -> Right: dx > 0, dy > 0
+	// LCA direction=horizontal, preferred=E/W
+	// If both E/W have equal counts, should choose E (dx > 0)
+	sourcePos, targetPos = AutoCalculatePositions(left, right)
+	// Both should prefer E/W (LCA direction)
+	if sourcePos != WINDROSE_E && sourcePos != WINDROSE_W {
+		t.Errorf("Left->Right: expected source=E or W, got %v", sourcePos)
+	}
+	if targetPos != WINDROSE_E && targetPos != WINDROSE_W {
+		t.Errorf("Left->Right: expected target=E or W, got %v", targetPos)
+	}
+}
+
 func TestAutoCalculatePositionsVerticalLayout(t *testing.T) {
 	// Create vertical layout hierarchy
 	vpc := &Resource{direction: "vertical"}
