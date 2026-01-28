@@ -3904,7 +3904,9 @@ func TestAutoCalculatePositions_BorderChild(t *testing.T) {
 	alb.label = "ALB"
 	albBounds := image.Rect(200, 200, 400, 300)
 	alb.bindings = &albBounds
-	vpc.AddChild(alb)
+	if err := vpc.AddChild(alb); err != nil {
+		t.Fatal(err)
+	}
 
 	igw := new(Resource).Init()
 	igw.label = "IGW"
@@ -3916,7 +3918,9 @@ func TestAutoCalculatePositions_BorderChild(t *testing.T) {
 		Position: WINDROSE_S,
 		Resource: igw,
 	}
-	vpc.AddBorderChild(bc)
+	if err := vpc.AddBorderChild(bc); err != nil {
+		t.Fatal(err)
+	}
 
 	// Test 1: IGW to ALB (LCA = VPC, which is IGW's parent)
 	// Expected: IGW should use inside (opposite of S = N)
@@ -3932,13 +3936,17 @@ func TestAutoCalculatePositions_BorderChild(t *testing.T) {
 	canvas.direction = "vertical"
 	canvasBounds := image.Rect(0, 0, 600, 700)
 	canvas.bindings = &canvasBounds
-	canvas.AddChild(vpc)
+	if err := canvas.AddChild(vpc); err != nil {
+		t.Fatal(err)
+	}
 
 	external := new(Resource).Init()
 	external.label = "External"
 	externalBounds := image.Rect(200, 600, 400, 650)
 	external.bindings = &externalBounds
-	canvas.AddChild(external)
+	if err := canvas.AddChild(external); err != nil {
+		t.Fatal(err)
+	}
 
 	// Test 2: IGW to External (LCA = Canvas, ancestor of VPC)
 	// Expected: IGW should use outside (same as S)
@@ -3958,7 +3966,9 @@ func TestAutoCalculatePositions_BorderChild(t *testing.T) {
 		Position: WINDROSE_SSW,
 		Resource: natgw,
 	}
-	vpc.AddBorderChild(bc2)
+	if err := vpc.AddBorderChild(bc2); err != nil {
+		t.Fatal(err)
+	}
 
 	// Test 3: NATGW to IGW (both BorderChildren, LCA = VPC)
 	// Expected: Both use inside (opposite of their positions)
