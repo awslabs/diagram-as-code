@@ -75,6 +75,16 @@ func ConvertWindrose(position string) (Windrose, error) {
 	return 0, fmt.Errorf("unknown position: %s, supported positions are N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW, auto", position)
 }
 
+// WindroseTo4Direction converts 16-direction windrose to 4-direction (N=0, E=1, S=2, W=3)
+func WindroseTo4Direction(w Windrose) int {
+	return (int(w) + 2) % 16 / 4
+}
+
+// GetOppositeWindrose returns the opposite windrose direction
+func GetOppositeWindrose(w Windrose) Windrose {
+	return Windrose((int(w) + 8) % 16)
+}
+
 type Margin struct {
 	Top    int
 	Right  int

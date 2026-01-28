@@ -999,10 +999,45 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 
 	log.Infof("Auto-positioning: dx=%d, dy=%d", dx, dy)
 
+	// Check for BorderChild resources
+	sourceBorderParent, sourceBorderPos, sourceIsBorderChild := source.GetBorderChildInfo()
+	targetBorderParent, targetBorderPos, targetIsBorderChild := target.GetBorderChildInfo()
+
 	// Check for common ancestor layout
 	if commonAncestor := findLowestCommonAncestor(source, target); commonAncestor != nil {
 		direction := commonAncestor.direction
 		log.Infof("Auto-positioning: Found common ancestor with direction=%s", direction)
+
+		// Handle BorderChild positioning
+		if sourceIsBorderChild {
+			if commonAncestor == sourceBorderParent {
+				// LCA is direct parent: use inside (opposite)
+				sourcePos = GetOppositeWindrose(sourceBorderPos)
+				log.Infof("Auto-positioning: Source is BorderChild, LCA is parent, using inside: %v", sourcePos)
+			} else {
+				// LCA is ancestor: use outside (same)
+				sourcePos = sourceBorderPos
+				log.Infof("Auto-positioning: Source is BorderChild, LCA is ancestor, using outside: %v", sourcePos)
+			}
+		}
+
+		if targetIsBorderChild {
+			if commonAncestor == targetBorderParent {
+				// LCA is direct parent: use inside (opposite)
+				targetPos = GetOppositeWindrose(targetBorderPos)
+				log.Infof("Auto-positioning: Target is BorderChild, LCA is parent, using inside: %v", targetPos)
+			} else {
+				// LCA is ancestor: use outside (same)
+				targetPos = targetBorderPos
+				log.Infof("Auto-positioning: Target is BorderChild, LCA is ancestor, using outside: %v", targetPos)
+			}
+		}
+
+		// If both are already set by BorderChild logic, return early
+		if sourceIsBorderChild && targetIsBorderChild {
+			log.Infof("Auto-positioning: Both BorderChildren, Source=%v, Target=%v", sourcePos, targetPos)
+			return sourcePos, targetPos
+		}
 
 		// Find LCA direct children that contain source and target
 		sourceChild := findChildAncestorInLCA(commonAncestor, source)
@@ -1010,7 +1045,13 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 
 		if sourceChild == nil || targetChild == nil {
 			log.Warnf("Could not find LCA child ancestors, falling back to distance-based")
-			sourcePos, targetPos = calculateByDistance(dx, dy)
+			if !sourceIsBorderChild && !targetIsBorderChild {
+				sourcePos, targetPos = calculateByDistance(dx, dy)
+			} else if !sourceIsBorderChild {
+				sourcePos, _ = calculateByDistance(dx, dy)
+			} else if !targetIsBorderChild {
+				_, targetPos = calculateByDistance(dx, dy)
+			}
 			return sourcePos, targetPos
 		}
 
@@ -1031,9 +1072,13 @@ func AutoCalculatePositions(source, target *Resource) (sourcePos, targetPos Wind
 		log.Infof("Auto-positioning: Target counts (after adjustment): N=%d, E=%d, W=%d, S=%d",
 			targetCounts.North, targetCounts.East, targetCounts.West, targetCounts.South)
 
-		// Select optimal positions based on counts and direction
-		sourcePos = selectOptimalPosition(sourceCounts, direction, dx, dy, true)
-		targetPos = selectOptimalPosition(targetCounts, direction, -dx, -dy, false)
+		// Select optimal positions based on counts and direction (only if not BorderChild)
+		if !sourceIsBorderChild {
+			sourcePos = selectOptimalPosition(sourceCounts, direction, dx, dy, true)
+		}
+		if !targetIsBorderChild {
+			targetPos = selectOptimalPosition(targetCounts, direction, -dx, -dy, false)
+		}
 	} else {
 		// No common ancestor: use distance-based logic
 		sourcePos, targetPos = calculateByDistance(dx, dy)
