@@ -278,8 +278,24 @@ func (r *Resource) AddBorderChild(borderChild *BorderChild) error {
 	if hasChild {
 		return fmt.Errorf("couldn't add group to border children")
 	}
+	borderChild.Resource.parent = r // Set parent for BorderChild
 	r.borderChildren = append(r.borderChildren, borderChild)
 	return nil
+}
+
+// GetBorderChildInfo returns the parent and position if this resource is a BorderChild
+// Returns (parent, position, true) if it's a BorderChild, (nil, 0, false) otherwise
+func (r *Resource) GetBorderChildInfo() (*Resource, Windrose, bool) {
+	if r.parent == nil {
+		return nil, 0, false
+	}
+
+	for _, bc := range r.parent.borderChildren {
+		if bc.Resource == r {
+			return r.parent, bc.Position, true
+		}
+	}
+	return nil, 0, false
 }
 
 func (r *Resource) prepareFontFace(hasChild bool, parent *Resource) (font.Face, error) {

@@ -3891,3 +3891,95 @@ func TestUnorderedChildrenDisabled(t *testing.T) {
 	t.Logf("✓ ResourceB children unchanged (UnorderedChildren=false)")
 	t.Logf("✓ ResourceD children unchanged (UnorderedChildren=false)")
 }
+
+func TestAutoCalculatePositions_BorderChild(t *testing.T) {
+	// Setup: VPC with BorderChild IGW at South position
+	vpc := new(Resource).Init()
+	vpc.label = "VPC"
+	vpc.direction = "vertical"
+	vpcBounds := image.Rect(100, 100, 500, 500)
+	vpc.bindings = &vpcBounds
+
+	alb := new(Resource).Init()
+	alb.label = "ALB"
+	albBounds := image.Rect(200, 200, 400, 300)
+	alb.bindings = &albBounds
+	if err := vpc.AddChild(alb); err != nil {
+		t.Fatal(err)
+	}
+
+	igw := new(Resource).Init()
+	igw.label = "IGW"
+	igwBounds := image.Rect(250, 480, 350, 520)
+	igw.bindings = &igwBounds
+
+	// Add IGW as BorderChild at South position
+	bc := &BorderChild{
+		Position: WINDROSE_S,
+		Resource: igw,
+	}
+	if err := vpc.AddBorderChild(bc); err != nil {
+		t.Fatal(err)
+	}
+
+	// Test 1: IGW to ALB (LCA = VPC, which is IGW's parent)
+	// Expected: IGW should use inside (opposite of S = N)
+	sourcePos, targetPos := AutoCalculatePositions(igw, alb)
+	if sourcePos != WINDROSE_N {
+		t.Errorf("Test 1: Expected IGW position N (inside), got %v", sourcePos)
+	}
+	t.Logf("Test 1 passed: IGW->ALB, IGW uses inside position N")
+
+	// Test 2: Create external resource outside VPC
+	canvas := new(Resource).Init()
+	canvas.label = "Canvas"
+	canvas.direction = "vertical"
+	canvasBounds := image.Rect(0, 0, 600, 700)
+	canvas.bindings = &canvasBounds
+	if err := canvas.AddChild(vpc); err != nil {
+		t.Fatal(err)
+	}
+
+	external := new(Resource).Init()
+	external.label = "External"
+	externalBounds := image.Rect(200, 600, 400, 650)
+	external.bindings = &externalBounds
+	if err := canvas.AddChild(external); err != nil {
+		t.Fatal(err)
+	}
+
+	// Test 2: IGW to External (LCA = Canvas, ancestor of VPC)
+	// Expected: IGW should use outside (same as S)
+	sourcePos, targetPos = AutoCalculatePositions(igw, external)
+	if sourcePos != WINDROSE_S {
+		t.Errorf("Test 2: Expected IGW position S (outside), got %v", sourcePos)
+	}
+	t.Logf("Test 2 passed: IGW->External, IGW uses outside position S")
+
+	// Test 3: Both resources are BorderChildren
+	natgw := new(Resource).Init()
+	natgw.label = "NATGW"
+	natgwBounds := image.Rect(150, 480, 220, 520)
+	natgw.bindings = &natgwBounds
+
+	bc2 := &BorderChild{
+		Position: WINDROSE_SSW,
+		Resource: natgw,
+	}
+	if err := vpc.AddBorderChild(bc2); err != nil {
+		t.Fatal(err)
+	}
+
+	// Test 3: NATGW to IGW (both BorderChildren, LCA = VPC)
+	// Expected: Both use inside (opposite of their positions)
+	sourcePos, targetPos = AutoCalculatePositions(natgw, igw)
+	expectedNATGWPos := GetOppositeWindrose(WINDROSE_SSW) // Should be NNE
+	expectedIGWPos := GetOppositeWindrose(WINDROSE_S)     // Should be N
+	if sourcePos != expectedNATGWPos {
+		t.Errorf("Test 3: Expected NATGW position %v (inside), got %v", expectedNATGWPos, sourcePos)
+	}
+	if targetPos != expectedIGWPos {
+		t.Errorf("Test 3: Expected IGW position %v (inside), got %v", expectedIGWPos, targetPos)
+	}
+	t.Logf("Test 3 passed: NATGW->IGW, both use inside positions")
+}
