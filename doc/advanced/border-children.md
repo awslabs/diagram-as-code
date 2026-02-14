@@ -74,3 +74,28 @@ VPC:
 
 - [Resource Types](../resource-types.md) - Resource basics
 - [Best Practices](../best-practices.md) - Design patterns
+
+## Advanced Usage
+
+### Fill Transparent Icon Background
+
+Border children with transparent icons may look unclear. Use `FillColor` with white to fill the background:
+
+```yaml
+VPC:
+  Type: AWS::EC2::VPC
+  BorderChildren:
+    - Position: N
+      Resource: IGW
+  Children:
+    - Subnets
+
+IGW:
+  Type: AWS::EC2::InternetGateway
+  FillColor: "rgba(255, 255, 255, 1)"  # White background
+  Title: "Internet Gateway"
+```
+
+![Border child with white background](../static/border-children-fillcolor.png)
+
+This makes transparent icons more visible and cleaner in the diagram.
