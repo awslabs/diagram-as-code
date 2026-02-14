@@ -116,7 +116,6 @@ See [MCP Server Documentation](doc/mcp-server.md) for complete setup and usage i
 ### Tools & Integration
 - **[MCP Server](doc/mcp-server.md)** - AI assistant integration
 - **[CloudFormation Conversion](doc/cloudformation.md)** [Beta] - Convert CloudFormation templates to diagrams
-- **[CLI Reference](doc/cli-reference.md)** - Command-line options and environment variables
 
 ### Advanced Features
 - **[UnorderedChildren](doc/advanced/unordered-children.md)** - Automatic child reordering for optimal layouts
