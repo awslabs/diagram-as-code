@@ -6,9 +6,17 @@ Prevent link overlap when multiple links originate from or terminate at the same
 
 When multiple links share the same source or target position, they can overlap and become difficult to distinguish. Link grouping offset automatically spreads these links apart.
 
-## Usage
+## Comparison
 
-Enable for specific resources:
+### 1. Disabled (Default)
+
+Links overlap when originating from the same position:
+
+![Link grouping disabled](../static/link-grouping-disabled.png)
+
+### 2. GroupingOffset Enabled
+
+Links are spread horizontally (perpendicular to link direction):
 
 ```yaml
 Resources:
@@ -17,6 +25,23 @@ Resources:
     Options:
       GroupingOffset: true
 ```
+
+![Link grouping enabled](../static/link-grouping-enabled.png)
+
+### 3. GroupingOffsetDirection Enabled
+
+Links are grouped by target direction for more organized layouts:
+
+```yaml
+Resources:
+  ELB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Options:
+      GroupingOffset: true
+      GroupingOffsetDirection: true
+```
+
+![Link grouping directional](../static/link-grouping-directional.png)
 
 ## How It Works
 
@@ -24,37 +49,7 @@ Resources:
 - Links are sorted by target/source position for consistent ordering
 - Offset is applied perpendicular to the link direction
 - Calculation: `(index - (count-1)/2.0) * 10` pixels
-
-## Example
-
-```yaml
-Resources:
-  ELB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Options:
-      GroupingOffset: true
-      
-Links:
-  - Source: ELB
-    Target: Instance1
-    SourcePosition: S
-    TargetPosition: N
-    Type: orthogonal
-  - Source: ELB
-    Target: Instance2
-    SourcePosition: S  # Will be automatically offset
-    TargetPosition: N
-    Type: orthogonal
-  - Source: ELB
-    Target: Instance3
-    SourcePosition: S  # Will be automatically offset
-    TargetPosition: N
-    Type: orthogonal
-```
-
-**Result**: Links spread horizontally to prevent overlap.
-
-![Link grouping offset example](../static/link-grouping-example.png)
+- **Directional mode**: Groups links by target direction before applying offset
 
 ## When to Use
 
