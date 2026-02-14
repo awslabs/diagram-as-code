@@ -63,18 +63,6 @@ $ awsdac examples/alb-ec2.yaml
 $ awsdac privatelink.yaml -o custom-output.png
 ```
 
-### [Beta] Create a diagram from CloudFormation template
-
-Generate diagrams from CloudFormation templates:
-
-```
-$ awsdac examples/vpc-subnet-ec2-cfn.yaml --cfn-template
-```
-
-<img src="examples/vpc-subnet-ec2-cfn.png" width="500">
-
-See [CloudFormation Conversion Guide](doc/cloudformation.md) for detailed usage and workflows.
-
 ## Documentation
 
 ### Getting Started
