@@ -10,6 +10,20 @@ Check out the [Introduction Guide](doc/introduction.md) as well for additional i
 
 ![CLI Usage animation](doc/static/command_demo.gif)
 
+## Features
+- **Compliant with AWS architecture guidelines**  
+Easily generate diagrams that follow [AWS diagram guidelines](https://aws.amazon.com/architecture/icons).
+- **Flexible**  
+Automatically adjust the position and size of groups.
+- **Lightweight & CI/CD-friendly**  
+Start quickly on a container; no dependency on headless browser or GUI.
+- **Integrate with your Infrastructure as Code**  
+Generate diagrams to align with your IaC code without managing diagrams manually.
+- **As a drawing library**  
+Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI tools.
+- **Extensible**  
+Add definition files to create non-AWS diagrams as well.
+
 ## Getting started
 
 ### for Gopher (go 1.21 or higher)
@@ -60,20 +74,6 @@ $ awsdac examples/vpc-subnet-ec2-cfn.yaml --cfn-template
 <img src="examples/vpc-subnet-ec2-cfn.png" width="500">
 
 See [CloudFormation Conversion Guide](doc/cloudformation.md) for detailed usage and workflows.
-
-## Features
-- **Compliant with AWS architecture guidelines**  
-Easily generate diagrams that follow [AWS diagram guidelines](https://aws.amazon.com/architecture/icons).
-- **Flexible**  
-Automatically adjust the position and size of groups.
-- **Lightweight & CI/CD-friendly**  
-Start quickly on a container; no dependency on headless browser or GUI.
-- **Integrate with your Infrastructure as Code**  
-Generate diagrams to align with your IaC code without managing diagrams manually.
-- **As a drawing library**  
-Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI tools.
-- **Extensible**  
-Add definition files to create non-AWS diagrams as well.
 
 ## Documentation
 
