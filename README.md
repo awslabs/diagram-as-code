@@ -98,6 +98,43 @@ Add definition files to create non-AWS diagrams as well.
 
 The awsdac MCP server enables AI assistants and development tools to generate AWS architecture diagrams programmatically through the Model Context Protocol (MCP). This integration allows seamless diagram creation within your development workflow.
 
+See [MCP Server Documentation](doc/mcp-server.md) for complete setup and usage instructions.
+
+---
+
+## Documentation
+
+### Getting Started
+- **[Introduction Guide](doc/introduction.md)** - Quick start (10 minutes) and core concepts
+- **[Troubleshooting](doc/troubleshooting.md)** - Common issues and solutions
+
+### Core Features
+- **[Resource Types](doc/resource-types.md)** - Available AWS resources and diagram elements
+- **[Links](doc/links.md)** - Connecting resources with arrows and lines
+- **[Templates](doc/template.md)** - Using Go templates for dynamic diagrams
+
+### Tools & Integration
+- **[MCP Server](doc/mcp-server.md)** - AI assistant integration
+- **[CloudFormation Conversion](doc/cloudformation.md)** [Beta] - Convert CloudFormation templates to diagrams
+- **[CLI Reference](doc/cli-reference.md)** - Command-line options and environment variables
+
+### Advanced Features
+- **[UnorderedChildren](doc/advanced/unordered-children.md)** - Automatic child reordering for optimal layouts
+- **[Auto-positioning](doc/advanced/auto-positioning.md)** - Smart link positioning
+- **[Link Grouping Offset](doc/advanced/link-grouping.md)** - Prevent link overlap
+- **[BorderChildren](doc/advanced/border-children.md)** - Place resources on borders
+
+### Guides
+- **[Best Practices](doc/best-practices.md)** - Design patterns and diagram standards
+- **[Large Diagrams](doc/guides/large-diagrams.md)** - Strategies for complex architectures
+- **[Layout Strategies](doc/guides/layout-strategies.md)** - Optimization techniques
+- **[Maintainability](doc/guides/maintenance.md)** - Long-term diagram management
+
+### Contributing
+- **[Documentation Guidelines](doc/contributing-docs.md)** - How to contribute to documentation
+
+---
+
 ### Installation & MCP Client configuration
 **Note;** Currently, MCP Client Configuration depends on the MCP Client implementation. Please check the MCP client's documentation for the correct json format.
 
