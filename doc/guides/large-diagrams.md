@@ -60,6 +60,8 @@ AZ{{$i}}:
 {{- end}}
 ```
 
+![Template example for multiple AZs](../static/large-diagrams-template.png)
+
 ## Best Practices
 
 1. **Start simple**: Begin with high-level, add detail as needed

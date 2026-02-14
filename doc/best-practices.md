@@ -72,6 +72,8 @@ VPC:
     - PrivateSubnets   # South
 ```
 
+![Direction example](static/best-practices-direction.png)
+
 ### Redundancy Layers
 
 **Horizontal Redundancy** (for North-South traffic):

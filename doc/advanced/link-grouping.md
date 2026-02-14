@@ -51,6 +51,8 @@ Links:
 
 **Result**: Links spread horizontally to prevent overlap.
 
+![Link grouping offset example](../static/link-grouping-example.png)
+
 ## When to Use
 
 **Enable when**:

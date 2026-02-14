@@ -23,6 +23,9 @@ You can execute a block repeatedly with index.
         - VPC{{$i}}AvailabilityZone1
     {{- end}}
 ```
+
+![Template repetition example](static/template-example.png)
+
 This template will expand to the following YAML:
 ```yaml
     VPC0:

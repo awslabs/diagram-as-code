@@ -13,10 +13,10 @@ Resources:
   VPC:
     Type: AWS::EC2::VPC
     BorderChildren:
-      - Position: North
-        Child: InternetGateway
-      - Position: South
-        Child: VPNGateway
+      - Position: N
+        Resource: InternetGateway
+      - Position: S
+        Resource: VPNGateway
     Children:
       - PublicSubnet
       - PrivateSubnet
@@ -28,13 +28,15 @@ Resources:
     Type: AWS::EC2::VPNGateway
 ```
 
+![BorderChildren example](../static/border-children-example.png)
+
 ## Positions
 
 Available positions:
-- `North` - Top edge
-- `South` - Bottom edge
-- `East` - Right edge
-- `West` - Left edge
+- `N` (North) - Top edge
+- `S` (South) - Bottom edge
+- `E` (East) - Right edge
+- `W` (West) - Left edge
 
 ## Common Use Cases
 
@@ -44,8 +46,8 @@ Available positions:
 VPC:
   Type: AWS::EC2::VPC
   BorderChildren:
-    - Position: North
-      Child: IGW
+    - Position: N
+      Resource: IGW
 ```
 
 ### VPN Gateway
@@ -54,8 +56,8 @@ VPC:
 VPC:
   Type: AWS::EC2::VPC
   BorderChildren:
-    - Position: South
-      Child: VPNGateway
+    - Position: S
+      Resource: VPNGateway
 ```
 
 ### Transit Gateway Attachment
@@ -64,8 +66,8 @@ VPC:
 VPC:
   Type: AWS::EC2::VPC
   BorderChildren:
-    - Position: West
-      Child: TGWAttachment
+    - Position: W
+      Resource: TGWAttachment
 ```
 
 ## Related Documentation

@@ -40,6 +40,8 @@ Links:
     TargetPosition: auto   # Automatic
 ```
 
+![Auto-positioning example](../static/auto-positioning-example.png)
+
 ## How It Works
 
 The auto-positioning algorithm:

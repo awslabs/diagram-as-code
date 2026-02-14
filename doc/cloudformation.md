@@ -30,6 +30,10 @@ awsdac template.yaml --cfn-template
 awsdac template.yaml --cfn-template -o my-architecture.png
 ```
 
+**Example output**:
+
+![CloudFormation conversion example](static/cloudformation-example.png)
+
 ### When to Use
 
 - Quick visualization of CloudFormation resources

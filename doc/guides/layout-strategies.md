@@ -73,6 +73,8 @@ Application:
     - Databases
 ```
 
+![Three-tier architecture example](../static/layout-three-tier.png)
+
 ### Multi-AZ Deployment
 
 ```yaml
