@@ -85,42 +85,6 @@ awsdac template.yaml --cfn-template --dac-file
 - Want to add custom annotations
 - Generated diagram needs improvement
 
-## Best Practices for CloudFormation Templates
-
-### 1. Use Descriptive Resource Names
-
-**Good**:
-```yaml
-Resources:
-  WebServerInstance:
-    Type: AWS::EC2::Instance
-```
-
-**Avoid**:
-```yaml
-Resources:
-  Instance1:
-    Type: AWS::EC2::Instance
-```
-
-### 2. Organize by Logical Groups
-
-Group related resources together in your CloudFormation template for better diagram organization.
-
-### 3. Add Resource Tags
-
-Tags can help identify resources in the generated diagram:
-
-```yaml
-Resources:
-  MyVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      Tags:
-        - Key: Name
-          Value: Production VPC
-```
-
 ## Known Issues
 
 CloudFormation templates have various dependencies and complex relationships. Some patterns may not work as expected.
