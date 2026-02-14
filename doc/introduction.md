@@ -21,8 +21,6 @@ Get your first AWS architecture diagram in under 10 minutes.
 
 ## Installation
 
-## Installation
-
 **For macOS users:**
 ```bash
 brew install awsdac
