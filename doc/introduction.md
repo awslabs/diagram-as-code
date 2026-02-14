@@ -96,10 +96,10 @@ To use the pre-defined resource definitions from the awsdac GitHub repository, s
       - Type: URL
         Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
 ```
-```
 
 If you want to customize the resource definitions locally, you can specify a local file path instead:
-```
+
+```yaml
     DefinitionFiles:
       - Type: LocalFile
         LocalFile: "<your definition file path (e.g. ~/Desktop/your-custom-definition.yaml)>"
@@ -110,7 +110,7 @@ If you want to customize the resource definitions locally, you can specify a loc
 `awsdac` has a unique feature where it provides resource types such as `AWS::Diagram::Canvas` and `AWS::Diagram::Cloud`, but you can define other AWS resources in a similar way to CloudFormation resource types.
 And these resources are associated with each other by listing them under the "Children" property.
 
-```
+```yaml
     Resources:
         Canvas:
             Type: AWS::Diagram::Canvas
@@ -186,7 +186,7 @@ For more detailed information about "Resources" section, please refer to: [resou
 You can draw a line between the resource specified as the Source and the resource specified as the Target. At this time, you can define "where the line is drawn on the icon" by specifying SourcePosition or TargetPosition.
 For example, if you make the following definition, you will get a diagram like this:
 
-```
+```yaml
     Links:
       - Source: ELB
         SourcePosition: S     # "S" (South) for SourcePosition means the line begins from the bottom of the icon
