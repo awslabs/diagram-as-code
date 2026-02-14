@@ -125,9 +125,6 @@ See [MCP Server Documentation](doc/mcp-server.md) for complete setup and usage i
 
 ### Guides
 - **[Best Practices](doc/best-practices.md)** - Design patterns and diagram standards
-- **[Large Diagrams](doc/guides/large-diagrams.md)** - Strategies for complex architectures
-- **[Layout Strategies](doc/guides/layout-strategies.md)** - Optimization techniques
-- **[Maintainability](doc/guides/maintenance.md)** - Long-term diagram management
 
 ### Contributing
 - **[Documentation Guidelines](doc/contributing-docs.md)** - How to contribute to documentation
