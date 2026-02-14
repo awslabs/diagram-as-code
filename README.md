@@ -104,12 +104,6 @@ Add definition files to create non-AWS diagrams as well.
 
 ---
 
-## Resource types
-See [doc/resource-types.md](doc/resource-types.md).
-
-## Resource Link
-See [doc/links.md](doc/links.md).
-
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
@@ -117,4 +111,3 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This project is licensed under the Apache-2.0 License.
-# Fix image URLs
