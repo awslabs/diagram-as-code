@@ -16,7 +16,7 @@ Links overlap when originating from the same position:
 
 ### 2. GroupingOffset Enabled
 
-Links are spread horizontally (perpendicular to link direction):
+Links are spread vertically (perpendicular to link direction):
 
 ```yaml
 Resources:
@@ -24,6 +24,29 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Options:
       GroupingOffset: true
+
+Links:
+  - Source: Instance1
+    Target: ELB
+    SourcePosition: E
+    TargetPosition: W
+    Type: orthogonal
+    TargetArrowHead:
+      Type: Open
+  - Source: ELB
+    Target: Instance2
+    SourcePosition: W
+    TargetPosition: E
+    Type: orthogonal
+    TargetArrowHead:
+      Type: Open
+  - Source: ELB
+    Target: Instance3
+    SourcePosition: W
+    TargetPosition: E
+    Type: orthogonal
+    TargetArrowHead:
+      Type: Open
 ```
 
 ![Link grouping enabled](../static/link-grouping-enabled.png)
