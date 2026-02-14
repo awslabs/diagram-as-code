@@ -222,6 +222,24 @@ See [doc/resource-types.md](doc/resource-types.md).
 ## Resource Link
 See [doc/links.md](doc/links.md).
 
+## Development Guide
+
+For contributing guidelines, please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Project Structure
+- `cmd/` - CLI tools (awsdac, awsdac-mcp-server)
+- `internal/` - Core implementation
+  - `cache/` - Caching logic
+  - `ctl/` - Core control logic
+  - `definition/` - Definition file handling
+  - `font/` - Font management
+  - `types/` - Core types and structures
+  - `vector/` - Vector operations
+- `test/` - Integration tests
+- `tools/` - Development tools
+- `examples/` - Example YAML files
+- `doc/` - Documentation
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
@@ -229,4 +247,3 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This project is licensed under the Apache-2.0 License.
-# Fix image URLs
