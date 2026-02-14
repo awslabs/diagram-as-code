@@ -39,14 +39,17 @@ Links:
     Target: Instance1
     SourcePosition: S
     TargetPosition: N
+    Type: orthogonal
   - Source: ELB
     Target: Instance2
     SourcePosition: S  # Will be automatically offset
     TargetPosition: N
+    Type: orthogonal
   - Source: ELB
     Target: Instance3
     SourcePosition: S  # Will be automatically offset
     TargetPosition: N
+    Type: orthogonal
 ```
 
 **Result**: Links spread horizontally to prevent overlap.
