@@ -79,7 +79,7 @@ VPC:
 
 ### Fill Transparent Icon Background
 
-Border children with transparent icons may look unclear. Use `FillColor` with white to fill the background:
+Border children with transparent icons may look unclear. Use `IconFill` with `Type: rect` to fill the background:
 
 ```yaml
 VPC:
@@ -92,7 +92,8 @@ VPC:
 
 IGW:
   Type: AWS::EC2::InternetGateway
-  FillColor: "rgba(255, 255, 255, 1)"  # White background
+  IconFill:
+    Type: rect
   Title: "Internet Gateway"
 ```
 
