@@ -44,10 +44,27 @@ Links:
 
 ## How It Works
 
-The auto-positioning algorithm:
-1. Calculates relative positions of source and target resources
-2. Determines optimal connection points based on geometry
-3. Selects positions that minimize link length and overlaps
+The auto-positioning algorithm intelligently selects connection points based on resource relationships in the diagram hierarchy:
+
+### Hierarchy-Based Selection
+
+1. **Finds Lowest Common Ancestor (LCA)**: Identifies the nearest common parent of source and target resources in the tree structure
+
+2. **Considers container direction**: Uses the LCA's `Direction` property (`vertical` or `horizontal`) to prioritize appropriate positions
+
+3. **Counts resources in each direction**: Analyzes resource density (N, E, W, S) to avoid overlapping with existing resources
+
+4. **Selects optimal positions**: 
+   - Prefers directions with fewer resources (minimizes overlap)
+   - Aligns with container direction (maintains layout flow)
+   - Uses relative position between source and target (shortest path)
+
+### Special Cases
+
+- **BorderChildren**: Automatically uses inside/outside positions based on parent relationship
+- **No common ancestor**: Falls back to distance-based calculation
+
+This approach ensures links follow the diagram's logical structure while minimizing visual clutter.
 
 ## When to Use
 
