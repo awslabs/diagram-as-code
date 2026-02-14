@@ -84,13 +84,13 @@ Add definition files to create non-AWS diagrams as well.
 ### Core Features
 - **[Resource Types](doc/resource-types.md)** - Available AWS resources and diagram elements
 - **[Links](doc/links.md)** - Connecting resources with arrows and lines
-- **[Templates](doc/template.md)** - Using Go templates for dynamic diagrams
 
 ### Tools & Integration
 - **[MCP Server](doc/mcp-server.md)** - AI assistant integration
 - **[CloudFormation Conversion](doc/cloudformation.md)** [Beta] - Convert CloudFormation templates to diagrams
 
 ### Advanced Features
+- **[Templates](doc/template.md)** - Using Go templates for dynamic diagrams
 - **[UnorderedChildren](doc/advanced/unordered-children.md)** - Automatic child reordering for optimal layouts
 - **[Auto-positioning](doc/advanced/auto-positioning.md)** - Smart link positioning
 - **[Link Grouping Offset](doc/advanced/link-grouping.md)** - Prevent link overlap
