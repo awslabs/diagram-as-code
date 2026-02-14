@@ -24,29 +24,6 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Options:
       GroupingOffset: true
-
-Links:
-  - Source: Instance1
-    Target: ELB
-    SourcePosition: E
-    TargetPosition: W
-    Type: orthogonal
-    TargetArrowHead:
-      Type: Open
-  - Source: ELB
-    Target: Instance2
-    SourcePosition: W
-    TargetPosition: E
-    Type: orthogonal
-    TargetArrowHead:
-      Type: Open
-  - Source: ELB
-    Target: Instance3
-    SourcePosition: W
-    TargetPosition: E
-    Type: orthogonal
-    TargetArrowHead:
-      Type: Open
 ```
 
 ![Link grouping enabled](../static/link-grouping-enabled.png)
