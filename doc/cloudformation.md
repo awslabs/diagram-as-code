@@ -50,6 +50,13 @@ awsdac template.yaml --cfn-template -o my-architecture.png
 
 Generate an editable YAML file that you can customize before creating the final diagram.
 
+**Workflow**:
+```
+CloudFormation template --[awsdac]--> DAC YAML file --[customize]--> Final diagram
+```
+
+This approach offers greater flexibility by decoupling diagram generation from CloudFormation template structure.
+
 ### Usage
 
 ```bash
