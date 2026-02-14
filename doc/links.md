@@ -67,8 +67,16 @@ Links:
 ```
 
 #### Orthogonal
+
+Orthogonal links create right-angled connections between resources, making diagrams cleaner and more organized than straight diagonal lines.
+
 ![orthogonal link](static/link-orthogonal.png)
-```
+
+**Types**:
+- **Single-arm**: One bend (horizontal then vertical, or vice versa)
+- **Double-arm**: Two bends (horizontal-vertical-horizontal or vertical-horizontal-vertical)
+
+```yaml
   Links:
       # Orthogonal (single-arm)
     - Source: Orthogonal1Lambda
@@ -98,7 +106,7 @@ Links:
       Type: orthogonal
 ```
 
-For orthogonal links with auto-positioning labels (`AutoRight` and `AutoLeft`), the system automatically detects the longest horizontal segment among the control points and places labels along that segment for optimal readability. The system intelligently avoids acute angles by selecting appropriate segments based on the path geometry.
+**Label positioning**: For orthogonal links with auto-positioning labels (`AutoRight` and `AutoLeft`), the system automatically detects the longest horizontal segment among the control points and places labels along that segment for optimal readability. The system intelligently avoids acute angles by selecting appropriate segments based on the path geometry.
 
 
 ### Arrow head
