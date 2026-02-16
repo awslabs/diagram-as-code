@@ -29,7 +29,7 @@ When drawing an orthogonal link from Resource1 to Resource6, the link path overl
 2. **ResourceC and its children** (Resource3, Resource4): The link crosses through the intermediate container
 3. **Resource5** (in ResourceD): The link enters ResourceD from the left, overlapping Resource5 if it's positioned to the left of Resource6
 
-![Problem: Link overlaps with multiple resources](./unordered-children-before.png)
+![Problem: Link overlaps with multiple resources](../static/unordered-children-before.png)
 
 *Figure: Without UnorderedChildren, the link from Resource1 to Resource6 crosses over intermediate resources*
 
@@ -74,7 +74,7 @@ The system will analyze the link and perform multi-level reordering:
 2. **ResourceD**: Reorder to place Resource6 at the leftmost position
 3. **ResourceA**: Reorder to place ResourceD adjacent to ResourceB
 
-![Solution: After reordering with UnorderedChildren](./unordered-children-after.png)
+![Solution: After reordering with UnorderedChildren](../static/unordered-children-after.png)
 
 *Figure: With UnorderedChildren enabled, children are automatically reordered to minimize link overlaps*
 
@@ -84,13 +84,13 @@ The following diagrams show the parent-child relationship tree and how Unordered
 
 **Before (UnorderedChildren disabled):**
 
-![Hierarchy Tree Before](./hierarchy-tree-before.png)
+![Hierarchy Tree Before](../static/hierarchy-tree-before.png)
 
 *Original order: ResourceA → [B,C,D], ResourceB → [1,2], ResourceD → [5,6]. Gray lines show parent-child relationships. Red link from Resource1 to Resource6 crosses over Resources 2,3,4,5.*
 
 **After (UnorderedChildren enabled):**
 
-![Hierarchy Tree After](./hierarchy-tree-after.png)
+![Hierarchy Tree After](../static/hierarchy-tree-after.png)
 
 *Reordered: ResourceA → [B,D,C], ResourceB → [2,1], ResourceD → [6,5]. Blue lines indicate reordered relationships. Green dashed lines show which elements were swapped. Red link is now optimized with Resource1 and Resource6 adjacent.*
 
@@ -193,21 +193,21 @@ Move the child to the first position (index 0).
 
 When the LCA has a different direction from its children, moving children to the first position helps reduce link crossing.
 
-![Different Direction Before](./different-direction-before.png)
+![Different Direction Before](../static/different-direction-before.png)
 
 *Before: VPC (vertical) contains Horizontal1 and Horizontal2 (horizontal). Two links cross each other.*
 
-![Different Direction After](./different-direction-after.png)
+![Different Direction After](../static/different-direction-after.png)
 
 *After: Resource2 moved to first position in Horizontal1. Links no longer cross.*
 
 **Hierarchy comparison:**
 
-![Different Direction Tree Before](./different-direction-tree-before.png)
+![Different Direction Tree Before](../static/different-direction-tree-before.png)
 
 *Before: Original order VPC[H1,H2], H1[1,2], H2[3,4]. Links cross.*
 
-![Different Direction Tree After](./different-direction-tree-after.png)
+![Different Direction Tree After](../static/different-direction-tree-after.png)
 
 *After: Reordered H1[2,1], H2[3,4]. Green dashed line shows swap. Links no longer cross.*
 

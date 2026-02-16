@@ -67,8 +67,16 @@ Links:
 ```
 
 #### Orthogonal
+
+Orthogonal links create right-angled connections between resources, making diagrams cleaner and more organized than straight diagonal lines.
+
 ![orthogonal link](static/link-orthogonal.png)
-```
+
+**Types**:
+- **Single-arm**: One bend (horizontal then vertical, or vice versa)
+- **Double-arm**: Two bends (horizontal-vertical-horizontal or vertical-horizontal-vertical)
+
+```yaml
   Links:
       # Orthogonal (single-arm)
     - Source: Orthogonal1Lambda
@@ -98,7 +106,7 @@ Links:
       Type: orthogonal
 ```
 
-For orthogonal links with auto-positioning labels (`AutoRight` and `AutoLeft`), the system automatically detects the longest horizontal segment among the control points and places labels along that segment for optimal readability. The system intelligently avoids acute angles by selecting appropriate segments based on the path geometry.
+**Label positioning**: For orthogonal links with auto-positioning labels (`AutoRight` and `AutoLeft`), the system automatically detects the longest horizontal segment among the control points and places labels along that segment for optimal readability. The system intelligently avoids acute angles by selecting appropriate segments based on the path geometry.
 
 
 ### Arrow head
@@ -168,46 +176,8 @@ Link Labels add labels along the link
 
 ### Link Grouping Offset
 
-When multiple links originate from or terminate at the same position on a resource, they can be automatically spread apart to prevent overlap. This feature is **disabled by default** and must be explicitly enabled.
+When multiple links originate from or terminate at the same position on a resource, they can be automatically spread apart to prevent overlap. This feature is **disabled by default** and must be explicitly enabled using `Options.GroupingOffset: true`.
 
-**How it works:**
-- Links from the same position are offset by ±5px, ±10px, etc.
-- Links are sorted by target/source position for consistent ordering
-- Offset is applied perpendicular to the link direction
-- Calculation: `(index - (count-1)/2.0) * 10` pixels
-
-**Enable for specific resource:**
-```yaml
-Resources:
-  ELB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Options:
-      GroupingOffset: true  # Enable link grouping offset
-```
-
-**Example with multiple links:**
-```yaml
-Resources:
-  ELB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Options:
-      GroupingOffset: true
-      
-Links:
-  - Source: ELB
-    Target: Instance1
-    SourcePosition: S  # Multiple links from same position
-    TargetPosition: N
-  - Source: ELB
-    Target: Instance2
-    SourcePosition: S  # Will be automatically offset
-    TargetPosition: N
-  - Source: ELB
-    Target: Instance3
-    SourcePosition: S  # Will be automatically offset
-    TargetPosition: N
-```
-
-**Result:** Links will be spread horizontally (perpendicular to S direction) to prevent overlap.
+For detailed information and examples, see [Link Grouping Offset](advanced/link-grouping.md).
 
 

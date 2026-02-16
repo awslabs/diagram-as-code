@@ -1,37 +1,81 @@
 # Introduction Guide
 
-- [Introduction Guide](#introduction-guide)
-  - [How to Install](#how-to-install)
-    - [Your First Diagram](#your-first-diagram)
-  - [Understanding DAC (diagram as code) File / How to Make Input File](#understanding-dac-diagram-as-code-file--how-to-make-input-file)
+- [Part 1: Quick Start (10 minutes)](#part-1-quick-start-10-minutes)
+  - [Installation](#installation)
+  - [Your First Diagram](#your-first-diagram)
+  - [Next Steps](#next-steps)
+- [Part 2: Understanding Diagram-as-Code](#part-2-understanding-diagram-as-code)
+  - [Core Concepts](#core-concepts)
+  - [DAC File Structure](#dac-file-structure)
     - [DefinitionFiles section](#definitionfiles-section)
     - [Resources section](#resources-section)
     - [Links section](#links-section)
-  - [\[Beta\] Create Diagrams from CloudFormation template](#beta-create-diagrams-from-cloudformation-template)
-    - [Create DAC files from CloudFormation template](#create-dac-files-from-cloudformation-template)
-  - [Tips](#tips)
-    - [How to Change default icons](#how-to-change-default-icons)
-    - [How to Change default titles](#how-to-change-default-titles)
+  - [\[Beta\] CloudFormation Integration](#beta-cloudformation-integration)
+  - [Customization Tips](#customization-tips)
 
+---
 
-## How to Install
+# Part 1: Quick Start (10 minutes)
 
+Get your first AWS architecture diagram in under 10 minutes.
+
+## Installation
+
+**For macOS users:**
+```bash
+brew install awsdac
 ```
-$ go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
+
+**For Go developers:**
+```bash
+go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
 ```
 
-### Your First Diagram
+## Your First Diagram
 
+Create your first diagram using an example from the repository:
+
+```bash
+awsdac https://raw.githubusercontent.com/awslabs/diagram-as-code/main/examples/alb-ec2.yaml
 ```
-$ awsdac https://raw.githubusercontent.com/awslabs/diagram-as-code/main/examples/alb-ec2.yaml
+
+Output:
+```
 [Completed] AWS infrastructure diagram generated: output.png
 ```
-You can confirm the generated diagram when you open `output.png` file. ※ This name is the default. You can change the name with "-o" option.
 
-## Understanding DAC (diagram as code) File / How to Make Input File
+Open `output.png` to see your diagram! 🎉
+
+**Tip**: Use `-o custom-name.png` to specify a different output filename.
+
+## Next Steps
+
+**Encountered an error?** → See [Troubleshooting](troubleshooting.md)
+
+**Want to create your own diagram?** → Continue to [Part 2: Understanding Diagram-as-Code](#part-2-understanding-diagram-as-code)
+
+**Need advanced features?** → Explore [Advanced Features](advanced/)
+
+**Using AI assistants?** → Check out [MCP Server Integration](mcp-server.md)
+
+---
+
+# Part 2: Understanding Diagram-as-Code
+
+## Core Concepts
+
+Diagram-as-code (DAC) lets you define AWS architecture diagrams using YAML files. This approach enables:
+
+- **Version Control**: Track diagram changes with Git
+- **Code Reuse**: Share and reuse diagram components
+- **Automation**: Generate diagrams in CI/CD pipelines
+- **Consistency**: Maintain standardized diagram styles
+
+## DAC File Structure
 
 To create diagrams with `awsdac`, you need to provide a "DAC (diagram as code) file" that defines the components and layout of your architecture. The DAC file uses YAML syntax and consists of 3 main sections:
-```
+
+```yaml
 Diagram:
     DefinitionFiles:  # Specify the location of the definition file
       ...
@@ -44,14 +88,16 @@ Diagram:
 ### DefinitionFiles section
 
 To use the pre-defined resource definitions from the awsdac GitHub repository, specify the URL in the DefinitionFiles section:
-```
+
+```yaml
     DefinitionFiles:
       - Type: URL
         Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
 ```
 
 If you want to customize the resource definitions locally, you can specify a local file path instead:
-```
+
+```yaml
     DefinitionFiles:
       - Type: LocalFile
         LocalFile: "<your definition file path (e.g. ~/Desktop/your-custom-definition.yaml)>"
@@ -62,7 +108,7 @@ If you want to customize the resource definitions locally, you can specify a loc
 `awsdac` has a unique feature where it provides resource types such as `AWS::Diagram::Canvas` and `AWS::Diagram::Cloud`, but you can define other AWS resources in a similar way to CloudFormation resource types.
 And these resources are associated with each other by listing them under the "Children" property.
 
-```
+```yaml
     Resources:
         Canvas:
             Type: AWS::Diagram::Canvas
@@ -138,7 +184,7 @@ For more detailed information about "Resources" section, please refer to: [resou
 You can draw a line between the resource specified as the Source and the resource specified as the Target. At this time, you can define "where the line is drawn on the icon" by specifying SourcePosition or TargetPosition.
 For example, if you make the following definition, you will get a diagram like this:
 
-```
+```yaml
     Links:
       - Source: ELB
         SourcePosition: S     # "S" (South) for SourcePosition means the line begins from the bottom of the icon
@@ -154,141 +200,45 @@ For example, if you make the following definition, you will get a diagram like t
 
 For more detailed information about Links, please refer to: [links.md](links.md)
 
-## [Beta] Create Diagrams from CloudFormation template
+## [Beta] CloudFormation Integration
 
-`--cfn-template` option allows you to generate diagrams from CloudFormation templates, providing a visual representation of the resources.
-The tool can generate diagrams even if the CloudFormation template is not in a perfect format, enabling you to visualize the resources before actually creating the CloudFormation stack. This means you don't have to strictly adhere to the CloudFormation syntax constraints.
+Want to visualize existing CloudFormation templates? See the dedicated [CloudFormation Conversion Guide](cloudformation.md) for detailed instructions on both direct conversion and DAC file generation workflows.
 
-```
-$ awsdac <input your CloudFormation template (YAML format)> --cfn-template
-[Completed] AWS infrastructure diagram generated: output.png
-```
+## Customization Tips
 
-However, we recognize there are some issues in this feature; [issue tracker](https://github.com/awslabs/diagram-as-code/labels/cfn-template%20feature).
+### Changing Icons
 
-CloudFormation templates have various dependencies, and there is no simple parent-child relationship between resources. As a result, generating the desired diagram directly from the existing CloudFormation template formats can be challenging at this stage. 
-If the generated diagram is not what you want, please go to the next section.
+Use the `Preset` parameter to select different icon styles. Available presets are defined in the [definition file](https://github.com/awslabs/diagram-as-code/blob/main/definitions/definition-for-aws-icons-light.yaml).
 
-### Create DAC files from CloudFormation template
+**Example**: Change S3 bucket icon to show objects
 
-Instead of directly generating diagrams from CloudFormation templates, you can create a separate YAML file (DAC file) from CloudFormation template and customize this YAML file.
-
-```
-$ awsdac <input your CloudFormation template (YAML format)> --cfn-template --dac-file 
-[Completed] dac (diagram-as-code) data written to output.yaml
-[Completed] AWS infrastructure diagram generated: output.png
-```
-You can confirm the generated DAC file when you open `output.yaml` file. ※ This name is the default. You can change the name with "-o" option.
-
-For example, if you use [example/vpc-subnet-ec2-cfn.yaml](../examples/vpc-subnet-ec2-cfn.yaml), you can get the DAC file as follows:
-```
-Diagram:
-    DefinitionFiles:
-        - Type: URL
-          Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
-          LocalFile: ""
-          Embed:
-            Definitions: {}
-    Resources:
-        AWSCloud:
-            Type: AWS::Diagram::Cloud
-            Icon: ""
-            Direction: ""
-            Preset: AWSCloudNoLogo
-            Align: center
-            FillColor: ""
-            Title: ""
-            TitleColor: ""
-            Font: ""
-            Children:
-                - VPC
-        ...
-        VPC:
-            Type: AWS::EC2::VPC
-            Icon: ""
-            Direction: ""
-            Preset: ""
-            Align: ""
-            FillColor: ""
-            Title: ""
-            TitleColor: ""
-            Font: ""
-            Children:
-                - Subnet1
-                - Subnet2
-    Links: []
-```
-The DAC file obtained can be customized according to your needs by commenting out or removing unnecessary parameters within the file. This allows you to tailor the configuration to your specific requirements.
-
-## Tips
-
-### How to Change default icons
-
-You can set the "Preset" parameter in DAC file and search values from the [definition file](https://github.com/awslabs/diagram-as-code/blob/main/definitions/definition-for-aws-icons-light.yaml).
-
-Ex)
-
-Default
-```
-Diagram:
-  DefinitionFiles:
-    - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
-
-  Resources:
-    Canvas:
-      Type: AWS::Diagram::Canvas
-      Direction: vertical
-      Children:
-        - AWSCloud
-    AWSCloud:
-      Type: AWS::Diagram::Cloud
-      Direction: vertical
-      Preset: AWSCloudNoLogo
-      Align: center
-      Children:
-        - S3
-    S3:
-      Type: AWS::S3::Bucket
-```
-
-<p align="center">
-<img src="static/S3default.png" width="450">
-</p>
-
-Set "Preset" parameter and "Bucket with objects" value
 ```diff
-Diagram:
-  ...
-
-  Resources:
-    ...
-    S3:
-      Type: AWS::S3::Bucket
-+     Preset: "Bucket with objects"
+Resources:
+  S3:
+    Type: AWS::S3::Bucket
++   Preset: "Bucket with objects"
 ```
 
-<p align="center">
-<img src="static/S3withPreset.png" width="450">
-</p>
+### Adding Titles
 
-### How to Change default titles
+Use the `Title` parameter to add custom labels to resources.
 
-You can set the "Title" parameter in DAC file.
+**Example**: Add descriptive title to S3 bucket
 
-Ex)
 ```diff
-Diagram:
-  ...
-
-  Resources:
-    ...
-    S3:
-      Type: AWS::S3::Bucket
-+     Preset: "Bucket with objects"
-+     Title: "S3 (image data bucket)" 
+Resources:
+  S3:
+    Type: AWS::S3::Bucket
+    Preset: "Bucket with objects"
++   Title: "S3 (image data bucket)"
 ```
 
-<p align="center">
-<img src="static/S3withTitle.png" width="450">
-</p>
+## Related Documentation
+
+- **[Resource Types](resource-types.md)** - Complete list of available AWS resources and diagram elements
+- **[Links](links.md)** - How to connect resources with arrows and lines
+- **[Templates](template.md)** - Using Go templates for dynamic diagrams
+- **[MCP Server](mcp-server.md)** - AI assistant integration
+- **[CloudFormation Conversion](cloudformation.md)** [Beta] - Convert CloudFormation templates to diagrams
+- **[Best Practices](best-practices.md)** - Design patterns and diagram standards
+- **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
