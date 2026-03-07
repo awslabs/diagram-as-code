@@ -1,3 +1,9 @@
+# Go template example — requires the -t flag:
+#   awsdac -t tgw-nwfw-tmpl.yaml
+#
+# NOTE: YAML linters will report errors on double-curly-brace blocks — this is expected.
+# The file is processed as a Go text/template first, then parsed as YAML.
+
 Diagram:
   DefinitionFiles:
     - Type: URL

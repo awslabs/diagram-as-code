@@ -1,3 +1,10 @@
+# CloudFormation template example — used with the -c flag:
+#   awsdac -c vpc-subnet-ec2-cfn.yaml
+#
+# This is a standard CloudFormation template, not a DAC YAML file.
+# The -c flag converts CloudFormation resources into a diagram automatically.
+
+# ── Network ────────────────────────────────────────────────────────────────────
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -21,20 +28,21 @@ Resources:
       CidrBlock: !Ref Subnet2CIDER
       MapPublicIpOnLaunch: false
 
+# ── Compute ────────────────────────────────────────────────────────────────────
   EC2Instance1:
-   Type: "AWS::EC2::Instance"
-   Properties:
-     InstanceType: "t3.small"
-     NetworkInterfaces:
-     - AssociatePublicIpAddress: true
-       DeviceIndex: "0"
-       SubnetId: !Ref Subnet1
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t3.small"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          SubnetId: !Ref Subnet1
 
   EC2Instance2:
-   Type: "AWS::EC2::Instance"
-   Properties:
-     InstanceType: "t3.small"
-     NetworkInterfaces:
-     - AssociatePublicIpAddress: true
-       DeviceIndex: "0"
-       SubnetId: !Ref Subnet2
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t3.small"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          SubnetId: !Ref Subnet2
