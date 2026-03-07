@@ -24,18 +24,35 @@ Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI too
 - **Extensible**  
 Add definition files to create non-AWS diagrams as well.
 
-## What's New In This Fork
-- Added native `.drawio` export support through CLI:
-  - `--drawio` flag
-  - Automatic draw.io mode when `-o` ends with `.drawio`
-- Added draw.io export pipeline in Go:
-  - `internal/ctl/drawio.go`
-  - `internal/ctl/drawio_assets.go`
-- Added conversion helper script:
-  - `tools/dac-to-drawio.py`
-- Added local ignore rules for generated files and local tooling:
-  - `diagrams/*`
-  - `.claude/`
+## About This Fork
+
+This is a fork of [awslabs/diagram-as-code](https://github.com/awslabs/diagram-as-code) maintained by **Fernando Azevedo** — [fernando.moretes.com](https://fernando.moretes.com/).
+
+Fork repository: **[github.com/fernandofatech/diagram-as-code](https://github.com/fernandofatech/diagram-as-code)**
+
+This fork extends the original CLI tool with new features and a fully hosted web frontend:
+
+### Web Frontend (New)
+
+A browser-based editor that lets you write YAML and generate diagrams in PNG or draw.io format — no CLI or local install required. Hosted 100% on Vercel.
+
+<img src="doc/static/web-frontend.png" width="900" alt="Web frontend screenshot — YAML editor with live diagram preview">
+
+**Try it live:** [diagram-as-code-ruddy.vercel.app](https://diagram-as-code-ruddy.vercel.app)
+
+Key features:
+- Monaco-powered YAML editor with syntax highlighting
+- PNG and draw.io format toggle
+- Built-in example templates (ALB+EC2, VPC+NAT, ALB+AutoScaling, Multi-Region)
+- One-click download for generated diagrams
+- Go serverless backend via Vercel Functions
+
+### CLI Extensions (vs upstream)
+
+- Native `.drawio` export via `--drawio` flag or `-o output.drawio`
+- Draw.io export pipeline in Go (`internal/ctl/drawio.go`, `drawio_assets.go`)
+- Public wrapper package `pkg/diagram` for embedding in external tools
+- `cmd/api-dev` local dev server for testing the API handler without Vercel CLI
 
 ## Getting started
 
@@ -133,7 +150,7 @@ $ awsdac examples/alb-ec2.yaml -o output.drawio
 For contributing guidelines, please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Project Structure
-- `cmd/` - CLI tools (awsdac, awsdac-mcp-server)
+- `cmd/` - CLI tools (awsdac, awsdac-mcp-server, api-dev)
 - `internal/` - Core implementation
   - `cache/` - Caching logic
   - `ctl/` - Core control logic
@@ -141,6 +158,9 @@ For contributing guidelines, please see [CONTRIBUTING.md](CONTRIBUTING.md).
   - `font/` - Font management
   - `types/` - Core types and structures
   - `vector/` - Vector operations
+- `pkg/diagram/` - Public wrapper around `internal/ctl` (importable by external packages)
+- `api/` - Vercel serverless handler (`POST /api/generate`)
+- `web/` - Next.js 14 frontend (Monaco editor + diagram preview)
 - `test/` - Integration tests
 - `tools/` - Development tools
 - `examples/` - Example YAML files
