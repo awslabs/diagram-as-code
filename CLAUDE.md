@@ -33,6 +33,7 @@ go run ./cmd/awsdac examples/vpc-subnet-ec2-cfn.yaml -c -f     # CloudFormation
 ### Request-to-Output Pipeline (shared by PNG and draw.io)
 
 All flows go through `internal/ctl/`:
+
 1. **Parse** YAML input (`dacfile.go`: `getTemplate` + `processTemplate`)
 2. **Load definitions** from URL/local/embedded (`create.go`: `loadDefinitionFiles`)
 3. **Build runtime resources** — each YAML resource becomes a `*types.Resource` with its icon, label, colors, and geometry (`create.go`: `loadResources`)
@@ -41,6 +42,7 @@ All flows go through `internal/ctl/`:
 6. **Export** — PNG via `createDiagram()`, draw.io via `exportToDrawio()`
 
 The public entrypoints are:
+
 - `ctl.CreateDiagramFromDacFile()` — DAC YAML → PNG
 - `ctl.CreateDrawioFromDacFile()` — DAC YAML → draw.io
 - `ctl.CreateDiagramFromCFnTemplate()` — CloudFormation → PNG or DAC YAML
@@ -48,6 +50,7 @@ The public entrypoints are:
 ### Key Type: `types.Resource`
 
 Every node in the diagram is a `*types.Resource` (`internal/types/resource.go`). It holds:
+
 - `label` (string) — display name, set via `SetLabel()` / read via `GetLabel()`
 - `bindings` (`*image.Rectangle`) — pixel bounds computed by the layout engine
 - `children` / `borderChildren` — tree structure
@@ -72,6 +75,7 @@ Layout is driven by `Scale()` (recursive, child-first) and the concrete subtypes
 `test/func_test.go` generates PNGs from all `examples/*.yaml` into `/tmp/results/` and does a pixel-by-pixel comparison against the committed `examples/*.png` golden files.
 
 **If layout changes cause pixel differences**, update the golden files:
+
 ```bash
 go test ./test/...          # generates fresh PNGs to /tmp/results/
 cp /tmp/results/*.png examples/
