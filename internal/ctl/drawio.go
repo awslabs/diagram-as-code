@@ -15,20 +15,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// drawioScale converte coordenadas de pixel (motor awsdac) para unidades draw.io.
-// O motor renderiza em pixels; 0.5 produz diagramas confortáveis na tela.
+// drawioScale converts awsdac pixel coordinates to draw.io units.
+// The rendering engine uses pixels; 0.5 produces comfortable on-screen sizing.
 const drawioScale = 0.5
 
-// ─── Mapeamento tipo DAC → estilo draw.io ────────────────────────────────────
+// --- DAC type to draw.io style mapping ---
 
 type drawioNode struct {
 	style   string
-	isGroup bool // true = retângulo de fundo (grupo), false = ícone de recurso
+	isGroup bool // true = background rectangle (group), false = resource icon
 }
 
-// stencilStyle retorna o style para um ícone usando os stencils nativos do draw.io.
-// shapeName = nome exato do stencil aws4 (ex: "mxgraph.aws4.lambda").
-// fillColor = cor da categoria AWS (ex: "#ED7100" para compute).
+// stencilStyle returns the style for an icon using native draw.io stencils.
+// shapeName is the exact aws4 stencil name (e.g. "mxgraph.aws4.lambda").
+// fillColor is the AWS category color (e.g. "#ED7100" for compute).
 func stencilStyle(shapeName, fillColor string) string {
 	return fmt.Sprintf(
 		"outlineConnect=0;fontColor=#232F3E;gradientColor=none;"+
@@ -40,7 +40,7 @@ func stencilStyle(shapeName, fillColor string) string {
 	)
 }
 
-// groupStyle retorna o style para um grupo AWS4 com borda visível.
+// groupStyle returns the style for an AWS4 group with a visible border.
 func groupStyle(grIcon, fillColor, strokeColor string) string {
 	return fmt.Sprintf(
 		"shape=mxgraph.aws4.group;grIcon=%s;grStroke=0;"+
@@ -51,7 +51,7 @@ func groupStyle(grIcon, fillColor, strokeColor string) string {
 	)
 }
 
-// Cores oficiais por categoria AWS
+// Official AWS category colors.
 const (
 	awsColorCompute    = "#ED7100" // Compute (EC2, Lambda, ECS, Fargate)
 	awsColorStorage    = "#3F8624" // Storage (S3, EBS)
@@ -116,7 +116,7 @@ var dacTypeStyles = map[string]drawioNode{
 		style:   "fillColor=none;strokeColor=none;",
 		isGroup: true,
 	},
-	// ── Recurso genérico (User, etc.) ─────────────────────────────────────
+	// ── Generic resource (User, etc.) ──────────────────────────────────────
 	"AWS::Diagram::Resource": {
 		style: stencilStyle("mxgraph.aws4.user", awsColorGeneral),
 	},
@@ -126,7 +126,7 @@ func getDrawioNode(rtype string) drawioNode {
 	if n, ok := dacTypeStyles[rtype]; ok {
 		return n
 	}
-	// Fallback: tenta ícone de nível de serviço (ex: AWS::ApiGateway::X → AWS::ApiGateway)
+	// Fallback: try service-level icon (e.g. AWS::ApiGateway::X -> AWS::ApiGateway).
 	parts := strings.SplitN(rtype, "::", 3)
 	if len(parts) >= 2 {
 		svcType := strings.Join(parts[:2], "::")
@@ -140,22 +140,22 @@ func getDrawioNode(rtype string) drawioNode {
 	}
 }
 
-// ─── Geração do XML ───────────────────────────────────────────────────────────
+// --- XML generation ---
 
-// rgbaToHex converte "rgba(r,g,b,a)" para "#RRGGBB" usável no draw.io.
+// rgbaToHex converts "rgba(r,g,b,a)" to "#RRGGBB" for draw.io.
 func rgbaToHex(rgba string) string {
 	var r, g, b, a uint8
 	if _, err := fmt.Sscanf(rgba, "rgba(%d,%d,%d,%d)", &r, &g, &b, &a); err == nil {
 		return fmt.Sprintf("#%02X%02X%02X", r, g, b)
 	}
-	return rgba // devolve como está se não conseguir parsear
+	return rgba // Keep original value if parsing fails.
 }
 
 func px(v int) string {
 	return fmt.Sprintf("%.0f", float64(v)*drawioScale)
 }
 
-// escapeXML faz escape básico para valores de atributos XML.
+// escapeXML applies basic escaping for XML attribute values.
 func escapeXML(s string) string {
 	s = strings.ReplaceAll(s, "&", "&amp;")
 	s = strings.ReplaceAll(s, "<", "&lt;")
@@ -172,7 +172,7 @@ func exportToDrawio(
 ) error {
 	var buf bytes.Buffer
 
-	// ── BFS para ordem de inserção (pais antes de filhos) ────────────────
+	// ── BFS insertion order (parents before children) ─────────────────────
 	order := []string{}
 	visited := map[string]bool{}
 	queue := []string{"Canvas"}
@@ -190,14 +190,14 @@ func exportToDrawio(
 			}
 		}
 	}
-	// Recursos fora da árvore (ex: BorderChildren)
+	// Resources outside the tree (e.g. isolated BorderChildren)
 	for name := range template.Resources {
 		if !visited[name] && resources[name] != nil {
 			order = append(order, name)
 		}
 	}
 
-	// ── Separar grupos e ícones para z-order (grupos primeiro) ───────────
+	// ── Split groups and icons for z-order (groups first) ─────────────────
 	var groups, icons []string
 	for _, name := range order {
 		res := template.Resources[name]
@@ -219,13 +219,13 @@ func exportToDrawio(
 		cellID++
 	}
 
-	// ── Cabeçalho XML ─────────────────────────────────────────────────────
+	// ── XML header ─────────────────────────────────────────────────────────
 	buf.WriteString(`<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">`)
 	buf.WriteString("\n  <root>\n")
 	buf.WriteString("    <mxCell id=\"0\"/>\n")
 	buf.WriteString("    <mxCell id=\"1\" parent=\"0\"/>\n")
 
-	// ── Nós ───────────────────────────────────────────────────────────────
+	// ── Nodes ──────────────────────────────────────────────────────────────
 	for _, name := range drawOrder {
 		res := template.Resources[name]
 		runtime := resources[name]
@@ -246,7 +246,7 @@ func exportToDrawio(
 			label = name
 		}
 
-		// Preset de subnet privada: troca ícone
+		// Private subnet preset: swap group icon.
 		if res.Type == "AWS::EC2::Subnet" && res.Preset == "PrivateSubnet" {
 			node.style = groupStyle("mxgraph.aws4.group_private_subnet", "#F4E6FA", "#AD688E")
 		}
@@ -254,7 +254,7 @@ func exportToDrawio(
 		style := node.style
 		value := label
 
-		// Para ícones sem filhos: usa SVG oficial AWS do Asset Package
+		// For leaf icons: use official AWS SVG from the Asset Package.
 		if !node.isGroup && !hasChildren {
 			if dataURI := GetAWSIconDataURI(res.Type); dataURI != "" {
 				style = fmt.Sprintf(
@@ -267,7 +267,7 @@ func exportToDrawio(
 			}
 		}
 
-		// Resource com Children: usa fill/border do YAML se definido, senão padrão
+		// Resources with children use YAML fill/border when present, otherwise defaults.
 		if !node.isGroup && hasChildren {
 			fillColor := "#dae8fc"
 			strokeColor := "#6c8ebf"
@@ -303,7 +303,7 @@ func exportToDrawio(
 		)
 	}
 
-	// ── Arestas ───────────────────────────────────────────────────────────
+	// ── Edges ──────────────────────────────────────────────────────────────
 	for _, link := range template.Links {
 		srcID, srcOK := nameToID[link.Source]
 		tgtID, tgtOK := nameToID[link.Target]
@@ -318,7 +318,7 @@ func exportToDrawio(
 			edgeStyle += "dashed=1;"
 		}
 		if link.LineColor != "" {
-			// rgba(r,g,b,a) → #RRGGBB
+			// rgba(r,g,b,a) -> #RRGGBB
 			var r, g, b, a uint8
 			if _, err := fmt.Sscanf(link.LineColor, "rgba(%d,%d,%d,%d)", &r, &g, &b, &a); err == nil {
 				edgeStyle += fmt.Sprintf("strokeColor=#%02X%02X%02X;", r, g, b)
@@ -347,10 +347,10 @@ func exportToDrawio(
 	return os.WriteFile(outputfile, buf.Bytes(), 0600)
 }
 
-// ─── Ponto de entrada público ─────────────────────────────────────────────────
+// --- Public entry point ---
 
-// CreateDrawioFromDacFile lê um arquivo DAC YAML e gera um .drawio com o
-// mesmo layout pixel-exato que o PNG (usando o mesmo motor de layout do awsdac).
+// CreateDrawioFromDacFile reads a DAC YAML file and produces a .drawio file
+// with the same pixel-accurate layout as PNG output (same awsdac layout engine).
 func CreateDrawioFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
 	log.Infof("drawio: input file: %s", inputfile)
 
@@ -408,7 +408,7 @@ func CreateDrawioFromDacFile(inputfile string, outputfile *string, opts *CreateO
 		return fmt.Errorf("failed to load links: %w", err)
 	}
 
-	// Reordenar filhos (mesmo comportamento do PNG)
+	// Reorder children (same behavior as PNG generation).
 	canvas, exists := resources["Canvas"]
 	if !exists {
 		return fmt.Errorf("Canvas resource not found")
@@ -419,7 +419,7 @@ func CreateDrawioFromDacFile(inputfile string, outputfile *string, opts *CreateO
 	}
 	types.ReorderChildrenByLinks(canvas, allLinks)
 
-	// ── Layout: mesmo motor que o PNG ────────────────────────────────────
+	// ── Layout: use the same engine as PNG generation ─────────────────────
 	if err := canvas.Scale(nil, nil); err != nil {
 		return fmt.Errorf("error scaling diagram: %w", err)
 	}
@@ -427,7 +427,7 @@ func CreateDrawioFromDacFile(inputfile string, outputfile *string, opts *CreateO
 		return fmt.Errorf("error adjusting diagram: %w", err)
 	}
 
-	// Resolve auto-positions (necessário para links mas não afeta bounds)
+	// Resolve auto-positions (required for links, but does not change bounds).
 	for _, r := range resources {
 		for _, link := range r.GetLinks() {
 			if err := link.ResolveAutoPositions(); err != nil {
@@ -436,7 +436,7 @@ func CreateDrawioFromDacFile(inputfile string, outputfile *string, opts *CreateO
 		}
 	}
 
-	// ── Export drawio ────────────────────────────────────────────────────
+	// ── Export draw.io ─────────────────────────────────────────────────────
 	if err := exportToDrawio(&template, resources, *outputfile); err != nil {
 		return fmt.Errorf("failed to export drawio: %w", err)
 	}

@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
 dac-to-drawio.py
-Converte arquivos DAC (diagram-as-code YAML) para o formato draw.io (.drawio / XML mxGraph).
+Converts DAC files (diagram-as-code YAML) to draw.io format (.drawio / mxGraph XML).
 
-Estratégia de layout:
-  - Todos os elementos são posicionados com coordenadas ABSOLUTAS (parent="1")
-  - Grupos ficam como retângulos de fundo (z-order: grupos primeiro, ícones depois)
-  - Isso garante que o layout fique visualmente idêntico ao PNG gerado pelo awsdac
-  - Evita o problema de acumulação de erros com coordenadas relativas aninhadas
+Layout strategy:
+  - All elements are positioned using ABSOLUTE coordinates (parent="1")
+  - Groups are rendered as background rectangles (z-order: groups first, icons after)
+  - This keeps the visual layout aligned with awsdac PNG output
+  - This avoids error accumulation from nested relative coordinates
 
-Uso:
-    python3 tools/dac-to-drawio.py <arquivo.yaml> [-o saida.drawio]
+Usage:
+    python3 tools/dac-to-drawio.py <input.yaml> [-o output.drawio]
 """
 
 import yaml
@@ -21,19 +21,19 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from collections import deque
 
-# ─── Constantes de layout ────────────────────────────────────────────────────
-PADDING   = 36   # Espaço interno em grupos (entre borda e filhos)
-GAP       = 16   # Espaço entre irmãos
-HEADER_H  = 48   # Altura do cabeçalho do grupo (espaço para ícone + rótulo)
-ICON_W    = 78   # Largura padrão de ícones folha
-ICON_H    = 78   # Altura padrão de ícones folha
-LABEL_H   = 24   # Altura extra para rótulo abaixo do ícone
+# --- Layout constants ---
+PADDING   = 36   # Inner padding inside groups (between border and children)
+GAP       = 16   # Gap between sibling elements
+HEADER_H  = 48   # Group header height (space for icon + label)
+ICON_W    = 78   # Default width for leaf icons
+ICON_H    = 78   # Default height for leaf icons
+LABEL_H   = 24   # Extra height for icon label below the icon
 
-# ─── Estilos draw.io por tipo de recurso DAC ─────────────────────────────────
-# is_group=True → renderizado como retângulo de fundo (grupo AWS)
-# is_group=False → renderizado como ícone de recurso
+# --- draw.io styles by DAC resource type ---
+# is_group=True  -> rendered as a background rectangle (AWS group)
+# is_group=False -> rendered as a resource icon
 STYLES: dict = {
-    # ── Ícones de recursos AWS ────────────────────────────────────────────────
+    # ── AWS resource icons ───────────────────────────────────────────────────
     "AWS::EC2::Instance": dict(
         style=("shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ec2;"
                "fillColor=#ED7100;gradientColor=none;strokeColor=none;"
@@ -83,7 +83,7 @@ STYLES: dict = {
                "verticalLabelPosition=bottom;verticalAlign=top;align=center;"),
         w=ICON_W, h=ICON_H, is_group=False,
     ),
-    "AWS::CloudFront": dict(  # fallback de serviço
+    "AWS::CloudFront": dict(  # service-level fallback
         style=("shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudfront;"
                "fillColor=#8C4FFF;gradientColor=none;strokeColor=none;"
                "fontFamily=Helvetica;fontSize=11;"
@@ -118,7 +118,7 @@ STYLES: dict = {
                "verticalLabelPosition=bottom;verticalAlign=top;align=center;"),
         w=58, h=58, is_group=False,
     ),
-    # ── Grupos AWS (renderizados como retângulos de fundo) ────────────────────
+    # ── AWS groups (rendered as background rectangles) ───────────────────────
     "AWS::EC2::VPC": dict(
         style=("shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;"
                "grStroke=0;fillColor=#E5F5F8;strokeColor=#147EBA;"
@@ -152,7 +152,7 @@ STYLES: dict = {
         style="fillColor=none;strokeColor=none;",
         w=120, h=200, is_group=True,
     ),
-    # ── Tipo desconhecido ─────────────────────────────────────────────────────
+    # ── Unknown type fallback ────────────────────────────────────────────────
     "_default": dict(
         style=("rounded=1;whiteSpace=wrap;html=1;"
                "fillColor=#dae8fc;strokeColor=#6c8ebf;"
@@ -161,7 +161,7 @@ STYLES: dict = {
     ),
 }
 
-# Tamanho visual total de um ícone (inclui rótulo abaixo)
+# Total visual icon height (includes label below).
 def icon_visual_h(h: int) -> int:
     return h + LABEL_H
 
@@ -170,7 +170,7 @@ def get_style(rtype: str) -> dict:
     return STYLES.get(rtype, STYLES["_default"])
 
 
-# ─── Motor de layout ──────────────────────────────────────────────────────────
+# --- Layout engine ---
 
 def is_horizontal_dir(rtype: str, direction: str) -> bool:
     if rtype == "AWS::Diagram::HorizontalStack":
@@ -182,8 +182,8 @@ def is_horizontal_dir(rtype: str, direction: str) -> bool:
 
 def compute_size(name: str, resources: dict, _cache: dict = None) -> tuple:
     """
-    Retorna (w, h) do bounding box de um recurso incluindo todos os filhos.
-    Usa cache para evitar recálculo em grafos grandes.
+    Returns (w, h) for the resource bounding box including all children.
+    Uses cache to avoid recomputing large graphs.
     """
     if _cache is None:
         _cache = {}
@@ -198,7 +198,7 @@ def compute_size(name: str, resources: dict, _cache: dict = None) -> tuple:
     horiz     = is_horizontal_dir(rtype, direction)
 
     if not children:
-        # Ícones folha: o "h" visual inclui o rótulo abaixo
+        # For leaf icons, visual height includes the label below.
         if not si["is_group"]:
             result = (si["w"], icon_visual_h(si["h"]))
         else:
@@ -227,8 +227,8 @@ def compute_positions(name: str, resources: dict,
                       ox: int, oy: int,
                       size_cache: dict) -> dict:
     """
-    Calcula posições ABSOLUTAS de todos os nós recursivamente.
-    Retorna {name: (abs_x, abs_y, w, h)}.
+    Computes ABSOLUTE positions for all nodes recursively.
+    Returns {name: (abs_x, abs_y, w, h)}.
     """
     w, h = size_cache[name]
     positions = {name: (ox, oy, w, h)}
@@ -243,7 +243,7 @@ def compute_positions(name: str, resources: dict,
     if not children:
         return positions
 
-    # Área interior (excluindo padding e cabeçalho)
+    # Inner area (excluding padding and header)
     cursor_x = ox + PADDING
     cursor_y = oy + HEADER_H + PADDING
 
@@ -260,10 +260,10 @@ def compute_positions(name: str, resources: dict,
     return positions
 
 
-# ─── Geração do XML draw.io ───────────────────────────────────────────────────
+# --- draw.io XML generation ---
 
 def bfs_nodes(resources: dict) -> list:
-    """BFS a partir do Canvas para ordenar nós (pais antes de filhos)."""
+    """BFS from Canvas to order nodes (parents before children)."""
     order, visited = [], set()
     queue = deque(["Canvas"])
     while queue:
@@ -274,7 +274,7 @@ def bfs_nodes(resources: dict) -> list:
         order.append(n)
         for child in resources[n].get("Children", []):
             queue.append(child)
-    # Nós fora da árvore (ex: BorderChildren isolados)
+    # Nodes outside the main tree (e.g. isolated BorderChildren)
     for name in resources:
         if name not in visited:
             order.append(name)
@@ -289,22 +289,22 @@ def build_drawio(dac_file: str) -> str:
     resources = diagram.get("Resources", {})
     links     = diagram.get("Links", [])
 
-    # ── 1. Calcular tamanhos ──────────────────────────────────────────────────
+    # ── 1. Compute sizes ─────────────────────────────────────────────────────
     size_cache: dict = {}
     for name in resources:
         compute_size(name, resources, size_cache)
 
-    # ── 2. Calcular posições absolutas ────────────────────────────────────────
+    # ── 2. Compute absolute positions ────────────────────────────────────────
     canvas_w, canvas_h = size_cache.get("Canvas", (900, 700))
     positions = compute_positions("Canvas", resources, 20, 20, size_cache)
 
-    # ── 3. Separar grupos de ícones (grupos primeiro no z-order) ─────────────
+    # ── 3. Split groups and icons (groups first in z-order) ─────────────────
     node_order = bfs_nodes(resources)
     groups = [n for n in node_order if get_style(resources.get(n, {}).get("Type", ""))["is_group"]]
     icons  = [n for n in node_order if not get_style(resources.get(n, {}).get("Type", ""))["is_group"]]
-    draw_order = groups + icons  # grupos no fundo, ícones na frente
+    draw_order = groups + icons  # groups in the back, icons in front
 
-    # ── 4. Montar XML ─────────────────────────────────────────────────────────
+    # ── 4. Build XML ─────────────────────────────────────────────────────────
     model = ET.Element("mxGraphModel",
                        dx="1422", dy="762",
                        grid="1", gridSize="10",
@@ -328,12 +328,12 @@ def build_drawio(dac_file: str) -> str:
 
         res   = resources.get(name, {})
         rtype = res.get("Type", "")
-        # Título: substitui quebras de linha por entidade XML
+        # Title: replace line breaks with XML entity.
         title = res.get("Title", name).replace("\n", "&#xa;")
         x, y, w, h = positions[name]
         si = get_style(rtype)
 
-        # ── Todos os nós são filhos diretos do layer "1" (posição absoluta) ──
+        # ── All nodes are direct children of layer "1" (absolute positions) ─
         attrs = dict(
             id=str(cell_id),
             value=title,
@@ -350,7 +350,7 @@ def build_drawio(dac_file: str) -> str:
         name_to_id[name] = str(cell_id)
         cell_id += 1
 
-    # ── 5. Arestas ────────────────────────────────────────────────────────────
+    # ── 5. Edges ─────────────────────────────────────────────────────────────
     for link in links:
         src_id = name_to_id.get(link.get("Source", ""))
         tgt_id = name_to_id.get(link.get("Target", ""))
@@ -367,14 +367,14 @@ def build_drawio(dac_file: str) -> str:
                           "exitX=0.5;exitY=1;exitDx=0;exitDy=0;"
                           "entryX=0.5;entryY=0;entryDx=0;entryDy=0;")
 
-        # Seta na ponta do destino
+        # Arrowhead on the target side
         has_target_arrow = bool(link.get("TargetArrowHead"))
         if not has_target_arrow:
             edge_style += "endArrow=none;"
 
         line_color = link.get("LineColor", "")
         if line_color:
-            # rgba(r,g,b,a) → #rrggbb para draw.io
+            # rgba(r,g,b,a) -> #rrggbb for draw.io
             try:
                 parts = line_color.replace("rgba(", "").replace(")", "").split(",")
                 r, g, b = int(parts[0]), int(parts[1]), int(parts[2])
@@ -397,7 +397,7 @@ def build_drawio(dac_file: str) -> str:
         ET.SubElement(edge, "mxGeometry", relative="1", **{"as": "geometry"})
         cell_id += 1
 
-    # ── 6. Serializar ─────────────────────────────────────────────────────────
+    # ── 6. Serialize ─────────────────────────────────────────────────────────
     raw    = ET.tostring(model, encoding="unicode")
     pretty = minidom.parseString(raw).toprettyxml(indent="  ")
     lines  = pretty.splitlines()
@@ -406,18 +406,18 @@ def build_drawio(dac_file: str) -> str:
     return "\n".join(lines)
 
 
-# ─── Entrada ─────────────────────────────────────────────────────────────────
+# --- CLI entrypoint ---
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Converte arquivos DAC YAML para draw.io (.drawio)")
-    parser.add_argument("input",  help="Arquivo DAC YAML de entrada")
+        description="Convert DAC YAML files to draw.io (.drawio)")
+    parser.add_argument("input",  help="Input DAC YAML file")
     parser.add_argument("-o", "--output",
-                        help="Arquivo de saída .drawio (padrão: mesmo nome do input)")
+                        help="Output .drawio file (default: input name with .drawio)")
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
-        print(f"Erro: arquivo '{args.input}' não encontrado.", file=sys.stderr)
+        print(f"Error: file '{args.input}' was not found.", file=sys.stderr)
         sys.exit(1)
 
     output = args.output or os.path.splitext(args.input)[0] + ".drawio"
@@ -425,7 +425,7 @@ def main():
 
     with open(output, "w", encoding="utf-8") as f:
         f.write(xml_content)
-    print(f"[OK] draw.io gerado: {output}")
+    print(f"[OK] draw.io generated: {output}")
 
 
 if __name__ == "__main__":

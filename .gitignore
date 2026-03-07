@@ -4,3 +4,4 @@ awsdac
 main
 tools/mapcheck/mapcheck
 diagrams/*
+.claude/

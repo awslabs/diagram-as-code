@@ -24,6 +24,19 @@ Use as Golang Library and integrate with other IaC tools, AI, or drawing GUI too
 - **Extensible**  
 Add definition files to create non-AWS diagrams as well.
 
+## What's New In This Fork
+- Added native `.drawio` export support through CLI:
+  - `--drawio` flag
+  - Automatic draw.io mode when `-o` ends with `.drawio`
+- Added draw.io export pipeline in Go:
+  - `internal/ctl/drawio.go`
+  - `internal/ctl/drawio_assets.go`
+- Added conversion helper script:
+  - `tools/dac-to-drawio.py`
+- Added local ignore rules for generated files and local tooling:
+  - `diagrams/*`
+  - `.claude/`
+
 ## Getting started
 
 ### for Gopher (go 1.21 or higher)
@@ -43,14 +56,19 @@ Usage:
   awsdac <input filename> [flags]
 
 Flags:
+      --allow-untrusted-definitions  Allow loading definition files from untrusted URLs (not from official repository)
   -c, --cfn-template               [beta] Create diagram from CloudFormation template
   -d, --dac-file                   [beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template
+      --drawio                     Generate draw.io (.drawio) file instead of PNG
+  -f, --force                      Overwrite output file without confirmation
   -h, --help                       help for awsdac
+      --height int                 Resize output image height (0 means no resizing)
   -o, --output string              Output file name (default "output.png")
       --override-def-file string   For testing purpose, override DefinitionFiles to another url/local file
   -t, --template                   Processes the input file as a template according to text/template.
   -v, --verbose                    Enable verbose logging
       --version                    version for awsdac
+      --width int                  Resize output image width (0 means no resizing)
 ```
 
 ### Example
@@ -62,6 +80,21 @@ $ awsdac examples/alb-ec2.yaml
 ```
 $ awsdac privatelink.yaml -o custom-output.png
 ```
+
+```
+$ awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+```
+
+```
+$ awsdac examples/alb-ec2.yaml -o output.drawio
+```
+
+## How Draw.io Export Works
+1. The YAML file is parsed with the same resource/link model used by PNG rendering.
+2. The same layout engine is executed (`Scale` and `ZeroAdjust`) to keep geometry consistent.
+3. Children are reordered from link topology to keep ordering aligned with PNG output.
+4. Resources are exported as draw.io cells and links are exported as draw.io edges in `mxGraphModel`.
+5. Official AWS SVG icons are loaded from the AWS Asset Package and embedded as data URIs for leaf resources.
 
 ## Documentation
 
@@ -86,6 +119,7 @@ $ awsdac privatelink.yaml -o custom-output.png
 
 ### Guides
 - **[Best Practices](doc/best-practices.md)** - Design patterns and diagram standards
+- **[Gitflow Workflow](doc/gitflow.md)** - Branching model for PRs, tests, review, and release flow
 
 ### Contributing
 - **[Documentation Guidelines](doc/contributing-docs.md)** - How to contribute to documentation

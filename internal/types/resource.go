@@ -143,8 +143,8 @@ func (r *Resource) GetIconImage() image.Image {
 	return r.iconImage
 }
 
-// LoadIconSVG renderiza o conteúdo SVG para image.Image e define como ícone do recurso.
-// size é o lado do quadrado em pixels para renderização (ex: 64).
+// LoadIconSVG rasterizes SVG content into image.Image and sets it as the resource icon.
+// size is the square side in pixels used for rasterization (e.g., 64).
 func (r *Resource) LoadIconSVG(svgContent string, size int) error {
 	icon, err := oksvg.ReadIconStream(strings.NewReader(svgContent), oksvg.WarnErrorMode)
 	if err != nil {

@@ -61,7 +61,7 @@ func main() {
 
 			inputFile := args[0]
 
-			// Detecta output drawio por flag ou extensão do arquivo de saída
+			// Detect draw.io output by explicit flag or .drawio output extension.
 			if drawio || strings.HasSuffix(outputFile, ".drawio") {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:              isGoTemplate,

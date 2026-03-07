@@ -21,7 +21,7 @@ import (
 const assetPackageURL = "https://d1.awsstatic.com/onedam/marketing-channels/website/aws/en_US/architecture/approved/architecture-icons/Asset-Package_07312025.49d3aab7f9e6131e51ade8f7c6c8b961ee7d3bb1.zip"
 const assetPackageCacheFile = "aws-asset-package-07312025.zip"
 
-// dacTypeToSVGPath mapeia tipos DAC para o caminho do SVG dentro do Asset Package zip.
+// dacTypeToSVGPath maps DAC types to SVG paths inside the AWS Asset Package zip.
 var dacTypeToSVGPath = map[string]string{
 	// ── Compute ───────────────────────────────────────────────────────────
 	"AWS::EC2::Instance":        "Architecture-Service-Icons_07312025/Arch_Compute/64/Arch_Amazon-EC2_64.svg",
@@ -69,7 +69,7 @@ var (
 	assetZipErr   error
 )
 
-// cacheDir retorna o diretório de cache do awsdac.
+// cacheDir returns the awsdac cache directory.
 func cacheDir() string {
 	base, err := os.UserCacheDir()
 	if err != nil {
@@ -78,12 +78,12 @@ func cacheDir() string {
 	return filepath.Join(base, "awsdac")
 }
 
-// loadAssetPackage baixa e cacheia o Asset Package zip na primeira chamada.
+// loadAssetPackage downloads and caches the Asset Package zip on first call.
 func loadAssetPackage() ([]byte, error) {
 	assetZipOnce.Do(func() {
 		cachePath := filepath.Join(cacheDir(), assetPackageCacheFile)
 
-		// Usa cache local se já existe
+		// Reuse local cache when available.
 		if data, err := os.ReadFile(cachePath); err == nil {
 			log.Infof("drawio: using cached asset package: %s", cachePath)
 			assetZipBytes = data
@@ -104,7 +104,7 @@ func loadAssetPackage() ([]byte, error) {
 			return
 		}
 
-		// Salva no cache
+		// Persist to cache.
 		if err := os.MkdirAll(cacheDir(), 0755); err == nil {
 			if err := os.WriteFile(cachePath, data, 0644); err != nil {
 				log.Warnf("drawio: could not cache asset package: %v", err)
@@ -116,7 +116,7 @@ func loadAssetPackage() ([]byte, error) {
 	return assetZipBytes, assetZipErr
 }
 
-// extractSVGFromZip extrai o conteúdo de um arquivo SVG do zip.
+// extractSVGFromZip extracts SVG content from a zip entry.
 func extractSVGFromZip(zipData []byte, svgPath string) (string, error) {
 	r, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
 	if err != nil {
@@ -139,40 +139,40 @@ func extractSVGFromZip(zipData []byte, svgPath string) (string, error) {
 	return "", fmt.Errorf("SVG not found in zip: %s", svgPath)
 }
 
-// svgToDataURI converte conteúdo SVG para data URI usando URL-encoding (sem base64).
-// Evita o problema do ';' no style do draw.io que ocorre com 'data:image/svg+xml;base64,...'
+// svgToDataURI converts SVG content to a URL-encoded data URI (without base64).
+// This avoids draw.io style parsing issues with ';' from base64 data URIs.
 func svgToDataURI(svgContent string) string {
-	// Encoding mínimo para SVG em data URI: substitui chars especiais
-	// Troca aspas duplas por simples para evitar encoding (SVG aceita ambas)
+	// Minimal encoding for SVG data URIs: replace critical characters.
+	// Replace double quotes with single quotes to reduce escaping.
 	s := strings.ReplaceAll(svgContent, `"`, `'`)
-	// Encoding de caracteres obrigatórios
-	s = strings.ReplaceAll(s, "%", "%25") // deve ser o primeiro!
+	// Required character encoding.
+	s = strings.ReplaceAll(s, "%", "%25") // must be first
 	s = strings.ReplaceAll(s, "#", "%23")
 	s = strings.ReplaceAll(s, "<", "%3C")
 	s = strings.ReplaceAll(s, ">", "%3E")
 	s = strings.ReplaceAll(s, "\n", " ")
 	s = strings.ReplaceAll(s, "\r", "")
 	s = strings.ReplaceAll(s, "\t", " ")
-	// Colapsa múltiplos espaços
+	// Collapse repeated spaces.
 	for strings.Contains(s, "  ") {
 		s = strings.ReplaceAll(s, "  ", " ")
 	}
 	return "data:image/svg+xml," + s
 }
 
-// svgToBase64DataURI converte SVG para data URI base64.
+// svgToBase64DataURI converts SVG to a base64 data URI.
 func svgToBase64DataURI(svgContent string) string {
 	b64 := base64.StdEncoding.EncodeToString([]byte(svgContent))
 	return "data:image/svg+xml;base64," + b64
 }
 
-// resolveSVGPath resolve o caminho SVG no zip para um tipo DAC.
-// Retorna "" se não houver mapeamento.
+// resolveSVGPath resolves a zip SVG path for a DAC type.
+// Returns an empty string when no mapping exists.
 func resolveSVGPath(dacType string) string {
 	if path, ok := dacTypeToSVGPath[dacType]; ok {
 		return path
 	}
-	// fallback para tipo de serviço (ex: AWS::ApiGateway::X → AWS::ApiGateway)
+	// Fallback to service-level type (e.g. AWS::ApiGateway::X -> AWS::ApiGateway).
 	parts := strings.SplitN(dacType, "::", 3)
 	if len(parts) >= 2 {
 		if path, ok := dacTypeToSVGPath[strings.Join(parts[:2], "::")]; ok {
@@ -182,7 +182,7 @@ func resolveSVGPath(dacType string) string {
 	return ""
 }
 
-// getAWSIconSVGContent extrai e retorna o conteúdo SVG bruto do Asset Package.
+// getAWSIconSVGContent returns raw SVG content from the Asset Package.
 func getAWSIconSVGContent(dacType string) string {
 	svgPath := resolveSVGPath(dacType)
 	if svgPath == "" {
@@ -201,14 +201,14 @@ func getAWSIconSVGContent(dacType string) string {
 	return svgContent
 }
 
-// GetAWSIconSVG retorna o conteúdo SVG bruto do Asset Package para um tipo DAC.
-// Usado pelo pipeline PNG para renderizar o ícone via oksvg.
+// GetAWSIconSVG returns raw SVG content for a DAC type from the Asset Package.
+// Used by the PNG pipeline to render the icon via oksvg.
 func GetAWSIconSVG(dacType string) string {
 	return getAWSIconSVGContent(dacType)
 }
 
-// GetAWSIconDataURI retorna o data URI do SVG oficial AWS para uso no draw.io.
-// Usa URL-encoding para evitar o ';' no style do draw.io (data:image/svg+xml;base64,...).
+// GetAWSIconDataURI returns the official AWS SVG as a data URI for draw.io.
+// Uses URL encoding to avoid ';' style parsing issues in draw.io.
 func GetAWSIconDataURI(dacType string) string {
 	svgContent := getAWSIconSVGContent(dacType)
 	if svgContent == "" {
