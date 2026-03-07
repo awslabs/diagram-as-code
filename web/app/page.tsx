@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { ChevronDown, Zap, Github } from 'lucide-react'
+import Link from 'next/link'
+import { ChevronDown, Zap, Github, BookOpen, ExternalLink } from 'lucide-react'
 import DiagramPreview from '@/components/DiagramPreview'
 
 const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
@@ -409,6 +410,19 @@ export default function Home() {
   const [examplesOpen, setExamplesOpen] = useState(false)
   const prevImageUrl = useRef<string | null>(null)
 
+  // Ctrl+Enter shortcut
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault()
+        generate()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yaml, format])
+
   const generate = useCallback(async () => {
     if (!yaml.trim()) return
     setLoading(true)
@@ -541,9 +555,18 @@ export default function Home() {
             Generate
           </button>
 
+          {/* Docs link */}
+          <Link
+            href="/docs"
+            className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
+          >
+            <BookOpen size={13} />
+            Docs
+          </Link>
+
           {/* GitHub link */}
           <a
-            href="https://github.com/awslabs/diagram-as-code"
+            href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#555] hover:text-[#999] transition-colors p-1"
@@ -592,7 +615,15 @@ export default function Home() {
       {/* ── Status bar ─────────────────────────────────────────────────────── */}
       <footer className="flex items-center justify-between px-4 h-6 border-t border-[#2a2a2a] flex-shrink-0">
         <span className="text-[10px] text-[#444]">
-          diagram-as-code · AWS Architecture Diagrams from YAML
+          diagram-as-code · AWS Architecture Diagrams from YAML ·{' '}
+          <a
+            href="https://fernando.moretes.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#555] hover:text-[#888] transition-colors"
+          >
+            by Fernando Azevedo
+          </a>
         </span>
         <span className="text-[10px] text-[#444]">
           {format.toUpperCase()} mode · <kbd className="font-mono">Ctrl+Enter</kbd> to generate
