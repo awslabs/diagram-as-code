@@ -48,10 +48,9 @@ Diagram:
       Type: AWS::Diagram::Resource
       Preset: "User"
 
-    # ── VPC iteration (Go template) ────────────────────────────────────────────
-    # Generates VPC1, VPC2, VPC3 with Availability Zones, subnets and TGW attachments.
-    # VPC1 and VPC2 have public subnets + IGWs; VPC3 has firewall subnets (Network Firewall).
-    {{/* VPC iteration */}}
+    # ── VPC1 / VPC2 / VPC3 – generated via Go template (-t flag required) ──────
+    # VPC1 and VPC2: public subnets + IGW + transit subnets
+    # VPC3: firewall subnets (Network Firewall endpoint) + transit subnets
     {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
     # {{$vpc_identifier}}
     {{$vpc_identifier}}:
@@ -69,7 +68,6 @@ Diagram:
           Resource: {{$vpc_identifier}}IGW
       {{end}}
 
-    # ── Availability Zones ─────────────────────────────────────────────────────
     {{- range $j := seq 2}}{{$az := (add $j 1)}}
     {{$vpc_identifier}}AvailabilityZone{{$az}}:
       Type: AWS::EC2::AvailabilityZone
@@ -87,7 +85,6 @@ Diagram:
         - {{$vpc_identifier}}FirewallSubnet{{$az}}
         {{end}}
 
-    # ── Public Subnet (VPC1 and VPC2 only) ────────────────────────────────────
     {{if lt $i 2}}
     {{$vpc_identifier}}PublicSubnet{{$az}}:
       Type: AWS::EC2::Subnet
@@ -99,7 +96,6 @@ Diagram:
       Type: AWS::EC2::Instance
     {{end}}
 
-    # ── Transit Subnet (all VPCs) ──────────────────────────────────────────────
     {{$vpc_identifier}}TransitSubnet{{$az}}:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -109,7 +105,6 @@ Diagram:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
 
-    # ── Firewall Subnet (VPC3 only) ────────────────────────────────────────────
     {{if eq $i 2}}
     {{$vpc_identifier}}FirewallSubnet{{$az}}:
       Type: AWS::EC2::Subnet
@@ -125,7 +120,6 @@ Diagram:
 
     {{end}}
 
-    # ── TGW Attachment & Internet Gateway ──────────────────────────────────────
     {{$vpc_identifier}}TGWAttach:
       Type: AWS::EC2::TransitGatewayAttachment
       IconFill:
@@ -140,8 +134,7 @@ Diagram:
 
   # ── Links ──────────────────────────────────────────────────────────────────
   Links:
-    # Transit Gateway → TGW attachments (spoke-and-hub)
-    {{/* VPC iteration */}}
+    # Transit Gateway ↔ TGW attachments (spoke-and-hub)
     {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
     - Source: TransitGateway
       SourcePosition: {{index (mkarr "W" "E" "S") $i}}
