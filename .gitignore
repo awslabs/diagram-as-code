@@ -1,7 +1,60 @@
-
 # Build artifacts
 awsdac
 main
 tools/mapcheck/mapcheck
-diagrams/*
+*.test
+*.prof
+*.pprof
+coverage.out
+cover.out
+coverage.txt
+.coverprofile
+
+# Generated diagram outputs
+diagrams/
+output.png
+output.drawio
+
+# Local agent and assistant workspaces
 .claude/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.secrets
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.kubeconfig
+
+# Editor and IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python (tools)
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Misc local caches
+.cache/
+tmp/

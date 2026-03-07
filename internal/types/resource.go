@@ -231,6 +231,10 @@ func (r *Resource) SetFillColor(fillColor color.RGBA) {
 	r.fillColor = fillColor
 }
 
+func (r *Resource) GetLabel() string {
+	return r.label
+}
+
 func (r *Resource) SetLabel(label *string, labelColor *color.RGBA, labelFont *string) {
 	if label != nil {
 		r.label = *label

@@ -120,6 +120,8 @@ $ awsdac examples/alb-ec2.yaml -o output.drawio
 ### Guides
 - **[Best Practices](doc/best-practices.md)** - Design patterns and diagram standards
 - **[Gitflow Workflow](doc/gitflow.md)** - Branching model for PRs, tests, review, and release flow
+- **[AI Documentation](doc/ai/README.md)** - Context, architecture, guardrails, and development model for AI agents
+- **[Agent Entry Point](AGENTS.md)** - Primary project instructions for coding agents
 
 ### Contributing
 - **[Documentation Guidelines](doc/contributing-docs.md)** - How to contribute to documentation
