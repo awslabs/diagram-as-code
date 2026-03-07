@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { ChevronDown, Zap, Github, BookOpen, ExternalLink } from 'lucide-react'
+import { ChevronDown, Zap, Github, BookOpen } from 'lucide-react'
 import DiagramPreview from '@/components/DiagramPreview'
 
 const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
