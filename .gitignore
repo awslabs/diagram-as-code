@@ -18,6 +18,12 @@ output.drawio
 # Local agent and assistant workspaces
 .claude/
 
+# Web frontend
+web/node_modules/
+web/.next/
+web/.env.local
+web/out/
+
 # Environment and secrets
 .env
 .env.*
