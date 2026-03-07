@@ -64,3 +64,4 @@ venv/
 # Misc local caches
 .cache/
 tmp/
+.vercel

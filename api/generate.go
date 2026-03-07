@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/awslabs/diagram-as-code/internal/ctl"
+	diagram "github.com/awslabs/diagram-as-code/pkg/diagram"
 )
 
 type generateRequest struct {
@@ -75,13 +75,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	tmpOut.Close()
 	defer os.Remove(tmpOut.Name())
 
-	opts := &ctl.CreateOptions{OverwriteMode: ctl.Force}
+	opts := &diagram.CreateOptions{OverwriteMode: diagram.Force}
 	outputFile := tmpOut.Name()
 
 	if req.Format == "drawio" {
-		err = ctl.CreateDrawioFromDacFile(tmpIn.Name(), &outputFile, opts)
+		err = diagram.CreateDrawioFromDacFile(tmpIn.Name(), &outputFile, opts)
 	} else {
-		err = ctl.CreateDiagramFromDacFile(tmpIn.Name(), &outputFile, opts)
+		err = diagram.CreateDiagramFromDacFile(tmpIn.Name(), &outputFile, opts)
 	}
 
 	if err != nil {

@@ -7,7 +7,10 @@
     },
     {
       "src": "api/generate.go",
-      "use": "@vercel/go"
+      "use": "@vercel/go",
+      "config": {
+        "maxDuration": 60
+      }
     }
   ],
   "routes": [
@@ -19,10 +22,5 @@
       "src": "/(.*)",
       "dest": "/web/$1"
     }
-  ],
-  "functions": {
-    "api/generate.go": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }
