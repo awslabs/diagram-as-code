@@ -1,0 +1,320 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+
+    # ── Canvas ─────────────────────────────────────────────────────────────────
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Clients
+        - AWSCloud
+
+    # ── Client Layer ───────────────────────────────────────────────────────────
+    Clients:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - WebClient
+        - MobileClient
+
+    WebClient:
+      Type: AWS::Diagram::Resource
+      Preset: Client
+      Title: Web Browser
+
+    MobileClient:
+      Type: AWS::Diagram::Resource
+      Preset: Mobile client
+      Title: Mobile App
+
+    # ── AWS Cloud ──────────────────────────────────────────────────────────────
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - EdgeLayer
+        - AuthLayer
+        - BFFLayer
+        - VPC
+
+    # ── Edge Layer ─────────────────────────────────────────────────────────────
+    EdgeLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Route53
+        - WAF
+        - CDN
+
+    Route53:
+      Type: AWS::Route53::HostedZone
+      Title: Route 53
+
+    WAF:
+      Type: AWS::WAFv2::WebACL
+      Title: AWS WAF
+
+    CDN:
+      Type: AWS::CloudFront
+      Title: CloudFront
+
+    # ── Auth Layer ─────────────────────────────────────────────────────────────
+    AuthLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Cognito
+
+    Cognito:
+      Type: AWS::Cognito::UserPool
+      Title: Cognito User Pool
+
+    # ── BFF Layer ──────────────────────────────────────────────────────────────
+    BFFLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - WebBFFGroup
+        - MobileBFFGroup
+
+    WebBFFGroup:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Web BFF
+      Direction: vertical
+      Children:
+        - WebAPIGateway
+        - WebBFFLambda
+
+    WebAPIGateway:
+      Type: AWS::ApiGateway
+      Title: API Gateway (Web)
+
+    WebBFFLambda:
+      Type: AWS::Lambda::Function
+      Title: Web BFF
+
+    MobileBFFGroup:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Mobile BFF
+      Direction: vertical
+      Children:
+        - MobileAPIGateway
+        - MobileBFFLambda
+
+    MobileAPIGateway:
+      Type: AWS::ApiGateway
+      Title: API Gateway (Mobile)
+
+    MobileBFFLambda:
+      Type: AWS::Lambda::Function
+      Title: Mobile BFF
+
+    # ── VPC – Backend Services ─────────────────────────────────────────────────
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - InternalALB
+        - ServicesStack
+        - DataStack
+        - MessagingStack
+
+    InternalALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+      Title: Internal ALB
+
+    ServicesStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ProductService
+        - OrderService
+        - UserService
+
+    ProductService:
+      Type: AWS::ECS::Service
+      Title: Product Service
+
+    OrderService:
+      Type: AWS::ECS::Service
+      Title: Order Service
+
+    UserService:
+      Type: AWS::ECS::Service
+      Title: User Service
+
+    DataStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - RDS
+        - Cache
+        - NoSQL
+
+    RDS:
+      Type: AWS::RDS::DBCluster
+      Title: Aurora PostgreSQL
+
+    Cache:
+      Type: AWS::ElastiCache::CacheCluster
+      Title: ElastiCache Redis
+
+    NoSQL:
+      Type: AWS::DynamoDB::Table
+      Title: DynamoDB
+
+    MessagingStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Queue
+        - Topic
+
+    Queue:
+      Type: AWS::SQS::Queue
+      Title: SQS Queue
+
+    Topic:
+      Type: AWS::SNS::Topic
+      Title: SNS Topic
+
+  # ── Links ──────────────────────────────────────────────────────────────────
+  Links:
+
+    # Clients → Edge
+    - Source: WebClient
+      SourcePosition: E
+      Target: Route53
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "HTTPS"
+
+    - Source: MobileClient
+      SourcePosition: E
+      Target: Route53
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "HTTPS"
+
+    # Edge flow
+    - Source: Route53
+      Target: WAF
+      TargetArrowHead:
+        Type: Open
+
+    - Source: WAF
+      Target: CDN
+      TargetArrowHead:
+        Type: Open
+
+    # CDN → BFF gateways
+    - Source: CDN
+      SourcePosition: SSW
+      Target: WebAPIGateway
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetLeft:
+          Title: "Web"
+
+    - Source: CDN
+      SourcePosition: SSE
+      Target: MobileAPIGateway
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetRight:
+          Title: "Mobile"
+
+    # Auth
+    - Source: WebBFFLambda
+      Target: Cognito
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "JWT"
+
+    - Source: MobileBFFLambda
+      Target: Cognito
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "JWT"
+
+    # BFF → ALB
+    - Source: WebBFFLambda
+      SourcePosition: S
+      Target: InternalALB
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+
+    - Source: MobileBFFLambda
+      SourcePosition: S
+      Target: InternalALB
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+
+    # ALB → Services
+    - Source: InternalALB
+      Target: ProductService
+      TargetArrowHead:
+        Type: Open
+
+    - Source: InternalALB
+      Target: OrderService
+      TargetArrowHead:
+        Type: Open
+
+    - Source: InternalALB
+      Target: UserService
+      TargetArrowHead:
+        Type: Open
+
+    # Services → Data
+    - Source: ProductService
+      Target: RDS
+      TargetArrowHead:
+        Type: Open
+
+    - Source: OrderService
+      Target: RDS
+      TargetArrowHead:
+        Type: Open
+
+    - Source: UserService
+      Target: Cache
+      TargetArrowHead:
+        Type: Open
+
+    - Source: OrderService
+      Target: NoSQL
+      TargetArrowHead:
+        Type: Open
+
+    # Services → Messaging
+    - Source: OrderService
+      Target: Queue
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "async"
+
+    - Source: Queue
+      Target: Topic
+      TargetArrowHead:
+        Type: Open
