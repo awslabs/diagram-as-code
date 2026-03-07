@@ -40,11 +40,22 @@ func stencilStyle(shapeName, fillColor string) string {
 	)
 }
 
-// groupStyle returns the style for an AWS4 group with a visible border.
+// groupStyle returns the style for an AWS4 group with a visible solid border.
 func groupStyle(grIcon, fillColor, strokeColor string) string {
 	return fmt.Sprintf(
 		"shape=mxgraph.aws4.group;grIcon=%s;grStroke=0;"+
 			"fillColor=%s;strokeColor=%s;strokeWidth=2;"+
+			"fontFamily=Helvetica;fontSize=12;"+
+			"verticalLabelPosition=top;verticalAlign=bottom;align=left;",
+		grIcon, fillColor, strokeColor,
+	)
+}
+
+// groupStyleDashed returns the style for an AWS4 group with a dashed border.
+func groupStyleDashed(grIcon, fillColor, strokeColor string) string {
+	return fmt.Sprintf(
+		"shape=mxgraph.aws4.group;grIcon=%s;grStroke=0;"+
+			"fillColor=%s;strokeColor=%s;strokeWidth=2;dashed=1;"+
 			"fontFamily=Helvetica;fontSize=12;"+
 			"verticalLabelPosition=top;verticalAlign=bottom;align=left;",
 		grIcon, fillColor, strokeColor,
@@ -102,6 +113,14 @@ var dacTypeStyles = map[string]drawioNode{
 	},
 	"AWS::Diagram::Cloud": {
 		style:   groupStyle("mxgraph.aws4.group_aws_cloud_alt", "#FFFFFF", "#232F3E"),
+		isGroup: true,
+	},
+	"AWS::AutoScaling::AutoScalingGroup": {
+		style:   groupStyleDashed("mxgraph.aws4.group_auto_scaling", "#FFFFFF", "#ED7100"),
+		isGroup: true,
+	},
+	"AWS::Region": {
+		style:   groupStyleDashed("mxgraph.aws4.group_region", "#FFFFFF", "#00A4A6"),
 		isGroup: true,
 	},
 	"AWS::Diagram::Canvas": {
@@ -241,9 +260,14 @@ func exportToDrawio(
 		node := getDrawioNode(res.Type)
 		hasChildren := len(res.Children) > 0
 
+		// Priority: YAML Title > runtime label from definition > YAML key name.
 		label := res.Title
 		if label == "" {
-			label = name
+			if runtimeLabel := runtime.GetLabel(); runtimeLabel != "" {
+				label = runtimeLabel
+			} else {
+				label = name
+			}
 		}
 
 		// Private subnet preset: swap group icon.
@@ -333,11 +357,27 @@ func exportToDrawio(
 			edgeStyle += "startArrow=open;startFill=0;"
 		}
 
+		// Compose edge label from all link label fields.
+		var labelParts []string
+		for _, ll := range []*LinkLabel{
+			link.Labels.SourceLeft,
+			link.Labels.SourceRight,
+			link.Labels.TargetLeft,
+			link.Labels.TargetRight,
+			link.Labels.AutoLeft,
+			link.Labels.AutoRight,
+		} {
+			if ll != nil && ll.Title != "" {
+				labelParts = append(labelParts, ll.Title)
+			}
+		}
+		edgeLabel := strings.Join(labelParts, " | ")
+
 		fmt.Fprintf(&buf,
-			"    <mxCell id=\"%d\" value=\"\" style=\"%s\" edge=\"1\" source=\"%s\" target=\"%s\" parent=\"1\">\n"+
+			"    <mxCell id=\"%d\" value=\"%s\" style=\"%s\" edge=\"1\" source=\"%s\" target=\"%s\" parent=\"1\">\n"+
 				"      <mxGeometry relative=\"1\" as=\"geometry\"/>\n"+
 				"    </mxCell>\n",
-			cellID, escapeXML(edgeStyle), srcID, tgtID,
+			cellID, escapeXML(edgeLabel), escapeXML(edgeStyle), srcID, tgtID,
 		)
 		cellID++
 	}

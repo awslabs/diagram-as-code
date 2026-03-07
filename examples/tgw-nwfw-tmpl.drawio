@@ -1,0 +1,147 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="2" value="Canvas" style="fillColor=none;strokeColor=none;" vertex="1" parent="1">
+      <mxGeometry x="22" y="10" width="1625" height="1169" as="geometry"/>
+    </mxCell>
+    <mxCell id="3" value="AWS Cloud" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud_alt;grStroke=0;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="52" y="30" width="1565" height="1048" as="geometry"/>
+    </mxCell>
+    <mxCell id="4" value="HorizontalStack1" style="fillColor=none;strokeColor=none;" vertex="1" parent="1">
+      <mxGeometry x="75" y="72" width="1520" height="504" as="geometry"/>
+    </mxCell>
+    <mxCell id="5" value="HorizontalStack2" style="fillColor=none;strokeColor=none;" vertex="1" parent="1">
+      <mxGeometry x="553" y="576" width="564" height="492" as="geometry"/>
+    </mxCell>
+    <mxCell id="6" value="VPC1 (10.0.0.0/16)" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;grStroke=0;fillColor=#E5F5F8;strokeColor=#147EBA;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="132" y="82" width="579" height="484" as="geometry"/>
+    </mxCell>
+    <mxCell id="7" value="VPC2 (10.1.0.0/16)" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;grStroke=0;fillColor=#E5F5F8;strokeColor=#147EBA;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="958" y="82" width="579" height="484" as="geometry"/>
+    </mxCell>
+    <mxCell id="8" value="VPC3 (10.2.0.0/16)" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;grStroke=0;fillColor=#E5F5F8;strokeColor=#147EBA;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="560" y="616" width="549" height="442" as="geometry"/>
+    </mxCell>
+    <mxCell id="9" value="Availability Zone 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="208" y="134" width="429" height="196" as="geometry"/>
+    </mxCell>
+    <mxCell id="10" value="Availability Zone 2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="208" y="350" width="429" height="196" as="geometry"/>
+    </mxCell>
+    <mxCell id="11" value="Availability Zone 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1034" y="134" width="429" height="196" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" value="Availability Zone 2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1034" y="350" width="429" height="196" as="geometry"/>
+    </mxCell>
+    <mxCell id="13" value="Availability Zone 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="590" y="688" width="237" height="350" as="geometry"/>
+    </mxCell>
+    <mxCell id="14" value="Availability Zone 2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="842" y="688" width="237" height="350" as="geometry"/>
+    </mxCell>
+    <mxCell id="15" value="Public Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_public_subnet;grStroke=0;fillColor=#E9F3E6;strokeColor=#67AB9F;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="238" y="178" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="16" value="Private Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="430" y="178" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="17" value="Public Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_public_subnet;grStroke=0;fillColor=#E9F3E6;strokeColor=#67AB9F;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="238" y="394" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="18" value="Private Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="430" y="394" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="19" value="Private Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1064" y="178" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="20" value="Public Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_public_subnet;grStroke=0;fillColor=#E9F3E6;strokeColor=#67AB9F;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1256" y="178" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="21" value="Private Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1064" y="394" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="22" value="Public Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_public_subnet;grStroke=0;fillColor=#E9F3E6;strokeColor=#67AB9F;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1256" y="394" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="23" value="Private Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="620" y="732" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="24" value="Firewall Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="620" y="884" width="177" height="134" as="geometry"/>
+    </mxCell>
+    <mxCell id="25" value="Private Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="872" y="732" width="177" height="132" as="geometry"/>
+    </mxCell>
+    <mxCell id="26" value="Firewall Subnet" style="shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;grStroke=0;fillColor=#F4E6FA;strokeColor=#AD688E;strokeWidth=2;fontFamily=Helvetica;fontSize=12;verticalLabelPosition=top;verticalAlign=bottom;align=left;" vertex="1" parent="1">
+      <mxGeometry x="872" y="884" width="177" height="134" as="geometry"/>
+    </mxCell>
+    <mxCell id="27" value="User" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='48px' height='48px' viewBox='0 0 48 48' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Resource/General-Resource/Res_User_48_Light%3C/title%3E %3Cg id='Icon-Resource/General-Resource/Res_User_48' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cpath d='M6.025,44 C6.524,34.085 14.395,26.178 24,26.178 C27.248,26.178 30.43,27.092 33.205,28.822 C38.354,32.033 41.653,37.783 41.974,44 L6.025,44 Z M14.192,13.878 C14.192,8.432 18.592,4 24.001,4 C29.408,4 33.807,8.432 33.807,13.878 C33.807,19.325 29.408,23.757 24.001,23.757 C18.592,23.757 14.192,19.325 14.192,13.878 L14.192,13.878 Z M34.263,27.125 C32.53,26.044 30.65,25.26 28.698,24.771 C32.877,22.939 35.807,18.749 35.807,13.878 C35.807,7.329 30.51,2 24.001,2 C17.489,2 12.192,7.329 12.192,13.878 C12.192,18.755 15.13,22.95 19.317,24.778 C10.545,26.981 4,35.2 4,45 C4,45.552 4.447,46 5,46 L43,46 C43.552,46 44,45.552 44,45 C44,37.719 40.269,30.87 34.263,27.125 L34.263,27.125 Z' id='Fill-1' fill='%23242F3E'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="819" y="1104" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="28" value="AWS Transit Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="819" y="308" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="29" value="Instance" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='80px' height='80px' viewBox='0 0 80 80' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Architecture/64/Arch_Amazon-EC2_64%3C/title%3E %3Cg id='Icon-Architecture/64/Arch_Amazon-EC2_64' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cg id='Icon-Architecture-BG/64/Compute' fill='%23ED7100'%3E %3Crect id='Rectangle' x='0' y='0' width='80' height='80'%3E%3C/rect%3E %3C/g%3E %3Cpath d='M27,53 L52,53 L52,28 L27,28 L27,53 Z M54,28 L58,28 L58,30 L54,30 L54,34 L58,34 L58,36 L54,36 L54,39 L58,39 L58,41 L54,41 L54,45 L58,45 L58,47 L54,47 L54,51 L58,51 L58,53 L54,53 L54,53.136 C54,54.164 53.164,55 52.136,55 L52,55 L52,59 L50,59 L50,55 L46,55 L46,59 L44,59 L44,55 L41,55 L41,59 L39,59 L39,55 L35,55 L35,59 L33,59 L33,55 L29,55 L29,59 L27,59 L27,55 L26.864,55 C25.836,55 25,54.164 25,53.136 L25,53 L22,53 L22,51 L25,51 L25,47 L22,47 L22,45 L25,45 L25,41 L22,41 L22,39 L25,39 L25,36 L22,36 L22,34 L25,34 L25,30 L22,30 L22,28 L25,28 L25,27.864 C25,26.836 25.836,26 26.864,26 L27,26 L27,22 L29,22 L29,26 L33,26 L33,22 L35,22 L35,26 L39,26 L39,22 L41,22 L41,26 L44,26 L44,22 L46,22 L46,26 L50,26 L50,22 L52,22 L52,26 L52.136,26 C53.164,26 54,26.836 54,27.864 L54,28 Z M41,65.876 C41,65.944 40.944,66 40.876,66 L14.124,66 C14.056,66 14,65.944 14,65.876 L14,39.124 C14,39.056 14.056,39 14.124,39 L20,39 L20,37 L14.124,37 C12.953,37 12,37.953 12,39.124 L12,65.876 C12,67.047 12.953,68 14.124,68 L40.876,68 C42.047,68 43,67.047 43,65.876 L43,61 L41,61 L41,65.876 Z M68,14.124 L68,40.876 C68,42.047 67.047,43 65.876,43 L60,43 L60,41 L65.876,41 C65.944,41 66,40.944 66,40.876 L66,14.124 C66,14.056 65.944,14 65.876,14 L39.124,14 C39.056,14 39,14.056 39,14.124 L39,20 L37,20 L37,14.124 C37,12.953 37.953,12 39.124,12 L65.876,12 C67.047,12 68,12.953 68,14.124 L68,14.124 Z' id='Amazon-EC2_Icon_64_Squid' fill='%23FFFFFF'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="310" y="234" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="30" value="TGW ENI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="502" y="234" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="31" value="Instance" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='80px' height='80px' viewBox='0 0 80 80' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Architecture/64/Arch_Amazon-EC2_64%3C/title%3E %3Cg id='Icon-Architecture/64/Arch_Amazon-EC2_64' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cg id='Icon-Architecture-BG/64/Compute' fill='%23ED7100'%3E %3Crect id='Rectangle' x='0' y='0' width='80' height='80'%3E%3C/rect%3E %3C/g%3E %3Cpath d='M27,53 L52,53 L52,28 L27,28 L27,53 Z M54,28 L58,28 L58,30 L54,30 L54,34 L58,34 L58,36 L54,36 L54,39 L58,39 L58,41 L54,41 L54,45 L58,45 L58,47 L54,47 L54,51 L58,51 L58,53 L54,53 L54,53.136 C54,54.164 53.164,55 52.136,55 L52,55 L52,59 L50,59 L50,55 L46,55 L46,59 L44,59 L44,55 L41,55 L41,59 L39,59 L39,55 L35,55 L35,59 L33,59 L33,55 L29,55 L29,59 L27,59 L27,55 L26.864,55 C25.836,55 25,54.164 25,53.136 L25,53 L22,53 L22,51 L25,51 L25,47 L22,47 L22,45 L25,45 L25,41 L22,41 L22,39 L25,39 L25,36 L22,36 L22,34 L25,34 L25,30 L22,30 L22,28 L25,28 L25,27.864 C25,26.836 25.836,26 26.864,26 L27,26 L27,22 L29,22 L29,26 L33,26 L33,22 L35,22 L35,26 L39,26 L39,22 L41,22 L41,26 L44,26 L44,22 L46,22 L46,26 L50,26 L50,22 L52,22 L52,26 L52.136,26 C53.164,26 54,26.836 54,27.864 L54,28 Z M41,65.876 C41,65.944 40.944,66 40.876,66 L14.124,66 C14.056,66 14,65.944 14,65.876 L14,39.124 C14,39.056 14.056,39 14.124,39 L20,39 L20,37 L14.124,37 C12.953,37 12,37.953 12,39.124 L12,65.876 C12,67.047 12.953,68 14.124,68 L40.876,68 C42.047,68 43,67.047 43,65.876 L43,61 L41,61 L41,65.876 Z M68,14.124 L68,40.876 C68,42.047 67.047,43 65.876,43 L60,43 L60,41 L65.876,41 C65.944,41 66,40.944 66,40.876 L66,14.124 C66,14.056 65.944,14 65.876,14 L39.124,14 C39.056,14 39,14.056 39,14.124 L39,20 L37,20 L37,14.124 C37,12.953 37.953,12 39.124,12 L65.876,12 C67.047,12 68,12.953 68,14.124 L68,14.124 Z' id='Amazon-EC2_Icon_64_Squid' fill='%23FFFFFF'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="310" y="450" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="32" value="TGW ENI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="502" y="450" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="33" value="TGW ENI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="1136" y="234" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="34" value="Instance" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='80px' height='80px' viewBox='0 0 80 80' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Architecture/64/Arch_Amazon-EC2_64%3C/title%3E %3Cg id='Icon-Architecture/64/Arch_Amazon-EC2_64' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cg id='Icon-Architecture-BG/64/Compute' fill='%23ED7100'%3E %3Crect id='Rectangle' x='0' y='0' width='80' height='80'%3E%3C/rect%3E %3C/g%3E %3Cpath d='M27,53 L52,53 L52,28 L27,28 L27,53 Z M54,28 L58,28 L58,30 L54,30 L54,34 L58,34 L58,36 L54,36 L54,39 L58,39 L58,41 L54,41 L54,45 L58,45 L58,47 L54,47 L54,51 L58,51 L58,53 L54,53 L54,53.136 C54,54.164 53.164,55 52.136,55 L52,55 L52,59 L50,59 L50,55 L46,55 L46,59 L44,59 L44,55 L41,55 L41,59 L39,59 L39,55 L35,55 L35,59 L33,59 L33,55 L29,55 L29,59 L27,59 L27,55 L26.864,55 C25.836,55 25,54.164 25,53.136 L25,53 L22,53 L22,51 L25,51 L25,47 L22,47 L22,45 L25,45 L25,41 L22,41 L22,39 L25,39 L25,36 L22,36 L22,34 L25,34 L25,30 L22,30 L22,28 L25,28 L25,27.864 C25,26.836 25.836,26 26.864,26 L27,26 L27,22 L29,22 L29,26 L33,26 L33,22 L35,22 L35,26 L39,26 L39,22 L41,22 L41,26 L44,26 L44,22 L46,22 L46,26 L50,26 L50,22 L52,22 L52,26 L52.136,26 C53.164,26 54,26.836 54,27.864 L54,28 Z M41,65.876 C41,65.944 40.944,66 40.876,66 L14.124,66 C14.056,66 14,65.944 14,65.876 L14,39.124 C14,39.056 14.056,39 14.124,39 L20,39 L20,37 L14.124,37 C12.953,37 12,37.953 12,39.124 L12,65.876 C12,67.047 12.953,68 14.124,68 L40.876,68 C42.047,68 43,67.047 43,65.876 L43,61 L41,61 L41,65.876 Z M68,14.124 L68,40.876 C68,42.047 67.047,43 65.876,43 L60,43 L60,41 L65.876,41 C65.944,41 66,40.944 66,40.876 L66,14.124 C66,14.056 65.944,14 65.876,14 L39.124,14 C39.056,14 39,14.056 39,14.124 L39,20 L37,20 L37,14.124 C37,12.953 37.953,12 39.124,12 L65.876,12 C67.047,12 68,12.953 68,14.124 L68,14.124 Z' id='Amazon-EC2_Icon_64_Squid' fill='%23FFFFFF'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="1328" y="234" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="35" value="TGW ENI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="1136" y="450" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="36" value="Instance" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='80px' height='80px' viewBox='0 0 80 80' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Architecture/64/Arch_Amazon-EC2_64%3C/title%3E %3Cg id='Icon-Architecture/64/Arch_Amazon-EC2_64' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cg id='Icon-Architecture-BG/64/Compute' fill='%23ED7100'%3E %3Crect id='Rectangle' x='0' y='0' width='80' height='80'%3E%3C/rect%3E %3C/g%3E %3Cpath d='M27,53 L52,53 L52,28 L27,28 L27,53 Z M54,28 L58,28 L58,30 L54,30 L54,34 L58,34 L58,36 L54,36 L54,39 L58,39 L58,41 L54,41 L54,45 L58,45 L58,47 L54,47 L54,51 L58,51 L58,53 L54,53 L54,53.136 C54,54.164 53.164,55 52.136,55 L52,55 L52,59 L50,59 L50,55 L46,55 L46,59 L44,59 L44,55 L41,55 L41,59 L39,59 L39,55 L35,55 L35,59 L33,59 L33,55 L29,55 L29,59 L27,59 L27,55 L26.864,55 C25.836,55 25,54.164 25,53.136 L25,53 L22,53 L22,51 L25,51 L25,47 L22,47 L22,45 L25,45 L25,41 L22,41 L22,39 L25,39 L25,36 L22,36 L22,34 L25,34 L25,30 L22,30 L22,28 L25,28 L25,27.864 C25,26.836 25.836,26 26.864,26 L27,26 L27,22 L29,22 L29,26 L33,26 L33,22 L35,22 L35,26 L39,26 L39,22 L41,22 L41,26 L44,26 L44,22 L46,22 L46,26 L50,26 L50,22 L52,22 L52,26 L52.136,26 C53.164,26 54,26.836 54,27.864 L54,28 Z M41,65.876 C41,65.944 40.944,66 40.876,66 L14.124,66 C14.056,66 14,65.944 14,65.876 L14,39.124 C14,39.056 14.056,39 14.124,39 L20,39 L20,37 L14.124,37 C12.953,37 12,37.953 12,39.124 L12,65.876 C12,67.047 12.953,68 14.124,68 L40.876,68 C42.047,68 43,67.047 43,65.876 L43,61 L41,61 L41,65.876 Z M68,14.124 L68,40.876 C68,42.047 67.047,43 65.876,43 L60,43 L60,41 L65.876,41 C65.944,41 66,40.944 66,40.876 L66,14.124 C66,14.056 65.944,14 65.876,14 L39.124,14 C39.056,14 39,14.056 39,14.124 L39,20 L37,20 L37,14.124 C37,12.953 37.953,12 39.124,12 L65.876,12 C67.047,12 68,12.953 68,14.124 L68,14.124 Z' id='Amazon-EC2_Icon_64_Squid' fill='%23FFFFFF'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="1328" y="450" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="37" value="TGW ENI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="693" y="788" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="38" value="Firewall Endpoint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="693" y="941" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="39" value="TGW ENI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="945" y="788" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="40" value="Firewall Endpoint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="945" y="941" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="41" value="Attachment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="696" y="308" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="42" value="Attachment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="819" y="600" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="43" value="Internet gateway" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='48px' height='48px' viewBox='0 0 48 48' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Resource/Networking-and-Content-Delivery/Res_Amazon-VPC_Internet-Gateway_48%3C/title%3E %3Cg id='Icon-Resource/Networking-and-Content-Delivery/Res_Amazon-VPC_Internet-Gateway_48' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cpath d='M33.4312,35.1778 L31.9332,35.1778 L31.9332,17.5018 C31.9332,17.1088 31.7022,16.7518 31.3442,16.5908 L31.2522,16.5488 C29.2432,15.6418 27.1642,14.7028 24.1762,14.7028 C21.0532,14.7028 18.7612,15.7118 16.4952,16.8368 C16.1552,17.0058 15.9402,17.3528 15.9402,17.7328 L15.9402,35.1778 L14.4772,35.1778 L14.4772,16.3118 C16.9112,14.3328 20.4202,13.2048 24.1862,13.2048 C27.6872,13.2048 31.0252,14.2018 33.4312,15.9528 L33.4312,35.1778 Z M24.1862,11.2048 C19.7612,11.2048 15.6172,12.6238 12.8152,15.0998 C12.6002,15.2888 12.4772,15.5618 12.4772,15.8488 L12.4772,36.1778 C12.4772,36.7308 12.9242,37.1778 13.4772,37.1778 L16.9402,37.1778 C17.4932,37.1778 17.9402,36.7308 17.9402,36.1778 L17.9402,18.3558 C19.8592,17.4288 21.7192,16.7028 24.1762,16.7028 C26.5112,16.7028 28.2092,17.3778 29.9332,18.1488 L29.9332,36.1778 C29.9332,36.7308 30.3802,37.1778 30.9332,37.1778 L34.4312,37.1778 C34.9842,37.1778 35.4312,36.7308 35.4312,36.1778 L35.4312,15.4578 C35.4312,15.1538 35.2922,14.8658 35.0532,14.6748 C32.2792,12.4698 28.3182,11.2048 24.1862,11.2048 L24.1862,11.2048 Z M23.9542,43.9088 C12.9522,43.9088 3.9992,34.9568 3.9992,23.9538 C3.9992,12.9508 12.9522,3.9998 23.9542,3.9998 C34.9572,3.9998 43.9092,12.9508 43.9092,23.9538 C43.9092,34.9568 34.9572,43.9088 23.9542,43.9088 L23.9542,43.9088 Z M23.9542,1.9998 C11.8482,1.9998 1.9992,11.8488 1.9992,23.9538 C1.9992,36.0608 11.8482,45.9088 23.9542,45.9088 C36.0602,45.9088 45.9092,36.0608 45.9092,23.9538 C45.9092,11.8488 36.0602,1.9998 23.9542,1.9998 L23.9542,1.9998 Z' id='AWS-Amazon-VPC_Internet-gateway_Resource-Icon_light-bg' fill='%238C4FFF'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="116" y="308" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="44" value="Attachment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;" vertex="1" parent="1">
+      <mxGeometry x="942" y="308" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="45" value="Internet gateway" style="shape=image;html=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#232F3E;labelBackgroundColor=#ffffff;image=data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8'?%3E %3Csvg width='48px' height='48px' viewBox='0 0 48 48' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3EIcon-Resource/Networking-and-Content-Delivery/Res_Amazon-VPC_Internet-Gateway_48%3C/title%3E %3Cg id='Icon-Resource/Networking-and-Content-Delivery/Res_Amazon-VPC_Internet-Gateway_48' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cpath d='M33.4312,35.1778 L31.9332,35.1778 L31.9332,17.5018 C31.9332,17.1088 31.7022,16.7518 31.3442,16.5908 L31.2522,16.5488 C29.2432,15.6418 27.1642,14.7028 24.1762,14.7028 C21.0532,14.7028 18.7612,15.7118 16.4952,16.8368 C16.1552,17.0058 15.9402,17.3528 15.9402,17.7328 L15.9402,35.1778 L14.4772,35.1778 L14.4772,16.3118 C16.9112,14.3328 20.4202,13.2048 24.1862,13.2048 C27.6872,13.2048 31.0252,14.2018 33.4312,15.9528 L33.4312,35.1778 Z M24.1862,11.2048 C19.7612,11.2048 15.6172,12.6238 12.8152,15.0998 C12.6002,15.2888 12.4772,15.5618 12.4772,15.8488 L12.4772,36.1778 C12.4772,36.7308 12.9242,37.1778 13.4772,37.1778 L16.9402,37.1778 C17.4932,37.1778 17.9402,36.7308 17.9402,36.1778 L17.9402,18.3558 C19.8592,17.4288 21.7192,16.7028 24.1762,16.7028 C26.5112,16.7028 28.2092,17.3778 29.9332,18.1488 L29.9332,36.1778 C29.9332,36.7308 30.3802,37.1778 30.9332,37.1778 L34.4312,37.1778 C34.9842,37.1778 35.4312,36.7308 35.4312,36.1778 L35.4312,15.4578 C35.4312,15.1538 35.2922,14.8658 35.0532,14.6748 C32.2792,12.4698 28.3182,11.2048 24.1862,11.2048 L24.1862,11.2048 Z M23.9542,43.9088 C12.9522,43.9088 3.9992,34.9568 3.9992,23.9538 C3.9992,12.9508 12.9522,3.9998 23.9542,3.9998 C34.9572,3.9998 43.9092,12.9508 43.9092,23.9538 C43.9092,34.9568 34.9572,43.9088 23.9542,43.9088 L23.9542,43.9088 Z M23.9542,1.9998 C11.8482,1.9998 1.9992,11.8488 1.9992,23.9538 C1.9992,36.0608 11.8482,45.9088 23.9542,45.9088 C36.0602,45.9088 45.9092,36.0608 45.9092,23.9538 C45.9092,11.8488 36.0602,1.9998 23.9542,1.9998 L23.9542,1.9998 Z' id='AWS-Amazon-VPC_Internet-gateway_Resource-Icon_light-bg' fill='%238C4FFF'%3E%3C/path%3E %3C/g%3E %3C/svg%3E;" vertex="1" parent="1">
+      <mxGeometry x="1522" y="308" width="32" height="32" as="geometry"/>
+    </mxCell>
+    <mxCell id="46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;" edge="1" source="28" target="41" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="47" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;" edge="1" source="28" target="44" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;" edge="1" source="28" target="42" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>
