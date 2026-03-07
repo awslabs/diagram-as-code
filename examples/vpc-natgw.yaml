@@ -4,13 +4,18 @@ Diagram:
       Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
     #- Type: LocalFile
     #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
   Resources:
+
+    # ── Canvas ─────────────────────────────────────────────────────────────────
     Canvas:
       Type: AWS::Diagram::Canvas
       Direction: vertical
       Children:
         - AWSCloud
         - User
+
+    # ── AWS Cloud ──────────────────────────────────────────────────────────────
     AWSCloud:
       Type: AWS::Diagram::Cloud
       Direction: vertical
@@ -19,7 +24,7 @@ Diagram:
       Children:
         - VPC
 
-    # VPC
+    # ── VPC ────────────────────────────────────────────────────────────────────
     VPC:
       Type: AWS::EC2::VPC
       Direction: vertical
@@ -27,46 +32,57 @@ Diagram:
         - VPCPublicSubnetStack
         - VPCPrivateSubnetStack
 
+    # ── Public Subnets (NAT Gateways) ──────────────────────────────────────────
     VPCPublicSubnetStack:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - VPCPublicSubnet1
         - VPCPublicSubnet2
+
     VPCPublicSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPCPublicSubnet1NatGateway
+
     VPCPublicSubnet1NatGateway:
       Type: AWS::EC2::NatGateway
+
     VPCPublicSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPCPublicSubnet2NatGateway
+
     VPCPublicSubnet2NatGateway:
       Type: AWS::EC2::NatGateway
 
+    # ── Private Subnets (EC2 instances) ────────────────────────────────────────
     VPCPrivateSubnetStack:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - VPCPrivateSubnet1
         - VPCPrivateSubnet2
+
     VPCPrivateSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
       Children:
         - VPCPrivateSubnet1Instance
+
     VPCPrivateSubnet1Instance:
       Type: AWS::EC2::Instance
+
     VPCPrivateSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
       Children:
         - VPCPrivateSubnet2Instance
+
     VPCPrivateSubnet2Instance:
       Type: AWS::EC2::Instance
 
+    # ── External User ──────────────────────────────────────────────────────────
     User:
       Type: AWS::Diagram::Resource
       Preset: User

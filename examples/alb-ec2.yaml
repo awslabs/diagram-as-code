@@ -6,12 +6,16 @@ Diagram:
     #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
 
   Resources:
+
+    # ── Canvas ─────────────────────────────────────────────────────────────────
     Canvas:
       Type: AWS::Diagram::Canvas
       Direction: vertical
       Children:
         - AWSCloud
         - User
+
+    # ── AWS Cloud ──────────────────────────────────────────────────────────────
     AWSCloud:
       Type: AWS::Diagram::Cloud
       Direction: vertical
@@ -19,7 +23,8 @@ Diagram:
       Align: center
       Children:
         - VPC
-    # VPC
+
+    # ── VPC ────────────────────────────────────────────────────────────────────
     VPC:
       Type: AWS::EC2::VPC
       Direction: vertical
@@ -29,55 +34,74 @@ Diagram:
       BorderChildren:
         - Position: S
           Resource: IGW
+
+    # ── Public Subnets ─────────────────────────────────────────────────────────
     VPCPublicStack:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - VPCPublicSubnet1
         - VPCPublicSubnet2
+
     VPCPublicSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPCPublicSubnet1Instance
+
     VPCPublicSubnet1Instance:
       Type: AWS::EC2::Instance
+
     VPCPublicSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPCPublicSubnet2Instance
+
     VPCPublicSubnet2Instance:
       Type: AWS::EC2::Instance
+
+    # ── Load Balancer & Internet Gateway ───────────────────────────────────────
     ALB:
       Type: AWS::ElasticLoadBalancingV2::LoadBalancer
       Preset: Application Load Balancer
+
     IGW:
       Type: AWS::EC2::InternetGateway
       IconFill:
         Type: rect
+
+    # ── External User ──────────────────────────────────────────────────────────
     User:
       Type: AWS::Diagram::Resource
       Preset: User
 
+  # ── Links ──────────────────────────────────────────────────────────────────
   Links:
+
+    # ALB → EC2 instances
     - Source: ALB
       SourcePosition: NNW
       Target: VPCPublicSubnet1Instance
       TargetPosition: SSE
       TargetArrowHead:
         Type: Open
+
     - Source: ALB
       SourcePosition: NNE
       Target: VPCPublicSubnet2Instance
       TargetPosition: SSW
       TargetArrowHead:
         Type: Open
+
+    # Internet Gateway → ALB
     - Source: IGW
       SourcePosition: N
       Target: ALB
       TargetPosition: S
       TargetArrowHead:
         Type: Open
+
+    # User → Internet Gateway
     - Source: User
       SourcePosition: N
       Target: IGW

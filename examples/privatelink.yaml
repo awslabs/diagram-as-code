@@ -4,26 +4,34 @@ Diagram:
       Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
     #- Type: LocalFile
     #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
+
   Resources:
+
+    # ── Canvas ─────────────────────────────────────────────────────────────────
     Canvas:
       Type: AWS::Diagram::Canvas
       Direction: vertical
       Children:
         - AWSCloud
         - User
+
+    # ── AWS Cloud ──────────────────────────────────────────────────────────────
     AWSCloud:
       Type: AWS::Diagram::Cloud
       Direction: vertical
       Align: center
       Children:
         - HorizontalStack1
+
+    # ── Top-level layout: VPC1 | PrivateLink | VPC2 ────────────────────────────
     HorizontalStack1:
       Type: AWS::Diagram::HorizontalStack
       Children:
         - VPC1
         - PrivateLinkGroup
         - VPC2
-    # VPC1
+
+    # ── VPC1 – Service Provider ────────────────────────────────────────────────
     VPC1:
       Type: AWS::EC2::VPC
       Title: "VPC1 (10.0.0.0/16)"
@@ -39,24 +47,30 @@ Diagram:
       Children:
         - VPC1PublicSubnet1
         - VPC1PublicSubnet2
+
     VPC1PublicSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPC1PublicSubnet1Instance
+
     VPC1PublicSubnet1Instance:
       Type: AWS::EC2::Instance
+
     VPC1PublicSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPC1PublicSubnet2Instance
+
     VPC1PublicSubnet2Instance:
       Type: AWS::EC2::Instance
+
     NLB1:
       Type: AWS::ElasticLoadBalancingV2::LoadBalancer
       Preset: Network Load Balancer
 
+    # ── AWS PrivateLink ────────────────────────────────────────────────────────
     PrivateLinkGroup:
       Type: AWS::Diagram::Resource
       Preset: BlankGroup
@@ -67,7 +81,7 @@ Diagram:
       Type: AWS::Diagram::Resource
       Preset: AWS PrivateLink
 
-    # VPC2
+    # ── VPC2 – Service Consumer ────────────────────────────────────────────────
     VPC2:
       Type: AWS::EC2::VPC
       Title: "VPC2 (10.1.0.0/16)"
@@ -86,20 +100,26 @@ Diagram:
       Children:
         - VPC2PublicSubnet1
         - VPC2PublicSubnet2
+
     VPC2PublicSubnet1:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPC2PublicSubnet1Instance
+
     VPC2PublicSubnet1Instance:
       Type: AWS::EC2::Instance
+
     VPC2PublicSubnet2:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
       Children:
         - VPC2PublicSubnet2EmptyResource
+
     VPC2PublicSubnet2EmptyResource:
       Type: AWS::Diagram::Resource
+
+    # ── Internet Gateways ──────────────────────────────────────────────────────
     IGW1:
       Type: AWS::EC2::InternetGateway
       IconFill:
@@ -110,11 +130,15 @@ Diagram:
       IconFill:
         Type: rect
 
+    # ── External User ──────────────────────────────────────────────────────────
     User:
       Type: AWS::Diagram::Resource
       Preset: User
 
+  # ── Links ──────────────────────────────────────────────────────────────────
   Links:
+
+    # PrivateLink flow: VPC2 instance → Endpoint → PrivateLink → NLB → instances
     - Source: VPC2PublicSubnet1Instance
       SourcePosition: W
       Target: VPC2Endpoint
@@ -122,18 +146,21 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+
     - Source: VPC2Endpoint
       SourcePosition: W
       Target: PrivateLink
       TargetPosition: E
       TargetArrowHead:
         Type: Open
+
     - Source: PrivateLink
       SourcePosition: W
       Target: NLB1
       TargetPosition: E
       TargetArrowHead:
         Type: Open
+
     - Source: NLB1
       SourcePosition: N
       Target: VPC1PublicSubnet1Instance
@@ -141,6 +168,7 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+
     - Source: NLB1
       SourcePosition: S
       Target: VPC1PublicSubnet2Instance
@@ -148,6 +176,8 @@ Diagram:
       TargetArrowHead:
         Type: Open
       Type: orthogonal
+
+    # SSH access via VPC1 IGW (teal color)
     - Source: IGW1
       SourcePosition: E
       Target: VPC1PublicSubnet1Instance
@@ -156,6 +186,7 @@ Diagram:
         Type: Open
       Type: orthogonal
       LineColor: 'rgba(0,125,125,255)'
+
     - Source: IGW1
       SourcePosition: E
       Target: VPC1PublicSubnet2Instance
@@ -164,6 +195,7 @@ Diagram:
         Type: Open
       Type: orthogonal
       LineColor: 'rgba(0,125,125,255)'
+
     - Source: User
       SourcePosition: W
       Target: IGW1
@@ -176,6 +208,8 @@ Diagram:
         SourceRight:
           Title: "SSH access"
           Color: 'rgba(0,125,125,255)'
+
+    # SSH access via VPC2 IGW (teal color)
     - Source: IGW2
       SourcePosition: W
       Target: VPC2PublicSubnet1Instance
@@ -184,6 +218,7 @@ Diagram:
         Type: Open
       Type: orthogonal
       LineColor: 'rgba(0,125,125,255)'
+
     - Source: User
       SourcePosition: E
       Target: IGW2

@@ -6,12 +6,16 @@ Diagram:
     #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
 
   Resources:
+
+    # ── Canvas ─────────────────────────────────────────────────────────────────
     Canvas:
       Type: AWS::Diagram::Canvas
       Direction: vertical
       Children:
         - AWSCloud
         - User
+
+    # ── AWS Cloud ──────────────────────────────────────────────────────────────
     AWSCloud:
       Type: AWS::Diagram::Cloud
       Direction: vertical
@@ -19,7 +23,8 @@ Diagram:
       Align: center
       Children:
         - VPC
-    # VPC
+
+    # ── VPC ────────────────────────────────────────────────────────────────────
     VPC:
       Type: AWS::EC2::VPC
       Direction: vertical
@@ -29,27 +34,39 @@ Diagram:
       BorderChildren:
         - Position: S
           Resource: IGW
+
+    # ── Auto Scaling Group ─────────────────────────────────────────────────────
     VPCPublicStack:
       Type: AWS::AutoScaling::AutoScalingGroup
       Children:
         - VPCPublicSubnet1Instance
         - VPCPublicSubnet2Instance
+
     VPCPublicSubnet1Instance:
       Type: AWS::EC2::Instance
+
     VPCPublicSubnet2Instance:
       Type: AWS::EC2::Instance
+
+    # ── Load Balancer & Internet Gateway ───────────────────────────────────────
     ALB:
       Type: AWS::ElasticLoadBalancingV2::LoadBalancer
       Preset: Application Load Balancer
+
     IGW:
       Type: AWS::EC2::InternetGateway
       IconFill:
         Type: rect
+
+    # ── External User ──────────────────────────────────────────────────────────
     User:
       Type: AWS::Diagram::Resource
       Preset: User
 
+  # ── Links ──────────────────────────────────────────────────────────────────
   Links:
+
+    # ALB → EC2 instances (with port labels)
     - Source: ALB
       SourcePosition: NNW
       Target: VPCPublicSubnet1Instance
@@ -60,6 +77,7 @@ Diagram:
       Labels:
         SourceLeft:
           Title: "HTTP:80"
+
     - Source: ALB
       SourcePosition: NNE
       Target: VPCPublicSubnet2Instance
@@ -70,6 +88,8 @@ Diagram:
       Labels:
         SourceRight:
           Title: "HTTP:80"
+
+    # Internet Gateway → ALB (with port labels)
     - Source: IGW
       SourcePosition: N
       Target: ALB
@@ -82,6 +102,8 @@ Diagram:
           Title: "HTTP:80"
         SourceRight:
           Title: "HTTPS:443"
+
+    # User → Internet Gateway
     - Source: User
       SourcePosition: N
       Target: IGW

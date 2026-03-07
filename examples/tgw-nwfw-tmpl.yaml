@@ -6,6 +6,8 @@ Diagram:
     #  LocalFile: ./definitions/definition-for-aws-icons-light.yaml
 
   Resources:
+
+    # ── Canvas ─────────────────────────────────────────────────────────────────
     Canvas:
       Type: AWS::Diagram::Canvas
       Direction: vertical
@@ -13,6 +15,7 @@ Diagram:
         - AWSCloud
         - User
 
+    # ── AWS Cloud ──────────────────────────────────────────────────────────────
     AWSCloud:
       Type: AWS::Diagram::Cloud
       Direction: vertical
@@ -21,6 +24,7 @@ Diagram:
         - HorizontalStack1
         - HorizontalStack2
 
+    # ── Top row: VPC1 | Transit Gateway | VPC2 ────────────────────────────────
     HorizontalStack1:
       Type: AWS::Diagram::HorizontalStack
       Children:
@@ -28,19 +32,25 @@ Diagram:
         - TransitGateway
         - VPC2
 
+    # ── Transit Gateway (hub) ──────────────────────────────────────────────────
     TransitGateway:
       Type: AWS::EC2::TransitGateway
 
+    # ── Bottom row: VPC3 (Network Firewall inspection) ─────────────────────────
     HorizontalStack2:
       Type: AWS::Diagram::HorizontalStack
       Align: bottom
       Children:
         - VPC3
 
+    # ── External User ──────────────────────────────────────────────────────────
     User:
       Type: AWS::Diagram::Resource
       Preset: "User"
 
+    # ── VPC iteration (Go template) ────────────────────────────────────────────
+    # Generates VPC1, VPC2, VPC3 with Availability Zones, subnets and TGW attachments.
+    # VPC1 and VPC2 have public subnets + IGWs; VPC3 has firewall subnets (Network Firewall).
     {{/* VPC iteration */}}
     {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
     # {{$vpc_identifier}}
@@ -59,7 +69,7 @@ Diagram:
           Resource: {{$vpc_identifier}}IGW
       {{end}}
 
-    {{/* Availability Zones iteration */}}
+    # ── Availability Zones ─────────────────────────────────────────────────────
     {{- range $j := seq 2}}{{$az := (add $j 1)}}
     {{$vpc_identifier}}AvailabilityZone{{$az}}:
       Type: AWS::EC2::AvailabilityZone
@@ -77,7 +87,7 @@ Diagram:
         - {{$vpc_identifier}}FirewallSubnet{{$az}}
         {{end}}
 
-    {{/* Public Subnet (VPC1~2) */}}
+    # ── Public Subnet (VPC1 and VPC2 only) ────────────────────────────────────
     {{if lt $i 2}}
     {{$vpc_identifier}}PublicSubnet{{$az}}:
       Type: AWS::EC2::Subnet
@@ -89,7 +99,7 @@ Diagram:
       Type: AWS::EC2::Instance
     {{end}}
 
-    {{/* Transit Subnet (VPC1~3) */}}
+    # ── Transit Subnet (all VPCs) ──────────────────────────────────────────────
     {{$vpc_identifier}}TransitSubnet{{$az}}:
       Type: AWS::EC2::Subnet
       Preset: PrivateSubnet
@@ -99,7 +109,7 @@ Diagram:
       Type: AWS::EC2::NetworkInterface
       Title: "TGW ENI"
 
-    {{/* Firewall Subnet (VPC3) */}}
+    # ── Firewall Subnet (VPC3 only) ────────────────────────────────────────────
     {{if eq $i 2}}
     {{$vpc_identifier}}FirewallSubnet{{$az}}:
       Type: AWS::EC2::Subnet
@@ -112,9 +122,10 @@ Diagram:
       Type: AWS::EC2::VPCEndpoint
       Title: "Firewall Endpoint"
     {{end}}
- 
+
     {{end}}
 
+    # ── TGW Attachment & Internet Gateway ──────────────────────────────────────
     {{$vpc_identifier}}TGWAttach:
       Type: AWS::EC2::TransitGatewayAttachment
       IconFill:
@@ -127,7 +138,9 @@ Diagram:
     {{end}}
     {{end}}
 
+  # ── Links ──────────────────────────────────────────────────────────────────
   Links:
+    # Transit Gateway → TGW attachments (spoke-and-hub)
     {{/* VPC iteration */}}
     {{- range $i := seq 3}}{{$vpc_identifier := (printf "VPC%d" (add $i 1))}}
     - Source: TransitGateway
