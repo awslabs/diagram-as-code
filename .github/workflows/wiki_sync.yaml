@@ -15,16 +15,29 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v3
 
+      - name: Check wiki exists
+        id: wiki_check
+        run: |
+          if git ls-remote --exit-code "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki" HEAD > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Wiki not initialized for ${{ github.repository }} — skipping sync."
+          fi
+
       - name: Checkout wiki
+        if: steps.wiki_check.outputs.exists == 'true'
         uses: actions/checkout@v3
         with:
           repository: "${{ github.repository }}.wiki"
           path: .wiki
 
       - name: Update wiki pages
+        if: steps.wiki_check.outputs.exists == 'true'
         run: (cd tools && ./generate-md-table-from-mappings) > .wiki/CloudFormation-Resource-Type-Compatibility.md
 
       - name: Staging the changes
+        if: steps.wiki_check.outputs.exists == 'true'
         working-directory: .wiki
         id: staging
         run: |
@@ -33,7 +46,7 @@ jobs:
 
       - name: Publish wiki
         working-directory: .wiki
-        if: steps.staging.outputs.CHANGES > 0
+        if: steps.wiki_check.outputs.exists == 'true' && steps.staging.outputs.CHANGES > 0
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
