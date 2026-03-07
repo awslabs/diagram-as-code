@@ -18,6 +18,8 @@ import (
 	fontPath "github.com/awslabs/diagram-as-code/internal/font"
 	"github.com/awslabs/diagram-as-code/internal/vector"
 	"github.com/golang/freetype/truetype"
+	"github.com/srwiley/oksvg"
+	"github.com/srwiley/rasterx"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
@@ -135,6 +137,30 @@ func (r *Resource) Init() *Resource {
 	rr.align = "center"
 	rr.drawn = false
 	return &rr
+}
+
+func (r *Resource) GetIconImage() image.Image {
+	return r.iconImage
+}
+
+// LoadIconSVG renderiza o conteúdo SVG para image.Image e define como ícone do recurso.
+// size é o lado do quadrado em pixels para renderização (ex: 64).
+func (r *Resource) LoadIconSVG(svgContent string, size int) error {
+	icon, err := oksvg.ReadIconStream(strings.NewReader(svgContent), oksvg.WarnErrorMode)
+	if err != nil {
+		return fmt.Errorf("failed to parse SVG: %w", err)
+	}
+	icon.SetTarget(0, 0, float64(size), float64(size))
+	rgba := image.NewRGBA(image.Rect(0, 0, size, size))
+	draw.Draw(rgba, rgba.Bounds(), image.NewUniform(color.Transparent), image.Point{}, draw.Src)
+	scanner := rasterx.NewScannerGV(size, size, rgba, rgba.Bounds())
+	raster := rasterx.NewDasher(size, size, scanner)
+	icon.Draw(raster, 1.0)
+	r.iconBounds = image.Rect(0, 0, size, size)
+	_b := image.Rect(0, 0, size, size)
+	r.bindings = &_b
+	r.iconImage = rgba
+	return nil
 }
 
 func (r *Resource) LoadIcon(imageFilePath string) error {

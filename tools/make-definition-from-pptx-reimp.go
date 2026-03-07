@@ -114,10 +114,17 @@ type IconData struct {
 }
 
 func main() {
-	url, err := getPPTXUrl()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
+	var url string
+	var err error
+	if len(os.Args) > 1 {
+		url = os.Args[1]
+		fmt.Printf("Using provided URL: %s\n\n", url)
+	} else {
+		url, err = getPPTXUrl()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
 	}
 	fmt.Printf("PPTx file url: %s\n\n", url)
 
@@ -634,7 +641,7 @@ func writeInitialDefinitions(f *os.File, url string) {
     ZipFile:
       SourceType: file
       Source: Main
-      Path: "AWS-Architecture-Icons-Deck_For-Light-BG_02072025.pptx"
+      Path: "AWS-Architecture-Icons-Deck_For-Light-BG_07312025.pptx"
 
   ArchitectureIconsPptxMedia:
     Type: Directory

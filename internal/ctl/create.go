@@ -651,6 +651,22 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 		}
 	}
 
+	// Substitui ícones do PPTX pelos SVGs oficiais do Asset Package (Jul 2025),
+	// garantindo que PNG e draw.io usem os mesmos ícones.
+	for k, v := range template.Resources {
+		resource, exists := resources[k]
+		if !exists {
+			continue
+		}
+		svgContent := GetAWSIconSVG(v.Type)
+		if svgContent == "" {
+			continue
+		}
+		if err := resource.LoadIconSVG(svgContent, 64); err != nil {
+			log.Warnf("failed to load SVG icon for %s (%s): %v", k, v.Type, err)
+		}
+	}
+
 	return nil
 }
 

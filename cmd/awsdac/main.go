@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/awslabs/diagram-as-code/internal/ctl"
 	log "github.com/sirupsen/logrus"
@@ -26,6 +27,7 @@ func main() {
 	var force bool
 	var width int
 	var height int
+	var drawio bool
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -58,6 +60,20 @@ func main() {
 			}
 
 			inputFile := args[0]
+
+			// Detecta output drawio por flag ou extensão do arquivo de saída
+			if drawio || strings.HasSuffix(outputFile, ".drawio") {
+				opts := ctl.CreateOptions{
+					IsGoTemplate:              isGoTemplate,
+					OverrideDefFile:           overrideDefFile,
+					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+				}
+				if err := ctl.CreateDrawioFromDacFile(inputFile, &outputFile, &opts); err != nil {
+					return fmt.Errorf("failed to create drawio: %w", err)
+				}
+				fmt.Printf("[Completed] draw.io diagram generated: %s\n", outputFile)
+				return nil
+			}
 
 			if cfnTemplate {
 				opts := ctl.CreateOptions{
@@ -108,6 +124,7 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Overwrite output file without confirmation")
 	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
 	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
+	rootCmd.PersistentFlags().BoolVar(&drawio, "drawio", false, "Generate draw.io (.drawio) file instead of PNG")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
