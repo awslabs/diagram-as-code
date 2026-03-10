@@ -30,4 +30,4 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Deploy to Vercel
-        run: vercel deploy --prod --archive=tgz --token="${VERCEL_TOKEN}"
+        run: vercel deploy --prod --archive=tgz --yes --token="${VERCEL_TOKEN}"
