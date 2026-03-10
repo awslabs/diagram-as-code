@@ -1,657 +1,301 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { ChevronDown, Zap, Github, BookOpen, Wrench } from 'lucide-react'
-import DiagramPreview from '@/components/DiagramPreview'
+import { Github, Zap, Terminal, Globe, Wrench, ArrowRight, Code2, Layers, BookOpen } from 'lucide-react'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useLanguage } from '@/lib/i18n'
 
-const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-full text-[#444] text-sm">
-      Loading editor…
-    </div>
-  ),
-})
-
-// ── Example templates ────────────────────────────────────────────────────────
-
-const EXAMPLES: Record<string, string> = {
-  'ALB + EC2': `Diagram:
-  DefinitionFiles:
-    - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+const YAML_DEMO = `Diagram:
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
-      Direction: vertical
-      Children:
-        - AWSCloud
-        - User
+      Children: [AWSCloud]
     AWSCloud:
       Type: AWS::Diagram::Cloud
-      Direction: vertical
-      Preset: AWSCloudNoLogo
-      Align: center
-      Children:
-        - VPC
+      Children: [VPC]
     VPC:
       Type: AWS::EC2::VPC
-      Direction: vertical
-      Children:
-        - VPCPublicStack
-        - ALB
-      BorderChildren:
-        - Position: S
-          Resource: IGW
-    VPCPublicStack:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - VPCPublicSubnet1
-        - VPCPublicSubnet2
-    VPCPublicSubnet1:
+      Children: [Subnet]
+    Subnet:
       Type: AWS::EC2::Subnet
       Preset: PublicSubnet
-      Children:
-        - VPCPublicSubnet1Instance
-    VPCPublicSubnet1Instance:
-      Type: AWS::EC2::Instance
-    VPCPublicSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - VPCPublicSubnet2Instance
-    VPCPublicSubnet2Instance:
-      Type: AWS::EC2::Instance
-    ALB:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Preset: Application Load Balancer
-    IGW:
-      Type: AWS::EC2::InternetGateway
-      IconFill:
-        Type: rect
-    User:
-      Type: AWS::Diagram::Resource
-      Preset: User
-  Links:
-    - Source: ALB
-      SourcePosition: NNW
-      Target: VPCPublicSubnet1Instance
-      TargetPosition: SSE
-      TargetArrowHead:
-        Type: Open
-    - Source: ALB
-      SourcePosition: NNE
-      Target: VPCPublicSubnet2Instance
-      TargetPosition: SSW
-      TargetArrowHead:
-        Type: Open
-    - Source: IGW
-      SourcePosition: N
-      Target: ALB
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-    - Source: User
-      SourcePosition: N
-      Target: IGW
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-`,
+      Children: [Instance]
+    Instance:
+      Type: AWS::EC2::Instance`
 
-  'VPC + NAT Gateway': `Diagram:
-  DefinitionFiles:
-    - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
-  Resources:
-    Canvas:
-      Type: AWS::Diagram::Canvas
-      Direction: vertical
-      Children:
-        - AWSCloud
-        - User
-    AWSCloud:
-      Type: AWS::Diagram::Cloud
-      Direction: vertical
-      Preset: AWSCloudNoLogo
-      Align: center
-      Children:
-        - VPC
-    VPC:
-      Type: AWS::EC2::VPC
-      Direction: vertical
-      Children:
-        - VPCPublicSubnetStack
-        - VPCPrivateSubnetStack
-    VPCPublicSubnetStack:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - VPCPublicSubnet1
-        - VPCPublicSubnet2
-    VPCPublicSubnet1:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - VPCPublicSubnet1NatGateway
-    VPCPublicSubnet1NatGateway:
-      Type: AWS::EC2::NatGateway
-    VPCPublicSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - VPCPublicSubnet2NatGateway
-    VPCPublicSubnet2NatGateway:
-      Type: AWS::EC2::NatGateway
-    VPCPrivateSubnetStack:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - VPCPrivateSubnet1
-        - VPCPrivateSubnet2
-    VPCPrivateSubnet1:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPCPrivateSubnet1Instance
-    VPCPrivateSubnet1Instance:
-      Type: AWS::EC2::Instance
-    VPCPrivateSubnet2:
-      Type: AWS::EC2::Subnet
-      Preset: PrivateSubnet
-      Children:
-        - VPCPrivateSubnet2Instance
-    VPCPrivateSubnet2Instance:
-      Type: AWS::EC2::Instance
-    User:
-      Type: AWS::Diagram::Resource
-      Preset: User
-`,
-
-  'ALB + Auto Scaling': `Diagram:
-  DefinitionFiles:
-    - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
-  Resources:
-    Canvas:
-      Type: AWS::Diagram::Canvas
-      Direction: vertical
-      Children:
-        - AWSCloud
-        - User
-    AWSCloud:
-      Type: AWS::Diagram::Cloud
-      Direction: vertical
-      Preset: AWSCloudNoLogo
-      Align: center
-      Children:
-        - VPC
-    VPC:
-      Type: AWS::EC2::VPC
-      Direction: vertical
-      Children:
-        - AutoScalingGroup
-        - ALB
-      BorderChildren:
-        - Position: S
-          Resource: IGW
-    AutoScalingGroup:
-      Type: AWS::AutoScaling::AutoScalingGroup
-      Children:
-        - Instance1
-        - Instance2
-    Instance1:
-      Type: AWS::EC2::Instance
-    Instance2:
-      Type: AWS::EC2::Instance
-    ALB:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Preset: Application Load Balancer
-    IGW:
-      Type: AWS::EC2::InternetGateway
-      IconFill:
-        Type: rect
-    User:
-      Type: AWS::Diagram::Resource
-      Preset: User
-  Links:
-    - Source: ALB
-      SourcePosition: NNW
-      Target: Instance1
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-      Labels:
-        SourceLeft:
-          Title: "HTTP:80"
-    - Source: ALB
-      SourcePosition: NNE
-      Target: Instance2
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-      Labels:
-        SourceRight:
-          Title: "HTTP:80"
-    - Source: IGW
-      SourcePosition: N
-      Target: ALB
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-      Labels:
-        SourceLeft:
-          Title: "HTTP:80"
-        SourceRight:
-          Title: "HTTPS:443"
-    - Source: User
-      SourcePosition: N
-      Target: IGW
-      TargetPosition: S
-      TargetArrowHead:
-        Type: Open
-`,
-
-  'Multi-Region': `Diagram:
-  DefinitionFiles:
-    - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
-  Resources:
-    Canvas:
-      Type: AWS::Diagram::Canvas
-      Direction: vertical
-      Children:
-        - AWSCloud
-        - User
-    AWSCloud:
-      Type: AWS::Diagram::Cloud
-      Direction: vertical
-      Preset: AWSCloudNoLogo
-      Align: center
-      Children:
-        - Regions
-    Regions:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - UsEast1
-        - UsWest2
-    UsEast1:
-      Type: AWS::Region
-      Title: us-east-1
-      Direction: vertical
-      Children:
-        - VpcEast
-    VpcEast:
-      Type: AWS::EC2::VPC
-      Direction: vertical
-      Children:
-        - SubnetStackEast
-        - ALBEast
-      BorderChildren:
-        - Position: S
-          Resource: IGWEast
-    SubnetStackEast:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - Subnet1East
-        - Subnet2East
-    Subnet1East:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - Instance1East
-    Instance1East:
-      Type: AWS::EC2::Instance
-    Subnet2East:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - Instance2East
-    Instance2East:
-      Type: AWS::EC2::Instance
-    ALBEast:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Preset: Application Load Balancer
-    IGWEast:
-      Type: AWS::EC2::InternetGateway
-      IconFill:
-        Type: rect
-    UsWest2:
-      Type: AWS::Region
-      Title: us-west-2
-      Direction: vertical
-      Children:
-        - VpcWest
-    VpcWest:
-      Type: AWS::EC2::VPC
-      Direction: vertical
-      Children:
-        - SubnetStackWest
-        - ALBWest
-      BorderChildren:
-        - Position: S
-          Resource: IGWWest
-    SubnetStackWest:
-      Type: AWS::Diagram::HorizontalStack
-      Children:
-        - Subnet1West
-        - Subnet2West
-    Subnet1West:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - Instance1West
-    Instance1West:
-      Type: AWS::EC2::Instance
-    Subnet2West:
-      Type: AWS::EC2::Subnet
-      Preset: PublicSubnet
-      Children:
-        - Instance2West
-    Instance2West:
-      Type: AWS::EC2::Instance
-    ALBWest:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Preset: Application Load Balancer
-    IGWWest:
-      Type: AWS::EC2::InternetGateway
-      IconFill:
-        Type: rect
-    User:
-      Type: AWS::Diagram::Resource
-      Preset: User
-  Links:
-    - Source: ALBEast
-      Target: Instance1East
-      TargetArrowHead:
-        Type: Open
-    - Source: ALBEast
-      Target: Instance2East
-      TargetArrowHead:
-        Type: Open
-    - Source: IGWEast
-      Target: ALBEast
-      TargetArrowHead:
-        Type: Open
-    - Source: User
-      Target: IGWEast
-      TargetArrowHead:
-        Type: Open
-    - Source: ALBWest
-      Target: Instance1West
-      TargetArrowHead:
-        Type: Open
-    - Source: ALBWest
-      Target: Instance2West
-      TargetArrowHead:
-        Type: Open
-    - Source: IGWWest
-      Target: ALBWest
-      TargetArrowHead:
-        Type: Open
-    - Source: User
-      Target: IGWWest
-      TargetArrowHead:
-        Type: Open
-`,
+const CONTENT = {
+  en: {
+    nav: { editor: 'Editor', builder: 'Builder', docs: 'Docs' },
+    hero: {
+      badge: 'Open Source · Free · No Install Required',
+      heading1: 'AWS Architecture Diagrams',
+      heading2: 'from YAML',
+      sub: 'Write YAML, get beautiful AWS architecture diagrams. Generate PNG or draw.io files instantly — in the browser or via CLI.',
+      cta: 'Open Editor',
+      ctaBuilder: 'Try the Builder',
+    },
+    how: {
+      title: 'How it works',
+      steps: [
+        { icon: '✍️', title: 'Write YAML', desc: 'Describe your AWS architecture using a simple, readable YAML syntax.' },
+        { icon: '⚡', title: 'Generate', desc: 'Click Generate or press Ctrl+Enter. Our Go backend renders your diagram instantly.' },
+        { icon: '📥', title: 'Download', desc: 'Export as PNG for presentations or draw.io for further editing.' },
+      ],
+    },
+    features: {
+      title: 'Everything you need',
+      items: [
+        { icon: <Code2 size={20} />, title: 'YAML-first', desc: 'No drag-and-drop needed. Define your entire architecture in code.' },
+        { icon: <Layers size={20} />, title: '100+ AWS Icons', desc: 'Full AWS icon set with proper colors, borders, and grouping.' },
+        { icon: <Zap size={20} />, title: 'Instant Preview', desc: 'Real-time diagram preview as you type.' },
+        { icon: <Wrench size={20} />, title: 'Visual Builder', desc: 'Prefer forms? Use the Builder to generate YAML without writing a line.' },
+        { icon: <Terminal size={20} />, title: 'CLI Tool', desc: 'Use the CLI in your CI/CD pipeline to automate diagram generation.' },
+        { icon: <Globe size={20} />, title: 'Open Source', desc: 'MIT licensed. Contribute, self-host, or fork it freely.' },
+      ],
+    },
+    cta: {
+      title: 'Start building your diagrams',
+      sub: 'No sign-up. No install. Just open the editor and start writing.',
+      btn: 'Open Editor →',
+    },
+    footer: 'Made with ❤️ by Fernando Azevedo · Open Source',
+  },
+  pt: {
+    nav: { editor: 'Editor', builder: 'Builder', docs: 'Docs' },
+    hero: {
+      badge: 'Open Source · Gratuito · Sem instalação',
+      heading1: 'Diagramas de Arquitetura AWS',
+      heading2: 'a partir de YAML',
+      sub: 'Escreva YAML, obtenha diagramas AWS bonitos. Gere arquivos PNG ou draw.io instantaneamente — no navegador ou via CLI.',
+      cta: 'Abrir Editor',
+      ctaBuilder: 'Usar o Builder',
+    },
+    how: {
+      title: 'Como funciona',
+      steps: [
+        { icon: '✍️', title: 'Escreva YAML', desc: 'Descreva sua arquitetura AWS usando uma sintaxe YAML simples e legível.' },
+        { icon: '⚡', title: 'Gere', desc: 'Clique em Gerar ou pressione Ctrl+Enter. Nosso backend Go renderiza seu diagrama.' },
+        { icon: '📥', title: 'Baixe', desc: 'Exporte como PNG para apresentações ou draw.io para edição adicional.' },
+      ],
+    },
+    features: {
+      title: 'Tudo que você precisa',
+      items: [
+        { icon: <Code2 size={20} />, title: 'YAML primeiro', desc: 'Sem arrastar e soltar. Defina toda sua arquitetura em código.' },
+        { icon: <Layers size={20} />, title: '100+ ícones AWS', desc: 'Conjunto completo de ícones AWS com cores, bordas e agrupamentos corretos.' },
+        { icon: <Zap size={20} />, title: 'Preview instantâneo', desc: 'Visualização em tempo real enquanto você digita.' },
+        { icon: <Wrench size={20} />, title: 'Builder Visual', desc: 'Prefere formulários? Use o Builder para gerar YAML sem escrever uma linha.' },
+        { icon: <Terminal size={20} />, title: 'CLI Tool', desc: 'Use o CLI no seu pipeline CI/CD para automatizar a geração de diagramas.' },
+        { icon: <Globe size={20} />, title: 'Open Source', desc: 'Licença MIT. Contribua, faça self-host ou fork livremente.' },
+      ],
+    },
+    cta: {
+      title: 'Comece a criar seus diagramas',
+      sub: 'Sem cadastro. Sem instalação. Só abrir o editor e começar a escrever.',
+      btn: 'Abrir Editor →',
+    },
+    footer: 'Feito com ❤️ por Fernando Azevedo · Open Source',
+  },
 }
 
-const EXAMPLE_NAMES = Object.keys(EXAMPLES)
-
-// ── Page component ───────────────────────────────────────────────────────────
-
-export default function Home() {
-  const { t } = useLanguage()
-  const [yaml, setYaml] = useState(EXAMPLES['ALB + EC2'])
-  const [format, setFormat] = useState<'png' | 'drawio'>('png')
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [drawioContent, setDrawioContent] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [examplesOpen, setExamplesOpen] = useState(false)
-  const prevImageUrl = useRef<string | null>(null)
-
-  // Pick up YAML from builder
-  useEffect(() => {
-    const saved = localStorage.getItem('builder_yaml')
-    if (saved) {
-      setYaml(saved)
-      localStorage.removeItem('builder_yaml')
-    }
-  }, [])
-
-  // Ctrl+Enter shortcut
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault()
-        generate()
-      }
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [yaml, format])
-
-  const generate = useCallback(async () => {
-    if (!yaml.trim()) return
-    setLoading(true)
-    setError(null)
-
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ yaml, format }),
-      })
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({ error: 'Unknown error' }))
-        throw new Error(body.error ?? 'Generation failed')
-      }
-
-      if (format === 'png') {
-        const blob = await res.blob()
-        const url = URL.createObjectURL(blob)
-        if (prevImageUrl.current) URL.revokeObjectURL(prevImageUrl.current)
-        prevImageUrl.current = url
-        setImageUrl(url)
-        setDrawioContent(null)
-      } else {
-        const text = await res.text()
-        setDrawioContent(text)
-        setImageUrl(null)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setLoading(false)
-    }
-  }, [yaml, format])
-
-  function loadExample(name: string) {
-    setYaml(EXAMPLES[name])
-    setExamplesOpen(false)
-    setImageUrl(null)
-    setDrawioContent(null)
-    setError(null)
-  }
+export default function LandingPage() {
+  const { lang } = useLanguage()
+  const c = CONTENT[lang] ?? CONTENT.en
 
   return (
-    <div className="flex flex-col h-screen bg-[#0f0f0f] overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5] flex flex-col">
 
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-4 h-12 border-b border-[#2a2a2a] flex-shrink-0">
-        <div className="flex items-center gap-3">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-[#FF9900] rounded flex items-center justify-center">
-              <svg viewBox="0 0 16 16" fill="white" className="w-4 h-4">
-                <rect x="1" y="1" width="6" height="6" rx="1" />
-                <rect x="9" y="1" width="6" height="6" rx="1" />
-                <rect x="1" y="9" width="6" height="6" rx="1" />
-                <rect x="9" y="9" width="6" height="6" rx="1" />
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-[#e5e5e5] tracking-tight">
-              diagram-as-code
-            </span>
+      {/* ── Sticky Header ─────────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 h-14 border-b border-[#1e1e1e] bg-[#0a0a0a]/90 backdrop-blur">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 bg-[#FF9900] rounded-md flex items-center justify-center">
+            <svg viewBox="0 0 16 16" fill="white" className="w-4 h-4">
+              <rect x="1" y="1" width="6" height="6" rx="1" />
+              <rect x="9" y="1" width="6" height="6" rx="1" />
+              <rect x="1" y="9" width="6" height="6" rx="1" />
+              <rect x="9" y="9" width="6" height="6" rx="1" />
+            </svg>
           </div>
-
-          {/* Divider */}
-          <div className="w-px h-4 bg-[#2a2a2a]" />
-
-          {/* Examples dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setExamplesOpen((o) => !o)}
-              className="flex items-center gap-1.5 text-xs text-[#999] hover:text-[#e5e5e5] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
-            >
-              {t.examples}
-              <ChevronDown size={12} className={`transition-transform ${examplesOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {examplesOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setExamplesOpen(false)}
-                />
-                <div className="absolute top-full left-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-20 min-w-[180px] py-1 overflow-hidden">
-                  {EXAMPLE_NAMES.map((name) => (
-                    <button
-                      key={name}
-                      onClick={() => loadExample(name)}
-                      className="w-full text-left px-3 py-2 text-xs text-[#ccc] hover:bg-[#252525] hover:text-[#e5e5e5] transition-colors"
-                    >
-                      {name}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          <span className="font-semibold text-sm tracking-tight text-[#e5e5e5]">diagram-as-code</span>
         </div>
 
-        {/* Right controls */}
-        <div className="flex items-center gap-2">
-          {/* Language switcher */}
+        <nav className="flex items-center gap-1">
+          <Link href="/editor" className="text-xs text-[#777] hover:text-[#e5e5e5] transition-colors px-3 py-1.5 rounded hover:bg-[#1a1a1a]">{c.nav.editor}</Link>
+          <Link href="/builder" className="text-xs text-[#777] hover:text-[#e5e5e5] transition-colors px-3 py-1.5 rounded hover:bg-[#1a1a1a]">{c.nav.builder}</Link>
+          <Link href="/docs" className="text-xs text-[#777] hover:text-[#e5e5e5] transition-colors px-3 py-1.5 rounded hover:bg-[#1a1a1a]">{c.nav.docs}</Link>
+          <div className="w-px h-4 bg-[#2a2a2a] mx-1" />
           <LanguageSwitcher />
-
-          {/* Format toggle */}
-          <div className="flex items-center bg-[#1a1a1a] border border-[#2a2a2a] rounded-md p-0.5 text-xs">
-            {(['png', 'drawio'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFormat(f)}
-                className={`px-3 py-1 rounded transition-all ${
-                  format === f
-                    ? 'bg-[#FF9900] text-[#0f0f0f] font-semibold'
-                    : 'text-[#888] hover:text-[#ccc]'
-                }`}
-              >
-                {f === 'png' ? 'PNG' : 'draw.io'}
-              </button>
-            ))}
-          </div>
-
-          {/* Generate button */}
-          <button
-            onClick={generate}
-            disabled={loading || !yaml.trim()}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-[#FF9900] hover:bg-[#ffb340] disabled:opacity-40 disabled:cursor-not-allowed text-[#0f0f0f] text-xs font-semibold rounded-md transition-colors"
-          >
-            {loading ? (
-              <div className="w-3.5 h-3.5 border-2 border-[#0f0f0f] border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Zap size={13} />
-            )}
-            {t.generate}
-          </button>
-
-          {/* Builder link */}
-          <Link
-            href="/builder"
-            className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
-          >
-            <Wrench size={13} />
-            {t.builderLink}
-          </Link>
-
-          {/* Docs link */}
-          <Link
-            href="/docs"
-            className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
-          >
-            <BookOpen size={13} />
-            {t.docs}
-          </Link>
-
-          {/* GitHub link */}
+          <ThemeSwitcher />
           <a
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#555] hover:text-[#999] transition-colors p-1"
+            className="text-[#555] hover:text-[#e5e5e5] transition-colors p-1.5 rounded hover:bg-[#1a1a1a]"
             aria-label="GitHub"
           >
             <Github size={16} />
           </a>
-        </div>
+        </nav>
       </header>
 
-      {/* ── Main content ────────────────────────────────────────────────────── */}
-      <main className="flex flex-1 overflow-hidden">
-        {/* Editor panel */}
-        <div className="w-1/2 flex flex-col overflow-hidden border-r border-[#2a2a2a]">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
-            <span className="text-xs text-[#555] font-medium uppercase tracking-wider">
-              {t.yamlEditor}
-            </span>
-            <span className="text-xs text-[#444]">
-              {t.lines(yaml.split('\n').length)}
-            </span>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <YamlEditor value={yaml} onChange={setYaml} />
-          </div>
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      <section className="flex flex-col items-center justify-center text-center px-6 pt-24 pb-20 gap-6">
+        <span className="text-xs text-[#FF9900] border border-[#FF9900]/30 bg-[#FF9900]/10 px-3 py-1 rounded-full">
+          {c.hero.badge}
+        </span>
+
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight max-w-3xl">
+          <span className="text-[#e5e5e5]">{c.hero.heading1}</span>
+          <br />
+          <span className="text-[#FF9900]">{c.hero.heading2}</span>
+        </h1>
+
+        <p className="text-base text-[#777] max-w-xl leading-relaxed">
+          {c.hero.sub}
+        </p>
+
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          <Link
+            href="/editor"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#FF9900] hover:bg-[#ffb340] text-[#0a0a0a] font-semibold text-sm rounded-lg transition-colors"
+          >
+            <Zap size={15} />
+            {c.hero.cta}
+          </Link>
+          <Link
+            href="/builder"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] text-[#ccc] font-medium text-sm rounded-lg transition-colors"
+          >
+            <Wrench size={15} />
+            {c.hero.ctaBuilder}
+          </Link>
         </div>
 
-        {/* Preview panel */}
-        <div className="w-1/2 flex flex-col overflow-hidden">
-          <div className="flex items-center px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
-            <span className="text-xs text-[#555] font-medium uppercase tracking-wider">
-              {t.preview}
-            </span>
+        {/* Demo block */}
+        <div className="w-full max-w-4xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+          {/* YAML code */}
+          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#1e1e1e]">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+              <span className="ml-2 text-[10px] text-[#444] font-mono">architecture.yaml</span>
+            </div>
+            <pre className="px-4 py-4 text-[11px] text-[#aaa] font-mono leading-relaxed overflow-auto">
+              <code>{YAML_DEMO}</code>
+            </pre>
           </div>
-          <div className="flex-1 overflow-hidden">
-            <DiagramPreview
-              imageUrl={imageUrl}
-              drawioContent={drawioContent}
-              loading={loading}
-              error={error}
-            />
+
+          {/* Diagram illustration */}
+          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden flex items-center justify-center p-8">
+            <svg viewBox="0 0 220 200" className="w-full max-w-[220px]" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Cloud outline */}
+              <rect x="4" y="4" width="212" height="192" rx="12" stroke="#FF9900" strokeWidth="1.5" strokeDasharray="4 3" fill="none" />
+              {/* VPC */}
+              <rect x="20" y="20" width="180" height="160" rx="8" stroke="#8b5cf6" strokeWidth="1.5" fill="#8b5cf620" />
+              <text x="26" y="34" fontSize="8" fill="#8b5cf6" fontFamily="monospace">VPC</text>
+              {/* Subnet */}
+              <rect x="36" y="44" width="148" height="100" rx="6" stroke="#10b981" strokeWidth="1.5" fill="#10b98115" />
+              <text x="42" y="57" fontSize="7" fill="#10b981" fontFamily="monospace">PublicSubnet</text>
+              {/* EC2 icon */}
+              <rect x="90" y="68" width="40" height="40" rx="6" fill="#FF9900" opacity="0.9" />
+              <text x="95" y="92" fontSize="9" fill="white" fontFamily="monospace" fontWeight="bold">EC2</text>
+              {/* Arrow down */}
+              <line x1="110" y1="148" x2="110" y2="168" stroke="#555" strokeWidth="1.5" />
+              <polygon points="105,165 110,173 115,165" fill="#555" />
+              {/* IGW */}
+              <rect x="85" y="173" width="50" height="18" rx="4" fill="#1e1e1e" stroke="#444" strokeWidth="1" />
+              <text x="98" y="185" fontSize="7" fill="#999" fontFamily="monospace">IGW</text>
+            </svg>
           </div>
         </div>
-      </main>
+      </section>
 
-      {/* ── Status bar ─────────────────────────────────────────────────────── */}
-      <footer className="flex items-center justify-between px-4 h-6 border-t border-[#2a2a2a] flex-shrink-0">
-        <span className="text-[10px] text-[#444]">
-          diagram-as-code · AWS Architecture Diagrams from YAML ·{' '}
+      {/* ── How it works ──────────────────────────────────────────────────── */}
+      <section className="px-6 py-20 border-t border-[#1a1a1a]">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-12 text-[#e5e5e5]">{c.how.title}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {c.how.steps.map((step, i) => (
+              <div key={i} className="flex flex-col items-center text-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-2xl">
+                  {step.icon}
+                </div>
+                <div className="w-6 h-6 rounded-full bg-[#FF9900]/20 border border-[#FF9900]/40 flex items-center justify-center text-xs font-bold text-[#FF9900]">
+                  {i + 1}
+                </div>
+                <h3 className="font-semibold text-[#e5e5e5]">{step.title}</h3>
+                <p className="text-sm text-[#666] leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ──────────────────────────────────────────────────────── */}
+      <section className="px-6 py-20 border-t border-[#1a1a1a]">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-12 text-[#e5e5e5]">{c.features.title}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {c.features.items.map((item, i) => (
+              <div key={i} className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 hover:border-[#FF9900]/30 transition-colors">
+                <div className="text-[#FF9900] mb-3">{item.icon}</div>
+                <h3 className="font-semibold text-sm text-[#e5e5e5] mb-1">{item.title}</h3>
+                <p className="text-xs text-[#666] leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ───────────────────────────────────────────────────────────── */}
+      <section className="px-6 py-20 border-t border-[#1a1a1a]">
+        <div className="max-w-2xl mx-auto text-center flex flex-col items-center gap-6">
+          <h2 className="text-3xl font-bold text-[#e5e5e5]">{c.cta.title}</h2>
+          <p className="text-[#666] text-sm leading-relaxed">{c.cta.sub}</p>
+          <Link
+            href="/editor"
+            className="flex items-center gap-2 px-8 py-3 bg-[#FF9900] hover:bg-[#ffb340] text-[#0a0a0a] font-semibold rounded-lg transition-colors text-sm"
+          >
+            {c.cta.btn}
+            <ArrowRight size={15} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Footer ────────────────────────────────────────────────────────── */}
+      <footer className="border-t border-[#1a1a1a] px-6 py-6 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 bg-[#FF9900] rounded flex items-center justify-center">
+            <svg viewBox="0 0 16 16" fill="white" className="w-3 h-3">
+              <rect x="1" y="1" width="6" height="6" rx="1" />
+              <rect x="9" y="1" width="6" height="6" rx="1" />
+              <rect x="1" y="9" width="6" height="6" rx="1" />
+              <rect x="9" y="9" width="6" height="6" rx="1" />
+            </svg>
+          </div>
+          <span className="text-xs text-[#444]">{c.footer}</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link href="/editor" className="text-xs text-[#444] hover:text-[#777] transition-colors flex items-center gap-1">
+            <Zap size={11} /> Editor
+          </Link>
+          <Link href="/builder" className="text-xs text-[#444] hover:text-[#777] transition-colors flex items-center gap-1">
+            <Wrench size={11} /> Builder
+          </Link>
+          <Link href="/docs" className="text-xs text-[#444] hover:text-[#777] transition-colors flex items-center gap-1">
+            <BookOpen size={11} /> Docs
+          </Link>
           <a
-            href="https://fernando.moretes.com"
+            href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#555] hover:text-[#888] transition-colors"
+            className="text-[#444] hover:text-[#777] transition-colors"
           >
-            {t.footerBy}
+            <Github size={13} />
           </a>
-        </span>
-        <span className="text-[10px] text-[#444]">
-          {t.mode(format)} · <kbd className="font-mono">Ctrl+Enter</kbd>
-        </span>
+        </div>
       </footer>
     </div>
   )

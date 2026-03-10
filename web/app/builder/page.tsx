@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Copy, Check, Zap, ChevronDown, ChevronRight,
-  Trash2, Plus, Github, BookOpen
+  Trash2, Plus, Github, BookOpen, Upload
 } from 'lucide-react'
+import * as jsyaml from 'js-yaml'
 import { useLanguage } from '@/lib/i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 
 // ── AWS Resource Catalog ──────────────────────────────────────────────────────
 
@@ -343,6 +345,168 @@ function newLink(): LinkEntry {
 }
 
 const DEFAULT_URL = 'https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml'
+
+// ── Example YAML templates for builder import ─────────────────────────────────
+
+const BUILDER_EXAMPLES: Record<string, string> = {
+  'ALB + EC2': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEFAULT_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Children:
+        - VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - Subnet1
+        - ALB
+      BorderChildren:
+        - Position: S
+          Resource: IGW
+    Subnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - Instance1
+    Instance1:
+      Type: AWS::EC2::Instance
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    IGW:
+      Type: AWS::EC2::InternetGateway
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+  Links:
+    - Source: ALB
+      SourcePosition: N
+      Target: Instance1
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open`,
+  'VPC + NAT Gateway': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEFAULT_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Children:
+        - VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - PublicSubnet
+        - PrivateSubnet
+    PublicSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - NAT
+    NAT:
+      Type: AWS::EC2::NatGateway
+    PrivateSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - Instance1
+    Instance1:
+      Type: AWS::EC2::Instance`,
+}
+
+// ── YAML → FormState parser ────────────────────────────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseYamlToForm(yamlStr: string): Partial<FormState> | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const doc = jsyaml.load(yamlStr) as any
+    if (!doc?.Diagram) return null
+    const diagram = doc.Diagram
+
+    // Definition file
+    const defFiles = diagram.DefinitionFiles ?? []
+    const firstDef = defFiles[0] ?? {}
+    const defType: 'URL' | 'LocalFile' = firstDef.Type === 'LocalFile' ? 'LocalFile' : 'URL'
+    const defUrl = firstDef.Url ?? DEFAULT_URL
+    const defFile = firstDef.LocalFile ?? ''
+
+    // Canvas direction
+    const rawResources = diagram.Resources ?? {}
+    const canvas = rawResources.Canvas ?? {}
+    const canvasDirection = canvas.Direction ?? 'vertical'
+
+    // Resources (exclude Canvas)
+    const resources: ResourceEntry[] = []
+    for (const [key, val] of Object.entries(rawResources)) {
+      if (key === 'Canvas') continue
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const v = val as any
+      const borderChildren: BorderChild[] = (v.BorderChildren ?? []).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (bc: any) => ({ id: crypto.randomUUID(), position: bc.Position ?? '', resource: bc.Resource ?? '' })
+      )
+      resources.push({
+        id: crypto.randomUUID(),
+        name: key,
+        type: v.Type ?? '',
+        title: v.Title ?? '',
+        preset: v.Preset ?? '',
+        direction: v.Direction ?? '',
+        align: v.Align ?? '',
+        iconFill: v.IconFill?.Type ?? '',
+        children: v.Children ?? [],
+        borderChildren,
+      })
+    }
+
+    // Links
+    const links: LinkEntry[] = (diagram.Links ?? []).map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (l: any) => ({
+        id: crypto.randomUUID(),
+        source: l.Source ?? '',
+        sourcePosition: l.SourcePosition ?? '',
+        target: l.Target ?? '',
+        targetPosition: l.TargetPosition ?? '',
+        arrowHead: l.TargetArrowHead?.Type ?? '',
+        labels: {
+          SourceLeft: l.Labels?.SourceLeft?.Title ?? '',
+          SourceRight: l.Labels?.SourceRight?.Title ?? '',
+          TargetLeft: l.Labels?.TargetLeft?.Title ?? '',
+          TargetRight: l.Labels?.TargetRight?.Title ?? '',
+          AutoLeft: l.Labels?.AutoLeft?.Title ?? '',
+          AutoRight: l.Labels?.AutoRight?.Title ?? '',
+        },
+      })
+    )
+
+    return { defType, defUrl, defFile, canvasDirection, resources, links }
+  } catch {
+    return null
+  }
+}
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -916,7 +1080,7 @@ export default function BuilderPage() {
 
   function useInEditor() {
     localStorage.setItem('builder_yaml', yaml)
-    router.push('/')
+    router.push('/editor')
   }
 
   // Pick up builder_yaml when returning to editor
@@ -924,6 +1088,38 @@ export default function BuilderPage() {
     const saved = localStorage.getItem('builder_yaml')
     if (saved) localStorage.removeItem('builder_yaml')
   }, [])
+
+  // Upload YAML file
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [examplesOpen, setExamplesOpen] = useState(false)
+
+  function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const content = ev.target?.result as string
+      const parsed = parseYamlToForm(content)
+      if (!parsed) {
+        setUploadError('Invalid YAML or unsupported structure')
+        return
+      }
+      setForm(f => ({ ...f, ...parsed }))
+      setUploadError(null)
+    }
+    reader.readAsText(file)
+    // reset input so same file can be re-uploaded
+    e.target.value = ''
+  }
+
+  function loadExample(name: string) {
+    const yaml = BUILDER_EXAMPLES[name]
+    if (!yaml) return
+    const parsed = parseYamlToForm(yaml)
+    if (parsed) setForm(f => ({ ...f, ...parsed }))
+    setExamplesOpen(false)
+  }
 
   const lineCount = yaml.split('\n').length
 
@@ -933,7 +1129,7 @@ export default function BuilderPage() {
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 h-12 border-b border-[#2a2a2a] flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors">
+          <Link href="/editor" className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors">
             <ArrowLeft size={13} />
             {t.backToEditor}
           </Link>
@@ -952,7 +1148,42 @@ export default function BuilderPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Examples dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setExamplesOpen(o => !o)}
+              className="flex items-center gap-1 text-xs text-[#666] hover:text-[#ccc] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a] border border-[#2a2a2a]"
+            >
+              Examples <ChevronDown size={11} className={`transition-transform ${examplesOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {examplesOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setExamplesOpen(false)} />
+                <div className="absolute top-full right-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-20 min-w-[180px] py-1">
+                  {Object.keys(BUILDER_EXAMPLES).map(name => (
+                    <button key={name} type="button" onClick={() => loadExample(name)}
+                      className="w-full text-left px-3 py-2 text-xs text-[#ccc] hover:bg-[#252525] hover:text-[#e5e5e5] transition-colors">
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Upload YAML */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1 text-xs text-[#666] hover:text-[#ccc] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a] border border-[#2a2a2a]"
+          >
+            <Upload size={12} /> Upload YAML
+          </button>
+          <input ref={fileInputRef} type="file" accept=".yaml,.yml" className="hidden" onChange={handleUpload} />
+
           <LanguageSwitcher />
+          <ThemeSwitcher />
           <Link href="/docs" className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]">
             <BookOpen size={13} />
             {t.docs}
@@ -963,6 +1194,12 @@ export default function BuilderPage() {
           </a>
         </div>
       </header>
+      {uploadError && (
+        <div className="px-4 py-2 bg-red-900/30 border-b border-red-800/50 text-xs text-red-400 flex items-center justify-between">
+          <span>{uploadError}</span>
+          <button type="button" onClick={() => setUploadError(null)} className="text-red-500 hover:text-red-300 ml-4">✕</button>
+        </div>
+      )}
 
       {/* ── Body ── */}
       <div className="flex flex-1 overflow-hidden">
