@@ -1,6 +1,7 @@
 'use client'
 
 import { Download, FileCode2, ImageIcon } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n'
 
 interface DiagramPreviewProps {
   imageUrl: string | null
@@ -15,6 +16,8 @@ export default function DiagramPreview({
   loading,
   error,
 }: DiagramPreviewProps) {
+  const { t } = useLanguage()
+
   function downloadDrawio() {
     if (!drawioContent) return
     const blob = new Blob([drawioContent], { type: 'application/xml' })
@@ -30,7 +33,7 @@ export default function DiagramPreview({
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 text-[#666]">
         <div className="w-8 h-8 border-2 border-[#FF9900] border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm">Generating diagram…</span>
+        <span className="text-sm">{t.generating}</span>
       </div>
     )
   }
@@ -39,7 +42,7 @@ export default function DiagramPreview({
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 px-8">
         <div className="w-full max-w-lg bg-red-950/40 border border-red-800/60 rounded-lg p-4">
-          <p className="text-red-400 text-sm font-medium mb-1">Generation failed</p>
+          <p className="text-red-400 text-sm font-medium mb-1">{t.generationFailed}</p>
           <p className="text-red-300/80 text-xs font-mono whitespace-pre-wrap break-words">{error}</p>
         </div>
       </div>
@@ -53,7 +56,7 @@ export default function DiagramPreview({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
-            alt="Generated diagram"
+            alt={t.generatedDiagram}
             className="max-w-full max-h-full object-contain rounded shadow-lg"
           />
         </div>
@@ -64,7 +67,7 @@ export default function DiagramPreview({
             className="flex items-center gap-2 text-xs text-[#FF9900] hover:text-[#ffb340] transition-colors px-3 py-1.5 rounded border border-[#FF9900]/30 hover:border-[#FF9900]/60"
           >
             <Download size={13} />
-            Download PNG
+            {t.downloadPng}
           </a>
         </div>
       </div>
@@ -79,15 +82,16 @@ export default function DiagramPreview({
             <FileCode2 size={28} className="text-[#4a9eff]" />
           </div>
           <div className="text-center">
-            <p className="text-sm text-[#e5e5e5] font-medium">draw.io file ready</p>
-            <p className="text-xs text-[#666] mt-1">Open with draw.io or diagrams.net</p>
+            <p className="text-sm text-[#e5e5e5] font-medium">{t.drawioReady}</p>
+            <p className="text-xs text-[#666] mt-1">{t.drawioHelper}</p>
           </div>
           <button
+            type="button"
             onClick={downloadDrawio}
             className="flex items-center gap-2 text-sm text-[#FF9900] hover:text-[#ffb340] transition-colors px-4 py-2 rounded border border-[#FF9900]/30 hover:border-[#FF9900]/60"
           >
             <Download size={14} />
-            Download .drawio
+            {t.downloadDrawio}
           </button>
         </div>
       </div>
@@ -97,7 +101,9 @@ export default function DiagramPreview({
   return (
     <div className="flex flex-col items-center justify-center h-full gap-3 text-[#444]">
       <ImageIcon size={40} strokeWidth={1} />
-      <p className="text-sm">Click <span className="text-[#FF9900]">Generate</span> to preview your diagram</p>
+      <p className="text-sm">
+        {t.emptyStatePre} <span className="text-[#FF9900]">{t.generate}</span> {t.emptyStatePost}
+      </p>
     </div>
   )
 }

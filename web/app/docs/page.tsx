@@ -16,6 +16,8 @@ import {
   Github,
   Linkedin,
 } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 // ── Section IDs ───────────────────────────────────────────────────────────────
 
@@ -29,18 +31,6 @@ type SectionId =
   | 'local-dev'
   | 'examples'
   | 'about'
-
-const NAV: { id: SectionId; label: string; icon: React.ReactNode }[] = [
-  { id: 'overview',   label: 'Overview',          icon: <BookOpen size={14} /> },
-  { id: 'web-editor', label: 'Web Editor',         icon: <Globe size={14} /> },
-  { id: 'cli',        label: 'CLI Usage',          icon: <Terminal size={14} /> },
-  { id: 'drawio',     label: 'Draw.io Export',     icon: <Layers size={14} /> },
-  { id: 'api',        label: 'API Reference',      icon: <Code2 size={14} /> },
-  { id: 'mcp',        label: 'MCP Server',         icon: <Cpu size={14} /> },
-  { id: 'local-dev',  label: 'Local Development',  icon: <Terminal size={14} /> },
-  { id: 'examples',   label: 'YAML Examples',      icon: <Layers size={14} /> },
-  { id: 'about',      label: 'About the Author',   icon: <User size={14} /> },
-]
 
 // ── Reusable primitives ───────────────────────────────────────────────────────
 
@@ -145,7 +135,20 @@ function Callout({ type, children }: { type: 'info' | 'tip'; children: React.Rea
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function DocsPage() {
+  const { t, lang } = useLanguage()
   const [active, setActive] = useState<SectionId>('overview')
+
+  const NAV: { id: SectionId; label: string; icon: React.ReactNode }[] = [
+    { id: 'overview',   label: t.navOverview,   icon: <BookOpen size={14} /> },
+    { id: 'web-editor', label: t.navWebEditor,  icon: <Globe size={14} /> },
+    { id: 'cli',        label: t.navCli,        icon: <Terminal size={14} /> },
+    { id: 'drawio',     label: t.navDrawio,     icon: <Layers size={14} /> },
+    { id: 'api',        label: t.navApi,        icon: <Code2 size={14} /> },
+    { id: 'mcp',        label: t.navMcp,        icon: <Cpu size={14} /> },
+    { id: 'local-dev',  label: t.navLocalDev,   icon: <Terminal size={14} /> },
+    { id: 'examples',   label: t.navExamples,   icon: <Layers size={14} /> },
+    { id: 'about',      label: t.navAbout,      icon: <User size={14} /> },
+  ]
 
   function scrollTo(id: SectionId) {
     setActive(id)
@@ -163,7 +166,7 @@ export default function DocsPage() {
             className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors"
           >
             <ArrowLeft size={13} />
-            Back to Editor
+            {t.backToEditor}
           </Link>
           <div className="w-px h-4 bg-[#2a2a2a]" />
           <div className="flex items-center gap-2">
@@ -175,10 +178,11 @@ export default function DocsPage() {
                 <rect x="9" y="9" width="6" height="6" rx="1" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-[#e5e5e5]">Documentation</span>
+            <span className="text-sm font-semibold text-[#e5e5e5]">{t.documentation}</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <a
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
@@ -205,12 +209,13 @@ export default function DocsPage() {
         {/* Sidebar */}
         <aside className="w-52 flex-shrink-0 border-r border-[#2a2a2a] overflow-y-auto py-4">
           <p className="px-4 text-[10px] text-[#444] uppercase tracking-widest font-medium mb-2">
-            Contents
+            {t.contents}
           </p>
           <nav className="space-y-0.5 px-2">
             {NAV.map(({ id, label, icon }) => (
               <button
                 key={id}
+                type="button"
                 onClick={() => scrollTo(id)}
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs text-left transition-colors ${
                   active === id
@@ -230,69 +235,65 @@ export default function DocsPage() {
         <main className="flex-1 overflow-y-auto px-10 py-8 max-w-3xl">
 
           {/* ── Overview ──────────────────────────────────────────────────── */}
-          <H2 id="overview">Overview</H2>
+          <H2 id="overview">{t.navOverview}</H2>
           <P>
-            <strong className="text-[#ccc]">diagram-as-code</strong> is an open-source CLI tool that
-            generates AWS architecture diagrams from YAML. Write human-readable YAML, get
-            pixel-perfect PNG diagrams or draw.io files — all without touching any GUI diagramming tool.
+            <strong className="text-[#ccc]">diagram-as-code</strong>{' '}
+            {t.overviewP1.replace('diagram-as-code is', '').replace('diagram-as-code é', '')}
           </P>
           <P>
-            This fork, maintained by{' '}
+            {t.overviewP2Fork}{' '}
             <a href="https://fernando.moretes.com" className="text-[#FF9900] hover:underline" target="_blank" rel="noopener noreferrer">
               Fernando Azevedo
             </a>
-            , extends the original{' '}
+            {t.overviewP2Extends}{' '}
             <a href="https://github.com/awslabs/diagram-as-code" className="text-[#FF9900] hover:underline" target="_blank" rel="noopener noreferrer">
               awslabs/diagram-as-code
             </a>{' '}
-            with a browser-based editor hosted on Vercel and a native draw.io export pipeline.
+            {t.overviewP2With}
           </P>
           <Callout type="tip">
-            Fork repository:{' '}
+            {t.overviewForkRepo}{' '}
             <a href="https://github.com/fernandofatech/diagram-as-code" className="underline" target="_blank" rel="noopener noreferrer">
               github.com/fernandofatech/diagram-as-code
             </a>
           </Callout>
 
-          <H3>What this tool produces</H3>
+          <H3>{t.whatToolProduces}</H3>
           <Table
-            headers={['Output', 'Format', 'Use case']}
+            headers={[t.outputCol, t.formatCol, t.useCaseCol]}
             rows={[
-              ['PNG diagram', 'image/png', 'Docs, wikis, PRs, CI artifacts'],
-              ['draw.io file', 'application/xml', 'Editable diagrams in diagrams.net'],
+              [t.pngDiagram, 'image/png', t.pngUseCase],
+              [t.drawioFile, 'application/xml', t.drawioUseCase],
             ]}
           />
 
           {/* ── Web Editor ────────────────────────────────────────────────── */}
-          <H2 id="web-editor">Web Editor</H2>
-          <P>
-            The web editor lets you write YAML and generate diagrams directly in the browser.
-            No installation needed. Powered by Vercel serverless functions running the same Go
-            engine as the CLI.
-          </P>
-          <H3>How to use it</H3>
+          <H2 id="web-editor">{t.navWebEditor}</H2>
+          <P>{t.webEditorP1}</P>
+          <H3>{t.howToUse}</H3>
           <ol className="list-decimal list-inside space-y-2 text-sm text-[#999] mb-4 ml-2">
-            <li>Open the editor at <Link href="/" className="text-[#FF9900] hover:underline">diagram-as-code-ruddy.vercel.app</Link></li>
-            <li>Write or paste your YAML in the left panel, or pick an example from the <strong className="text-[#ccc]">Examples</strong> dropdown</li>
-            <li>Choose output format: <Badge>PNG</Badge> or <Badge color="blue">draw.io</Badge></li>
-            <li>Click <Badge color="orange">⚡ Generate</Badge> or press <Code>Ctrl+Enter</Code></li>
-            <li>Download the result with the button in the preview panel</li>
+            <li>{t.webEditorStep1} <Link href="/" className="text-[#FF9900] hover:underline">diagram-as-code-ruddy.vercel.app</Link></li>
+            <li>{t.webEditorStep2} <strong className="text-[#ccc]">{t.examples}</strong> {t.webEditorStep2b}</li>
+            <li>{t.webEditorStep3} <Badge>PNG</Badge> {lang === 'pt' ? 'ou' : 'or'} <Badge color="blue">draw.io</Badge></li>
+            <li>{t.webEditorStep4} <Badge color="orange">⚡ {t.generate}</Badge> {t.webEditorStep4b} <Code>Ctrl+Enter</Code></li>
+            <li>{t.webEditorStep5}</li>
           </ol>
           <Callout type="info">
-            The editor uses Monaco (the VS Code engine) with YAML syntax highlighting. draw.io files
-            can be opened in <a href="https://app.diagrams.net" className="underline" target="_blank" rel="noopener noreferrer">diagrams.net</a> for further editing.
+            {t.webEditorCallout}{' '}
+            <a href="https://app.diagrams.net" className="underline" target="_blank" rel="noopener noreferrer">diagrams.net</a>{' '}
+            {t.webEditorCalloutSuffix}
           </Callout>
 
           {/* ── CLI Usage ─────────────────────────────────────────────────── */}
-          <H2 id="cli">CLI Usage</H2>
-          <H3>Install</H3>
+          <H2 id="cli">{t.navCli}</H2>
+          <H3>{t.install}</H3>
           <Pre lang="bash">{`# Go 1.21+
-go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
 
 # macOS (Homebrew)
 brew install awsdac`}</Pre>
 
-          <H3>Basic usage</H3>
+          <H3>{t.basicUsage}</H3>
           <Pre lang="bash">{`# Generate PNG
 awsdac examples/alb-ec2.yaml
 
@@ -305,55 +306,52 @@ awsdac examples/alb-ec2.yaml --drawio -o output.drawio
 # Shorthand: output extension auto-selects format
 awsdac examples/alb-ec2.yaml -o output.drawio`}</Pre>
 
-          <H3>All flags</H3>
+          <H3>{t.allFlags}</H3>
           <Table
-            headers={['Flag', 'Default', 'Description']}
+            headers={[t.flagCol, t.defaultCol, t.descriptionCol]}
             rows={[
-              ['-o, --output', 'output.png', 'Output file name'],
-              ['--drawio', 'false', 'Generate draw.io file instead of PNG'],
-              ['-f, --force', 'false', 'Overwrite output without confirmation'],
-              ['-v, --verbose', 'false', 'Enable verbose logging'],
-              ['--width', '0 (no resize)', 'Resize output image width (PNG only)'],
-              ['--height', '0 (no resize)', 'Resize output image height (PNG only)'],
-              ['-t, --template', 'false', 'Process input as Go text/template'],
-              ['-c, --cfn-template', 'false', '[Beta] Create diagram from CloudFormation template'],
-              ['--allow-untrusted-definitions', 'false', 'Allow definition files from non-official URLs'],
+              ['-o, --output', 'output.png', t.flagOutput],
+              ['--drawio', 'false', t.flagDrawio],
+              ['-f, --force', 'false', t.flagForce],
+              ['-v, --verbose', 'false', t.flagVerbose],
+              ['--width', '0 (no resize)', t.flagWidth],
+              ['--height', '0 (no resize)', t.flagHeight],
+              ['-t, --template', 'false', t.flagTemplate],
+              ['-c, --cfn-template', 'false', t.flagCfn],
+              ['--allow-untrusted-definitions', 'false', t.flagUntrusted],
             ]}
           />
 
           {/* ── Draw.io Export ────────────────────────────────────────────── */}
-          <H2 id="drawio">Draw.io Export</H2>
+          <H2 id="drawio">{t.navDrawio}</H2>
           <P>
-            The draw.io export uses the same resource/link model and layout engine as PNG
-            rendering. Resources become <Code>mxCell</Code> nodes; links become edges. Official
-            AWS SVG icons are embedded as data URIs so the file is fully self-contained.
+            {t.drawioP1} <Code>mxCell</Code> {t.drawioP1b}
           </P>
-          <H3>Export pipeline</H3>
+          <H3>{t.exportPipeline}</H3>
           <ol className="list-decimal list-inside space-y-2 text-sm text-[#999] mb-4 ml-2">
-            <li>YAML is parsed into the resource graph</li>
-            <li>The same layout pass runs (<Code>Scale</Code> + <Code>ZeroAdjust</Code>)</li>
-            <li>Children are reordered by link topology (matches PNG ordering)</li>
-            <li>Leaf resources get AWS icons embedded as base64 data URIs</li>
-            <li>Groups get AWS4 group styles with correct fill/stroke colors</li>
-            <li>Links become <Code>mxCell</Code> edges with optional source/target labels</li>
-            <li>Output is written as <Code>mxGraphModel</Code> XML</li>
+            <li>{t.drawioStep1}</li>
+            <li>{t.drawioStep2} (<Code>Scale</Code> + <Code>ZeroAdjust</Code>)</li>
+            <li>{t.drawioStep3}</li>
+            <li>{t.drawioStep4}</li>
+            <li>{t.drawioStep5}</li>
+            <li>{t.drawioStep6} <Code>mxCell</Code> {t.drawioStep6b}</li>
+            <li>{t.drawioStep7} <Code>mxGraphModel</Code> {t.drawioStep7b}</li>
           </ol>
           <Callout type="info">
-            Open the generated <Code>.drawio</Code> file at{' '}
+            {t.drawioCallout} <Code>.drawio</Code> {t.drawioCalloutAt}{' '}
             <a href="https://app.diagrams.net" className="underline" target="_blank" rel="noopener noreferrer">app.diagrams.net</a>{' '}
-            — all icons, labels and group borders render without internet access.
+            {t.drawioCalloutSuffix}
           </Callout>
 
           {/* ── API Reference ─────────────────────────────────────────────── */}
-          <H2 id="api">API Reference</H2>
+          <H2 id="api">{t.navApi}</H2>
           <P>
-            The serverless function at <Code>/api/generate</Code> powers the web editor and can
-            be called directly from any HTTP client or AI agent.
+            {t.apiP1} <Code>/api/generate</Code> {t.apiP1b}
           </P>
 
           <H3>POST /api/generate</H3>
           <Table
-            headers={['Property', 'Value']}
+            headers={[t.propertyCol, t.valueCol]}
             rows={[
               ['Method', 'POST'],
               ['Content-Type', 'application/json'],
@@ -361,15 +359,15 @@ awsdac examples/alb-ec2.yaml -o output.drawio`}</Pre>
             ]}
           />
 
-          <H3>Request body</H3>
+          <H3>{t.requestBody}</H3>
           <Pre lang="json">{`{
   "yaml": "Diagram:\\n  ...",   // Required. DAC YAML string.
   "format": "png"              // Optional. "png" (default) or "drawio"
 }`}</Pre>
 
-          <H3>Response</H3>
+          <H3>{t.response}</H3>
           <Table
-            headers={['format', 'Content-Type', 'Body']}
+            headers={['format', 'Content-Type', t.bodyCol]}
             rows={[
               ['png', 'image/png', 'Raw PNG bytes'],
               ['drawio', 'application/xml', 'draw.io XML (mxGraphModel)'],
@@ -377,7 +375,7 @@ awsdac examples/alb-ec2.yaml -o output.drawio`}</Pre>
             ]}
           />
 
-          <H3>curl example</H3>
+          <H3>{t.curlExample}</H3>
           <Pre lang="bash">{`# Generate PNG
 curl -X POST https://diagram-as-code-ruddy.vercel.app/api/generate \\
   -H "Content-Type: application/json" \\
@@ -390,7 +388,7 @@ curl -X POST https://diagram-as-code-ruddy.vercel.app/api/generate \\
   -d '{"yaml":"...","format":"drawio"}' \\
   --output diagram.drawio`}</Pre>
 
-          <H3>JavaScript / TypeScript example</H3>
+          <H3>{t.jsExample}</H3>
           <Pre lang="typescript">{`const yaml = \`Diagram:
   DefinitionFiles:
     - Type: URL
@@ -419,18 +417,15 @@ const url = URL.createObjectURL(blob)
 // use url in <img src={url} />`}</Pre>
 
           {/* ── MCP Server ────────────────────────────────────────────────── */}
-          <H2 id="mcp">MCP Server</H2>
-          <P>
-            The MCP (Model Context Protocol) server lets AI assistants like Claude generate AWS
-            architecture diagrams directly from chat — no CLI required.
-          </P>
+          <H2 id="mcp">{t.navMcp}</H2>
+          <P>{t.mcpP1}</P>
 
-          <H3>Install the MCP server</H3>
+          <H3>{t.installMcp}</H3>
           <Pre lang="bash">{`go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest`}</Pre>
 
-          <H3>Configure in Claude Desktop</H3>
+          <H3>{t.configureClaude}</H3>
           <P>
-            Add the following to your <Code>claude_desktop_config.json</Code>:
+            {t.configureClaudeP} <Code>claude_desktop_config.json</Code>:
           </P>
           <Pre lang="json">{`{
   "mcpServers": {
@@ -441,20 +436,20 @@ const url = URL.createObjectURL(blob)
   }
 }`}</Pre>
           <P>
-            On macOS the config file is at{' '}
+            {t.configureClaudeP2}{' '}
             <Code>~/Library/Application Support/Claude/claude_desktop_config.json</Code>.
           </P>
 
-          <H3>Available MCP tools</H3>
+          <H3>{t.availableMcpTools}</H3>
           <Table
-            headers={['Tool', 'Description']}
+            headers={[t.toolCol, t.descriptionCol]}
             rows={[
-              ['create_diagram', 'Generate a PNG diagram from a DAC YAML string'],
-              ['create_drawio', 'Generate a draw.io XML file from a DAC YAML string'],
+              ['create_diagram', t.mcpTool1Desc],
+              ['create_drawio', t.mcpTool2Desc],
             ]}
           />
 
-          <H3>Example prompt for Claude</H3>
+          <H3>{t.examplePrompt}</H3>
           <Pre lang="text">{`Create an AWS architecture diagram showing:
 - A VPC with two public subnets
 - An Application Load Balancer
@@ -463,16 +458,13 @@ const url = URL.createObjectURL(blob)
 
 Export as PNG and save to ~/Desktop/architecture.png`}</Pre>
 
-          <Callout type="info">
-            Claude will use the MCP server to invoke the Go diagram engine, applying the same
-            layout and icon rules as the CLI tool.
-          </Callout>
+          <Callout type="info">{t.mcpCallout}</Callout>
 
           {/* ── Local Dev ─────────────────────────────────────────────────── */}
-          <H2 id="local-dev">Local Development</H2>
-          <H3>Prerequisites</H3>
+          <H2 id="local-dev">{t.navLocalDev}</H2>
+          <H3>{t.prerequisites}</H3>
           <Table
-            headers={['Tool', 'Version', 'Install']}
+            headers={[t.toolCol, t.versionCol, t.install]}
             rows={[
               ['Go', '1.21+', 'go.dev/dl'],
               ['Node.js', '18+', 'nodejs.org'],
@@ -480,21 +472,20 @@ Export as PNG and save to ~/Desktop/architecture.png`}</Pre>
             ]}
           />
 
-          <H3>Clone and run the full stack locally</H3>
+          <H3>{t.cloneAndRun}</H3>
           <Pre lang="bash">{`git clone https://github.com/fernandofatech/diagram-as-code.git
 cd diagram-as-code
 
 # Terminal 1 — Go API server on :8080
 go run ./cmd/api-dev
 
-# Terminal 2 — Next.js frontend on :3000 (proxies /api/* → :8080)
+# Terminal 2 — Next.js frontend on :3001 (proxies /api/* → :8080)
 cd web && npm install && npm run dev`}</Pre>
           <P>
-            Open <Code>http://localhost:3000</Code> — the editor connects to your local Go server
-            automatically. No Vercel CLI needed.
+            {t.localDevP} <Code>http://localhost:3001</Code> {t.localDevPSuffix}
           </P>
 
-          <H3>Run tests</H3>
+          <H3>{t.runTests}</H3>
           <Pre lang="bash">{`# Unit tests
 go test ./internal/...
 
@@ -504,17 +495,17 @@ go test ./test/...
 # Update golden files after intentional rendering changes
 go test ./test/... -update`}</Pre>
 
-          <H3>Build the CLI</H3>
+          <H3>{t.buildCli}</H3>
           <Pre lang="bash">{`go build -o awsdac ./cmd/awsdac
 ./awsdac examples/alb-ec2.yaml`}</Pre>
 
-          <H3>Run with Vercel CLI (full stack)</H3>
+          <H3>{t.runWithVercel}</H3>
           <Pre lang="bash">{`npm i -g vercel
 vercel dev   # runs Next.js + Go serverless function together`}</Pre>
 
           {/* ── Examples ──────────────────────────────────────────────────── */}
-          <H2 id="examples">YAML Examples</H2>
-          <H3>Minimal — S3 bucket</H3>
+          <H2 id="examples">{t.navExamples}</H2>
+          <H3>{t.minimalS3}</H3>
           <Pre lang="yaml">{`Diagram:
   DefinitionFiles:
     - Type: URL
@@ -532,7 +523,7 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
     Bucket:
       Type: AWS::S3::Bucket`}</Pre>
 
-          <H3>ALB + EC2 in a VPC</H3>
+          <H3>{t.albEc2}</H3>
           <Pre lang="yaml">{`Diagram:
   DefinitionFiles:
     - Type: URL
@@ -609,25 +600,25 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
       TargetArrowHead:
         Type: Open`}</Pre>
 
-          <H3>Key YAML concepts</H3>
+          <H3>{t.keyYamlConcepts}</H3>
           <Table
-            headers={['Field', 'Description']}
+            headers={[t.fieldCol, t.descriptionCol]}
             rows={[
-              ['Diagram.DefinitionFiles', 'URLs or local files defining AWS resource types and icons'],
-              ['Resources.<name>.Type', 'AWS resource type (e.g. AWS::EC2::Instance) or diagram element'],
-              ['Resources.<name>.Children', 'List of resource names placed inside this container'],
-              ['Resources.<name>.Direction', '"vertical" or "horizontal" layout for children'],
-              ['Resources.<name>.Preset', 'Named preset from the definition file (e.g. "PublicSubnet")'],
-              ['Resources.<name>.Title', 'Override the display label'],
-              ['Resources.<name>.BorderChildren', 'Place resources on the border of a container'],
-              ['Links[].Source / Target', 'Resource names to connect'],
-              ['Links[].Labels.SourceLeft', 'Label on the source side of the edge'],
-              ['Links[].TargetArrowHead.Type', '"Open" = open arrow, "none" = no arrow'],
+              ['Diagram.DefinitionFiles', t.yamlConcept1],
+              ['Resources.<name>.Type', t.yamlConcept2],
+              ['Resources.<name>.Children', t.yamlConcept3],
+              ['Resources.<name>.Direction', t.yamlConcept4],
+              ['Resources.<name>.Preset', t.yamlConcept5],
+              ['Resources.<name>.Title', t.yamlConcept6],
+              ['Resources.<name>.BorderChildren', t.yamlConcept7],
+              ['Links[].Source / Target', t.yamlConcept8],
+              ['Links[].Labels.SourceLeft', t.yamlConcept9],
+              ['Links[].TargetArrowHead.Type', t.yamlConcept10],
             ]}
           />
 
           {/* ── About ─────────────────────────────────────────────────────── */}
-          <H2 id="about">About the Author</H2>
+          <H2 id="about">{t.navAbout}</H2>
           <div className="border border-[#2a2a2a] rounded-xl p-6 bg-[#111] mt-4">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF9900] to-[#ff6600] flex items-center justify-center flex-shrink-0 text-white font-bold text-lg">
@@ -635,7 +626,7 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-[#e5e5e5] font-semibold text-base">Fernando Azevedo</h3>
-                <p className="text-[#666] text-xs mb-3">Senior Solutions Architect · 16+ years global experience</p>
+                <p className="text-[#666] text-xs mb-3">{t.authorSubtitle}</p>
                 <div className="flex items-center gap-3 mb-4">
                   <a
                     href="https://fernando.moretes.com"
@@ -667,23 +658,18 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
                 </div>
                 <div className="space-y-3 text-xs text-[#888] leading-relaxed">
                   <p>
-                    Senior Solutions Architect with 16+ years of global experience delivering
-                    impactful, secure, and scalable digital solutions. Specialized in designing
-                    scalable, secure, and cost-efficient cloud architectures. Currently at{' '}
-                    <strong className="text-[#aaa]">Banco Itaú</strong>, bridging business goals
-                    and technology through innovation and best practices.
+                    {t.authorBio1}{' '}
+                    <strong className="text-[#aaa]">Banco Itaú</strong>
+                    {t.authorBio1b}
                   </p>
                   <p>
-                    Deep expertise in <strong className="text-[#aaa]">Clean Architecture</strong>,{' '}
-                    <strong className="text-[#aaa]">DDD</strong>, <strong className="text-[#aaa]">CQRS</strong>,
-                    Event-Driven systems, Microservices patterns, and high-scale architectures.
-                    Experienced with Data Mesh, Kafka, EKS, and AWS Well-Architected Framework.
+                    {t.authorBio2}{' '}
+                    <strong className="text-[#aaa]">Clean Architecture</strong>,{' '}
+                    <strong className="text-[#aaa]">DDD</strong>,{' '}
+                    <strong className="text-[#aaa]">CQRS</strong>
+                    {t.authorBio2b}
                   </p>
-                  <p>
-                    Security-first development approach with extensive experience in CI/CD,
-                    Infrastructure as Code (Terraform, CDK), GitOps, and Zero Trust Architecture.
-                    Compliance with PCI-DSS, ISO 27001, and GDPR.
-                  </p>
+                  <p>{t.authorBio3}</p>
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-4">
                   {[
@@ -703,9 +689,7 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
           </div>
 
           <div className="mt-12 pt-6 border-t border-[#1a1a1a] flex items-center justify-between">
-            <span className="text-[10px] text-[#333]">
-              diagram-as-code · Fork by Fernando Azevedo
-            </span>
+            <span className="text-[10px] text-[#333]">{t.footerFork}</span>
             <a
               href="https://github.com/fernandofatech/diagram-as-code"
               target="_blank"
@@ -713,7 +697,7 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
               className="text-[10px] text-[#444] hover:text-[#666] transition-colors flex items-center gap-1"
             >
               <Github size={10} />
-              View on GitHub
+              {t.viewOnGithub}
             </a>
           </div>
 

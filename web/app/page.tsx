@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ChevronDown, Zap, Github, BookOpen } from 'lucide-react'
 import DiagramPreview from '@/components/DiagramPreview'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { useLanguage } from '@/lib/i18n'
 
 const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
   ssr: false,
@@ -401,6 +403,7 @@ const EXAMPLE_NAMES = Object.keys(EXAMPLES)
 // ── Page component ───────────────────────────────────────────────────────────
 
 export default function Home() {
+  const { t } = useLanguage()
   const [yaml, setYaml] = useState(EXAMPLES['ALB + EC2'])
   const [format, setFormat] = useState<'png' | 'drawio'>('png')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -497,7 +500,7 @@ export default function Home() {
               onClick={() => setExamplesOpen((o) => !o)}
               className="flex items-center gap-1.5 text-xs text-[#999] hover:text-[#e5e5e5] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
             >
-              Examples
+              {t.examples}
               <ChevronDown size={12} className={`transition-transform ${examplesOpen ? 'rotate-180' : ''}`} />
             </button>
             {examplesOpen && (
@@ -524,6 +527,9 @@ export default function Home() {
 
         {/* Right controls */}
         <div className="flex items-center gap-2">
+          {/* Language switcher */}
+          <LanguageSwitcher />
+
           {/* Format toggle */}
           <div className="flex items-center bg-[#1a1a1a] border border-[#2a2a2a] rounded-md p-0.5 text-xs">
             {(['png', 'drawio'] as const).map((f) => (
@@ -552,7 +558,7 @@ export default function Home() {
             ) : (
               <Zap size={13} />
             )}
-            Generate
+            {t.generate}
           </button>
 
           {/* Docs link */}
@@ -561,7 +567,7 @@ export default function Home() {
             className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
           >
             <BookOpen size={13} />
-            Docs
+            {t.docs}
           </Link>
 
           {/* GitHub link */}
@@ -583,10 +589,10 @@ export default function Home() {
         <div className="w-1/2 flex flex-col overflow-hidden border-r border-[#2a2a2a]">
           <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
             <span className="text-xs text-[#555] font-medium uppercase tracking-wider">
-              YAML Editor
+              {t.yamlEditor}
             </span>
             <span className="text-xs text-[#444]">
-              {yaml.split('\n').length} lines
+              {t.lines(yaml.split('\n').length)}
             </span>
           </div>
           <div className="flex-1 overflow-hidden">
@@ -598,7 +604,7 @@ export default function Home() {
         <div className="w-1/2 flex flex-col overflow-hidden">
           <div className="flex items-center px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
             <span className="text-xs text-[#555] font-medium uppercase tracking-wider">
-              Preview
+              {t.preview}
             </span>
           </div>
           <div className="flex-1 overflow-hidden">
@@ -622,11 +628,11 @@ export default function Home() {
             rel="noopener noreferrer"
             className="text-[#555] hover:text-[#888] transition-colors"
           >
-            by Fernando Azevedo
+            {t.footerBy}
           </a>
         </span>
         <span className="text-[10px] text-[#444]">
-          {format.toUpperCase()} mode · <kbd className="font-mono">Ctrl+Enter</kbd> to generate
+          {t.mode(format)} · <kbd className="font-mono">Ctrl+Enter</kbd>
         </span>
       </footer>
     </div>
