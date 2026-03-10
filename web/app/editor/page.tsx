@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { ChevronDown, Zap, Github, BookOpen, Wrench } from 'lucide-react'
+import { ChevronDown, Zap, Github, BookOpen, Wrench, PanelLeftClose, PanelRightClose, Columns2 } from 'lucide-react'
 import DiagramPreview from '@/components/DiagramPreview'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
@@ -2143,15 +2143,18 @@ const EDITOR_TOUR: TourStep[] = [
 export default function Home() {
   const { t } = useLanguage()
   const [yaml, setYaml] = useState(EXAMPLES['BFF Architecture'])
-  const [format, setFormat] = useState<'png' | 'drawio' | 'pdf'>('png')
+  const [format, setFormat] = useState<'png' | 'drawio' | 'pdf'>('drawio')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [drawioContent, setDrawioContent] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [examplesOpen, setExamplesOpen] = useState(false)
+  const [editorWidth, setEditorWidth] = useState(50)
   const prevImageUrl = useRef<string | null>(null)
   const prevPdfUrl = useRef<string | null>(null)
+  const layoutRef = useRef<HTMLDivElement | null>(null)
+  const isDraggingRef = useRef(false)
 
   // Pick up YAML from builder
   useEffect(() => {
@@ -2168,6 +2171,43 @@ export default function Home() {
       if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
     }
   }, [])
+
+  useEffect(() => {
+    function onPointerMove(e: PointerEvent) {
+      if (!isDraggingRef.current || !layoutRef.current) {
+        return
+      }
+
+      const rect = layoutRef.current.getBoundingClientRect()
+      if (rect.width <= 0) {
+        return
+      }
+
+      const nextWidth = ((e.clientX - rect.left) / rect.width) * 100
+      const clampedWidth = Math.min(78, Math.max(22, nextWidth))
+      setEditorWidth(clampedWidth)
+    }
+
+    function stopDragging() {
+      isDraggingRef.current = false
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', stopDragging)
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', stopDragging)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (format === 'drawio' && editorWidth > 42) {
+      setEditorWidth(38)
+    }
+  }, [format, editorWidth])
 
   // Ctrl+Enter shortcut
   useEffect(() => {
@@ -2245,6 +2285,12 @@ export default function Home() {
     setError(null)
   }
 
+  function startResizing() {
+    isDraggingRef.current = true
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }
+
   return (
     <div className="flex flex-col h-screen bg-[var(--bg)] overflow-hidden">
 
@@ -2310,17 +2356,34 @@ export default function Home() {
 
           {/* Format toggle */}
           <div data-tour="editor-format" className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-md p-0.5 text-xs">
-            {(['png', 'pdf', 'drawio'] as const).map((f) => (
+            {(['drawio', 'png', 'pdf'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFormat(f)}
                 className={`px-3 py-1 rounded transition-all ${
                   format === f
-                    ? 'bg-[#FF9900] text-[var(--accent-contrast)] font-semibold'
-                    : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
+                    ? f === 'drawio'
+                      ? 'bg-[#1d4ed8] text-white font-semibold shadow-sm'
+                      : 'bg-[#FF9900] text-[var(--accent-contrast)] font-semibold'
+                    : f === 'drawio'
+                      ? 'text-[#1d4ed8] hover:text-[#2563eb] font-semibold'
+                      : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
                 }`}
               >
-                {f === 'png' ? 'PNG' : f === 'pdf' ? 'PDF' : 'draw.io'}
+                <span className="flex items-center gap-1.5">
+                  <span>{f === 'png' ? 'PNG' : f === 'pdf' ? 'PDF' : 'draw.io'}</span>
+                  {f === 'drawio' ? (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[9px] uppercase tracking-wide ${
+                        format === 'drawio'
+                          ? 'bg-white/20 text-white'
+                          : 'bg-[#1d4ed8]/10 text-[#1d4ed8]'
+                      }`}
+                    >
+                      {t.primary}
+                    </span>
+                  ) : null}
+                </span>
               </button>
             ))}
           </div>
@@ -2373,9 +2436,13 @@ export default function Home() {
       </header>
 
       {/* ── Main content ────────────────────────────────────────────────────── */}
-      <main className="flex flex-1 overflow-hidden">
+      <main ref={layoutRef} className="flex flex-1 overflow-hidden">
         {/* Editor panel */}
-        <div data-tour="editor-panel" className="w-1/2 flex flex-col overflow-hidden border-r border-[var(--border)]">
+        <div
+          data-tour="editor-panel"
+          className="flex flex-col overflow-hidden border-r border-[var(--border)] min-w-0"
+          style={{ width: `${editorWidth}%` }}
+        >
           <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
             <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">
               {t.yamlEditor}
@@ -2389,12 +2456,58 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="group relative flex w-3 shrink-0 items-stretch justify-center bg-[var(--bg)]">
+          <button
+            type="button"
+            onPointerDown={startResizing}
+            aria-label={t.resizePanels}
+            className="absolute inset-y-0 left-0 right-0 cursor-col-resize bg-transparent"
+          />
+          <div className="my-3 w-px bg-[var(--border)] transition-colors group-hover:bg-[#FF9900]" />
+          <div className="pointer-events-none absolute top-1/2 -translate-y-1/2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-1 py-1 text-[10px] text-[var(--text-5)] shadow-sm group-hover:border-[#FF9900]/50">
+            ⋮
+          </div>
+        </div>
+
         {/* Preview panel */}
-        <div data-tour="editor-preview" className="w-1/2 flex flex-col overflow-hidden">
-          <div className="flex items-center px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
+        <div
+          data-tour="editor-preview"
+          className="flex flex-col overflow-hidden min-w-0"
+          style={{ width: `${100 - editorWidth}%` }}
+        >
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0 gap-3">
             <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">
               {t.preview}
             </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setEditorWidth(62)}
+                className="flex items-center gap-1 rounded border border-[var(--border)] px-2 py-1 text-[10px] text-[var(--text-4)] transition-colors hover:border-[var(--text-5)] hover:text-[var(--text-2)]"
+                title={t.focusEditor}
+              >
+                <PanelRightClose size={12} />
+                {t.editorFocus}
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditorWidth(50)}
+                className="flex items-center gap-1 rounded border border-[var(--border)] px-2 py-1 text-[10px] text-[var(--text-4)] transition-colors hover:border-[var(--text-5)] hover:text-[var(--text-2)]"
+                title={t.resetPanels}
+              >
+                <Columns2 size={12} />
+                50/50
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditorWidth(28)}
+                className="flex items-center gap-1 rounded border border-[var(--border)] px-2 py-1 text-[10px] text-[var(--text-4)] transition-colors hover:border-[var(--text-5)] hover:text-[var(--text-2)]"
+                title={t.focusPreview}
+              >
+                <PanelLeftClose size={12} />
+                {t.previewFocus}
+              </button>
+            </div>
           </div>
           <div className="flex-1 overflow-hidden">
             <DiagramPreview
