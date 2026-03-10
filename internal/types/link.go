@@ -220,8 +220,8 @@ func sampleQuadraticBezier(p0, p1, p2 vector.Vector, steps int) []image.Point {
 func roundedCornerRadius(prev, corner, next image.Point) float64 {
 	inLen := math.Hypot(float64(corner.X-prev.X), float64(corner.Y-prev.Y))
 	outLen := math.Hypot(float64(next.X-corner.X), float64(next.Y-corner.Y))
-	radius := math.Min(18, math.Min(inLen, outLen)/2.5)
-	if radius < 6 {
+	radius := math.Min(28, math.Min(inLen, outLen)/2.1)
+	if radius < 8 {
 		return 0
 	}
 	return radius
@@ -274,7 +274,7 @@ func roundedOrthogonalPath(path []image.Point) []image.Point {
 			vector.New(float64(entry.X), float64(entry.Y)),
 			vector.New(float64(corner.X), float64(corner.Y)),
 			vector.New(float64(exit.X), float64(exit.Y)),
-			8,
+			16,
 		)
 		for _, pt := range curve[1:] {
 			if !pointsEqual(rounded[len(rounded)-1], pt) {
@@ -391,7 +391,7 @@ func (l *Link) obstacleRects() []image.Rectangle {
 		if bounds.Empty() || bounds.Dx() == 0 || bounds.Dy() == 0 {
 			continue
 		}
-		obstacles = append(obstacles, inflateRect(bounds, 18))
+		obstacles = append(obstacles, inflateRect(bounds, 28))
 	}
 	return obstacles
 }
@@ -442,7 +442,7 @@ func (l *Link) routeSegmentAroundObstacles(start, end image.Point, obstacles []i
 	}
 
 	cluster := mergeRects(hits)
-	margin := 22
+	margin := 34
 
 	tryRoute := func(candidate []image.Point) ([]image.Point, bool) {
 		routed := []image.Point{candidate[0]}
