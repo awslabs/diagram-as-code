@@ -1,6 +1,6 @@
 {
   "name": "awsdac",
-  "version": "0.22.4",
+  "version": "0.22.5",
   "description": "Generate AWS architecture diagrams from YAML — supports PNG and draw.io export.",
   "bin": {
     "awsdac": "bin/awsdac"
