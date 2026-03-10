@@ -57,13 +57,19 @@ Key features:
 
 ## Getting started
 
-### npm (all platforms — recommended)
+### npm — all platforms (recommended)
+
+> Requires [Node.js 14+](https://nodejs.org). Downloads the correct binary automatically for your OS and CPU.
+
 ```bash
 npm install -g awsdac
+awsdac --version
 ```
-Requires Node.js 14+. The installer automatically downloads the correct binary for your OS and CPU architecture.
+
+---
 
 ### macOS
+
 ```bash
 # via npm (recommended)
 npm install -g awsdac
@@ -72,36 +78,52 @@ npm install -g awsdac
 brew install awsdac
 ```
 
+---
+
 ### Linux
+
 ```bash
 # via npm (recommended)
 npm install -g awsdac
 
-# via Go
+# via Go (requires Go 1.21+)
 go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
 
-# or download the binary from GitHub Releases and move to /usr/local/bin/
+# via binary — download and install manually
+curl -LO https://github.com/fernandofatech/diagram-as-code/releases/latest/download/awsdac-$(curl -s https://api.github.com/repos/fernandofatech/diagram-as-code/releases/latest | grep tag_name | cut -d'"' -f4)_linux-amd64.zip
+unzip awsdac-*_linux-amd64.zip
+sudo mv awsdac-*_linux-amd64/awsdac /usr/local/bin/
+awsdac --version
 ```
 
+---
+
 ### Windows
+
 ```powershell
 # via npm (recommended)
 npm install -g awsdac
 
-# via Go
+# via Go (requires Go 1.21+)
 go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
-# or download awsdac.exe from GitHub Releases and add to your PATH
+
+# via binary — download from GitHub Releases, extract and add to PATH:
+# https://github.com/fernandofatech/diagram-as-code/releases/latest
+# Download: awsdac-vX.Y.Z_windows-amd64.zip
+# Extract awsdac.exe and add the folder to your PATH
 ```
 
+---
+
 ### From source (all platforms)
+
 ```bash
 git clone https://github.com/fernandofatech/diagram-as-code.git
 cd diagram-as-code
 make build   # produces ./awsdac (or awsdac.exe on Windows)
 ```
 
-**Prerequisites (for npm install):** Node.js 14+
-**Prerequisites (from source):** Go 1.21+ · Node.js 18+ (only for the web frontend)
+**Prerequisites:** Go 1.21+ · Node.js 18+ (web frontend only)
 
 ## Usage
 
@@ -114,33 +136,81 @@ Flags:
   -c, --cfn-template               [beta] Create diagram from CloudFormation template
   -d, --dac-file                   [beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template
       --drawio                     Generate draw.io (.drawio) file instead of PNG
+      --pdf                        Generate PDF file instead of PNG
   -f, --force                      Overwrite output file without confirmation
   -h, --help                       help for awsdac
       --height int                 Resize output image height (0 means no resizing)
   -o, --output string              Output file name (default "output.png")
       --override-def-file string   For testing purpose, override DefinitionFiles to another url/local file
-  -t, --template                   Processes the input file as a template according to text/template.
+  -t, --template                   Processes the input file as a template according to text/template
   -v, --verbose                    Enable verbose logging
       --version                    version for awsdac
       --width int                  Resize output image width (0 means no resizing)
 ```
 
-### Example
+### Examples
 
-```
-$ awsdac examples/alb-ec2.yaml
-```
-
-```
-$ awsdac privatelink.yaml -o custom-output.png
+**Generate PNG (default)**
+```bash
+awsdac examples/alb-ec2.yaml
 ```
 
-```
-$ awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+**Custom output filename**
+```bash
+awsdac my-architecture.yaml -o my-diagram.png
 ```
 
+**Force overwrite without confirmation**
+```bash
+awsdac my-architecture.yaml -o output.png -f
 ```
-$ awsdac examples/alb-ec2.yaml -o output.drawio
+
+**Generate draw.io file**
+```bash
+awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+
+# or just use .drawio extension — flag is inferred automatically
+awsdac examples/alb-ec2.yaml -o output.drawio
+```
+
+**Generate PDF**
+```bash
+awsdac examples/alb-ec2.yaml --pdf -o output.pdf
+```
+
+**Resize output image**
+```bash
+awsdac examples/alb-ec2.yaml --width 1920 --height 1080 -o output.png
+```
+
+**Use a Go template file**
+```bash
+awsdac examples/tgw-nwfw-tmpl.yaml -t -o output.png
+```
+
+**Convert CloudFormation template to diagram**
+```bash
+awsdac my-cfn-template.yaml -c -o output.png
+```
+
+**Convert CloudFormation template to DAC YAML (for further editing)**
+```bash
+awsdac my-cfn-template.yaml -c -d -o my-diagram.yaml
+```
+
+**Verbose logging**
+```bash
+awsdac examples/alb-ec2.yaml -v
+```
+
+**Use a local definition file instead of the remote one**
+```bash
+awsdac my-diagram.yaml --override-def-file ./my-definitions.yaml
+```
+
+**Check version**
+```bash
+awsdac --version
 ```
 
 ## How Draw.io Export Works
