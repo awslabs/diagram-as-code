@@ -831,7 +831,7 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) e
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
 		linkType := v.Type
 		if linkType == "" {
-			linkType = "orthogonal"
+			linkType = "straight"
 		}
 		link.SetType(linkType)
 		link.SetLineStyle(v.LineStyle)

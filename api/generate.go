@@ -78,8 +78,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(tmpOut.Name())
 
 	opts := &diagram.CreateOptions{
-		OverwriteMode:      diagram.Force,
-		PreferDrawioExport: true,
+		OverwriteMode: diagram.Force,
 	}
 	outputFile := tmpOut.Name()
 

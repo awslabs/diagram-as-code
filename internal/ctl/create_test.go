@@ -397,7 +397,7 @@ func TestLoadLinksDefaultsToOrthogonal(t *testing.T) {
 	if len(links) != 1 {
 		t.Fatalf("expected 1 link on source, got %d", len(links))
 	}
-	if links[0].Type != "orthogonal" {
-		t.Fatalf("expected default link type to be orthogonal, got %q", links[0].Type)
+	if links[0].Type != "straight" {
+		t.Fatalf("expected default link type to be straight, got %q", links[0].Type)
 	}
 }
