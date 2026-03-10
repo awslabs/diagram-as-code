@@ -430,19 +430,15 @@ const LanguageContext = createContext<LanguageContextType>({
   toggle: () => {},
 })
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('en')
+function resolveLanguage(): Lang {
+  if (typeof window === 'undefined') return 'en'
+  const stored = localStorage.getItem('lang')
+  if (stored === 'en' || stored === 'pt') return stored
+  return navigator.language.toLowerCase().startsWith('pt') ? 'pt' : 'en'
+}
 
-  useEffect(() => {
-    const stored = localStorage.getItem('lang') as Lang | null
-    if (stored === 'en' || stored === 'pt') {
-      setLang(stored)
-    } else {
-      // auto-detect browser language
-      const browser = navigator.language.toLowerCase()
-      setLang(browser.startsWith('pt') ? 'pt' : 'en')
-    }
-  }, [])
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>(resolveLanguage)
 
   function toggle() {
     setLang((prev) => {

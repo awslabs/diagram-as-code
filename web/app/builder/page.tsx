@@ -437,67 +437,64 @@ const BUILDER_EXAMPLES: Record<string, string> = {
 
 // ── YAML → FormState parser ────────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseYamlToForm(yamlStr: string): Partial<FormState> | null {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const doc = jsyaml.load(yamlStr) as any
+    const doc = jsyaml.load(yamlStr) as { Diagram?: Record<string, unknown> } | null
     if (!doc?.Diagram) return null
     const diagram = doc.Diagram
 
     // Definition file
-    const defFiles = diagram.DefinitionFiles ?? []
+    const defFiles = Array.isArray(diagram.DefinitionFiles) ? diagram.DefinitionFiles as Array<Record<string, unknown>> : []
     const firstDef = defFiles[0] ?? {}
     const defType: 'URL' | 'LocalFile' = firstDef.Type === 'LocalFile' ? 'LocalFile' : 'URL'
-    const defUrl = firstDef.Url ?? DEFAULT_URL
-    const defFile = firstDef.LocalFile ?? ''
+    const defUrl = String(firstDef.Url ?? DEFAULT_URL)
+    const defFile = String(firstDef.LocalFile ?? '')
 
     // Canvas direction
-    const rawResources = diagram.Resources ?? {}
+    const rawResources = (diagram.Resources as Record<string, Record<string, unknown>> | undefined) ?? {}
     const canvas = rawResources.Canvas ?? {}
-    const canvasDirection = canvas.Direction ?? 'vertical'
+    const canvasDirection = String(canvas.Direction ?? 'vertical')
 
     // Resources (exclude Canvas)
     const resources: ResourceEntry[] = []
     for (const [key, val] of Object.entries(rawResources)) {
       if (key === 'Canvas') continue
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const v = val as any
-      const borderChildren: BorderChild[] = (v.BorderChildren ?? []).map(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (bc: any) => ({ id: crypto.randomUUID(), position: bc.Position ?? '', resource: bc.Resource ?? '' })
+      const v = val
+      const borderChildrenSource = Array.isArray(v.BorderChildren) ? v.BorderChildren as Array<Record<string, unknown>> : []
+      const borderChildren: BorderChild[] = borderChildrenSource.map(
+        (bc) => ({ id: crypto.randomUUID(), position: String(bc.Position ?? ''), resource: String(bc.Resource ?? '') })
       )
       resources.push({
         id: crypto.randomUUID(),
         name: key,
-        type: v.Type ?? '',
-        title: v.Title ?? '',
-        preset: v.Preset ?? '',
-        direction: v.Direction ?? '',
-        align: v.Align ?? '',
-        iconFill: v.IconFill?.Type ?? '',
-        children: v.Children ?? [],
+        type: String(v.Type ?? ''),
+        title: String(v.Title ?? ''),
+        preset: String(v.Preset ?? ''),
+        direction: String(v.Direction ?? ''),
+        align: String(v.Align ?? ''),
+        iconFill: typeof v.IconFill === 'object' && v.IconFill !== null ? String((v.IconFill as Record<string, unknown>).Type ?? '') : '',
+        children: Array.isArray(v.Children) ? v.Children.map((child) => String(child)) : [],
         borderChildren,
       })
     }
 
     // Links
-    const links: LinkEntry[] = (diagram.Links ?? []).map(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (l: any) => ({
+    const linksSource = Array.isArray(diagram.Links) ? diagram.Links as Array<Record<string, unknown>> : []
+    const links: LinkEntry[] = linksSource.map(
+      (l) => ({
         id: crypto.randomUUID(),
-        source: l.Source ?? '',
-        sourcePosition: l.SourcePosition ?? '',
-        target: l.Target ?? '',
-        targetPosition: l.TargetPosition ?? '',
-        arrowHead: l.TargetArrowHead?.Type ?? '',
+        source: String(l.Source ?? ''),
+        sourcePosition: String(l.SourcePosition ?? ''),
+        target: String(l.Target ?? ''),
+        targetPosition: String(l.TargetPosition ?? ''),
+        arrowHead: typeof l.TargetArrowHead === 'object' && l.TargetArrowHead !== null ? String((l.TargetArrowHead as Record<string, unknown>).Type ?? '') : '',
         labels: {
-          SourceLeft: l.Labels?.SourceLeft?.Title ?? '',
-          SourceRight: l.Labels?.SourceRight?.Title ?? '',
-          TargetLeft: l.Labels?.TargetLeft?.Title ?? '',
-          TargetRight: l.Labels?.TargetRight?.Title ?? '',
-          AutoLeft: l.Labels?.AutoLeft?.Title ?? '',
-          AutoRight: l.Labels?.AutoRight?.Title ?? '',
+          SourceLeft: typeof l.Labels === 'object' && l.Labels !== null && typeof (l.Labels as Record<string, unknown>).SourceLeft === 'object' && (l.Labels as Record<string, unknown>).SourceLeft !== null ? String(((l.Labels as Record<string, unknown>).SourceLeft as Record<string, unknown>).Title ?? '') : '',
+          SourceRight: typeof l.Labels === 'object' && l.Labels !== null && typeof (l.Labels as Record<string, unknown>).SourceRight === 'object' && (l.Labels as Record<string, unknown>).SourceRight !== null ? String(((l.Labels as Record<string, unknown>).SourceRight as Record<string, unknown>).Title ?? '') : '',
+          TargetLeft: typeof l.Labels === 'object' && l.Labels !== null && typeof (l.Labels as Record<string, unknown>).TargetLeft === 'object' && (l.Labels as Record<string, unknown>).TargetLeft !== null ? String(((l.Labels as Record<string, unknown>).TargetLeft as Record<string, unknown>).Title ?? '') : '',
+          TargetRight: typeof l.Labels === 'object' && l.Labels !== null && typeof (l.Labels as Record<string, unknown>).TargetRight === 'object' && (l.Labels as Record<string, unknown>).TargetRight !== null ? String(((l.Labels as Record<string, unknown>).TargetRight as Record<string, unknown>).Title ?? '') : '',
+          AutoLeft: typeof l.Labels === 'object' && l.Labels !== null && typeof (l.Labels as Record<string, unknown>).AutoLeft === 'object' && (l.Labels as Record<string, unknown>).AutoLeft !== null ? String(((l.Labels as Record<string, unknown>).AutoLeft as Record<string, unknown>).Title ?? '') : '',
+          AutoRight: typeof l.Labels === 'object' && l.Labels !== null && typeof (l.Labels as Record<string, unknown>).AutoRight === 'object' && (l.Labels as Record<string, unknown>).AutoRight !== null ? String(((l.Labels as Record<string, unknown>).AutoRight as Record<string, unknown>).Title ?? '') : '',
         },
       })
     )

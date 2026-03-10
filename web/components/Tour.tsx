@@ -45,9 +45,12 @@ export default function Tour({ id, steps, onDone }: Props) {
     if (!active) return
     // Remove highlight from previous
     document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'))
-    updateRect()
+    const frame = window.requestAnimationFrame(updateRect)
     window.addEventListener('resize', updateRect)
-    return () => window.removeEventListener('resize', updateRect)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', updateRect)
+    }
   }, [active, step, updateRect])
 
   function done() {

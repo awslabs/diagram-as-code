@@ -20,12 +20,10 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setTheme] = useState<Theme>(resolveTheme)
 
   useEffect(() => {
-    const nextTheme = resolveTheme()
-    setTheme(nextTheme)
-    applyTheme(nextTheme)
+    applyTheme(theme)
 
     const media = window.matchMedia('(prefers-color-scheme: light)')
     const onChange = () => {
@@ -49,7 +47,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       media.removeEventListener('change', onChange)
       window.removeEventListener('storage', onStorage)
     }
-  }, [])
+  }, [theme])
 
   function toggleTheme() {
     setTheme(prev => {
