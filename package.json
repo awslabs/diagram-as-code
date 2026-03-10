@@ -1,0 +1,42 @@
+{
+  "name": "awsdac",
+  "version": "0.22.4",
+  "description": "Generate AWS architecture diagrams from YAML — supports PNG and draw.io export.",
+  "bin": {
+    "awsdac": "bin/awsdac"
+  },
+  "scripts": {
+    "postinstall": "node scripts/npm-install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fernandofatech/diagram-as-code.git"
+  },
+  "homepage": "https://dac.moretes.com",
+  "bugs": {
+    "url": "https://github.com/fernandofatech/diagram-as-code/issues"
+  },
+  "keywords": [
+    "aws",
+    "diagram",
+    "architecture",
+    "iac",
+    "yaml",
+    "drawio",
+    "diagram-as-code",
+    "infrastructure",
+    "cli",
+    "devops"
+  ],
+  "author": "Fernando Azevedo",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "bin/awsdac",
+    "scripts/npm-install.js",
+    "LICENSE",
+    "README.md"
+  ]
+}

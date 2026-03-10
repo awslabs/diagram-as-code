@@ -57,19 +57,38 @@ Key features:
 
 ## Getting started
 
+### npm (all platforms — recommended)
+```bash
+npm install -g awsdac
+```
+Requires Node.js 14+. The installer automatically downloads the correct binary for your OS and CPU architecture.
+
 ### macOS
 ```bash
+# via npm (recommended)
+npm install -g awsdac
+
+# via Homebrew
 brew install awsdac
 ```
 
 ### Linux
 ```bash
+# via npm (recommended)
+npm install -g awsdac
+
+# via Go
 go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+
 # or download the binary from GitHub Releases and move to /usr/local/bin/
 ```
 
 ### Windows
 ```powershell
+# via npm (recommended)
+npm install -g awsdac
+
+# via Go
 go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
 # or download awsdac.exe from GitHub Releases and add to your PATH
 ```
@@ -81,7 +100,8 @@ cd diagram-as-code
 make build   # produces ./awsdac (or awsdac.exe on Windows)
 ```
 
-**Prerequisites:** Go 1.21+ · Node.js 18+ (only for the web frontend)
+**Prerequisites (for npm install):** Node.js 14+
+**Prerequisites (from source):** Go 1.21+ · Node.js 18+ (only for the web frontend)
 
 ## Usage
 

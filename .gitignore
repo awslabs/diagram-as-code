@@ -1,6 +1,10 @@
 # Build artifacts
-awsdac
+/awsdac
 main
+
+# npm — downloaded native binaries (populated by postinstall script)
+bin/awsdac-bin
+bin/awsdac-bin.exe
 tools/mapcheck/mapcheck
 *.test
 *.prof
