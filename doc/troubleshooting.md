@@ -19,6 +19,18 @@ Common issues and solutions for diagram-as-code.
 
 **Problem**: After installation, `awsdac` command is not recognized.
 
+**Solution for npm users**:
+```bash
+# Verify installation
+npm list -g awsdac
+
+# If command not found, ensure npm global bin is in PATH
+npm config get prefix
+# Add the bin directory to PATH, e.g.:
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
 **Solution for brew users**:
 ```bash
 # Verify installation
@@ -38,6 +50,15 @@ echo $PATH | grep go/bin
 echo 'export PATH="$HOME/go/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
+
+### npm postinstall: binary download failed
+
+**Problem**: `awsdac: Failed to download binary` during `npm install -g awsdac`.
+
+**Solutions**:
+1. Check your internet connection
+2. Check that GitHub Releases are accessible from your network
+3. Install manually: download the binary from [GitHub Releases](https://github.com/fernandofatech/diagram-as-code/releases) and place it at `$(npm root -g)/awsdac/bin/awsdac-bin`
 
 ### Permission denied
 
@@ -249,9 +270,9 @@ See [CloudFormation Conversion Guide](cloudformation.md) for customization tips.
 
 If your issue isn't listed here:
 
-1. **Check existing issues**: [GitHub Issues](https://github.com/awslabs/diagram-as-code/issues)
+1. **Check existing issues**: [GitHub Issues](https://github.com/fernandofatech/diagram-as-code/issues)
 2. **Search documentation**: Use GitHub's search to find relevant docs
-3. **Create new issue**: [Report a bug](https://github.com/awslabs/diagram-as-code/issues/new)
+3. **Create new issue**: [Report a bug](https://github.com/fernandofatech/diagram-as-code/issues/new)
 
 When reporting issues, please include:
 - `awsdac` version (`awsdac --version`)

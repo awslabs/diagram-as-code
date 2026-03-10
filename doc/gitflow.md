@@ -43,16 +43,23 @@ git push -u origin feature/drawio-export-improvements
 ```bash
 git checkout -b release/vX.Y.Z develop
 ```
-2. Run final checks and bugfixes only.
-3. Open PR `release/vX.Y.Z -> main`.
-4. After merge to `main`, tag the release:
+2. Update `package.json` version to match the release tag:
+```bash
+npm version X.Y.Z --no-git-tag-version
+```
+3. Run final checks and bugfixes only.
+4. Open PR `release/vX.Y.Z -> main`.
+5. After merge to `main`, tag the release:
 ```bash
 git checkout main
 git pull origin main
 git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
-5. Merge `main` back into `develop` to keep both branches synchronized.
+6. GitHub Actions automatically:
+   - Builds cross-platform binaries and creates the GitHub Release
+   - Publishes the npm package to https://www.npmjs.com/package/awsdac
+7. Merge `main` back into `develop` to keep both branches synchronized.
 
 ## Hotfix Flow
 1. Create branch from `main`:

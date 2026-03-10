@@ -133,5 +133,5 @@ For large projects:
 - [Introduction Guide](introduction.md)
 - [Resource Types](resource-types.md)
 - [Links](links.md)
-- [Large Diagrams Guide](guides/large-diagrams.md)
-- [Layout Strategies](guides/layout-strategies.md)
+- [Advanced Features](advanced/)
+- [Templates](template.md)

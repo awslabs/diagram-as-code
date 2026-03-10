@@ -8,11 +8,19 @@ The awsdac MCP server enables AI assistants and development tools to generate AW
 
 ## Prerequisites
 
-- awsdac installed (`brew install awsdac` or `go install`)
+- awsdac installed (see options below)
 - MCP-compatible AI assistant (Claude Desktop, Cline, etc.)
 - Basic understanding of diagram-as-code YAML format
 
 ## Installation
+
+### via npm (all platforms — recommended)
+
+```bash
+npm install -g awsdac
+```
+
+The `awsdac-mcp-server` binary is included in the GitHub Release package. Download it separately from [GitHub Releases](https://github.com/fernandofatech/diagram-as-code/releases).
 
 ### For macOS users (Homebrew)
 
@@ -20,12 +28,12 @@ The awsdac MCP server enables AI assistants and development tools to generate AW
 brew install awsdac
 ```
 
-The MCP server binary (`awsdac-mcp-server`) is included with the main installation.
+The MCP server binary (`awsdac-mcp-server`) is included with the Homebrew installation.
 
 ### For Go developers
 
 ```bash
-go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac-mcp-server@latest
 ```
 
 Verify installation:

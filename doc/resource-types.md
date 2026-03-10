@@ -1,4 +1,4 @@
-## Resouce Types
+## Resource Types
 
 ### AWS::Diagram::Canvas
 
