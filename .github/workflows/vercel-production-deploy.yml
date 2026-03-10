@@ -1,38 +1,7 @@
-name: Vercel Production Deploy
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    name: Deploy to Vercel
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: team_f0XXCrLkLBr3WfHL4hkBG4lw
-      VERCEL_PROJECT_ID: prj_rWXdel2GEoewbTtAHZzI8zSJDtPl
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel environment
-        run: vercel pull --yes --environment=production --token="${VERCEL_TOKEN}"
-
-      - name: Build project
-        run: vercel build --prod --token="${VERCEL_TOKEN}"
-
-      - name: Deploy prebuilt to Vercel
-        run: vercel deploy --prebuilt --prod --token="${VERCEL_TOKEN}"
+# Vercel deployment is handled automatically via Vercel's GitHub Git Integration.
+# When code is pushed to 'main', Vercel receives a webhook, builds the project
+# on their servers, and deploys to production — no CLI upload needed.
+#
+# To manage the integration: https://vercel.com/fernando-francisco-azevedos-projects/diagram-as-code/settings/git
+#
+# This file is kept as documentation only.
