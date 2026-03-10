@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+'use strict';
+
+const { spawnSync } = require('child_process');
+const { join } = require('path');
+const { existsSync } = require('fs');
+
+const isWindows = process.platform === 'win32';
+const binaryName = isWindows ? 'awsdac-mcp-server-bin.exe' : 'awsdac-mcp-server-bin';
+const binaryPath = join(__dirname, binaryName);
+
+if (!existsSync(binaryPath)) {
+  console.error('awsdac-mcp-server: Native binary not found.');
+  console.error('Try reinstalling: npm install -g awsdac-mcp-server');
+  console.error('Or download manually from:');
+  console.error('  https://github.com/fernandofatech/diagram-as-code/releases');
+  process.exit(1);
+}
+
+const result = spawnSync(binaryPath, process.argv.slice(2), {
+  stdio: 'inherit',
+  env: process.env,
+});
+
+process.exit(result.status != null ? result.status : 1);

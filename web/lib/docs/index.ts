@@ -708,32 +708,39 @@ const xml = await response.text()`,
       category: 'Integration',
       title: 'MCP Server',
       summary:
-        'Use the Model Context Protocol server to let AI assistants generate diagrams from chat.',
-      keywords: ['mcp', 'claude', 'ai', 'agent', 'tools', 'server'],
+        'Integrate awsdac into Claude, Cursor, VS Code, and any MCP-compatible AI assistant to generate AWS architecture diagrams directly from chat.',
+      keywords: ['mcp', 'claude', 'cursor', 'vscode', 'ai', 'agent', 'tools', 'server', 'npm', 'install'],
       blocks: [
         {
           type: 'paragraph',
           text:
-            'The MCP server exposes diagram generation tools to AI assistants. This makes the project useful not only as a CLI or website, but also as part of agent workflows.',
+            'The MCP (Model Context Protocol) server exposes diagram generation tools to AI assistants. Once configured, you can ask your AI to create AWS architecture diagrams in natural language — it writes the DAC YAML, calls the tool, and returns the PNG directly in chat.',
         },
         {
-          type: 'paragraph',
-          text:
-            'Typical usage is: an assistant writes DAC YAML from a human request, invokes the MCP tool, and saves the result as PNG or draw.io.',
+          type: 'callout',
+          title: 'Recommended: install via npm',
+          tone: 'tip',
+          text: 'npm installs the correct pre-built binary automatically. No Go toolchain required.',
         },
         {
           type: 'code',
-          title: 'Install MCP server',
+          title: 'Install — npm (all platforms)',
           lang: 'bash',
-          code: `go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest`,
+          code: `npm install -g awsdac-mcp-server`,
         },
         {
           type: 'code',
-          title: 'Claude Desktop configuration',
+          title: 'Install — Go install',
+          lang: 'bash',
+          code: `go install github.com/fernandofatech/diagram-as-code/cmd/awsdac-mcp-server@latest`,
+        },
+        {
+          type: 'code',
+          title: 'Claude Desktop — claude_desktop_config.json',
           lang: 'json',
           code: `{
   "mcpServers": {
-    "diagram-as-code": {
+    "awsdac": {
       "command": "awsdac-mcp-server",
       "args": []
     }
@@ -741,26 +748,110 @@ const xml = await response.text()`,
 }`,
         },
         {
-          type: 'table',
-          title: 'Available tools',
-          headers: ['Tool', 'Description'],
-          rows: [
-            ['create_diagram', 'Generate PNG from DAC YAML'],
-            ['create_drawio', 'Generate draw.io XML from DAC YAML'],
-          ],
+          type: 'callout',
+          title: 'Where is claude_desktop_config.json?',
+          tone: 'info',
+          text: 'macOS: ~/Library/Application Support/Claude/claude_desktop_config.json — Windows: %APPDATA%\\Claude\\claude_desktop_config.json',
         },
         {
           type: 'code',
-          title: 'Example prompt',
+          title: 'Claude Code (CLI) — .claude/mcp.json',
+          lang: 'json',
+          code: `{
+  "mcpServers": {
+    "awsdac": {
+      "command": "awsdac-mcp-server",
+      "args": []
+    }
+  }
+}`,
+        },
+        {
+          type: 'code',
+          title: 'Cursor — .cursor/mcp.json',
+          lang: 'json',
+          code: `{
+  "mcpServers": {
+    "awsdac": {
+      "command": "awsdac-mcp-server",
+      "args": []
+    }
+  }
+}`,
+        },
+        {
+          type: 'code',
+          title: 'VS Code — settings.json',
+          lang: 'json',
+          code: `{
+  "mcp": {
+    "servers": {
+      "awsdac": {
+        "type": "stdio",
+        "command": "awsdac-mcp-server",
+        "args": []
+      }
+    }
+  }
+}`,
+        },
+        {
+          type: 'code',
+          title: 'Custom log file path (optional)',
+          lang: 'json',
+          code: `{
+  "mcpServers": {
+    "awsdac": {
+      "command": "awsdac-mcp-server",
+      "args": ["--log-file", "/tmp/awsdac-mcp.log"]
+    }
+  }
+}`,
+        },
+        {
+          type: 'table',
+          title: 'Available MCP tools',
+          headers: ['Tool', 'Description', 'Returns'],
+          rows: [
+            ['getDiagramAsCodeFormat', 'Returns the full DAC YAML format spec, resource types, and examples. Call this first.', 'Text documentation'],
+            ['generateDiagram', 'Generates a PNG diagram from DAC YAML. Returns a base64-encoded image inline in chat.', 'base64 PNG image'],
+            ['generateDiagramToFile', 'Generates a PNG diagram and saves it to a file path on disk. Use this in clients that do not render images inline (e.g. Amazon Q).', 'File path confirmation'],
+          ],
+        },
+        {
+          type: 'callout',
+          title: 'Workflow: call getDiagramAsCodeFormat first',
+          tone: 'warn',
+          text: 'Always call getDiagramAsCodeFormat before generateDiagram. This gives the AI the complete format specification so it generates valid YAML.',
+        },
+        {
+          type: 'code',
+          title: 'Example prompts',
           lang: 'text',
-          code: `Create an AWS architecture diagram with:
-- one VPC
+          code: `# Inline PNG (Claude Desktop, Cursor, Claude Code)
+Create an AWS architecture diagram with:
+- one VPC in us-east-1
 - two public subnets
 - an internet-facing ALB
-- two EC2 instances
+- two EC2 instances behind the ALB
 - an Internet Gateway
+Return the PNG diagram.
 
-Return PNG output and save it to ~/Desktop/architecture.png`,
+# Save to file (Amazon Q, file-based workflows)
+Generate a diagram of a serverless architecture with API Gateway,
+Lambda, and DynamoDB. Save it to ~/Desktop/serverless.png`,
+        },
+        {
+          type: 'list',
+          title: 'Supported clients',
+          items: [
+            'Claude Desktop — returns PNG inline in chat (generateDiagram)',
+            'Claude Code CLI — returns PNG inline in terminal',
+            'Cursor — returns PNG inline in chat',
+            'VS Code (Copilot with MCP support) — returns PNG inline',
+            'Amazon Q — use generateDiagramToFile to save PNG to disk',
+            'Any MCP-compatible client using stdio transport',
+          ],
         },
       ],
     },
@@ -1702,32 +1793,39 @@ const xml = await response.text()`,
       category: 'Integration',
       title: 'Servidor MCP',
       summary:
-        'Use o servidor Model Context Protocol para permitir que assistentes de IA gerem diagramas por chat.',
-      keywords: ['mcp', 'claude', 'ai', 'agent', 'tools', 'server'],
+        'Integre o awsdac ao Claude, Cursor, VS Code e qualquer assistente de IA compatível com MCP para gerar diagramas AWS diretamente pelo chat.',
+      keywords: ['mcp', 'claude', 'cursor', 'vscode', 'ai', 'agente', 'ferramentas', 'servidor', 'npm', 'instalar'],
       blocks: [
         {
           type: 'paragraph',
           text:
-            'O servidor MCP expõe ferramentas de geração de diagrama para assistentes de IA. Isso torna o projeto útil não só como CLI ou website, mas também em fluxos baseados em agentes.',
+            'O servidor MCP (Model Context Protocol) expõe ferramentas de geração de diagrama para assistentes de IA. Uma vez configurado, você pode pedir ao assistente para criar diagramas de arquitetura AWS em linguagem natural — ele escreve o DAC YAML, chama a ferramenta e retorna o PNG direto no chat.',
         },
         {
-          type: 'paragraph',
-          text:
-            'O uso típico é: o assistente escreve DAC YAML a partir do pedido humano, invoca a ferramenta MCP e salva o resultado como PNG ou draw.io.',
+          type: 'callout',
+          title: 'Recomendado: instale via npm',
+          tone: 'tip',
+          text: 'O npm instala o binário pré-compilado correto automaticamente. Não é necessário Go.',
         },
         {
           type: 'code',
-          title: 'Instalar servidor MCP',
+          title: 'Instalar — npm (todas as plataformas)',
           lang: 'bash',
-          code: `go install github.com/awslabs/diagram-as-code/cmd/awsdac-mcp-server@latest`,
+          code: `npm install -g awsdac-mcp-server`,
         },
         {
           type: 'code',
-          title: 'Configuração do Claude Desktop',
+          title: 'Instalar — Go install',
+          lang: 'bash',
+          code: `go install github.com/fernandofatech/diagram-as-code/cmd/awsdac-mcp-server@latest`,
+        },
+        {
+          type: 'code',
+          title: 'Claude Desktop — claude_desktop_config.json',
           lang: 'json',
           code: `{
   "mcpServers": {
-    "diagram-as-code": {
+    "awsdac": {
       "command": "awsdac-mcp-server",
       "args": []
     }
@@ -1735,26 +1833,110 @@ const xml = await response.text()`,
 }`,
         },
         {
-          type: 'table',
-          title: 'Ferramentas disponíveis',
-          headers: ['Ferramenta', 'Descrição'],
-          rows: [
-            ['create_diagram', 'Gera PNG a partir de DAC YAML'],
-            ['create_drawio', 'Gera XML draw.io a partir de DAC YAML'],
-          ],
+          type: 'callout',
+          title: 'Onde fica o claude_desktop_config.json?',
+          tone: 'info',
+          text: 'macOS: ~/Library/Application Support/Claude/claude_desktop_config.json — Windows: %APPDATA%\\Claude\\claude_desktop_config.json',
         },
         {
           type: 'code',
-          title: 'Prompt de exemplo',
+          title: 'Claude Code (CLI) — .claude/mcp.json',
+          lang: 'json',
+          code: `{
+  "mcpServers": {
+    "awsdac": {
+      "command": "awsdac-mcp-server",
+      "args": []
+    }
+  }
+}`,
+        },
+        {
+          type: 'code',
+          title: 'Cursor — .cursor/mcp.json',
+          lang: 'json',
+          code: `{
+  "mcpServers": {
+    "awsdac": {
+      "command": "awsdac-mcp-server",
+      "args": []
+    }
+  }
+}`,
+        },
+        {
+          type: 'code',
+          title: 'VS Code — settings.json',
+          lang: 'json',
+          code: `{
+  "mcp": {
+    "servers": {
+      "awsdac": {
+        "type": "stdio",
+        "command": "awsdac-mcp-server",
+        "args": []
+      }
+    }
+  }
+}`,
+        },
+        {
+          type: 'code',
+          title: 'Arquivo de log customizado (opcional)',
+          lang: 'json',
+          code: `{
+  "mcpServers": {
+    "awsdac": {
+      "command": "awsdac-mcp-server",
+      "args": ["--log-file", "/tmp/awsdac-mcp.log"]
+    }
+  }
+}`,
+        },
+        {
+          type: 'table',
+          title: 'Ferramentas MCP disponíveis',
+          headers: ['Ferramenta', 'Descrição', 'Retorna'],
+          rows: [
+            ['getDiagramAsCodeFormat', 'Retorna a especificação completa do formato DAC YAML, tipos de recursos e exemplos. Chame esta primeiro.', 'Documentação em texto'],
+            ['generateDiagram', 'Gera um diagrama PNG a partir de DAC YAML. Retorna imagem em base64 direto no chat.', 'Imagem PNG em base64'],
+            ['generateDiagramToFile', 'Gera um diagrama PNG e salva em um caminho no disco. Use em clientes que não renderizam imagens inline (ex: Amazon Q).', 'Confirmação do caminho'],
+          ],
+        },
+        {
+          type: 'callout',
+          title: 'Fluxo: chame getDiagramAsCodeFormat primeiro',
+          tone: 'warn',
+          text: 'Sempre chame getDiagramAsCodeFormat antes de generateDiagram. Isso fornece ao assistente a especificação completa do formato para gerar YAML válido.',
+        },
+        {
+          type: 'code',
+          title: 'Exemplos de prompt',
           lang: 'text',
-          code: `Crie um diagrama de arquitetura AWS com:
-- uma VPC
+          code: `# PNG inline (Claude Desktop, Cursor, Claude Code)
+Crie um diagrama de arquitetura AWS com:
+- uma VPC em us-east-1
 - duas subnets públicas
 - um ALB internet-facing
-- duas instâncias EC2
+- duas instâncias EC2 atrás do ALB
 - um Internet Gateway
+Retorne o diagrama PNG.
 
-Retorne saída PNG e salve em ~/Desktop/architecture.png`,
+# Salvar em arquivo (Amazon Q, fluxos baseados em arquivo)
+Gere um diagrama de arquitetura serverless com API Gateway,
+Lambda e DynamoDB. Salve em ~/Desktop/serverless.png`,
+        },
+        {
+          type: 'list',
+          title: 'Clientes suportados',
+          items: [
+            'Claude Desktop — retorna PNG inline no chat (generateDiagram)',
+            'Claude Code CLI — retorna PNG inline no terminal',
+            'Cursor — retorna PNG inline no chat',
+            'VS Code (Copilot com suporte a MCP) — retorna PNG inline',
+            'Amazon Q — use generateDiagramToFile para salvar PNG no disco',
+            'Qualquer cliente MCP compatível com transporte stdio',
+          ],
         },
       ],
     },

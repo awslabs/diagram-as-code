@@ -1,0 +1,44 @@
+{
+  "name": "awsdac-mcp-server",
+  "version": "0.22.5",
+  "description": "MCP server for awsdac — lets AI assistants (Claude, Cursor, VS Code) generate AWS architecture diagrams from chat.",
+  "bin": {
+    "awsdac-mcp-server": "bin/awsdac-mcp-server"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fernandofatech/diagram-as-code.git"
+  },
+  "homepage": "https://dac.moretes.com/docs/mcp",
+  "bugs": {
+    "url": "https://github.com/fernandofatech/diagram-as-code/issues"
+  },
+  "keywords": [
+    "mcp",
+    "aws",
+    "diagram",
+    "architecture",
+    "claude",
+    "cursor",
+    "ai",
+    "agent",
+    "diagram-as-code",
+    "yaml",
+    "drawio",
+    "png"
+  ],
+  "author": "Fernando Azevedo",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "bin/awsdac-mcp-server",
+    "scripts/install.js",
+    "LICENSE",
+    "README.md"
+  ]
+}
