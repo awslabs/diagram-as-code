@@ -171,6 +171,123 @@ func (l *Link) drawLine(img *image.RGBA, sourcePt image.Point, targetPt image.Po
 	}
 }
 
+func pointsEqual(a, b image.Point) bool {
+	return a.X == b.X && a.Y == b.Y
+}
+
+func firstDistinctPoint(points []image.Point, fallback image.Point) image.Point {
+	for _, pt := range points {
+		if !pointsEqual(pt, fallback) {
+			return pt
+		}
+	}
+	return fallback
+}
+
+func (l *Link) drawPath(img *image.RGBA, pts []image.Point) {
+	if len(pts) < 2 {
+		return
+	}
+	prev := pts[0]
+	for _, pt := range pts[1:] {
+		if pointsEqual(prev, pt) {
+			continue
+		}
+		l.drawLine(img, prev, pt)
+		prev = pt
+	}
+}
+
+func sampleQuadraticBezier(p0, p1, p2 vector.Vector, steps int) []image.Point {
+	if steps < 2 {
+		steps = 2
+	}
+	points := make([]image.Point, 0, steps+1)
+	for i := 0; i <= steps; i++ {
+		t := float64(i) / float64(steps)
+		mt := 1 - t
+		x := mt*mt*p0.X + 2*mt*t*p1.X + t*t*p2.X
+		y := mt*mt*p0.Y + 2*mt*t*p1.Y + t*t*p2.Y
+		pt := image.Point{X: int(math.Round(x)), Y: int(math.Round(y))}
+		if len(points) == 0 || !pointsEqual(points[len(points)-1], pt) {
+			points = append(points, pt)
+		}
+	}
+	return points
+}
+
+func roundedCornerRadius(prev, corner, next image.Point) float64 {
+	inLen := math.Hypot(float64(corner.X-prev.X), float64(corner.Y-prev.Y))
+	outLen := math.Hypot(float64(next.X-corner.X), float64(next.Y-corner.Y))
+	radius := math.Min(18, math.Min(inLen, outLen)/2.5)
+	if radius < 6 {
+		return 0
+	}
+	return radius
+}
+
+func roundedOrthogonalPath(path []image.Point) []image.Point {
+	if len(path) < 3 {
+		return path
+	}
+
+	rounded := []image.Point{path[0]}
+	for i := 1; i < len(path)-1; i++ {
+		prev := path[i-1]
+		corner := path[i]
+		next := path[i+1]
+
+		dx1 := corner.X - prev.X
+		dy1 := corner.Y - prev.Y
+		dx2 := next.X - corner.X
+		dy2 := next.Y - corner.Y
+
+		// Keep straight segments untouched.
+		if (dx1 == 0 && dx2 == 0) || (dy1 == 0 && dy2 == 0) {
+			if !pointsEqual(rounded[len(rounded)-1], corner) {
+				rounded = append(rounded, corner)
+			}
+			continue
+		}
+
+		radius := roundedCornerRadius(prev, corner, next)
+		if radius == 0 {
+			if !pointsEqual(rounded[len(rounded)-1], corner) {
+				rounded = append(rounded, corner)
+			}
+			continue
+		}
+
+		prevDir := vector.New(float64(dx1), float64(dy1)).Normalize()
+		nextDir := vector.New(float64(dx2), float64(dy2)).Normalize()
+		entryVec := vector.New(float64(corner.X), float64(corner.Y)).Sub(prevDir.Scale(radius))
+		exitVec := vector.New(float64(corner.X), float64(corner.Y)).Add(nextDir.Scale(radius))
+		entry := image.Point{X: int(math.Round(entryVec.X)), Y: int(math.Round(entryVec.Y))}
+		exit := image.Point{X: int(math.Round(exitVec.X)), Y: int(math.Round(exitVec.Y))}
+
+		if !pointsEqual(rounded[len(rounded)-1], entry) {
+			rounded = append(rounded, entry)
+		}
+
+		curve := sampleQuadraticBezier(
+			vector.New(float64(entry.X), float64(entry.Y)),
+			vector.New(float64(corner.X), float64(corner.Y)),
+			vector.New(float64(exit.X), float64(exit.Y)),
+			8,
+		)
+		for _, pt := range curve[1:] {
+			if !pointsEqual(rounded[len(rounded)-1], pt) {
+				rounded = append(rounded, pt)
+			}
+		}
+	}
+
+	if !pointsEqual(rounded[len(rounded)-1], path[len(path)-1]) {
+		rounded = append(rounded, path[len(path)-1])
+	}
+	return rounded
+}
+
 func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (font.Face, error) {
 	if label.Font == "" {
 		if parent1 != nil && parent1.labelFont != "" {
@@ -418,23 +535,35 @@ func (l *Link) Draw(img *image.RGBA) error {
 
 		// Draw the path
 		if len(controlPts) >= 1 {
-			l.drawLine(img, sourcePt, controlPts[0])
-			l.drawArrowHead(img, sourcePt, controlPts[0], l.SourceArrowHead)
-			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Right", l.Labels.SourceRight); err != nil {
+			fullPath := make([]image.Point, 0, len(controlPts)+2)
+			fullPath = append(fullPath, sourcePt)
+			fullPath = append(fullPath, controlPts...)
+			fullPath = append(fullPath, targetPt)
+			roundedPath := roundedOrthogonalPath(fullPath)
+
+			l.drawPath(img, roundedPath)
+
+			sourceTangent := firstDistinctPoint(roundedPath[1:], sourcePt)
+			targetTangent := targetPt
+			for i := len(roundedPath) - 2; i >= 0; i-- {
+				if !pointsEqual(roundedPath[i], targetPt) {
+					targetTangent = roundedPath[i]
+					break
+				}
+			}
+
+			l.drawArrowHead(img, sourcePt, sourceTangent, l.SourceArrowHead)
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, sourceTangent, "Right", l.Labels.SourceRight); err != nil {
 				return fmt.Errorf("failed to draw source right label: %w", err)
 			}
-			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, controlPts[0], "Left", l.Labels.SourceLeft); err != nil {
+			if err := l.drawLabel(img, l.SourcePosition, l.Source, l.Target, sourcePt, sourceTangent, "Left", l.Labels.SourceLeft); err != nil {
 				return fmt.Errorf("failed to draw source left label: %w", err)
 			}
-			for i := 0; i < len(controlPts)-1; i++ {
-				l.drawLine(img, controlPts[i], controlPts[i+1])
-			}
-			l.drawLine(img, controlPts[len(controlPts)-1], targetPt)
-			l.drawArrowHead(img, targetPt, controlPts[len(controlPts)-1], l.TargetArrowHead)
-			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Left", l.Labels.TargetRight); err != nil {
+			l.drawArrowHead(img, targetPt, targetTangent, l.TargetArrowHead)
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, targetTangent, "Left", l.Labels.TargetRight); err != nil {
 				return fmt.Errorf("failed to draw target right label: %w", err)
 			}
-			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, controlPts[len(controlPts)-1], "Right", l.Labels.TargetLeft); err != nil {
+			if err := l.drawLabel(img, l.TargetPosition, l.Target, l.Source, targetPt, targetTangent, "Right", l.Labels.TargetLeft); err != nil {
 				return fmt.Errorf("failed to draw target left label: %w", err)
 			}
 		} else {

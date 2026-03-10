@@ -70,6 +70,38 @@ func TestGetThreeSide(t *testing.T) {
 	}
 }
 
+func TestRoundedOrthogonalPath(t *testing.T) {
+	path := []image.Point{
+		{X: 10, Y: 10},
+		{X: 90, Y: 10},
+		{X: 90, Y: 90},
+		{X: 170, Y: 90},
+	}
+
+	rounded := roundedOrthogonalPath(path)
+
+	if len(rounded) <= len(path) {
+		t.Fatalf("expected rounded path to add curve points, got %d points from %d", len(rounded), len(path))
+	}
+	if !pointsEqual(rounded[0], path[0]) {
+		t.Fatalf("rounded path start = %v, want %v", rounded[0], path[0])
+	}
+	if !pointsEqual(rounded[len(rounded)-1], path[len(path)-1]) {
+		t.Fatalf("rounded path end = %v, want %v", rounded[len(rounded)-1], path[len(path)-1])
+	}
+
+	foundIntermediate := false
+	for _, pt := range rounded {
+		if pt.X != 90 && pt.Y != 10 && pt.Y != 90 {
+			foundIntermediate = true
+			break
+		}
+	}
+	if !foundIntermediate {
+		t.Fatal("expected rounded path to contain interpolated curve points away from the original axes")
+	}
+}
+
 func TestDrawNeighborsDots1(t *testing.T) {
 	// Create a test image
 	width, height := 10, 10

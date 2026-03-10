@@ -336,7 +336,7 @@ func exportToDrawio(
 			continue
 		}
 
-		edgeStyle := "edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;"
+		edgeStyle := "edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=18;orthogonalLoop=1;jettySize=auto;html=1;"
 
 		if link.LineStyle == "dashed" {
 			edgeStyle += "dashed=1;"
