@@ -1,0 +1,32 @@
+# Go source and binaries
+internal/
+cmd/
+pkg/
+tools/
+test/
+go.mod
+go.sum
+awsdac
+*.go
+
+# Git
+.git/
+.github/
+
+# Docs and examples (not needed for Vercel)
+doc/
+examples/
+diagrams/
+definitions/
+scripts/
+
+# Node
+web/node_modules/
+
+# Misc
+.claude/
+tmp/
+.cache/
+*.png
+*.drawio
+*.pdf
