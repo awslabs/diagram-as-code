@@ -220,7 +220,7 @@ func sampleQuadraticBezier(p0, p1, p2 vector.Vector, steps int) []image.Point {
 func roundedCornerRadius(prev, corner, next image.Point) float64 {
 	inLen := math.Hypot(float64(corner.X-prev.X), float64(corner.Y-prev.Y))
 	outLen := math.Hypot(float64(next.X-corner.X), float64(next.Y-corner.Y))
-	radius := math.Min(28, math.Min(inLen, outLen)/2.1)
+	radius := math.Min(22, math.Min(inLen, outLen)/2.4)
 	if radius < 8 {
 		return 0
 	}
@@ -391,7 +391,7 @@ func (l *Link) obstacleRects() []image.Rectangle {
 		if bounds.Empty() || bounds.Dx() == 0 || bounds.Dy() == 0 {
 			continue
 		}
-		obstacles = append(obstacles, inflateRect(bounds, 28))
+		obstacles = append(obstacles, inflateRect(bounds, 16))
 	}
 	return obstacles
 }
@@ -442,7 +442,7 @@ func (l *Link) routeSegmentAroundObstacles(start, end image.Point, obstacles []i
 	}
 
 	cluster := mergeRects(hits)
-	margin := 34
+	margin := 18
 
 	tryRoute := func(candidate []image.Point) ([]image.Point, bool) {
 		routed := []image.Point{candidate[0]}
@@ -456,10 +456,30 @@ func (l *Link) routeSegmentAroundObstacles(start, end image.Point, obstacles []i
 		return simplifyOrthogonalPath(routed), true
 	}
 
+	pathDistance := func(points []image.Point) int {
+		total := 0
+		for i := 1; i < len(points); i++ {
+			total += abs(points[i].X-points[i-1].X) + abs(points[i].Y-points[i-1].Y)
+		}
+		return total
+	}
+
 	if start.Y == end.Y {
 		candidates := []int{cluster.Min.Y - margin, cluster.Max.Y + margin}
 		sort.SliceStable(candidates, func(i, j int) bool {
-			return math.Abs(float64(candidates[i]-start.Y)) < math.Abs(float64(candidates[j]-start.Y))
+			left := []image.Point{
+				start,
+				{X: start.X, Y: candidates[i]},
+				{X: end.X, Y: candidates[i]},
+				end,
+			}
+			right := []image.Point{
+				start,
+				{X: start.X, Y: candidates[j]},
+				{X: end.X, Y: candidates[j]},
+				end,
+			}
+			return pathDistance(left) < pathDistance(right)
 		})
 		for _, detourY := range candidates {
 			candidate := []image.Point{
@@ -475,7 +495,19 @@ func (l *Link) routeSegmentAroundObstacles(start, end image.Point, obstacles []i
 	} else {
 		candidates := []int{cluster.Min.X - margin, cluster.Max.X + margin}
 		sort.SliceStable(candidates, func(i, j int) bool {
-			return math.Abs(float64(candidates[i]-start.X)) < math.Abs(float64(candidates[j]-start.X))
+			left := []image.Point{
+				start,
+				{X: candidates[i], Y: start.Y},
+				{X: candidates[i], Y: end.Y},
+				end,
+			}
+			right := []image.Point{
+				start,
+				{X: candidates[j], Y: start.Y},
+				{X: candidates[j], Y: end.Y},
+				end,
+			}
+			return pathDistance(left) < pathDistance(right)
 		})
 		for _, detourX := range candidates {
 			candidate := []image.Point{
