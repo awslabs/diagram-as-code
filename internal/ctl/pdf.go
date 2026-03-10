@@ -8,6 +8,9 @@ import (
 )
 
 func CreatePDFFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
+	if opts != nil && opts.PreferDrawioExport && canUseDrawioExport() {
+		return createPDFViaDrawio(inputfile, outputfile, opts)
+	}
 	return createPDF(func(tmpOutput string) error {
 		return CreateDiagramFromDacFile(inputfile, &tmpOutput, opts)
 	}, outputfile, opts)

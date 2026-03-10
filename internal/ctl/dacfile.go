@@ -69,6 +69,9 @@ func processTemplate(templateData []byte) ([]byte, error) {
 }
 
 func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
+	if opts != nil && opts.PreferDrawioExport && canUseDrawioExport() {
+		return createDiagramViaDrawio(inputfile, outputfile, opts)
+	}
 
 	log.Infof("input file path: %s\n", inputfile)
 

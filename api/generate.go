@@ -77,7 +77,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	tmpOut.Close()
 	defer os.Remove(tmpOut.Name())
 
-	opts := &diagram.CreateOptions{OverwriteMode: diagram.Force}
+	opts := &diagram.CreateOptions{
+		OverwriteMode:      diagram.Force,
+		PreferDrawioExport: true,
+	}
 	outputFile := tmpOut.Name()
 
 	if req.Format == "drawio" {

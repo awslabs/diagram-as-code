@@ -68,6 +68,7 @@ func main() {
 					IsGoTemplate:              isGoTemplate,
 					OverrideDefFile:           overrideDefFile,
 					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+					PreferDrawioExport:        true,
 				}
 				if err := ctl.CreateDrawioFromDacFile(inputFile, &outputFile, &opts); err != nil {
 					return fmt.Errorf("failed to create drawio: %w", err)
@@ -81,6 +82,7 @@ func main() {
 					IsGoTemplate:              isGoTemplate,
 					OverrideDefFile:           overrideDefFile,
 					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+					PreferDrawioExport:        true,
 					Width:                     width,
 					Height:                    height,
 				}
@@ -125,6 +127,7 @@ func main() {
 					IsGoTemplate:              isGoTemplate,
 					OverrideDefFile:           overrideDefFile,
 					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+					PreferDrawioExport:        true,
 					Width:                     width,
 					Height:                    height,
 				}

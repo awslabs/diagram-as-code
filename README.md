@@ -51,6 +51,7 @@ Key features:
 
 - Native `.drawio` export via `--drawio` flag or `-o output.drawio`
 - Draw.io export pipeline in Go (`internal/ctl/drawio.go`, `drawio_assets.go`)
+- PNG/PDF can optionally be exported from generated `.drawio` files when the `drawio` binary is available, keeping `.drawio` as the source of truth for local CLI and non-serverless environments
 - Public wrapper package `pkg/diagram` for embedding in external tools
 - `cmd/api-dev` local dev server for testing the API handler without Vercel CLI
 
@@ -128,6 +129,11 @@ $ awsdac examples/alb-ec2.yaml -o output.drawio
 3. Children are reordered from link topology to keep ordering aligned with PNG output.
 4. Resources are exported as draw.io cells and links are exported as draw.io edges in `mxGraphModel`.
 5. Official AWS SVG icons are loaded from the AWS Asset Package and embedded as data URIs for leaf resources.
+
+## PNG/PDF Export Source of Truth
+When the `drawio` binary is installed in the runtime environment, DAC YAML to `PNG` and `PDF` generation can be routed through a generated `.drawio` file first and then exported by draw.io itself. This keeps local CLI output aligned with `.drawio` output and makes draw.io the rendering source of truth.
+
+If the `drawio` binary is not available, the project falls back to the native Go PNG/PDF renderer so existing environments continue to work.
 
 ## Documentation
 

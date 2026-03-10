@@ -172,6 +172,7 @@ type CreateOptions struct {
 	IsGoTemplate              bool
 	OverrideDefFile           string
 	AllowUntrustedDefinitions bool
+	PreferDrawioExport        bool
 	OverwriteMode             OverwriteMode
 	OverrideFont              string
 	Width                     int
