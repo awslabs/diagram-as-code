@@ -1,13 +1,8 @@
-# Go source and binaries
-internal/
+# Go CLI / tests / tools (not needed for Vercel serverless)
 cmd/
-pkg/
 tools/
 test/
-go.mod
-go.sum
 awsdac
-*.go
 
 # Git
 .git/
