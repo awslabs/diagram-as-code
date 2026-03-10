@@ -21,7 +21,1733 @@ const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
 
 // ── Example templates ────────────────────────────────────────────────────────
 
+const DEF_URL = 'https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml'
+
 const EXAMPLES: Record<string, string> = {
+  'BFF Architecture': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+
+  Resources:
+
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Clients
+        - AWSCloud
+
+    Clients:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - WebClient
+        - MobileClient
+
+    WebClient:
+      Type: AWS::Diagram::Resource
+      Preset: Client
+      Title: Web Browser
+
+    MobileClient:
+      Type: AWS::Diagram::Resource
+      Preset: Mobile client
+      Title: Mobile App
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - EdgeLayer
+        - AuthLayer
+        - BFFLayer
+        - VPC
+
+    EdgeLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Route53
+        - WAF
+        - CDN
+
+    Route53:
+      Type: AWS::Route53::HostedZone
+      Title: Route 53
+
+    WAF:
+      Type: AWS::WAFv2::WebACL
+      Title: AWS WAF
+
+    CDN:
+      Type: AWS::CloudFront
+      Title: CloudFront
+
+    AuthLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Cognito
+
+    Cognito:
+      Type: AWS::Cognito::UserPool
+      Title: Cognito User Pool
+
+    BFFLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - WebBFFGroup
+        - MobileBFFGroup
+
+    WebBFFGroup:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Web BFF
+      Direction: vertical
+      Children:
+        - WebAPIGateway
+        - WebBFFLambda
+
+    WebAPIGateway:
+      Type: AWS::ApiGateway
+      Title: API Gateway (Web)
+
+    WebBFFLambda:
+      Type: AWS::Lambda::Function
+      Title: Web BFF
+
+    MobileBFFGroup:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Mobile BFF
+      Direction: vertical
+      Children:
+        - MobileAPIGateway
+        - MobileBFFLambda
+
+    MobileAPIGateway:
+      Type: AWS::ApiGateway
+      Title: API Gateway (Mobile)
+
+    MobileBFFLambda:
+      Type: AWS::Lambda::Function
+      Title: Mobile BFF
+
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - InternalALB
+        - ServicesStack
+        - DataStack
+        - MessagingStack
+
+    InternalALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+      Title: Internal ALB
+
+    ServicesStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ProductService
+        - OrderService
+        - UserService
+
+    ProductService:
+      Type: AWS::ECS::Service
+      Title: Product Service
+
+    OrderService:
+      Type: AWS::ECS::Service
+      Title: Order Service
+
+    UserService:
+      Type: AWS::ECS::Service
+      Title: User Service
+
+    DataStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - RDS
+        - Cache
+        - NoSQL
+
+    RDS:
+      Type: AWS::RDS::DBCluster
+      Title: Aurora PostgreSQL
+
+    Cache:
+      Type: AWS::ElastiCache::CacheCluster
+      Title: ElastiCache Redis
+
+    NoSQL:
+      Type: AWS::DynamoDB::Table
+      Title: DynamoDB
+
+    MessagingStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Queue
+        - Topic
+
+    Queue:
+      Type: AWS::SQS::Queue
+      Title: SQS Queue
+
+    Topic:
+      Type: AWS::SNS::Topic
+      Title: SNS Topic
+
+  Links:
+    - Source: WebClient
+      SourcePosition: E
+      Target: Route53
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "HTTPS"
+    - Source: MobileClient
+      SourcePosition: E
+      Target: Route53
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "HTTPS"
+    - Source: Route53
+      Target: WAF
+      TargetArrowHead:
+        Type: Open
+    - Source: WAF
+      Target: CDN
+      TargetArrowHead:
+        Type: Open
+    - Source: CDN
+      SourcePosition: SSW
+      Target: WebAPIGateway
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetLeft:
+          Title: "Web"
+    - Source: CDN
+      SourcePosition: SSE
+      Target: MobileAPIGateway
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetRight:
+          Title: "Mobile"
+    - Source: WebBFFLambda
+      Target: Cognito
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "JWT"
+    - Source: MobileBFFLambda
+      Target: Cognito
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "JWT"
+    - Source: WebBFFLambda
+      SourcePosition: S
+      Target: InternalALB
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: MobileBFFLambda
+      SourcePosition: S
+      Target: InternalALB
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: InternalALB
+      Target: ProductService
+      TargetArrowHead:
+        Type: Open
+    - Source: InternalALB
+      Target: OrderService
+      TargetArrowHead:
+        Type: Open
+    - Source: InternalALB
+      Target: UserService
+      TargetArrowHead:
+        Type: Open
+    - Source: ProductService
+      Target: RDS
+      TargetArrowHead:
+        Type: Open
+    - Source: OrderService
+      Target: RDS
+      TargetArrowHead:
+        Type: Open
+    - Source: UserService
+      Target: Cache
+      TargetArrowHead:
+        Type: Open
+    - Source: OrderService
+      Target: NoSQL
+      TargetArrowHead:
+        Type: Open
+    - Source: OrderService
+      Target: Queue
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "async"
+    - Source: Queue
+      Target: Topic
+      TargetArrowHead:
+        Type: Open
+`,
+
+  'Event-Driven (SNS/SQS/Lambda)': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - ClientApp
+        - AWSCloud
+
+    ClientApp:
+      Type: AWS::Diagram::Resource
+      Preset: Client
+      Title: Client App
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - APILayer
+        - MessagingLayer
+        - ProcessingLayer
+        - StorageLayer
+
+    APILayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - APIGW
+        - EventLambda
+
+    APIGW:
+      Type: AWS::ApiGateway
+      Title: API Gateway
+
+    EventLambda:
+      Type: AWS::Lambda::Function
+      Title: Event Publisher
+
+    MessagingLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - OrdersTopic
+        - OrdersQueue
+        - PaymentsQueue
+        - NotifQueue
+
+    OrdersTopic:
+      Type: AWS::SNS::Topic
+      Title: Orders Topic
+
+    OrdersQueue:
+      Type: AWS::SQS::Queue
+      Title: Orders Queue
+
+    PaymentsQueue:
+      Type: AWS::SQS::Queue
+      Title: Payments Queue
+
+    NotifQueue:
+      Type: AWS::SQS::Queue
+      Title: Notifications Queue
+
+    ProcessingLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - OrderProcessor
+        - PaymentProcessor
+        - NotifProcessor
+
+    OrderProcessor:
+      Type: AWS::Lambda::Function
+      Title: Order Processor
+
+    PaymentProcessor:
+      Type: AWS::Lambda::Function
+      Title: Payment Processor
+
+    NotifProcessor:
+      Type: AWS::Lambda::Function
+      Title: Notif Sender
+
+    StorageLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - OrdersTable
+        - PaymentsTable
+        - AuditBucket
+
+    OrdersTable:
+      Type: AWS::DynamoDB::Table
+      Title: Orders
+
+    PaymentsTable:
+      Type: AWS::DynamoDB::Table
+      Title: Payments
+
+    AuditBucket:
+      Type: AWS::S3::Bucket
+      Title: Audit Logs
+
+  Links:
+    - Source: ClientApp
+      Target: APIGW
+      TargetArrowHead:
+        Type: Open
+    - Source: APIGW
+      Target: EventLambda
+      TargetArrowHead:
+        Type: Open
+    - Source: EventLambda
+      Target: OrdersTopic
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "publish"
+    - Source: OrdersTopic
+      SourcePosition: SSW
+      Target: OrdersQueue
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: OrdersTopic
+      SourcePosition: S
+      Target: PaymentsQueue
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: OrdersTopic
+      SourcePosition: SSE
+      Target: NotifQueue
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: OrdersQueue
+      Target: OrderProcessor
+      TargetArrowHead:
+        Type: Open
+    - Source: PaymentsQueue
+      Target: PaymentProcessor
+      TargetArrowHead:
+        Type: Open
+    - Source: NotifQueue
+      Target: NotifProcessor
+      TargetArrowHead:
+        Type: Open
+    - Source: OrderProcessor
+      Target: OrdersTable
+      TargetArrowHead:
+        Type: Open
+    - Source: PaymentProcessor
+      Target: PaymentsTable
+      TargetArrowHead:
+        Type: Open
+    - Source: NotifProcessor
+      Target: AuditBucket
+      TargetArrowHead:
+        Type: Open
+`,
+
+  'Serverless REST API': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - MobileUser
+        - AWSCloud
+
+    MobileUser:
+      Type: AWS::Diagram::Resource
+      Preset: Mobile client
+      Title: Mobile / Web App
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - EdgeLayer
+        - AuthLayer
+        - ComputeLayer
+        - DataLayer
+
+    EdgeLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Route53
+        - CDN
+        - APIGW
+
+    Route53:
+      Type: AWS::Route53::HostedZone
+      Title: Route 53
+
+    CDN:
+      Type: AWS::CloudFront
+      Title: CloudFront
+
+    APIGW:
+      Type: AWS::ApiGatewayV2::Api
+      Title: HTTP API
+
+    AuthLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - UserPool
+
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Title: Cognito User Pool
+
+    ComputeLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - UsersLambda
+        - ProductsLambda
+        - OrdersLambda
+
+    UsersLambda:
+      Type: AWS::Lambda::Function
+      Title: Users fn
+
+    ProductsLambda:
+      Type: AWS::Lambda::Function
+      Title: Products fn
+
+    OrdersLambda:
+      Type: AWS::Lambda::Function
+      Title: Orders fn
+
+    DataLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - UsersTable
+        - ProductsTable
+        - OrdersTable
+        - Cache
+
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Title: Users
+
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Title: Products
+
+    OrdersTable:
+      Type: AWS::DynamoDB::Table
+      Title: Orders
+
+    Cache:
+      Type: AWS::ElastiCache::CacheCluster
+      Title: Redis Cache
+
+  Links:
+    - Source: MobileUser
+      Target: Route53
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "HTTPS"
+    - Source: Route53
+      Target: CDN
+      TargetArrowHead:
+        Type: Open
+    - Source: CDN
+      Target: APIGW
+      TargetArrowHead:
+        Type: Open
+    - Source: APIGW
+      Target: UserPool
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "auth"
+    - Source: APIGW
+      SourcePosition: SSW
+      Target: UsersLambda
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: APIGW
+      SourcePosition: S
+      Target: ProductsLambda
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: APIGW
+      SourcePosition: SSE
+      Target: OrdersLambda
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: UsersLambda
+      Target: UsersTable
+      TargetArrowHead:
+        Type: Open
+    - Source: ProductsLambda
+      Target: ProductsTable
+      TargetArrowHead:
+        Type: Open
+    - Source: OrdersLambda
+      Target: OrdersTable
+      TargetArrowHead:
+        Type: Open
+    - Source: UsersLambda
+      Target: Cache
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "cache"
+`,
+
+  'MFE with CloudFront': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Browser
+        - AWSCloud
+
+    Browser:
+      Type: AWS::Diagram::Resource
+      Preset: Client
+      Title: Browser
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - CDNLayer
+        - StaticLayer
+        - AuthLayer
+        - APILayer
+        - DataLayer
+
+    CDNLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - CloudFront
+
+    CloudFront:
+      Type: AWS::CloudFront
+      Title: CloudFront CDN
+
+    StaticLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ShellBucket
+        - HomeBucket
+        - CartBucket
+        - AssetsBucket
+
+    ShellBucket:
+      Type: AWS::S3::Bucket
+      Title: Shell App
+
+    HomeBucket:
+      Type: AWS::S3::Bucket
+      Title: Home MFE
+
+    CartBucket:
+      Type: AWS::S3::Bucket
+      Title: Cart MFE
+
+    AssetsBucket:
+      Type: AWS::S3::Bucket
+      Title: Static Assets
+
+    AuthLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Cognito
+
+    Cognito:
+      Type: AWS::Cognito::UserPool
+      Title: Cognito
+
+    APILayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - APIGW
+        - HomeAPILambda
+        - CartAPILambda
+
+    APIGW:
+      Type: AWS::ApiGatewayV2::Api
+      Title: API Gateway
+
+    HomeAPILambda:
+      Type: AWS::Lambda::Function
+      Title: Home API
+
+    CartAPILambda:
+      Type: AWS::Lambda::Function
+      Title: Cart API
+
+    DataLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ProductsDB
+        - CartDB
+
+    ProductsDB:
+      Type: AWS::DynamoDB::Table
+      Title: Products
+
+    CartDB:
+      Type: AWS::DynamoDB::Table
+      Title: Cart
+
+  Links:
+    - Source: Browser
+      Target: CloudFront
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "HTTPS"
+    - Source: CloudFront
+      SourcePosition: SSW
+      Target: ShellBucket
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetLeft:
+          Title: "/"
+    - Source: CloudFront
+      SourcePosition: S
+      Target: HomeBucket
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetLeft:
+          Title: "/home"
+    - Source: CloudFront
+      SourcePosition: SSE
+      Target: CartBucket
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetRight:
+          Title: "/cart"
+    - Source: CloudFront
+      SourcePosition: E
+      Target: APIGW
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        TargetRight:
+          Title: "/api"
+    - Source: APIGW
+      Target: Cognito
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "JWT"
+    - Source: APIGW
+      SourcePosition: SSW
+      Target: HomeAPILambda
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: APIGW
+      SourcePosition: SSE
+      Target: CartAPILambda
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: HomeAPILambda
+      Target: ProductsDB
+      TargetArrowHead:
+        Type: Open
+    - Source: CartAPILambda
+      Target: CartDB
+      TargetArrowHead:
+        Type: Open
+`,
+
+  'ECS Microservices': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - User
+        - AWSCloud
+
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - VPC
+
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - PublicSubnet
+        - PrivateSubnet
+        - DataSubnet
+      BorderChildren:
+        - Position: S
+          Resource: IGW
+
+    IGW:
+      Type: AWS::EC2::InternetGateway
+
+    PublicSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Public Subnet
+      Children:
+        - ALB
+
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+
+    PrivateSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: App Subnet (ECS)
+      Children:
+        - ServicesStack
+
+    ServicesStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - UsersService
+        - ProductsService
+        - OrdersService
+
+    UsersService:
+      Type: AWS::ECS::Service
+      Title: Users Service
+
+    ProductsService:
+      Type: AWS::ECS::Service
+      Title: Products Service
+
+    OrdersService:
+      Type: AWS::ECS::Service
+      Title: Orders Service
+
+    DataSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: Data Subnet
+      Children:
+        - DataStack
+
+    DataStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - AuroraDB
+        - RedisCache
+        - EventsQueue
+
+    AuroraDB:
+      Type: AWS::RDS::DBCluster
+      Title: Aurora PostgreSQL
+
+    RedisCache:
+      Type: AWS::ElastiCache::CacheCluster
+      Title: ElastiCache Redis
+
+    EventsQueue:
+      Type: AWS::SQS::Queue
+      Title: Events Queue
+
+  Links:
+    - Source: User
+      SourcePosition: N
+      Target: IGW
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: IGW
+      SourcePosition: N
+      Target: ALB
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNW
+      Target: UsersService
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: N
+      Target: ProductsService
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNE
+      Target: OrdersService
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: UsersService
+      Target: AuroraDB
+      TargetArrowHead:
+        Type: Open
+    - Source: ProductsService
+      Target: AuroraDB
+      TargetArrowHead:
+        Type: Open
+    - Source: OrdersService
+      Target: AuroraDB
+      TargetArrowHead:
+        Type: Open
+    - Source: UsersService
+      Target: RedisCache
+      TargetArrowHead:
+        Type: Open
+    - Source: OrdersService
+      Target: EventsQueue
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "async"
+`,
+
+  'CI/CD Pipeline': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - DevLayer
+        - AWSCloud
+
+    DevLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Developer
+
+    Developer:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Title: Developer
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - PipelineLayer
+        - BuildLayer
+        - RegistryLayer
+        - DeployLayer
+
+    PipelineLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Pipeline
+
+    Pipeline:
+      Type: AWS::CodePipeline::Pipeline
+      Title: CodePipeline
+
+    BuildLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Build
+
+    Build:
+      Type: AWS::CodeBuild::Project
+      Title: CodeBuild
+
+    RegistryLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Registry
+
+    Registry:
+      Type: AWS::ECR
+      Title: ECR
+
+    DeployLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ECSCluster
+        - APIService
+        - WorkerService
+
+    ECSCluster:
+      Type: AWS::ECS::Cluster
+      Title: ECS Cluster
+
+    APIService:
+      Type: AWS::ECS::Service
+      Title: API Service
+
+    WorkerService:
+      Type: AWS::ECS::Service
+      Title: Worker Service
+
+  Links:
+    - Source: Developer
+      Target: Pipeline
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "git push"
+    - Source: Pipeline
+      Target: Build
+      TargetArrowHead:
+        Type: Open
+    - Source: Build
+      Target: Registry
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "docker push"
+    - Source: Registry
+      SourcePosition: SSW
+      Target: APIService
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: Registry
+      SourcePosition: SSE
+      Target: WorkerService
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: Pipeline
+      SourcePosition: SSE
+      Target: APIService
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "deploy"
+`,
+
+  'Data Lake & Analytics': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - Sources
+        - AWSCloud
+
+    Sources:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - AppSource
+        - StreamSource
+
+    AppSource:
+      Type: AWS::Diagram::Resource
+      Preset: Client
+      Title: Applications
+
+    StreamSource:
+      Type: AWS::Diagram::Resource
+      Preset: Mobile client
+      Title: IoT / Events
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - IngestionLayer
+        - StorageLayer
+        - ProcessingLayer
+        - AnalyticsLayer
+
+    IngestionLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - KinesisStream
+        - APIGW
+
+    KinesisStream:
+      Type: AWS::Kinesis::Stream
+      Title: Kinesis Data Stream
+
+    APIGW:
+      Type: AWS::ApiGateway
+      Title: API Gateway
+
+    StorageLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - RawBucket
+        - ProcessedBucket
+        - CuratedBucket
+
+    RawBucket:
+      Type: AWS::S3::Bucket
+      Title: Raw Zone
+
+    ProcessedBucket:
+      Type: AWS::S3::Bucket
+      Title: Processed Zone
+
+    CuratedBucket:
+      Type: AWS::S3::Bucket
+      Title: Curated Zone
+
+    ProcessingLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - GlueETL
+        - TransformLambda
+
+    GlueETL:
+      Type: AWS::Glue
+      Title: AWS Glue ETL
+
+    TransformLambda:
+      Type: AWS::Lambda::Function
+      Title: Transform Lambda
+
+    AnalyticsLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - AthenaQuery
+        - EventsScheduler
+
+    AthenaQuery:
+      Type: AWS::Athena
+      Title: Amazon Athena
+
+    EventsScheduler:
+      Type: AWS::Events::Rule
+      Title: EventBridge Scheduler
+
+  Links:
+    - Source: StreamSource
+      Target: KinesisStream
+      TargetArrowHead:
+        Type: Open
+    - Source: AppSource
+      Target: APIGW
+      TargetArrowHead:
+        Type: Open
+    - Source: KinesisStream
+      Target: RawBucket
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "stream"
+    - Source: APIGW
+      Target: RawBucket
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "batch"
+    - Source: RawBucket
+      Target: GlueETL
+      TargetArrowHead:
+        Type: Open
+    - Source: GlueETL
+      Target: ProcessedBucket
+      TargetArrowHead:
+        Type: Open
+    - Source: ProcessedBucket
+      Target: TransformLambda
+      TargetArrowHead:
+        Type: Open
+    - Source: TransformLambda
+      Target: CuratedBucket
+      TargetArrowHead:
+        Type: Open
+    - Source: CuratedBucket
+      Target: AthenaQuery
+      TargetArrowHead:
+        Type: Open
+    - Source: EventsScheduler
+      Target: GlueETL
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "schedule"
+`,
+
+  'EKS Platform': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - DevTeam
+        - AWSCloud
+
+    DevTeam:
+      Type: AWS::Diagram::Resource
+      Preset: User
+      Title: Dev Team
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - EdgeLayer
+        - RegistryLayer
+        - VPC
+
+    EdgeLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ALBIngress
+
+    ALBIngress:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+      Title: ALB Ingress
+
+    RegistryLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ECR
+
+    ECR:
+      Type: AWS::ECR
+      Title: ECR
+
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - PublicSubnet
+        - PrivateSubnet
+        - DataSubnet
+      BorderChildren:
+        - Position: S
+          Resource: IGW
+
+    IGW:
+      Type: AWS::EC2::InternetGateway
+
+    PublicSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Public Subnet
+      Children:
+        - NAT
+
+    NAT:
+      Type: AWS::EC2::NatGateway
+
+    PrivateSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: EKS Node Group
+      Children:
+        - EKSCluster
+
+    EKSCluster:
+      Type: AWS::EKS
+      Title: EKS Cluster
+
+    DataSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: Data Subnet
+      Children:
+        - DataStack
+
+    DataStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Database
+        - CacheCluster
+
+    Database:
+      Type: AWS::RDS::DBCluster
+      Title: Aurora PostgreSQL
+
+    CacheCluster:
+      Type: AWS::ElastiCache::CacheCluster
+      Title: Redis
+
+  Links:
+    - Source: DevTeam
+      SourcePosition: E
+      Target: ECR
+      TargetPosition: W
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "docker push"
+    - Source: DevTeam
+      SourcePosition: S
+      Target: ALBIngress
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "kubectl"
+    - Source: ALBIngress
+      Target: EKSCluster
+      TargetArrowHead:
+        Type: Open
+    - Source: ECR
+      Target: EKSCluster
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "pull image"
+    - Source: EKSCluster
+      Target: Database
+      TargetArrowHead:
+        Type: Open
+    - Source: EKSCluster
+      Target: CacheCluster
+      TargetArrowHead:
+        Type: Open
+    - Source: NAT
+      Target: IGW
+      TargetArrowHead:
+        Type: Open
+`,
+
+  'Multi-tier Web App': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - User
+        - AWSCloud
+
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - EdgeLayer
+        - VPC
+
+    EdgeLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - DNS
+        - CDN
+        - WAF
+
+    DNS:
+      Type: AWS::Route53::HostedZone
+      Title: Route 53
+
+    CDN:
+      Type: AWS::CloudFront
+      Title: CloudFront
+
+    WAF:
+      Type: AWS::WAFv2::WebACL
+      Title: AWS WAF
+
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - PublicSubnet
+        - AppSubnet
+        - DBSubnet
+      BorderChildren:
+        - Position: S
+          Resource: IGW
+
+    IGW:
+      Type: AWS::EC2::InternetGateway
+
+    PublicSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Title: Public Subnet
+      Children:
+        - ALB
+
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+
+    AppSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: App Subnet
+      Children:
+        - ASG
+
+    ASG:
+      Type: AWS::AutoScaling::AutoScalingGroup
+      Children:
+        - AppServer1
+        - AppServer2
+
+    AppServer1:
+      Type: AWS::EC2::Instance
+      Title: App Server
+
+    AppServer2:
+      Type: AWS::EC2::Instance
+      Title: App Server
+
+    DBSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Title: Data Subnet
+      Children:
+        - DBStack
+
+    DBStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - PrimaryDB
+        - ReplicaDB
+        - SessionCache
+
+    PrimaryDB:
+      Type: AWS::RDS::DBCluster
+      Title: Aurora (Primary)
+
+    ReplicaDB:
+      Type: AWS::RDS::DBInstance
+      Title: Aurora (Replica)
+
+    SessionCache:
+      Type: AWS::ElastiCache::CacheCluster
+      Title: ElastiCache Redis
+
+  Links:
+    - Source: User
+      Target: DNS
+      TargetArrowHead:
+        Type: Open
+    - Source: DNS
+      Target: CDN
+      TargetArrowHead:
+        Type: Open
+    - Source: CDN
+      Target: WAF
+      TargetArrowHead:
+        Type: Open
+    - Source: WAF
+      Target: ALB
+      TargetArrowHead:
+        Type: Open
+    - Source: IGW
+      SourcePosition: N
+      Target: ALB
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNW
+      Target: AppServer1
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: ALB
+      SourcePosition: NNE
+      Target: AppServer2
+      TargetPosition: S
+      TargetArrowHead:
+        Type: Open
+    - Source: AppServer1
+      Target: PrimaryDB
+      TargetArrowHead:
+        Type: Open
+    - Source: AppServer2
+      Target: PrimaryDB
+      TargetArrowHead:
+        Type: Open
+    - Source: AppServer1
+      Target: SessionCache
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "session"
+    - Source: PrimaryDB
+      Target: ReplicaDB
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "replication"
+`,
+
+  'Step Functions Saga': `Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "${DEF_URL}"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - ClientLayer
+        - AWSCloud
+
+    ClientLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - Client
+
+    Client:
+      Type: AWS::Diagram::Resource
+      Preset: Mobile client
+      Title: Client App
+
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - APILayer
+        - OrchestratorLayer
+        - StepsLayer
+        - CompensationLayer
+        - StorageLayer
+
+    APILayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - APIGW
+
+    APIGW:
+      Type: AWS::ApiGateway
+      Title: API Gateway
+
+    OrchestratorLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - StateMachine
+
+    StateMachine:
+      Type: AWS::StepFunctions
+      Title: Order Saga
+
+    StepsLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ReserveInventoryFn
+        - ProcessPaymentFn
+        - ShipOrderFn
+
+    ReserveInventoryFn:
+      Type: AWS::Lambda::Function
+      Title: Reserve Inventory
+
+    ProcessPaymentFn:
+      Type: AWS::Lambda::Function
+      Title: Process Payment
+
+    ShipOrderFn:
+      Type: AWS::Lambda::Function
+      Title: Ship Order
+
+    CompensationLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - ReleaseInventoryFn
+        - RefundPaymentFn
+        - NotifyFailureFn
+
+    ReleaseInventoryFn:
+      Type: AWS::Lambda::Function
+      Title: Release Inventory
+
+    RefundPaymentFn:
+      Type: AWS::Lambda::Function
+      Title: Refund Payment
+
+    NotifyFailureFn:
+      Type: AWS::Lambda::Function
+      Title: Notify Failure
+
+    StorageLayer:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - OrdersTable
+        - InventoryTable
+        - DLQ
+
+    OrdersTable:
+      Type: AWS::DynamoDB::Table
+      Title: Orders
+
+    InventoryTable:
+      Type: AWS::DynamoDB::Table
+      Title: Inventory
+
+    DLQ:
+      Type: AWS::SQS::Queue
+      Title: Dead Letter Queue
+
+  Links:
+    - Source: Client
+      Target: APIGW
+      TargetArrowHead:
+        Type: Open
+    - Source: APIGW
+      Target: StateMachine
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "StartExecution"
+    - Source: StateMachine
+      SourcePosition: SSW
+      Target: ReserveInventoryFn
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: StateMachine
+      SourcePosition: S
+      Target: ProcessPaymentFn
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: StateMachine
+      SourcePosition: SSE
+      Target: ShipOrderFn
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+    - Source: StateMachine
+      SourcePosition: SW
+      Target: ReleaseInventoryFn
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "compensate"
+    - Source: StateMachine
+      SourcePosition: S
+      Target: RefundPaymentFn
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceLeft:
+          Title: "compensate"
+    - Source: StateMachine
+      SourcePosition: SE
+      Target: NotifyFailureFn
+      TargetPosition: N
+      TargetArrowHead:
+        Type: Open
+      Labels:
+        SourceRight:
+          Title: "compensate"
+    - Source: ReserveInventoryFn
+      Target: InventoryTable
+      TargetArrowHead:
+        Type: Open
+    - Source: ProcessPaymentFn
+      Target: OrdersTable
+      TargetArrowHead:
+        Type: Open
+    - Source: ShipOrderFn
+      Target: OrdersTable
+      TargetArrowHead:
+        Type: Open
+    - Source: NotifyFailureFn
+      Target: DLQ
+      TargetArrowHead:
+        Type: Open
+`,
+
   'ALB + EC2': `Diagram:
   DefinitionFiles:
     - Type: URL
@@ -406,7 +2132,7 @@ const EXAMPLE_NAMES = Object.keys(EXAMPLES)
 
 const EDITOR_TOUR: TourStep[] = [
   { target: 'editor-logo', title: 'diagram-as-code', description: 'Generate AWS architecture diagrams from YAML. Write code, get pixel-perfect diagrams.', position: 'bottom' },
-  { target: 'editor-examples', title: 'Examples', description: 'Load pre-built templates instantly — ALB+EC2, VPC+NAT, Auto Scaling, Multi-Region.', position: 'bottom' },
+  { target: 'editor-examples', title: 'Examples', description: '10 real-world templates: BFF, Event-Driven, Serverless API, MFE, ECS, CI/CD, Data Lake, EKS, Multi-tier Web, Step Functions Saga.', position: 'bottom' },
   { target: 'editor-format', title: 'Output Format', description: 'Toggle between PNG (for docs and wikis) and draw.io (for editable diagrams).', position: 'bottom' },
   { target: 'editor-generate', title: 'Generate', description: 'Click to render your diagram. You can also press Ctrl+Enter anytime.', position: 'bottom' },
   { target: 'editor-panel', title: 'YAML Editor', description: 'Write your architecture in YAML. The editor has syntax highlighting powered by Monaco (VS Code engine).', position: 'right' },
@@ -416,7 +2142,7 @@ const EDITOR_TOUR: TourStep[] = [
 
 export default function Home() {
   const { t } = useLanguage()
-  const [yaml, setYaml] = useState(EXAMPLES['ALB + EC2'])
+  const [yaml, setYaml] = useState(EXAMPLES['BFF Architecture'])
   const [format, setFormat] = useState<'png' | 'drawio'>('png')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [drawioContent, setDrawioContent] = useState<string | null>(null)
