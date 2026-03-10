@@ -121,9 +121,3 @@ Diagram:
         SourceLeft:
           Title: "HTTP:80"
 ```
-
-## Branch Strategy
-
-- `develop` — integration; all feature/fix work targets here
-- `main` — production-ready; merge from `develop` only
-- Commit prefixes: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
