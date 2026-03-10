@@ -102,6 +102,51 @@ func TestRoundedOrthogonalPath(t *testing.T) {
 	}
 }
 
+func TestCalculateOrthogonalPathAvoidsObstacleBounds(t *testing.T) {
+	canvas := new(Resource).Init()
+	canvas.label = "Canvas"
+	canvas.bindings = &image.Rectangle{Min: image.Point{0, 0}, Max: image.Point{500, 300}}
+
+	source := new(Resource).Init()
+	source.label = "Source"
+	source.parent = canvas
+	source.bindings = &image.Rectangle{Min: image.Point{20, 100}, Max: image.Point{84, 164}}
+
+	target := new(Resource).Init()
+	target.label = "Target"
+	target.parent = canvas
+	target.bindings = &image.Rectangle{Min: image.Point{380, 100}, Max: image.Point{444, 164}}
+
+	obstacle := new(Resource).Init()
+	obstacle.label = "Obstacle"
+	obstacle.parent = canvas
+	obstacle.bindings = &image.Rectangle{Min: image.Point{190, 80}, Max: image.Point{254, 184}}
+
+	canvas.children = []*Resource{source, obstacle, target}
+
+	link := &Link{
+		Source:         source,
+		SourcePosition: WINDROSE_E,
+		Target:         target,
+		TargetPosition: WINDROSE_W,
+		Type:           "orthogonal",
+	}
+
+	sourcePt := image.Point{X: 84, Y: 132}
+	targetPt := image.Point{X: 380, Y: 132}
+
+	controlPts := link.calculateOrthogonalPath(sourcePt, targetPt)
+	fullPath := append([]image.Point{sourcePt}, controlPts...)
+	fullPath = append(fullPath, targetPt)
+
+	inflatedObstacle := inflateRect(*obstacle.bindings, 18)
+	for i := 0; i < len(fullPath)-1; i++ {
+		if segmentIntersectsRect(fullPath[i], fullPath[i+1], inflatedObstacle) {
+			t.Fatalf("segment %v -> %v intersects inflated obstacle %v", fullPath[i], fullPath[i+1], inflatedObstacle)
+		}
+	}
+}
+
 func TestDrawNeighborsDots1(t *testing.T) {
 	// Create a test image
 	width, height := 10, 10

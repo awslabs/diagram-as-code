@@ -11,6 +11,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"sort"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -286,6 +287,235 @@ func roundedOrthogonalPath(path []image.Point) []image.Point {
 		rounded = append(rounded, path[len(path)-1])
 	}
 	return rounded
+}
+
+func simplifyOrthogonalPath(path []image.Point) []image.Point {
+	if len(path) <= 2 {
+		return path
+	}
+
+	simplified := make([]image.Point, 0, len(path))
+	for _, pt := range path {
+		if len(simplified) == 0 || !pointsEqual(simplified[len(simplified)-1], pt) {
+			simplified = append(simplified, pt)
+		}
+	}
+
+	if len(simplified) <= 2 {
+		return simplified
+	}
+
+	result := []image.Point{simplified[0]}
+	for i := 1; i < len(simplified)-1; i++ {
+		prev := result[len(result)-1]
+		curr := simplified[i]
+		next := simplified[i+1]
+		if (prev.X == curr.X && curr.X == next.X) || (prev.Y == curr.Y && curr.Y == next.Y) {
+			continue
+		}
+		result = append(result, curr)
+	}
+	result = append(result, simplified[len(simplified)-1])
+	return result
+}
+
+func inflateRect(rect image.Rectangle, padding int) image.Rectangle {
+	return image.Rect(rect.Min.X-padding, rect.Min.Y-padding, rect.Max.X+padding, rect.Max.Y+padding)
+}
+
+func segmentIntersectsRect(start, end image.Point, rect image.Rectangle) bool {
+	if start.X == end.X {
+		if start.X <= rect.Min.X || start.X >= rect.Max.X {
+			return false
+		}
+		minY := min(start.Y, end.Y)
+		maxY := max(start.Y, end.Y)
+		return maxY > rect.Min.Y && minY < rect.Max.Y
+	}
+	if start.Y == end.Y {
+		if start.Y <= rect.Min.Y || start.Y >= rect.Max.Y {
+			return false
+		}
+		minX := min(start.X, end.X)
+		maxX := max(start.X, end.X)
+		return maxX > rect.Min.X && minX < rect.Max.X
+	}
+	return false
+}
+
+func gatherSubtreeResources(root *Resource, out *[]*Resource) {
+	if root == nil {
+		return
+	}
+	*out = append(*out, root)
+	for _, child := range root.children {
+		gatherSubtreeResources(child, out)
+	}
+	for _, bc := range root.borderChildren {
+		gatherSubtreeResources(bc.Resource, out)
+	}
+}
+
+func collectAncestors(resource *Resource) map[*Resource]bool {
+	ancestors := map[*Resource]bool{}
+	for current := resource; current != nil; current = current.GetParent() {
+		ancestors[current] = true
+	}
+	return ancestors
+}
+
+func (l *Link) obstacleRects() []image.Rectangle {
+	root := l.Source
+	for root != nil && root.GetParent() != nil {
+		root = root.GetParent()
+	}
+	if root == nil {
+		return nil
+	}
+
+	sourceAncestors := collectAncestors(l.Source)
+	targetAncestors := collectAncestors(l.Target)
+
+	var resources []*Resource
+	gatherSubtreeResources(root, &resources)
+
+	obstacles := make([]image.Rectangle, 0, len(resources))
+	for _, resource := range resources {
+		if resource == nil || resource == l.Source || resource == l.Target {
+			continue
+		}
+		if sourceAncestors[resource] || targetAncestors[resource] {
+			continue
+		}
+		bounds := resource.GetBindings()
+		if bounds.Empty() || bounds.Dx() == 0 || bounds.Dy() == 0 {
+			continue
+		}
+		obstacles = append(obstacles, inflateRect(bounds, 18))
+	}
+	return obstacles
+}
+
+func intersectingObstacles(start, end image.Point, obstacles []image.Rectangle) []image.Rectangle {
+	var hits []image.Rectangle
+	for _, obstacle := range obstacles {
+		if segmentIntersectsRect(start, end, obstacle) {
+			hits = append(hits, obstacle)
+		}
+	}
+	return hits
+}
+
+func mergeRects(rects []image.Rectangle) image.Rectangle {
+	if len(rects) == 0 {
+		return image.Rectangle{}
+	}
+	merged := rects[0]
+	for _, rect := range rects[1:] {
+		if rect.Min.X < merged.Min.X {
+			merged.Min.X = rect.Min.X
+		}
+		if rect.Min.Y < merged.Min.Y {
+			merged.Min.Y = rect.Min.Y
+		}
+		if rect.Max.X > merged.Max.X {
+			merged.Max.X = rect.Max.X
+		}
+		if rect.Max.Y > merged.Max.Y {
+			merged.Max.Y = rect.Max.Y
+		}
+	}
+	return merged
+}
+
+func (l *Link) routeSegmentAroundObstacles(start, end image.Point, obstacles []image.Rectangle, depth int) []image.Point {
+	if depth > 4 {
+		return []image.Point{start, end}
+	}
+	if start.X != end.X && start.Y != end.Y {
+		return []image.Point{start, end}
+	}
+
+	hits := intersectingObstacles(start, end, obstacles)
+	if len(hits) == 0 {
+		return []image.Point{start, end}
+	}
+
+	cluster := mergeRects(hits)
+	margin := 22
+
+	tryRoute := func(candidate []image.Point) ([]image.Point, bool) {
+		routed := []image.Point{candidate[0]}
+		for i := 1; i < len(candidate); i++ {
+			segment := l.routeSegmentAroundObstacles(routed[len(routed)-1], candidate[i], obstacles, depth+1)
+			if len(segment) == 0 {
+				return nil, false
+			}
+			routed = append(routed, segment[1:]...)
+		}
+		return simplifyOrthogonalPath(routed), true
+	}
+
+	if start.Y == end.Y {
+		candidates := []int{cluster.Min.Y - margin, cluster.Max.Y + margin}
+		sort.SliceStable(candidates, func(i, j int) bool {
+			return math.Abs(float64(candidates[i]-start.Y)) < math.Abs(float64(candidates[j]-start.Y))
+		})
+		for _, detourY := range candidates {
+			candidate := []image.Point{
+				start,
+				{X: start.X, Y: detourY},
+				{X: end.X, Y: detourY},
+				end,
+			}
+			if routed, ok := tryRoute(candidate); ok {
+				return routed
+			}
+		}
+	} else {
+		candidates := []int{cluster.Min.X - margin, cluster.Max.X + margin}
+		sort.SliceStable(candidates, func(i, j int) bool {
+			return math.Abs(float64(candidates[i]-start.X)) < math.Abs(float64(candidates[j]-start.X))
+		})
+		for _, detourX := range candidates {
+			candidate := []image.Point{
+				start,
+				{X: detourX, Y: start.Y},
+				{X: detourX, Y: end.Y},
+				end,
+			}
+			if routed, ok := tryRoute(candidate); ok {
+				return routed
+			}
+		}
+	}
+
+	return []image.Point{start, end}
+}
+
+func (l *Link) routePathAroundObstacles(path []image.Point) []image.Point {
+	obstacles := l.obstacleRects()
+	if len(obstacles) == 0 || len(path) < 2 {
+		return path
+	}
+
+	hasIntersection := false
+	for i := 0; i < len(path)-1; i++ {
+		if len(intersectingObstacles(path[i], path[i+1], obstacles)) > 0 {
+			hasIntersection = true
+			break
+		}
+	}
+	if !hasIntersection {
+		return path
+	}
+
+	routed := []image.Point{path[0]}
+	for i := 1; i < len(path); i++ {
+		segment := l.routeSegmentAroundObstacles(routed[len(routed)-1], path[i], obstacles, 0)
+		routed = append(routed, segment[1:]...)
+	}
+	return simplifyOrthogonalPath(routed)
 }
 
 func (l *Link) prepareFontFace(label *LinkLabel, parent1, parent2 *Resource) (font.Face, error) {
@@ -1101,7 +1331,20 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 
 	log.Infof("Final control points: %v", controlPts)
 	log.Infof("=== End Convergent Calculation ===")
-	return controlPts
+
+	fullPath := make([]image.Point, 0, len(controlPts)+2)
+	fullPath = append(fullPath, sourcePt)
+	fullPath = append(fullPath, controlPts...)
+	fullPath = append(fullPath, targetPt)
+	routedPath := l.routePathAroundObstacles(fullPath)
+	if len(routedPath) != len(fullPath) {
+		routedPath = simplifyOrthogonalPath(routedPath)
+	}
+
+	if len(routedPath) <= 2 {
+		return nil
+	}
+	return routedPath[1 : len(routedPath)-1]
 }
 
 // AutoCalculatePositions determines optimal source and target positions for a link
