@@ -21,14 +21,35 @@ Get your first AWS architecture diagram in under 10 minutes.
 
 ## Installation
 
-**For macOS users:**
+**macOS**
 ```bash
 brew install awsdac
 ```
 
-**For Go developers:**
+**Linux**
 ```bash
-go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
+# Via Go (requires Go 1.21+)
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+
+# Or download the pre-built binary from GitHub Releases and move it to your PATH:
+# https://github.com/fernandofatech/diagram-as-code/releases
+sudo mv awsdac /usr/local/bin/
+```
+
+**Windows**
+```powershell
+# Via Go (requires Go 1.21+)
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+
+# Or download awsdac.exe from GitHub Releases and add the folder to your PATH:
+# https://github.com/fernandofatech/diagram-as-code/releases
+```
+
+**From source (all platforms)**
+```bash
+git clone https://github.com/fernandofatech/diagram-as-code.git
+cd diagram-as-code
+make build        # produces ./awsdac (or awsdac.exe on Windows)
 ```
 
 ## Your First Diagram

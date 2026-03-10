@@ -4,22 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+Common tasks via Makefile (Mac, Linux, Windows):
 ```bash
-# Build
-go build ./...
+make build        # compile CLI binary
+make test         # all tests
+make test-func    # functional tests only (generates PNGs to /tmp/results/)
+make run          # run CLI with default example
+make run FILE=examples/tgw-nwfw-tmpl.yaml  # run with specific file
+make dev          # start web frontend (port 3001)
+make web          # install deps + start web frontend
+make clean        # remove binary and temp PNGs
+make help         # list all commands
+```
 
-# Run all tests (unit + functional pixel comparison)
-go test ./...
-
+Direct Go commands:
+```bash
 # Run a single package's tests
 go test ./internal/ctl/...
 go test ./internal/types/...
 
 # Run a specific test
 go test ./internal/ctl/... -run TestRGBAToHex
-
-# Run the functional integration tests (generates PNGs to /tmp/results/)
-go test ./test/...
 
 # Run the CLI directly
 go run ./cmd/awsdac examples/alb-ec2.yaml
