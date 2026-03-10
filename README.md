@@ -38,7 +38,7 @@ A browser-based editor that lets you write YAML and generate diagrams in PNG or 
 
 <img src="doc/static/web-frontend.png" width="900" alt="Web frontend screenshot — YAML editor with live diagram preview">
 
-**Try it live:** [diagram-as-code-ruddy.vercel.app](https://diagram-as-code-ruddy.vercel.app)
+**Try it live:** [dac.moretes.com](https://dac.moretes.com)
 
 Key features:
 - Monaco-powered YAML editor with syntax highlighting

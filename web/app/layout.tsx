@@ -7,6 +7,10 @@ import Providers from '@/components/Providers'
 export const metadata: Metadata = {
   title: 'Diagram as Code',
   description: 'Generate AWS architecture diagrams from YAML — online, free, no install.',
+  metadataBase: new URL('https://dac.moretes.com'),
+  alternates: {
+    canonical: '/',
+  },
   icons: { icon: '/favicon.ico' },
 }
 

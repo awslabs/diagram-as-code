@@ -274,7 +274,7 @@ export default function DocsPage() {
           <P>{t.webEditorP1}</P>
           <H3>{t.howToUse}</H3>
           <ol className="list-decimal list-inside space-y-2 text-sm text-[var(--text-3)] mb-4 ml-2">
-            <li>{t.webEditorStep1} <Link href="/" className="text-[#FF9900] hover:underline">diagram-as-code-ruddy.vercel.app</Link></li>
+            <li>{t.webEditorStep1} <Link href="/" className="text-[#FF9900] hover:underline">dac.moretes.com</Link></li>
             <li>{t.webEditorStep2} <strong className="text-[var(--text-2)]">{t.examples}</strong> {t.webEditorStep2b}</li>
             <li>{t.webEditorStep3} <Badge>PNG</Badge> {lang === 'pt' ? 'ou' : 'or'} <Badge color="blue">draw.io</Badge></li>
             <li>{t.webEditorStep4} <Badge color="orange">⚡ {t.generate}</Badge> {t.webEditorStep4b} <Code>Ctrl+Enter</Code></li>
@@ -357,7 +357,7 @@ awsdac examples/alb-ec2.yaml -o output.drawio`}</Pre>
             rows={[
               ['Method', 'POST'],
               ['Content-Type', 'application/json'],
-              ['URL (production)', 'https://diagram-as-code-ruddy.vercel.app/api/generate'],
+              ['URL (production)', 'https://dac.moretes.com/api/generate'],
             ]}
           />
 
@@ -379,13 +379,13 @@ awsdac examples/alb-ec2.yaml -o output.drawio`}</Pre>
 
           <H3>{t.curlExample}</H3>
           <Pre lang="bash">{`# Generate PNG
-curl -X POST https://diagram-as-code-ruddy.vercel.app/api/generate \\
+curl -X POST https://dac.moretes.com/api/generate \\
   -H "Content-Type: application/json" \\
   -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - MyBucket\\n    MyBucket:\\n      Type: AWS::S3::Bucket"}' \\
   --output diagram.png
 
 # Generate draw.io
-curl -X POST https://diagram-as-code-ruddy.vercel.app/api/generate \\
+curl -X POST https://dac.moretes.com/api/generate \\
   -H "Content-Type: application/json" \\
   -d '{"yaml":"...","format":"drawio"}' \\
   --output diagram.drawio`}</Pre>
@@ -403,7 +403,7 @@ curl -X POST https://diagram-as-code-ruddy.vercel.app/api/generate \\
     Bucket:
       Type: AWS::S3::Bucket\`
 
-const res = await fetch('https://diagram-as-code-ruddy.vercel.app/api/generate', {
+const res = await fetch('https://dac.moretes.com/api/generate', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ yaml, format: 'png' }),
