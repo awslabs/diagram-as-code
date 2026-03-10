@@ -28,6 +28,7 @@ func main() {
 	var width int
 	var height int
 	var drawio bool
+	var pdf bool
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -61,7 +62,7 @@ func main() {
 
 			inputFile := args[0]
 
-			// Detect draw.io output by explicit flag or .drawio output extension.
+			// Detect output format by explicit flag or output extension.
 			if drawio || strings.HasSuffix(outputFile, ".drawio") {
 				opts := ctl.CreateOptions{
 					IsGoTemplate:              isGoTemplate,
@@ -72,6 +73,34 @@ func main() {
 					return fmt.Errorf("failed to create drawio: %w", err)
 				}
 				fmt.Printf("[Completed] draw.io diagram generated: %s\n", outputFile)
+				return nil
+			}
+
+			if pdf || strings.HasSuffix(outputFile, ".pdf") {
+				opts := ctl.CreateOptions{
+					IsGoTemplate:              isGoTemplate,
+					OverrideDefFile:           overrideDefFile,
+					AllowUntrustedDefinitions: allowUntrustedDefinitions,
+					Width:                     width,
+					Height:                    height,
+				}
+				if force {
+					opts.OverwriteMode = ctl.Force
+				} else {
+					opts.OverwriteMode = ctl.Ask
+				}
+
+				if cfnTemplate {
+					if err := ctl.CreatePDFFromCFnTemplate(inputFile, &outputFile, generateDacFile, &opts); err != nil {
+						return fmt.Errorf("failed to create pdf from CloudFormation template: %w", err)
+					}
+				} else {
+					if err := ctl.CreatePDFFromDacFile(inputFile, &outputFile, &opts); err != nil {
+						return fmt.Errorf("failed to create pdf: %w", err)
+					}
+				}
+
+				fmt.Printf("[Completed] PDF diagram generated: %s\n", outputFile)
 				return nil
 			}
 
@@ -125,6 +154,7 @@ func main() {
 	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
 	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
 	rootCmd.PersistentFlags().BoolVar(&drawio, "drawio", false, "Generate draw.io (.drawio) file instead of PNG")
+	rootCmd.PersistentFlags().BoolVar(&pdf, "pdf", false, "Generate PDF (.pdf) file instead of PNG")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

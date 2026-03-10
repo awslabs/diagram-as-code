@@ -1,11 +1,12 @@
 'use client'
 
-import { Download, FileCode2, ImageIcon } from 'lucide-react'
+import { Download, FileCode2, FileText, ImageIcon } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
 
 interface DiagramPreviewProps {
   imageUrl: string | null
   drawioContent: string | null
+  pdfUrl: string | null
   loading: boolean
   error: string | null
 }
@@ -13,6 +14,7 @@ interface DiagramPreviewProps {
 export default function DiagramPreview({
   imageUrl,
   drawioContent,
+  pdfUrl,
   loading,
   error,
 }: DiagramPreviewProps) {
@@ -93,6 +95,30 @@ export default function DiagramPreview({
             <Download size={14} />
             {t.downloadDrawio}
           </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (pdfUrl) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+          <div className="w-14 h-14 bg-[#5b3a1e] rounded-xl flex items-center justify-center">
+            <FileText size={28} className="text-[#ffb340]" />
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-[var(--text)] font-medium">{t.pdfReady}</p>
+            <p className="text-xs text-[var(--text-4)] mt-1">{t.pdfHelper}</p>
+          </div>
+          <a
+            href={pdfUrl}
+            download="diagram.pdf"
+            className="flex items-center gap-2 text-sm text-[#FF9900] hover:text-[#ffb340] transition-colors px-4 py-2 rounded border border-[#FF9900]/30 hover:border-[#FF9900]/60"
+          >
+            <Download size={14} />
+            {t.downloadPdf}
+          </a>
         </div>
       </div>
     )

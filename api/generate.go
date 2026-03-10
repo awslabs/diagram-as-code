@@ -15,13 +15,13 @@ import (
 
 type generateRequest struct {
 	YAML   string `json:"yaml"`
-	Format string `json:"format"` // "png" or "drawio"
+	Format string `json:"format"` // "png", "drawio", or "pdf"
 }
 
 // Handler is the Vercel serverless entry point.
 // POST /api/generate
-// Body: {"yaml": "...", "format": "png"|"drawio"}
-// Response: image/png binary OR application/xml text
+// Body: {"yaml": "...", "format": "png"|"drawio"|"pdf"}
+// Response: image/png binary OR application/xml text OR application/pdf binary
 func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -43,7 +43,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Format != "drawio" {
+	if req.Format != "drawio" && req.Format != "pdf" {
 		req.Format = "png"
 	}
 
@@ -66,6 +66,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	ext := ".png"
 	if req.Format == "drawio" {
 		ext = ".drawio"
+	} else if req.Format == "pdf" {
+		ext = ".pdf"
 	}
 	tmpOut, err := os.CreateTemp("", "dac-out-*"+ext)
 	if err != nil {
@@ -80,6 +82,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	if req.Format == "drawio" {
 		err = diagram.CreateDrawioFromDacFile(tmpIn.Name(), &outputFile, opts)
+	} else if req.Format == "pdf" {
+		err = diagram.CreatePDFFromDacFile(tmpIn.Name(), &outputFile, opts)
 	} else {
 		err = diagram.CreateDiagramFromDacFile(tmpIn.Name(), &outputFile, opts)
 	}
@@ -89,15 +93,28 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Format == "drawio" {
+		data, err := os.ReadFile(outputFile)
+		if err != nil {
+			jsonError(w, "failed to read output", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/xml")
+		w.Header().Set("Content-Disposition", `attachment; filename="diagram.drawio"`)
+		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(data)))
+		w.WriteHeader(http.StatusOK)
+		w.Write(data) //nolint:errcheck
+		return
+	}
+
 	data, err := os.ReadFile(outputFile)
 	if err != nil {
 		jsonError(w, "failed to read output", http.StatusInternalServerError)
 		return
 	}
-
-	if req.Format == "drawio" {
-		w.Header().Set("Content-Type", "application/xml")
-		w.Header().Set("Content-Disposition", `attachment; filename="diagram.drawio"`)
+	if req.Format == "pdf" {
+		w.Header().Set("Content-Type", "application/pdf")
+		w.Header().Set("Content-Disposition", `attachment; filename="diagram.pdf"`)
 	} else {
 		w.Header().Set("Content-Type", "image/png")
 	}

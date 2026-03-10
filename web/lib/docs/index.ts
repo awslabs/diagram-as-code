@@ -82,7 +82,7 @@ const en: DocsCopy = {
   hero: {
     title: 'diagram-as-code Wiki',
     intro:
-      'A complete wiki for the hosted editor, visual builder, DAC YAML format, CLI, API, draw.io export, MCP server, local development flow, and project architecture.',
+      'A complete wiki for the hosted editor, visual builder, DAC YAML format, CLI, API, PNG/PDF/draw.io export, MCP server, local development flow, and project architecture.',
     sub:
       'Use this section as the central reference for adoption, integration, troubleshooting, and maintenance. Start with Quick Start if you only need to generate a diagram now.',
   },
@@ -119,6 +119,7 @@ const en: DocsCopy = {
           headers: ['Output', 'Format', 'Main use case'],
           rows: [
             ['PNG diagram', 'image/png', 'Docs, PRs, architecture reviews, exported assets'],
+            ['PDF document', 'application/pdf', 'Printable or shareable document output'],
             ['draw.io file', 'application/xml', 'Editable diagrams in diagrams.net / draw.io'],
             ['DAC YAML', 'text/yaml', 'Versioned source of the architecture definition'],
           ],
@@ -150,7 +151,7 @@ const en: DocsCopy = {
           items: [
             'Open https://dac.moretes.com and choose Editor or Builder.',
             'Paste YAML or load one of the built-in examples.',
-            'Generate PNG for documentation or draw.io for editable output.',
+            'Generate PNG for visual preview, PDF for document sharing, or draw.io for editable output.',
             'If you need automation, install the CLI and run awsdac on your YAML file.',
           ],
         },
@@ -200,7 +201,7 @@ const en: DocsCopy = {
         {
           type: 'paragraph',
           text:
-            'The left panel is a Monaco editor with YAML syntax highlighting. The right panel shows the rendered output or the draw.io ready state, depending on the selected format.',
+            'The left panel is a Monaco editor with YAML syntax highlighting. The right panel shows the rendered output for PNG or a ready state for PDF and draw.io, depending on the selected format.',
         },
         {
           type: 'list',
@@ -208,7 +209,7 @@ const en: DocsCopy = {
           items: [
             'Fast authoring loop: write YAML, press Ctrl+Enter, inspect the output immediately.',
             'Visual tuning: adjust titles, groups, child ordering, and links until the layout stabilizes.',
-            'Export loop: switch between PNG and draw.io depending on whether the output is for documentation or post-editing.',
+            'Export loop: switch between PNG, PDF, and draw.io depending on whether the output is for preview, document delivery, or post-editing.',
           ],
         },
         {
@@ -490,7 +491,7 @@ Content-Type: application/json
 
 {
   "yaml": "Diagram:\\n  ...",
-  "format": "png"
+  "format": "pdf"
 }`,
         },
         {
@@ -499,6 +500,7 @@ Content-Type: application/json
           headers: ['Mode', 'Content-Type', 'Body'],
           rows: [
             ['png', 'image/png', 'Raw PNG bytes'],
+            ['pdf', 'application/pdf', 'Single-page PDF document'],
             ['drawio', 'application/xml', 'mxGraphModel XML'],
             ['error', 'application/json', '{"error":"message"}'],
           ],
@@ -509,8 +511,8 @@ Content-Type: application/json
           lang: 'bash',
           code: `curl -X POST https://dac.moretes.com/api/generate \\
   -H "Content-Type: application/json" \\
-  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"png"}' \\
-  --output diagram.png`,
+  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"pdf"}' \\
+  --output diagram.pdf`,
         },
         {
           type: 'code',
@@ -545,7 +547,7 @@ const xml = await response.text()`,
           title: 'Integration notes',
           items: [
             'The request body expects a DAC YAML string, not a file upload.',
-            'Format defaults to png when omitted.',
+            'Format defaults to png when omitted. Use pdf for document output or drawio for editable output.',
             'When generation fails, the endpoint returns a JSON error payload.',
             'The endpoint is suitable for browser, server-to-server, and agent workflows.',
           ],
@@ -908,7 +910,7 @@ vercel dev`,
             'Definition files are loaded and validated.',
             'Resources and links are constructed into the runtime graph.',
             'Layout is computed deterministically where possible.',
-            'Output is exported either as PNG or draw.io XML.',
+            'Output is exported as PNG, PDF, or draw.io XML.',
           ],
         },
       ],
@@ -966,7 +968,7 @@ const pt: DocsCopy = {
   hero: {
     title: 'Wiki do diagram-as-code',
     intro:
-      'Uma wiki completa para o editor hospedado, builder visual, formato DAC YAML, CLI, API, exportação draw.io, servidor MCP, fluxo de desenvolvimento local e arquitetura do projeto.',
+      'Uma wiki completa para o editor hospedado, builder visual, formato DAC YAML, CLI, API, exportação PNG/PDF/draw.io, servidor MCP, fluxo de desenvolvimento local e arquitetura do projeto.',
     sub:
       'Use esta área como referência central para adoção, integração, troubleshooting e manutenção. Comece em Começo Rápido se você só precisa gerar um diagrama agora.',
   },
@@ -1003,6 +1005,7 @@ const pt: DocsCopy = {
           headers: ['Saída', 'Formato', 'Caso de uso principal'],
           rows: [
             ['Diagrama PNG', 'image/png', 'Docs, PRs, revisões de arquitetura, assets exportados'],
+            ['Documento PDF', 'application/pdf', 'Saída pronta para compartilhar ou imprimir'],
             ['Arquivo draw.io', 'application/xml', 'Diagramas editáveis no diagrams.net / draw.io'],
             ['YAML DAC', 'text/yaml', 'Fonte versionada da definição de arquitetura'],
           ],
@@ -1034,7 +1037,7 @@ const pt: DocsCopy = {
           items: [
             'Abra https://dac.moretes.com e escolha Editor ou Builder.',
             'Cole YAML ou carregue um dos exemplos prontos.',
-            'Gere PNG para documentação ou draw.io para edição posterior.',
+            'Gere PNG para preview visual, PDF para compartilhamento e draw.io para edição posterior.',
             'Se precisar de automação, instale o CLI e execute awsdac no seu arquivo YAML.',
           ],
         },
@@ -1084,7 +1087,7 @@ const pt: DocsCopy = {
         {
           type: 'paragraph',
           text:
-            'O painel esquerdo é um editor Monaco com destaque de sintaxe YAML. O painel direito mostra a saída renderizada ou o estado pronto para draw.io.',
+            'O painel esquerdo é um editor Monaco com destaque de sintaxe YAML. O painel direito mostra a saída renderizada para PNG ou o estado pronto para PDF e draw.io.',
         },
         {
           type: 'list',
@@ -1092,7 +1095,7 @@ const pt: DocsCopy = {
           items: [
             'Loop rápido de autoria: escreva YAML, pressione Ctrl+Enter e veja a saída imediatamente.',
             'Ajuste visual: refine títulos, grupos, ordem dos children e links até estabilizar o layout.',
-            'Loop de exportação: alterne entre PNG e draw.io dependendo do destino final.',
+            'Loop de exportação: alterne entre PNG, PDF e draw.io dependendo do destino final.',
           ],
         },
         {
@@ -1374,7 +1377,7 @@ Content-Type: application/json
 
 {
   "yaml": "Diagram:\\n  ...",
-  "format": "png"
+  "format": "pdf"
 }`,
         },
         {
@@ -1383,6 +1386,7 @@ Content-Type: application/json
           headers: ['Modo', 'Content-Type', 'Body'],
           rows: [
             ['png', 'image/png', 'Bytes PNG brutos'],
+            ['pdf', 'application/pdf', 'Documento PDF de uma página'],
             ['drawio', 'application/xml', 'XML mxGraphModel'],
             ['error', 'application/json', '{"error":"message"}'],
           ],
@@ -1393,8 +1397,8 @@ Content-Type: application/json
           lang: 'bash',
           code: `curl -X POST https://dac.moretes.com/api/generate \\
   -H "Content-Type: application/json" \\
-  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"png"}' \\
-  --output diagram.png`,
+  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"pdf"}' \\
+  --output diagram.pdf`,
         },
         {
           type: 'code',
@@ -1429,7 +1433,7 @@ const xml = await response.text()`,
           title: 'Notas de integração',
           items: [
             'O body espera uma string YAML DAC, não upload de arquivo.',
-            'Quando format é omitido, o padrão é png.',
+            'Quando format é omitido, o padrão é png. Use pdf para saída em documento ou drawio para edição posterior.',
             'Quando a geração falha, o endpoint retorna um payload JSON de erro.',
             'O endpoint funciona para browser, server-to-server e fluxos com agentes.',
           ],
@@ -1792,7 +1796,7 @@ vercel dev`,
             'Os arquivos de definição são carregados e validados.',
             'Recursos e links formam o grafo de runtime.',
             'O layout é calculado de forma determinística quando possível.',
-            'A saída é exportada como PNG ou draw.io XML.',
+            'A saída é exportada como PNG, PDF ou draw.io XML.',
           ],
         },
       ],

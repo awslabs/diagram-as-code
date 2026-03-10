@@ -2133,23 +2133,25 @@ const EXAMPLE_NAMES = Object.keys(EXAMPLES)
 const EDITOR_TOUR: TourStep[] = [
   { target: 'editor-logo', title: 'diagram-as-code', description: 'Generate AWS architecture diagrams from YAML. Write code, get pixel-perfect diagrams.', position: 'bottom' },
   { target: 'editor-examples', title: 'Examples', description: '10 real-world templates: BFF, Event-Driven, Serverless API, MFE, ECS, CI/CD, Data Lake, EKS, Multi-tier Web, Step Functions Saga.', position: 'bottom' },
-  { target: 'editor-format', title: 'Output Format', description: 'Toggle between PNG (for docs and wikis) and draw.io (for editable diagrams).', position: 'bottom' },
+  { target: 'editor-format', title: 'Output Format', description: 'Toggle between PNG, PDF, and draw.io depending on whether you need preview images, printable documents, or editable diagrams.', position: 'bottom' },
   { target: 'editor-generate', title: 'Generate', description: 'Click to render your diagram. You can also press Ctrl+Enter anytime.', position: 'bottom' },
   { target: 'editor-panel', title: 'YAML Editor', description: 'Write your architecture in YAML. The editor has syntax highlighting powered by Monaco (VS Code engine).', position: 'right' },
-  { target: 'editor-preview', title: 'Preview', description: 'Your generated diagram appears here. Download PNG or draw.io with one click.', position: 'left' },
+  { target: 'editor-preview', title: 'Preview', description: 'Your generated diagram appears here. Download PNG, PDF, or draw.io from the preview panel.', position: 'left' },
   { target: 'editor-builder', title: 'Visual Builder', description: 'No YAML experience? Use the Builder to create diagrams with a visual form — no code required.', position: 'bottom' },
 ]
 
 export default function Home() {
   const { t } = useLanguage()
   const [yaml, setYaml] = useState(EXAMPLES['BFF Architecture'])
-  const [format, setFormat] = useState<'png' | 'drawio'>('png')
+  const [format, setFormat] = useState<'png' | 'drawio' | 'pdf'>('png')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [drawioContent, setDrawioContent] = useState<string | null>(null)
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [examplesOpen, setExamplesOpen] = useState(false)
   const prevImageUrl = useRef<string | null>(null)
+  const prevPdfUrl = useRef<string | null>(null)
 
   // Pick up YAML from builder
   useEffect(() => {
@@ -2157,6 +2159,13 @@ export default function Home() {
     if (saved) {
       setYaml(saved)
       localStorage.removeItem('builder_yaml')
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (prevImageUrl.current) URL.revokeObjectURL(prevImageUrl.current)
+      if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
     }
   }, [])
 
@@ -2197,10 +2206,24 @@ export default function Home() {
         prevImageUrl.current = url
         setImageUrl(url)
         setDrawioContent(null)
+        if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
+        prevPdfUrl.current = null
+        setPdfUrl(null)
+      } else if (format === 'pdf') {
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
+        prevPdfUrl.current = url
+        setPdfUrl(url)
+        setImageUrl(null)
+        setDrawioContent(null)
       } else {
         const text = await res.text()
         setDrawioContent(text)
         setImageUrl(null)
+        if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
+        prevPdfUrl.current = null
+        setPdfUrl(null)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
@@ -2212,8 +2235,13 @@ export default function Home() {
   function loadExample(name: string) {
     setYaml(EXAMPLES[name])
     setExamplesOpen(false)
+    if (prevImageUrl.current) URL.revokeObjectURL(prevImageUrl.current)
+    prevImageUrl.current = null
+    if (prevPdfUrl.current) URL.revokeObjectURL(prevPdfUrl.current)
+    prevPdfUrl.current = null
     setImageUrl(null)
     setDrawioContent(null)
+    setPdfUrl(null)
     setError(null)
   }
 
@@ -2282,7 +2310,7 @@ export default function Home() {
 
           {/* Format toggle */}
           <div data-tour="editor-format" className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-md p-0.5 text-xs">
-            {(['png', 'drawio'] as const).map((f) => (
+            {(['png', 'pdf', 'drawio'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFormat(f)}
@@ -2292,7 +2320,7 @@ export default function Home() {
                     : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
                 }`}
               >
-                {f === 'png' ? 'PNG' : 'draw.io'}
+                {f === 'png' ? 'PNG' : f === 'pdf' ? 'PDF' : 'draw.io'}
               </button>
             ))}
           </div>
@@ -2372,6 +2400,7 @@ export default function Home() {
             <DiagramPreview
               imageUrl={imageUrl}
               drawioContent={drawioContent}
+              pdfUrl={pdfUrl}
               loading={loading}
               error={error}
             />

@@ -12,8 +12,8 @@ import "github.com/awslabs/diagram-as-code/internal/ctl"
 type OverwriteMode = ctl.OverwriteMode
 
 const (
-	Ask        OverwriteMode = ctl.Ask
-	Force      OverwriteMode = ctl.Force
+	Ask         OverwriteMode = ctl.Ask
+	Force       OverwriteMode = ctl.Force
 	NoOverwrite OverwriteMode = ctl.NoOverwrite
 )
 
@@ -28,4 +28,9 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 // CreateDrawioFromDacFile generates a draw.io XML file from a DAC YAML file.
 func CreateDrawioFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
 	return ctl.CreateDrawioFromDacFile(inputfile, outputfile, opts)
+}
+
+// CreatePDFFromDacFile generates a PDF document from a DAC YAML file.
+func CreatePDFFromDacFile(inputfile string, outputfile *string, opts *CreateOptions) error {
+	return ctl.CreatePDFFromDacFile(inputfile, outputfile, opts)
 }
