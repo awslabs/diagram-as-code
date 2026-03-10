@@ -182,6 +182,12 @@ func resolveSVGPath(dacType string) string {
 	return ""
 }
 
+// HasAWSIconAsset reports whether the AWS Asset Package has a mapped SVG
+// for the given DAC resource type.
+func HasAWSIconAsset(dacType string) bool {
+	return resolveSVGPath(dacType) != ""
+}
+
 // getAWSIconSVGContent returns raw SVG content from the Asset Package.
 func getAWSIconSVGContent(dacType string) string {
 	svgPath := resolveSVGPath(dacType)

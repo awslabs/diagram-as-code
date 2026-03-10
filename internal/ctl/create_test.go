@@ -229,6 +229,39 @@ func TestLoadResourcesWithDefinedType(t *testing.T) {
 	}
 }
 
+func TestHasAWSIconAsset(t *testing.T) {
+	testCases := []struct {
+		name    string
+		dacType string
+		want    bool
+	}{
+		{
+			name:    "mapped leaf type",
+			dacType: "AWS::S3::Bucket",
+			want:    true,
+		},
+		{
+			name:    "mapped service-level fallback",
+			dacType: "AWS::ApiGateway::Stage",
+			want:    true,
+		},
+		{
+			name:    "unmapped type",
+			dacType: "AWS::MadeUp::Service",
+			want:    false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := HasAWSIconAsset(tc.dacType)
+			if got != tc.want {
+				t.Fatalf("HasAWSIconAsset(%q) = %v, want %v", tc.dacType, got, tc.want)
+			}
+		})
+	}
+}
+
 func TestLoadResourcesWithNoFallbackPossible(t *testing.T) {
 	// Create definition structure without fallback definition
 	ds := definition.DefinitionStructure{

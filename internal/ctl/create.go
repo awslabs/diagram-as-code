@@ -341,6 +341,21 @@ func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStru
 
 }
 
+func loadResourceIcon(resource *types.Resource, resourceType string, definitionIconPath string) error {
+	if svgContent := GetAWSIconSVG(resourceType); svgContent != "" {
+		if err := resource.LoadIconSVG(svgContent, 64); err == nil {
+			return nil
+		}
+	}
+	if definitionIconPath == "" {
+		return nil
+	}
+	if err := resource.LoadIcon(definitionIconPath); err != nil {
+		return fmt.Errorf("failed to load icon from cache file path: %w", err)
+	}
+	return nil
+}
+
 func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) error {
 
 	resources["Canvas"] = new(types.Resource).Init()
@@ -459,9 +474,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				if !exists {
 					return fmt.Errorf("resource %s not found when loading icon", k)
 				}
-				err := resource.LoadIcon(def.CacheFilePath)
+				err := loadResourceIcon(resource, v.Type, def.CacheFilePath)
 				if err != nil {
-					return fmt.Errorf("failed to load icon from cache file path: %w", err)
+					return err
 				}
 			}
 		}
@@ -526,9 +541,9 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				}
 				if icon := def.Icon; icon != nil {
 					if def.CacheFilePath != "" {
-						err := resource.LoadIcon(def.CacheFilePath)
+						err := loadResourceIcon(resource, v.Type, def.CacheFilePath)
 						if err != nil {
-							return fmt.Errorf("failed to load icon from cache file path: %w", err)
+							return err
 						}
 					}
 				}
