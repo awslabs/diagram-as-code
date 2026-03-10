@@ -319,6 +319,54 @@ func simplifyOrthogonalPath(path []image.Point) []image.Point {
 	return result
 }
 
+func removeTinyDoglegs(path []image.Point, threshold int) []image.Point {
+	if len(path) < 4 {
+		return path
+	}
+
+	current := append([]image.Point(nil), path...)
+	changed := true
+	for changed {
+		changed = false
+		next := []image.Point{current[0]}
+		for i := 1; i < len(current)-2; i++ {
+			a := next[len(next)-1]
+			b := current[i]
+			c := current[i+1]
+			d := current[i+2]
+
+			abx, aby := b.X-a.X, b.Y-a.Y
+			bcx, bcy := c.X-b.X, c.Y-b.Y
+			cdx, cdy := d.X-c.X, d.Y-c.Y
+
+			bcLen := abs(bcx) + abs(bcy)
+			isTinyDogleg :=
+				bcLen > 0 &&
+				bcLen <= threshold &&
+				((abx == 0 && cdx == 0 && aby != 0 && cdy != 0 && (aby > 0) != (cdy > 0)) ||
+					(aby == 0 && cdy == 0 && abx != 0 && cdx != 0 && (abx > 0) != (cdx > 0)))
+
+			if isTinyDogleg {
+				next = append(next, c)
+				i++
+				changed = true
+				continue
+			}
+
+			next = append(next, b)
+		}
+
+		for j := len(current) - 2; j < len(current); j++ {
+			if j >= 0 && !pointsEqual(next[len(next)-1], current[j]) {
+				next = append(next, current[j])
+			}
+		}
+		current = simplifyOrthogonalPath(next)
+	}
+
+	return current
+}
+
 func inflateRect(rect image.Rectangle, padding int) image.Rectangle {
 	return image.Rect(rect.Min.X-padding, rect.Min.Y-padding, rect.Max.X+padding, rect.Max.Y+padding)
 }
@@ -1370,6 +1418,8 @@ func (l *Link) calculateOrthogonalPath(sourcePt, targetPt image.Point) []image.P
 	fullPath = append(fullPath, targetPt)
 	routedPath := l.routePathAroundObstacles(fullPath)
 	if len(routedPath) != len(fullPath) {
+		routedPath = simplifyOrthogonalPath(routedPath)
+		routedPath = removeTinyDoglegs(routedPath, 28)
 		routedPath = simplifyOrthogonalPath(routedPath)
 	}
 
