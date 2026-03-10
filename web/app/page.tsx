@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { ChevronDown, Zap, Github, BookOpen } from 'lucide-react'
+import { ChevronDown, Zap, Github, BookOpen, Wrench } from 'lucide-react'
 import DiagramPreview from '@/components/DiagramPreview'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { useLanguage } from '@/lib/i18n'
@@ -413,6 +413,15 @@ export default function Home() {
   const [examplesOpen, setExamplesOpen] = useState(false)
   const prevImageUrl = useRef<string | null>(null)
 
+  // Pick up YAML from builder
+  useEffect(() => {
+    const saved = localStorage.getItem('builder_yaml')
+    if (saved) {
+      setYaml(saved)
+      localStorage.removeItem('builder_yaml')
+    }
+  }, [])
+
   // Ctrl+Enter shortcut
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -560,6 +569,15 @@ export default function Home() {
             )}
             {t.generate}
           </button>
+
+          {/* Builder link */}
+          <Link
+            href="/builder"
+            className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
+          >
+            <Wrench size={13} />
+            {t.builderLink}
+          </Link>
 
           {/* Docs link */}
           <Link
