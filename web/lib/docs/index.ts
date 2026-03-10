@@ -408,63 +408,171 @@ const en: DocsCopy = {
       category: 'Reference',
       title: 'CLI Reference',
       summary:
-        'Installation, commands, flags, and usage scenarios for the awsdac command line interface.',
-      keywords: ['cli', 'awsdac', 'flags', 'install', 'command line', 'automation'],
+        'Complete installation guide, all flags, and usage examples for the awsdac command line interface on macOS, Linux, and Windows.',
+      keywords: ['cli', 'awsdac', 'flags', 'install', 'npm', 'brew', 'homebrew', 'command line', 'automation', 'binary', 'windows', 'linux', 'macos'],
       blocks: [
         {
           type: 'paragraph',
           text:
-            'The CLI is the best fit when diagrams should live with infrastructure code, run in CI/CD, or be generated in automation pipelines.',
+            'The CLI is the best fit when diagrams should live with infrastructure code, run in CI/CD, or be generated in automation pipelines. It accepts DAC YAML, Go templates, and CloudFormation templates as input, and outputs PNG, draw.io XML, or PDF.',
+        },
+        {
+          type: 'callout',
+          title: 'Recommended: install via npm',
+          tone: 'tip',
+          text: 'npm works on macOS, Linux, and Windows (Node.js 14+ required). It downloads the correct pre-built binary automatically for your OS and CPU architecture.',
         },
         {
           type: 'code',
-          title: 'Install',
+          title: 'Install — all platforms via npm',
           lang: 'bash',
-          code: `# macOS
-brew install awsdac
-
-# Go install
-go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest`,
+          code: `npm install -g awsdac
+awsdac --version`,
         },
         {
           type: 'code',
-          title: 'Basic usage',
+          title: 'Install — macOS',
           lang: 'bash',
-          code: `# Generate PNG
-awsdac examples/alb-ec2.yaml
+          code: `# via npm (recommended)
+npm install -g awsdac
 
-# Custom output file
-awsdac examples/alb-ec2.yaml -o my-diagram.png
+# via Homebrew
+brew install awsdac`,
+        },
+        {
+          type: 'code',
+          title: 'Install — Linux',
+          lang: 'bash',
+          code: `# via npm (recommended)
+npm install -g awsdac
 
-# Generate draw.io XML
-awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+# via Go (requires Go 1.21+)
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
 
-# Output extension also selects format
-awsdac examples/alb-ec2.yaml -o output.drawio`,
+# via binary — download and install manually
+curl -LO https://github.com/fernandofatech/diagram-as-code/releases/latest/download/awsdac-$(curl -s https://api.github.com/repos/fernandofatech/diagram-as-code/releases/latest | grep tag_name | cut -d'"' -f4)_linux-amd64.zip
+unzip awsdac-*_linux-amd64.zip
+sudo mv awsdac-*_linux-amd64/awsdac /usr/local/bin/
+awsdac --version`,
+        },
+        {
+          type: 'code',
+          title: 'Install — Windows',
+          lang: 'powershell',
+          code: `# via npm (recommended)
+npm install -g awsdac
+
+# via Go (requires Go 1.21+)
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+
+# via binary — download from GitHub Releases, extract and add to PATH:
+# https://github.com/fernandofatech/diagram-as-code/releases/latest
+# Download awsdac-vX.Y.Z_windows-amd64.zip
+# Extract awsdac.exe and add the folder to your PATH`,
+        },
+        {
+          type: 'code',
+          title: 'Install — from source',
+          lang: 'bash',
+          code: `git clone https://github.com/fernandofatech/diagram-as-code.git
+cd diagram-as-code
+make build   # produces ./awsdac (or awsdac.exe on Windows)
+
+# Prerequisites: Go 1.21+`,
+        },
+        {
+          type: 'code',
+          title: 'Full flags reference',
+          lang: 'text',
+          code: `Usage:
+  awsdac <input filename> [flags]
+
+Flags:
+      --allow-untrusted-definitions  Allow loading definition files from untrusted URLs
+  -c, --cfn-template                 [beta] Create diagram from CloudFormation template
+  -d, --dac-file                     [beta] Generate DAC YAML from CloudFormation template
+      --drawio                       Generate draw.io (.drawio) file instead of PNG
+      --pdf                          Generate PDF file instead of PNG
+  -f, --force                        Overwrite output file without confirmation
+  -h, --help                         help for awsdac
+      --height int                   Resize output image height (0 = no resizing)
+  -o, --output string                Output file name (default "output.png")
+      --override-def-file string     Override DefinitionFiles to another URL or local file
+  -t, --template                     Process input file as a Go text/template
+  -v, --verbose                      Enable verbose logging
+      --version                      Print version and exit
+      --width int                    Resize output image width (0 = no resizing)`,
         },
         {
           type: 'table',
-          title: 'Main flags',
-          headers: ['Flag', 'Purpose'],
+          title: 'Flags quick reference',
+          headers: ['Flag', 'Default', 'Purpose'],
           rows: [
-            ['-o, --output', 'Output file name'],
-            ['--drawio', 'Generate draw.io instead of PNG'],
-            ['-f, --force', 'Overwrite output without confirmation'],
-            ['--width / --height', 'Resize PNG output'],
-            ['-t, --template', 'Render the input as Go text/template'],
-            ['-c, --cfn-template', 'Create diagram from CloudFormation'],
-            ['-d, --dac-file', 'Generate DAC YAML from CloudFormation'],
-            ['--allow-untrusted-definitions', 'Allow non-official definition sources'],
-            ['-v, --verbose', 'Verbose logging'],
+            ['-o, --output', 'output.png', 'Output file name'],
+            ['--drawio', 'false', 'Generate draw.io XML instead of PNG'],
+            ['--pdf', 'false', 'Generate PDF instead of PNG'],
+            ['-f, --force', 'false', 'Overwrite output without confirmation'],
+            ['--width / --height', '0 (off)', 'Resize PNG/PDF output to exact pixels'],
+            ['-t, --template', 'false', 'Render input as Go text/template'],
+            ['-c, --cfn-template', 'false', 'Create diagram from CloudFormation template'],
+            ['-d, --dac-file', 'false', 'Generate DAC YAML from CloudFormation (use with -c)'],
+            ['--override-def-file', '—', 'Use a local or custom URL definition file'],
+            ['--allow-untrusted-definitions', 'false', 'Allow non-official definition file URLs'],
+            ['-v, --verbose', 'false', 'Enable verbose logging'],
+            ['--version', '—', 'Print installed version'],
           ],
         },
         {
+          type: 'code',
+          title: 'Usage examples',
+          lang: 'bash',
+          code: `# Generate PNG (default)
+awsdac examples/alb-ec2.yaml
+
+# Custom output filename
+awsdac my-architecture.yaml -o my-diagram.png
+
+# Force overwrite without confirmation
+awsdac my-architecture.yaml -o output.png -f
+
+# Generate draw.io file
+awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+# shortcut: extension infers format automatically
+awsdac examples/alb-ec2.yaml -o output.drawio
+
+# Generate PDF
+awsdac examples/alb-ec2.yaml --pdf -o output.pdf
+
+# Resize output image
+awsdac examples/alb-ec2.yaml --width 1920 --height 1080 -o output.png
+
+# Use a Go template file
+awsdac examples/tgw-nwfw-tmpl.yaml -t -o output.png
+
+# Convert CloudFormation template to diagram
+awsdac my-cfn-template.yaml -c -o output.png
+
+# Convert CloudFormation template to DAC YAML (for further editing)
+awsdac my-cfn-template.yaml -c -d -o my-diagram.yaml
+
+# Verbose logging
+awsdac examples/alb-ec2.yaml -v
+
+# Use a local definition file instead of the remote one
+awsdac my-diagram.yaml --override-def-file ./my-definitions.yaml
+
+# Check version
+awsdac --version`,
+        },
+        {
           type: 'list',
-          title: 'CLI scenarios',
+          title: 'When to use the CLI',
           items: [
-            'Local engineering documentation stored next to IaC.',
+            'Local engineering documentation stored next to IaC in version control.',
             'CI/CD generation of diagrams for pull requests or release artifacts.',
             'Batch rendering multiple YAML files as part of docs automation.',
+            'CloudFormation template visualization during infrastructure review.',
+            'Exporting draw.io files for manual editing in diagram tools.',
           ],
         },
       ],
@@ -1294,63 +1402,171 @@ const pt: DocsCopy = {
       category: 'Reference',
       title: 'Referência CLI',
       summary:
-        'Instalação, comandos, flags e cenários de uso do comando awsdac.',
-      keywords: ['cli', 'awsdac', 'flags', 'install', 'automacao'],
+        'Guia completo de instalação, todas as flags e exemplos de uso do awsdac no macOS, Linux e Windows.',
+      keywords: ['cli', 'awsdac', 'flags', 'install', 'npm', 'brew', 'homebrew', 'automacao', 'binario', 'windows', 'linux', 'macos'],
       blocks: [
         {
           type: 'paragraph',
           text:
-            'O CLI é a melhor opção quando diagramas precisam viver com infraestrutura como código, rodar em CI/CD ou ser gerados em pipelines automatizados.',
+            'O CLI é a melhor opção quando diagramas precisam viver com infraestrutura como código, rodar em CI/CD ou ser gerados em pipelines automatizados. Aceita DAC YAML, Go templates e templates CloudFormation como entrada, e gera PNG, XML draw.io ou PDF.',
+        },
+        {
+          type: 'callout',
+          title: 'Recomendado: instale via npm',
+          tone: 'tip',
+          text: 'O npm funciona no macOS, Linux e Windows (requer Node.js 14+). Baixa automaticamente o binário pré-compilado correto para o seu sistema operacional e arquitetura.',
         },
         {
           type: 'code',
-          title: 'Instalação',
+          title: 'Instalação — todas as plataformas via npm',
           lang: 'bash',
-          code: `# macOS
-brew install awsdac
-
-# Go install
-go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest`,
+          code: `npm install -g awsdac
+awsdac --version`,
         },
         {
           type: 'code',
-          title: 'Uso básico',
+          title: 'Instalação — macOS',
           lang: 'bash',
-          code: `# Gerar PNG
-awsdac examples/alb-ec2.yaml
+          code: `# via npm (recomendado)
+npm install -g awsdac
 
-# Arquivo de saída customizado
-awsdac examples/alb-ec2.yaml -o my-diagram.png
+# via Homebrew
+brew install awsdac`,
+        },
+        {
+          type: 'code',
+          title: 'Instalação — Linux',
+          lang: 'bash',
+          code: `# via npm (recomendado)
+npm install -g awsdac
 
-# Gerar XML draw.io
-awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+# via Go (requer Go 1.21+)
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
 
-# A extensão da saída também seleciona o formato
-awsdac examples/alb-ec2.yaml -o output.drawio`,
+# via binário — baixar e instalar manualmente
+curl -LO https://github.com/fernandofatech/diagram-as-code/releases/latest/download/awsdac-$(curl -s https://api.github.com/repos/fernandofatech/diagram-as-code/releases/latest | grep tag_name | cut -d'"' -f4)_linux-amd64.zip
+unzip awsdac-*_linux-amd64.zip
+sudo mv awsdac-*_linux-amd64/awsdac /usr/local/bin/
+awsdac --version`,
+        },
+        {
+          type: 'code',
+          title: 'Instalação — Windows',
+          lang: 'powershell',
+          code: `# via npm (recomendado)
+npm install -g awsdac
+
+# via Go (requer Go 1.21+)
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+
+# via binário — baixe do GitHub Releases, extraia e adicione ao PATH:
+# https://github.com/fernandofatech/diagram-as-code/releases/latest
+# Baixe awsdac-vX.Y.Z_windows-amd64.zip
+# Extraia awsdac.exe e adicione a pasta ao PATH`,
+        },
+        {
+          type: 'code',
+          title: 'Instalação — a partir do código-fonte',
+          lang: 'bash',
+          code: `git clone https://github.com/fernandofatech/diagram-as-code.git
+cd diagram-as-code
+make build   # gera ./awsdac (ou awsdac.exe no Windows)
+
+# Pré-requisitos: Go 1.21+`,
+        },
+        {
+          type: 'code',
+          title: 'Referência completa de flags',
+          lang: 'text',
+          code: `Uso:
+  awsdac <arquivo de entrada> [flags]
+
+Flags:
+      --allow-untrusted-definitions  Permite carregar arquivos de definição de URLs não-oficiais
+  -c, --cfn-template                 [beta] Cria diagrama a partir de template CloudFormation
+  -d, --dac-file                     [beta] Gera YAML DAC a partir de template CloudFormation
+      --drawio                       Gera arquivo draw.io (.drawio) em vez de PNG
+      --pdf                          Gera arquivo PDF em vez de PNG
+  -f, --force                        Sobrescreve o arquivo de saída sem confirmação
+  -h, --help                         help para awsdac
+      --height int                   Redimensiona altura da imagem (0 = sem redimensionamento)
+  -o, --output string                Nome do arquivo de saída (padrão "output.png")
+      --override-def-file string     Substitui DefinitionFiles por outra URL ou arquivo local
+  -t, --template                     Processa o arquivo de entrada como Go text/template
+  -v, --verbose                      Ativa log detalhado
+      --version                      Exibe a versão e encerra
+      --width int                    Redimensiona largura da imagem (0 = sem redimensionamento)`,
         },
         {
           type: 'table',
-          title: 'Principais flags',
-          headers: ['Flag', 'Propósito'],
+          title: 'Referência rápida de flags',
+          headers: ['Flag', 'Padrão', 'Propósito'],
           rows: [
-            ['-o, --output', 'Nome do arquivo de saída'],
-            ['--drawio', 'Gera draw.io em vez de PNG'],
-            ['-f, --force', 'Sobrescreve a saída sem confirmação'],
-            ['--width / --height', 'Redimensiona a saída PNG'],
-            ['-t, --template', 'Renderiza a entrada como Go text/template'],
-            ['-c, --cfn-template', 'Cria diagrama a partir de CloudFormation'],
-            ['-d, --dac-file', 'Gera YAML DAC a partir de CloudFormation'],
-            ['--allow-untrusted-definitions', 'Permite fontes de definição não-oficiais'],
-            ['-v, --verbose', 'Log detalhado'],
+            ['-o, --output', 'output.png', 'Nome do arquivo de saída'],
+            ['--drawio', 'false', 'Gera XML draw.io em vez de PNG'],
+            ['--pdf', 'false', 'Gera PDF em vez de PNG'],
+            ['-f, --force', 'false', 'Sobrescreve a saída sem confirmação'],
+            ['--width / --height', '0 (desligado)', 'Redimensiona PNG/PDF para pixels exatos'],
+            ['-t, --template', 'false', 'Renderiza a entrada como Go text/template'],
+            ['-c, --cfn-template', 'false', 'Cria diagrama a partir de template CloudFormation'],
+            ['-d, --dac-file', 'false', 'Gera YAML DAC a partir de CloudFormation (usar com -c)'],
+            ['--override-def-file', '—', 'Usa arquivo de definição local ou URL customizada'],
+            ['--allow-untrusted-definitions', 'false', 'Permite URLs de definição não-oficiais'],
+            ['-v, --verbose', 'false', 'Ativa log detalhado'],
+            ['--version', '—', 'Exibe a versão instalada'],
           ],
         },
         {
+          type: 'code',
+          title: 'Exemplos de uso',
+          lang: 'bash',
+          code: `# Gerar PNG (padrão)
+awsdac examples/alb-ec2.yaml
+
+# Nome de saída customizado
+awsdac my-architecture.yaml -o my-diagram.png
+
+# Forçar sobrescrita sem confirmação
+awsdac my-architecture.yaml -o output.png -f
+
+# Gerar arquivo draw.io
+awsdac examples/alb-ec2.yaml --drawio -o output.drawio
+# atalho: extensão infere o formato automaticamente
+awsdac examples/alb-ec2.yaml -o output.drawio
+
+# Gerar PDF
+awsdac examples/alb-ec2.yaml --pdf -o output.pdf
+
+# Redimensionar imagem de saída
+awsdac examples/alb-ec2.yaml --width 1920 --height 1080 -o output.png
+
+# Usar arquivo Go template
+awsdac examples/tgw-nwfw-tmpl.yaml -t -o output.png
+
+# Converter template CloudFormation em diagrama
+awsdac my-cfn-template.yaml -c -o output.png
+
+# Converter template CloudFormation em YAML DAC (para edição posterior)
+awsdac my-cfn-template.yaml -c -d -o my-diagram.yaml
+
+# Log detalhado
+awsdac examples/alb-ec2.yaml -v
+
+# Usar arquivo de definição local em vez do remoto
+awsdac my-diagram.yaml --override-def-file ./my-definitions.yaml
+
+# Verificar versão
+awsdac --version`,
+        },
+        {
           type: 'list',
-          title: 'Cenários do CLI',
+          title: 'Quando usar o CLI',
           items: [
-            'Documentação local de engenharia junto com IaC.',
+            'Documentação local de engenharia armazenada junto com IaC no controle de versão.',
             'Geração em CI/CD de diagramas para pull requests ou artefatos de release.',
             'Renderização em lote de múltiplos arquivos YAML como parte de automação de documentação.',
+            'Visualização de templates CloudFormation durante revisão de infraestrutura.',
+            'Exportação de arquivos draw.io para edição manual em ferramentas de diagramação.',
           ],
         },
       ],
