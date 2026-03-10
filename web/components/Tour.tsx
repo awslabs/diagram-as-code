@@ -96,33 +96,33 @@ export default function Tour({ id, steps, onDone }: Props) {
 
       {/* Tooltip card */}
       <div style={{ ...tipStyle, width: 300 }}
-        className="bg-[#1a1a1a] border border-[#FF9900]/40 rounded-xl p-4 shadow-2xl"
+        className="bg-[var(--surface)] border border-[#FF9900]/40 rounded-xl p-4 shadow-2xl"
       >
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-sm font-semibold text-[#e5e5e5] leading-snug">{current.title}</h3>
-          <button type="button" onClick={done} className="text-[#555] hover:text-[#999] transition-colors shrink-0 mt-0.5">
+          <h3 className="text-sm font-semibold text-[var(--text)] leading-snug">{current.title}</h3>
+          <button type="button" onClick={done} className="text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors shrink-0 mt-0.5">
             <X size={14} />
           </button>
         </div>
-        <p className="text-xs text-[#999] leading-relaxed mb-4">{current.description}</p>
+        <p className="text-xs text-[var(--text-3)] leading-relaxed mb-4">{current.description}</p>
 
         <div className="flex items-center justify-between">
           {/* Step dots */}
           <div className="flex items-center gap-1.5">
             {steps.map((_, i) => (
-              <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === step ? 'bg-[#FF9900]' : 'bg-[#333]'}`} />
+              <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === step ? 'bg-[#FF9900]' : 'bg-[var(--border-strong)]'}`} />
             ))}
           </div>
 
           <div className="flex items-center gap-1">
             {step > 0 && (
               <button type="button" onClick={prev}
-                className="flex items-center gap-1 text-xs text-[#666] hover:text-[#ccc] transition-colors px-2 py-1 rounded hover:bg-[#252525]">
+                className="flex items-center gap-1 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface-hover)]">
                 <ChevronLeft size={12} /> Prev
               </button>
             )}
             <button type="button" onClick={next}
-              className="flex items-center gap-1 text-xs bg-[#FF9900] hover:bg-[#ffb340] text-[#0f0f0f] font-semibold px-3 py-1 rounded transition-colors">
+              className="flex items-center gap-1 text-xs bg-[#FF9900] hover:bg-[#ffb340] text-[var(--accent-contrast)] font-semibold px-3 py-1 rounded transition-colors">
               {step === steps.length - 1 ? 'Done' : 'Next'} {step < steps.length - 1 && <ChevronRight size={12} />}
             </button>
           </div>

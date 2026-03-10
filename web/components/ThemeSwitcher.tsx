@@ -10,7 +10,7 @@ export default function ThemeSwitcher() {
       type="button"
       onClick={toggleTheme}
       title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="flex items-center justify-center w-7 h-7 rounded text-[#555] hover:text-[#e5e5e5] hover:bg-[#1a1a1a] transition-colors border border-[#2a2a2a]"
+      className="flex items-center justify-center w-7 h-7 rounded text-[var(--text-5)] hover:text-[var(--text)] hover:bg-[var(--surface)] transition-colors border border-[var(--border)]"
     >
       {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
     </button>

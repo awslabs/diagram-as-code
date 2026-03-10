@@ -4,42 +4,47 @@
 
 /* ── CSS Variables (theme) ──────────────────────────────────────────────── */
 
-:root {
-  --bg:           #0f0f0f;
-  --surface:      #1a1a1a;
-  --surface2:     #141414;
-  --surface3:     #111111;
-  --border:       #2a2a2a;
-  --border2:      #333333;
-  --text:         #e5e5e5;
-  --text2:        #cccccc;
-  --text3:        #999999;
-  --text4:        #666666;
-  --text5:        #555555;
-  --text6:        #444444;
-  --text7:        #333333;
-  --accent:       #FF9900;
+:root,
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --bg-elevated: #0a0a0a;
+  --surface: #1a1a1a;
+  --surface-2: #141414;
+  --surface-hover: #252525;
+  --code-bg: #111111;
+  --border: #2a2a2a;
+  --border-strong: #333333;
+  --text: #e5e5e5;
+  --text-2: #cccccc;
+  --text-3: #999999;
+  --text-4: #666666;
+  --text-5: #555555;
+  --text-6: #444444;
+  --accent: #ff9900;
   --accent-hover: #ffb340;
-  --code-bg:      #111111;
+  --accent-contrast: #0f0f0f;
+  color-scheme: dark;
 }
 
 [data-theme="light"] {
-  --bg:           #f5f6f8;
-  --surface:      #ffffff;
-  --surface2:     #eeeff2;
-  --surface3:     #f9fafb;
-  --border:       #e0e3e8;
-  --border2:      #d0d3d9;
-  --text:         #111827;
-  --text2:        #374151;
-  --text3:        #6b7280;
-  --text4:        #9ca3af;
-  --text5:        #6b7280;
-  --text6:        #9ca3af;
-  --text7:        #d1d5db;
-  --accent:       #FF9900;
+  --bg: #f5f6f8;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eeeff2;
+  --surface-hover: #e9edf3;
+  --code-bg: #f3f4f6;
+  --border: #d9dee7;
+  --border-strong: #c4ccd8;
+  --text: #111827;
+  --text-2: #374151;
+  --text-3: #4b5563;
+  --text-4: #6b7280;
+  --text-5: #7b8794;
+  --text-6: #94a3b8;
+  --accent: #ff9900;
   --accent-hover: #e68900;
-  --code-bg:      #f3f4f6;
+  --accent-contrast: #111827;
+  color-scheme: light;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
@@ -54,42 +59,11 @@ html, body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* ── Light-theme overrides for hardcoded Tailwind colors ─────────────────── */
-
-[data-theme="light"] .bg-\[#0f0f0f\]  { background-color: var(--bg) !important; }
-[data-theme="light"] .bg-\[#111\]     { background-color: var(--code-bg) !important; }
-[data-theme="light"] .bg-\[#111111\]  { background-color: var(--code-bg) !important; }
-[data-theme="light"] .bg-\[#141414\]  { background-color: var(--surface2) !important; }
-[data-theme="light"] .bg-\[#161616\]  { background-color: var(--surface2) !important; }
-[data-theme="light"] .bg-\[#181818\]  { background-color: var(--surface) !important; }
-[data-theme="light"] .bg-\[#1a1a1a\]  { background-color: var(--surface) !important; }
-[data-theme="light"] .bg-\[#252525\]  { background-color: var(--surface2) !important; }
-
-[data-theme="light"] .border-\[#1a1a1a\] { border-color: var(--border) !important; }
-[data-theme="light"] .border-\[#2a2a2a\] { border-color: var(--border) !important; }
-[data-theme="light"] .border-\[#333\]    { border-color: var(--border2) !important; }
-
-[data-theme="light"] .text-\[#e5e5e5\] { color: var(--text) !important; }
-[data-theme="light"] .text-\[#ccc\]    { color: var(--text2) !important; }
-[data-theme="light"] .text-\[#aaa\]    { color: var(--text2) !important; }
-[data-theme="light"] .text-\[#999\]    { color: var(--text3) !important; }
-[data-theme="light"] .text-\[#888\]    { color: var(--text3) !important; }
-[data-theme="light"] .text-\[#666\]    { color: var(--text4) !important; }
-[data-theme="light"] .text-\[#555\]    { color: var(--text5) !important; }
-[data-theme="light"] .text-\[#444\]    { color: var(--text6) !important; }
-[data-theme="light"] .text-\[#333\]    { color: var(--text7) !important; }
-
-[data-theme="light"] .hover\:bg-\[#1a1a1a\]:hover { background-color: var(--surface2) !important; }
-[data-theme="light"] .hover\:bg-\[#252525\]:hover  { background-color: var(--surface2) !important; }
-
-/* Monaco editor light override */
-[data-theme="light"] .monaco-editor { background: var(--code-bg) !important; }
-
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text6); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-5); }
 
 /* ── Tour highlight ring ─────────────────────────────────────────────────── */
 

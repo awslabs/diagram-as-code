@@ -104,10 +104,10 @@ export default function LandingPage() {
   const c = CONTENT[lang] ?? CONTENT.en
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5] flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-elevated)] text-[var(--text)] flex flex-col">
 
       {/* ── Sticky Header ─────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 h-14 border-b border-[#1e1e1e] bg-[#0a0a0a]/90 backdrop-blur">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 h-14 border-b border-[var(--border)] bg-[var(--bg-elevated)]/90 backdrop-blur">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-[#FF9900] rounded-md flex items-center justify-center">
             <svg viewBox="0 0 16 16" fill="white" className="w-4 h-4">
@@ -117,21 +117,21 @@ export default function LandingPage() {
               <rect x="9" y="9" width="6" height="6" rx="1" />
             </svg>
           </div>
-          <span className="font-semibold text-sm tracking-tight text-[#e5e5e5]">diagram-as-code</span>
+          <span className="font-semibold text-sm tracking-tight text-[var(--text)]">diagram-as-code</span>
         </div>
 
         <nav className="flex items-center gap-1">
-          <Link href="/editor" className="text-xs text-[#777] hover:text-[#e5e5e5] transition-colors px-3 py-1.5 rounded hover:bg-[#1a1a1a]">{c.nav.editor}</Link>
-          <Link href="/builder" className="text-xs text-[#777] hover:text-[#e5e5e5] transition-colors px-3 py-1.5 rounded hover:bg-[#1a1a1a]">{c.nav.builder}</Link>
-          <Link href="/docs" className="text-xs text-[#777] hover:text-[#e5e5e5] transition-colors px-3 py-1.5 rounded hover:bg-[#1a1a1a]">{c.nav.docs}</Link>
-          <div className="w-px h-4 bg-[#2a2a2a] mx-1" />
+          <Link href="/editor" className="text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-3 py-1.5 rounded hover:bg-[var(--surface)]">{c.nav.editor}</Link>
+          <Link href="/builder" className="text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-3 py-1.5 rounded hover:bg-[var(--surface)]">{c.nav.builder}</Link>
+          <Link href="/docs" className="text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-3 py-1.5 rounded hover:bg-[var(--surface)]">{c.nav.docs}</Link>
+          <div className="w-px h-4 bg-[var(--border)] mx-1" />
           <LanguageSwitcher />
           <ThemeSwitcher />
           <a
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#555] hover:text-[#e5e5e5] transition-colors p-1.5 rounded hover:bg-[#1a1a1a]"
+            className="text-[var(--text-5)] hover:text-[var(--text)] transition-colors p-1.5 rounded hover:bg-[var(--surface)]"
             aria-label="GitHub"
           >
             <Github size={16} />
@@ -146,26 +146,26 @@ export default function LandingPage() {
         </span>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight max-w-3xl">
-          <span className="text-[#e5e5e5]">{c.hero.heading1}</span>
+          <span className="text-[var(--text)]">{c.hero.heading1}</span>
           <br />
           <span className="text-[#FF9900]">{c.hero.heading2}</span>
         </h1>
 
-        <p className="text-base text-[#777] max-w-xl leading-relaxed">
+        <p className="text-base text-[var(--text-3)] max-w-xl leading-relaxed">
           {c.hero.sub}
         </p>
 
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <Link
             href="/editor"
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#FF9900] hover:bg-[#ffb340] text-[#0a0a0a] font-semibold text-sm rounded-lg transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#FF9900] hover:bg-[#ffb340] text-[var(--accent-contrast)] font-semibold text-sm rounded-lg transition-colors"
           >
             <Zap size={15} />
             {c.hero.cta}
           </Link>
           <Link
             href="/builder"
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] text-[#ccc] font-medium text-sm rounded-lg transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border)] text-[var(--text-2)] font-medium text-sm rounded-lg transition-colors"
           >
             <Wrench size={15} />
             {c.hero.ctaBuilder}
@@ -175,20 +175,20 @@ export default function LandingPage() {
         {/* Demo block */}
         <div className="w-full max-w-4xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
           {/* YAML code */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#1e1e1e]">
+          <div className="bg-[var(--code-bg)] border border-[var(--border)] rounded-xl overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--border)]">
               <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
               <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
               <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-              <span className="ml-2 text-[10px] text-[#444] font-mono">architecture.yaml</span>
+              <span className="ml-2 text-[10px] text-[var(--text-6)] font-mono">architecture.yaml</span>
             </div>
-            <pre className="px-4 py-4 text-[11px] text-[#aaa] font-mono leading-relaxed overflow-auto">
+            <pre className="px-4 py-4 text-[11px] text-[var(--text-2)] font-mono leading-relaxed overflow-auto">
               <code>{YAML_DEMO}</code>
             </pre>
           </div>
 
           {/* Diagram illustration */}
-          <div className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden flex items-center justify-center p-8">
+          <div className="bg-[var(--code-bg)] border border-[var(--border)] rounded-xl overflow-hidden flex items-center justify-center p-8">
             <svg viewBox="0 0 220 200" className="w-full max-w-[220px]" fill="none" xmlns="http://www.w3.org/2000/svg">
               {/* Cloud outline */}
               <rect x="4" y="4" width="212" height="192" rx="12" stroke="#FF9900" strokeWidth="1.5" strokeDasharray="4 3" fill="none" />
@@ -202,31 +202,31 @@ export default function LandingPage() {
               <rect x="90" y="68" width="40" height="40" rx="6" fill="#FF9900" opacity="0.9" />
               <text x="95" y="92" fontSize="9" fill="white" fontFamily="monospace" fontWeight="bold">EC2</text>
               {/* Arrow down */}
-              <line x1="110" y1="148" x2="110" y2="168" stroke="#555" strokeWidth="1.5" />
-              <polygon points="105,165 110,173 115,165" fill="#555" />
+              <line x1="110" y1="148" x2="110" y2="168" stroke="var(--text-5)" strokeWidth="1.5" />
+              <polygon points="105,165 110,173 115,165" fill="var(--text-5)" />
               {/* IGW */}
-              <rect x="85" y="173" width="50" height="18" rx="4" fill="#1e1e1e" stroke="#444" strokeWidth="1" />
-              <text x="98" y="185" fontSize="7" fill="#999" fontFamily="monospace">IGW</text>
+              <rect x="85" y="173" width="50" height="18" rx="4" fill="var(--surface)" stroke="var(--text-6)" strokeWidth="1" />
+              <text x="98" y="185" fontSize="7" fill="var(--text-3)" fontFamily="monospace">IGW</text>
             </svg>
           </div>
         </div>
       </section>
 
       {/* ── How it works ──────────────────────────────────────────────────── */}
-      <section className="px-6 py-20 border-t border-[#1a1a1a]">
+      <section className="px-6 py-20 border-t border-[var(--border)]">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-12 text-[#e5e5e5]">{c.how.title}</h2>
+          <h2 className="text-2xl font-bold text-center mb-12 text-[var(--text)]">{c.how.title}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {c.how.steps.map((step, i) => (
               <div key={i} className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-2xl">
+                <div className="w-12 h-12 rounded-xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-2xl">
                   {step.icon}
                 </div>
                 <div className="w-6 h-6 rounded-full bg-[#FF9900]/20 border border-[#FF9900]/40 flex items-center justify-center text-xs font-bold text-[#FF9900]">
                   {i + 1}
                 </div>
-                <h3 className="font-semibold text-[#e5e5e5]">{step.title}</h3>
-                <p className="text-sm text-[#666] leading-relaxed">{step.desc}</p>
+                <h3 className="font-semibold text-[var(--text)]">{step.title}</h3>
+                <p className="text-sm text-[var(--text-4)] leading-relaxed">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -234,15 +234,15 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ──────────────────────────────────────────────────────── */}
-      <section className="px-6 py-20 border-t border-[#1a1a1a]">
+      <section className="px-6 py-20 border-t border-[var(--border)]">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-12 text-[#e5e5e5]">{c.features.title}</h2>
+          <h2 className="text-2xl font-bold text-center mb-12 text-[var(--text)]">{c.features.title}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {c.features.items.map((item, i) => (
-              <div key={i} className="bg-[#111] border border-[#1e1e1e] rounded-xl p-5 hover:border-[#FF9900]/30 transition-colors">
+              <div key={i} className="bg-[var(--code-bg)] border border-[var(--border)] rounded-xl p-5 hover:border-[#FF9900]/30 transition-colors">
                 <div className="text-[#FF9900] mb-3">{item.icon}</div>
-                <h3 className="font-semibold text-sm text-[#e5e5e5] mb-1">{item.title}</h3>
-                <p className="text-xs text-[#666] leading-relaxed">{item.desc}</p>
+                <h3 className="font-semibold text-sm text-[var(--text)] mb-1">{item.title}</h3>
+                <p className="text-xs text-[var(--text-4)] leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -250,13 +250,13 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
-      <section className="px-6 py-20 border-t border-[#1a1a1a]">
+      <section className="px-6 py-20 border-t border-[var(--border)]">
         <div className="max-w-2xl mx-auto text-center flex flex-col items-center gap-6">
-          <h2 className="text-3xl font-bold text-[#e5e5e5]">{c.cta.title}</h2>
-          <p className="text-[#666] text-sm leading-relaxed">{c.cta.sub}</p>
+          <h2 className="text-3xl font-bold text-[var(--text)]">{c.cta.title}</h2>
+          <p className="text-[var(--text-4)] text-sm leading-relaxed">{c.cta.sub}</p>
           <Link
             href="/editor"
-            className="flex items-center gap-2 px-8 py-3 bg-[#FF9900] hover:bg-[#ffb340] text-[#0a0a0a] font-semibold rounded-lg transition-colors text-sm"
+            className="flex items-center gap-2 px-8 py-3 bg-[#FF9900] hover:bg-[#ffb340] text-[var(--accent-contrast)] font-semibold rounded-lg transition-colors text-sm"
           >
             {c.cta.btn}
             <ArrowRight size={15} />
@@ -265,7 +265,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[#1a1a1a] px-6 py-6 flex items-center justify-between flex-wrap gap-3">
+      <footer className="border-t border-[var(--border)] px-6 py-6 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 bg-[#FF9900] rounded flex items-center justify-center">
             <svg viewBox="0 0 16 16" fill="white" className="w-3 h-3">
@@ -275,23 +275,23 @@ export default function LandingPage() {
               <rect x="9" y="9" width="6" height="6" rx="1" />
             </svg>
           </div>
-          <span className="text-xs text-[#444]">{c.footer}</span>
+          <span className="text-xs text-[var(--text-6)]">{c.footer}</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/editor" className="text-xs text-[#444] hover:text-[#777] transition-colors flex items-center gap-1">
+          <Link href="/editor" className="text-xs text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors flex items-center gap-1">
             <Zap size={11} /> Editor
           </Link>
-          <Link href="/builder" className="text-xs text-[#444] hover:text-[#777] transition-colors flex items-center gap-1">
+          <Link href="/builder" className="text-xs text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors flex items-center gap-1">
             <Wrench size={11} /> Builder
           </Link>
-          <Link href="/docs" className="text-xs text-[#444] hover:text-[#777] transition-colors flex items-center gap-1">
+          <Link href="/docs" className="text-xs text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors flex items-center gap-1">
             <BookOpen size={11} /> Docs
           </Link>
           <a
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#444] hover:text-[#777] transition-colors"
+            className="text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors"
           >
             <Github size={13} />
           </a>

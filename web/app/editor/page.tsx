@@ -13,7 +13,7 @@ import { useLanguage } from '@/lib/i18n'
 const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-full text-[#444] text-sm">
+    <div className="flex items-center justify-center h-full text-[var(--text-6)] text-sm">
       Loading editor…
     </div>
   ),
@@ -2218,10 +2218,10 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0f0f0f] overflow-hidden">
+    <div className="flex flex-col h-screen bg-[var(--bg)] overflow-hidden">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-4 h-12 border-b border-[#2a2a2a] flex-shrink-0">
+      <header className="flex items-center justify-between px-4 h-12 border-b border-[var(--border)] flex-shrink-0">
         <div className="flex items-center gap-3">
           {/* Logo */}
           <div className="flex items-center gap-2" data-tour="editor-logo">
@@ -2233,19 +2233,19 @@ export default function Home() {
                 <rect x="9" y="9" width="6" height="6" rx="1" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-[#e5e5e5] tracking-tight">
+            <span className="text-sm font-semibold text-[var(--text)] tracking-tight">
               diagram-as-code
             </span>
           </div>
 
           {/* Divider */}
-          <div className="w-px h-4 bg-[#2a2a2a]" />
+          <div className="w-px h-4 bg-[var(--border)]" />
 
           {/* Examples dropdown */}
           <div className="relative" data-tour="editor-examples">
             <button
               onClick={() => setExamplesOpen((o) => !o)}
-              className="flex items-center gap-1.5 text-xs text-[#999] hover:text-[#e5e5e5] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
+              className="flex items-center gap-1.5 text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
             >
               {t.examples}
               <ChevronDown size={12} className={`transition-transform ${examplesOpen ? 'rotate-180' : ''}`} />
@@ -2256,12 +2256,12 @@ export default function Home() {
                   className="fixed inset-0 z-10"
                   onClick={() => setExamplesOpen(false)}
                 />
-                <div className="absolute top-full left-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-20 min-w-[180px] py-1 overflow-hidden">
+                <div className="absolute top-full left-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-20 min-w-[180px] py-1 overflow-hidden">
                   {EXAMPLE_NAMES.map((name) => (
                     <button
                       key={name}
                       onClick={() => loadExample(name)}
-                      className="w-full text-left px-3 py-2 text-xs text-[#ccc] hover:bg-[#252525] hover:text-[#e5e5e5] transition-colors"
+                      className="w-full text-left px-3 py-2 text-xs text-[var(--text-2)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)] transition-colors"
                     >
                       {name}
                     </button>
@@ -2281,15 +2281,15 @@ export default function Home() {
           <ThemeSwitcher />
 
           {/* Format toggle */}
-          <div data-tour="editor-format" className="flex items-center bg-[#1a1a1a] border border-[#2a2a2a] rounded-md p-0.5 text-xs">
+          <div data-tour="editor-format" className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-md p-0.5 text-xs">
             {(['png', 'drawio'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFormat(f)}
                 className={`px-3 py-1 rounded transition-all ${
                   format === f
-                    ? 'bg-[#FF9900] text-[#0f0f0f] font-semibold'
-                    : 'text-[#888] hover:text-[#ccc]'
+                    ? 'bg-[#FF9900] text-[var(--accent-contrast)] font-semibold'
+                    : 'text-[var(--text-3)] hover:text-[var(--text-2)]'
                 }`}
               >
                 {f === 'png' ? 'PNG' : 'draw.io'}
@@ -2302,10 +2302,10 @@ export default function Home() {
             data-tour="editor-generate"
             onClick={generate}
             disabled={loading || !yaml.trim()}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-[#FF9900] hover:bg-[#ffb340] disabled:opacity-40 disabled:cursor-not-allowed text-[#0f0f0f] text-xs font-semibold rounded-md transition-colors"
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-[#FF9900] hover:bg-[#ffb340] disabled:opacity-40 disabled:cursor-not-allowed text-[var(--accent-contrast)] text-xs font-semibold rounded-md transition-colors"
           >
             {loading ? (
-              <div className="w-3.5 h-3.5 border-2 border-[#0f0f0f] border-t-transparent rounded-full animate-spin" />
+              <div className="w-3.5 h-3.5 border-2 border-[var(--accent-contrast)] border-t-transparent rounded-full animate-spin" />
             ) : (
               <Zap size={13} />
             )}
@@ -2316,7 +2316,7 @@ export default function Home() {
           <Link
             data-tour="editor-builder"
             href="/builder"
-            className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
+            className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
           >
             <Wrench size={13} />
             {t.builderLink}
@@ -2325,7 +2325,7 @@ export default function Home() {
           {/* Docs link */}
           <Link
             href="/docs"
-            className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]"
+            className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
           >
             <BookOpen size={13} />
             {t.docs}
@@ -2336,7 +2336,7 @@ export default function Home() {
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#555] hover:text-[#999] transition-colors p-1"
+            className="text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors p-1"
             aria-label="GitHub"
           >
             <Github size={16} />
@@ -2347,12 +2347,12 @@ export default function Home() {
       {/* ── Main content ────────────────────────────────────────────────────── */}
       <main className="flex flex-1 overflow-hidden">
         {/* Editor panel */}
-        <div data-tour="editor-panel" className="w-1/2 flex flex-col overflow-hidden border-r border-[#2a2a2a]">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
-            <span className="text-xs text-[#555] font-medium uppercase tracking-wider">
+        <div data-tour="editor-panel" className="w-1/2 flex flex-col overflow-hidden border-r border-[var(--border)]">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
+            <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">
               {t.yamlEditor}
             </span>
-            <span className="text-xs text-[#444]">
+            <span className="text-xs text-[var(--text-6)]">
               {t.lines(yaml.split('\n').length)}
             </span>
           </div>
@@ -2363,8 +2363,8 @@ export default function Home() {
 
         {/* Preview panel */}
         <div data-tour="editor-preview" className="w-1/2 flex flex-col overflow-hidden">
-          <div className="flex items-center px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
-            <span className="text-xs text-[#555] font-medium uppercase tracking-wider">
+          <div className="flex items-center px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
+            <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">
               {t.preview}
             </span>
           </div>
@@ -2382,19 +2382,19 @@ export default function Home() {
       <Tour id="editor" steps={EDITOR_TOUR} />
 
       {/* ── Status bar ─────────────────────────────────────────────────────── */}
-      <footer className="flex items-center justify-between px-4 h-6 border-t border-[#2a2a2a] flex-shrink-0">
-        <span className="text-[10px] text-[#444]">
+      <footer className="flex items-center justify-between px-4 h-6 border-t border-[var(--border)] flex-shrink-0">
+        <span className="text-[10px] text-[var(--text-6)]">
           diagram-as-code · AWS Architecture Diagrams from YAML ·{' '}
           <a
             href="https://fernando.moretes.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#555] hover:text-[#888] transition-colors"
+            className="text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors"
           >
             {t.footerBy}
           </a>
         </span>
-        <span className="text-[10px] text-[#444]">
+        <span className="text-[10px] text-[var(--text-6)]">
           {t.mode(format)} · <kbd className="font-mono">Ctrl+Enter</kbd>
         </span>
       </footer>

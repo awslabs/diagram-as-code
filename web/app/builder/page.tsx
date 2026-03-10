@@ -514,11 +514,11 @@ function SectionHeader({ title, open, onToggle, action }: {
   title: string; open: boolean; onToggle: () => void; action?: React.ReactNode
 }) {
   return (
-    <div className="flex items-center justify-between px-4 py-2.5 bg-[#141414] border-b border-[#2a2a2a] cursor-pointer select-none"
+    <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--surface-2)] border-b border-[var(--border)] cursor-pointer select-none"
       onClick={onToggle}>
       <div className="flex items-center gap-2">
-        {open ? <ChevronDown size={13} className="text-[#555]" /> : <ChevronRight size={13} className="text-[#555]" />}
-        <span className="text-xs font-semibold text-[#ccc] uppercase tracking-wider">{title}</span>
+        {open ? <ChevronDown size={13} className="text-[var(--text-5)]" /> : <ChevronRight size={13} className="text-[var(--text-5)]" />}
+        <span className="text-xs font-semibold text-[var(--text-2)] uppercase tracking-wider">{title}</span>
       </div>
       {action && <div onClick={e => e.stopPropagation()}>{action}</div>}
     </div>
@@ -526,7 +526,7 @@ function SectionHeader({ title, open, onToggle, action }: {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <span className="text-[10px] text-[#666] uppercase tracking-wider font-medium">{children}</span>
+  return <span className="text-[10px] text-[var(--text-4)] uppercase tracking-wider font-medium">{children}</span>
 }
 
 function Input({ value, onChange, placeholder, className = '' }: {
@@ -538,7 +538,7 @@ function Input({ value, onChange, placeholder, className = '' }: {
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full bg-[#111] border border-[#2a2a2a] rounded text-xs text-[#ccc] px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60 placeholder-[#444] ${className}`}
+      className={`w-full bg-[var(--code-bg)] border border-[var(--border)] rounded text-xs text-[var(--text-2)] px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60 placeholder:text-[var(--text-6)] ${className}`}
     />
   )
 }
@@ -551,7 +551,7 @@ function Select({ value, onChange, options, placeholder }: {
     <select
       value={value}
       onChange={e => onChange(e.target.value)}
-      className="w-full bg-[#111] border border-[#2a2a2a] rounded text-xs text-[#ccc] px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60"
+      className="w-full bg-[var(--code-bg)] border border-[var(--border)] rounded text-xs text-[var(--text-2)] px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60"
     >
       {placeholder && <option value="">{placeholder}</option>}
       {options.map(o => (
@@ -600,40 +600,40 @@ function TypeSearchSelect({ value, onChange, placeholder }: {
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full bg-[#111] border border-[#2a2a2a] rounded text-xs text-left px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60 flex items-center justify-between gap-1"
+        className="w-full bg-[var(--code-bg)] border border-[var(--border)] rounded text-xs text-left px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60 flex items-center justify-between gap-1"
       >
-        <span className={value ? 'text-[#FF9900] font-mono text-[11px]' : 'text-[#444]'}>
+        <span className={value ? 'text-[#FF9900] font-mono text-[11px]' : 'text-[var(--text-6)]'}>
           {value || placeholder}
         </span>
-        <ChevronDown size={11} className="text-[#555] flex-shrink-0" />
+        <ChevronDown size={11} className="text-[var(--text-5)] flex-shrink-0" />
       </button>
       {open && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-[#181818] border border-[#2a2a2a] rounded-lg shadow-2xl overflow-hidden">
-          <div className="p-2 border-b border-[#2a2a2a]">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-2xl overflow-hidden">
+          <div className="p-2 border-b border-[var(--border)]">
             <input
               autoFocus
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder={placeholder}
-              className="w-full bg-[#111] border border-[#333] rounded text-xs text-[#ccc] px-2 py-1.5 focus:outline-none focus:border-[#FF9900]/60 placeholder-[#444]"
+              className="w-full bg-[var(--code-bg)] border border-[var(--border-strong)] rounded text-xs text-[var(--text-2)] px-2 py-1.5 focus:outline-none focus:border-[#FF9900]/60 placeholder:text-[var(--text-6)]"
             />
           </div>
           <div className="max-h-64 overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="text-xs text-[#555] px-3 py-3 text-center">No results</p>
+              <p className="text-xs text-[var(--text-5)] px-3 py-3 text-center">No results</p>
             ) : (
               filtered.map(({ cat, type }) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => { onChange(type); setOpen(false); setQuery('') }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-[#252525] group flex items-center gap-2"
+                  className="w-full text-left px-3 py-1.5 hover:bg-[var(--surface-hover)] group flex items-center gap-2"
                 >
-                  <span className={`text-[9px] font-mono shrink-0 ${catColors[cat] ?? 'text-[#666]'}`}>
+                  <span className={`text-[9px] font-mono shrink-0 ${catColors[cat] ?? 'text-[var(--text-4)]'}`}>
                     {cat.split(' ')[0].slice(0, 4).toUpperCase()}
                   </span>
-                  <span className="text-[11px] text-[#ccc] font-mono truncate group-hover:text-[#e5e5e5]">
+                  <span className="text-[11px] text-[var(--text-2)] font-mono truncate group-hover:text-[var(--text)]">
                     {type}
                   </span>
                 </button>
@@ -672,24 +672,24 @@ function ChildrenSelect({ value, onChange, allResources, selfName }: {
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full bg-[#111] border border-[#2a2a2a] rounded text-xs text-left px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60 flex items-center justify-between gap-1 min-h-[30px]"
+        className="w-full bg-[var(--code-bg)] border border-[var(--border)] rounded text-xs text-left px-2.5 py-1.5 focus:outline-none focus:border-[#FF9900]/60 flex items-center justify-between gap-1 min-h-[30px]"
       >
-        <span className="text-[#ccc] truncate">
-          {value.length === 0 ? <span className="text-[#444]">—</span> : value.join(', ')}
+        <span className="text-[var(--text-2)] truncate">
+          {value.length === 0 ? <span className="text-[var(--text-6)]">—</span> : value.join(', ')}
         </span>
-        <ChevronDown size={11} className="text-[#555] flex-shrink-0" />
+        <ChevronDown size={11} className="text-[var(--text-5)] flex-shrink-0" />
       </button>
       {open && available.length > 0 && (
-        <div className="absolute z-40 top-full left-0 right-0 mt-1 bg-[#181818] border border-[#2a2a2a] rounded-lg shadow-xl max-h-40 overflow-y-auto py-1">
+        <div className="absolute z-40 top-full left-0 right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl max-h-40 overflow-y-auto py-1">
           {available.map(r => (
-            <label key={r.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#252525] cursor-pointer">
+            <label key={r.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--surface-hover)] cursor-pointer">
               <input
                 type="checkbox"
                 checked={value.includes(r.name)}
                 onChange={() => toggle(r.name)}
                 className="accent-[#FF9900]"
               />
-              <span className="text-xs text-[#ccc] font-mono">{r.name}</span>
+              <span className="text-xs text-[var(--text-2)] font-mono">{r.name}</span>
             </label>
           ))}
         </div>
@@ -731,21 +731,21 @@ function ResourceCard({ res, index, resources, onChange, onRemove, t }: {
   const catColor = Object.entries(AWS_TYPES).find(([, types]) => types.includes(res.type))?.[0]
 
   return (
-    <div className="border border-[#2a2a2a] rounded-lg overflow-hidden">
+    <div className="border border-[var(--border)] rounded-lg overflow-hidden">
       {/* Card header */}
       <div
-        className="flex items-center justify-between px-3 py-2 bg-[#161616] cursor-pointer"
+        className="flex items-center justify-between px-3 py-2 bg-[var(--surface-2)] cursor-pointer"
         onClick={() => setOpen(o => !o)}
       >
         <div className="flex items-center gap-2 min-w-0">
-          {open ? <ChevronDown size={12} className="text-[#555] shrink-0" /> : <ChevronRight size={12} className="text-[#555] shrink-0" />}
+          {open ? <ChevronDown size={12} className="text-[var(--text-5)] shrink-0" /> : <ChevronRight size={12} className="text-[var(--text-5)] shrink-0" />}
           <span className="text-xs font-mono text-[#FF9900] truncate">{res.name || `resource_${index + 1}`}</span>
-          <span className="text-[10px] text-[#555] truncate hidden sm:block">{res.type.split('::').slice(1).join('::')}</span>
+          <span className="text-[10px] text-[var(--text-5)] truncate hidden sm:block">{res.type.split('::').slice(1).join('::')}</span>
         </div>
         <button
           type="button"
           onClick={e => { e.stopPropagation(); onRemove() }}
-          className="text-[#555] hover:text-red-400 transition-colors p-1 shrink-0"
+          className="text-[var(--text-5)] hover:text-red-400 transition-colors p-1 shrink-0"
           aria-label={t.removeLabel}
         >
           <Trash2 size={12} />
@@ -753,7 +753,7 @@ function ResourceCard({ res, index, resources, onChange, onRemove, t }: {
       </div>
 
       {open && (
-        <div className="p-3 space-y-3 bg-[#0f0f0f]">
+        <div className="p-3 space-y-3 bg-[var(--bg)]">
           {/* Name + Type */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
@@ -865,7 +865,7 @@ function ResourceCard({ res, index, resources, onChange, onRemove, t }: {
                 <button
                   type="button"
                   onClick={() => removeBorderChild(bc.id)}
-                  className="text-[#555] hover:text-red-400 shrink-0"
+                  className="text-[var(--text-5)] hover:text-red-400 shrink-0"
                 >
                   <Trash2 size={12} />
                 </button>
@@ -897,28 +897,28 @@ function LinkCard({ link, resources, onChange, onRemove, t }: {
   const labelKeys: (keyof EdgeLabel)[] = ['SourceLeft', 'SourceRight', 'TargetLeft', 'TargetRight', 'AutoLeft', 'AutoRight']
 
   return (
-    <div className="border border-[#2a2a2a] rounded-lg overflow-hidden">
+    <div className="border border-[var(--border)] rounded-lg overflow-hidden">
       <div
-        className="flex items-center justify-between px-3 py-2 bg-[#161616] cursor-pointer"
+        className="flex items-center justify-between px-3 py-2 bg-[var(--surface-2)] cursor-pointer"
         onClick={() => setOpen(o => !o)}
       >
         <div className="flex items-center gap-2 min-w-0">
-          {open ? <ChevronDown size={12} className="text-[#555] shrink-0" /> : <ChevronRight size={12} className="text-[#555] shrink-0" />}
-          <span className="text-xs font-mono text-[#ccc] truncate">
+          {open ? <ChevronDown size={12} className="text-[var(--text-5)] shrink-0" /> : <ChevronRight size={12} className="text-[var(--text-5)] shrink-0" />}
+          <span className="text-xs font-mono text-[var(--text-2)] truncate">
             {link.source || '?'} <span className="text-[#FF9900]">→</span> {link.target || '?'}
           </span>
         </div>
         <button
           type="button"
           onClick={e => { e.stopPropagation(); onRemove() }}
-          className="text-[#555] hover:text-red-400 transition-colors p-1 shrink-0"
+          className="text-[var(--text-5)] hover:text-red-400 transition-colors p-1 shrink-0"
         >
           <Trash2 size={12} />
         </button>
       </div>
 
       {open && (
-        <div className="p-3 space-y-3 bg-[#0f0f0f]">
+        <div className="p-3 space-y-3 bg-[var(--bg)]">
           {/* Source + Target */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
@@ -976,7 +976,7 @@ function LinkCard({ link, resources, onChange, onRemove, t }: {
             <button
               type="button"
               onClick={() => setLabelsOpen(o => !o)}
-              className="flex items-center gap-1 text-[10px] text-[#555] hover:text-[#999] transition-colors uppercase tracking-wider"
+              className="flex items-center gap-1 text-[10px] text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors uppercase tracking-wider"
             >
               {labelsOpen ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
               {t.edgeLabels}
@@ -1124,16 +1124,16 @@ export default function BuilderPage() {
   const lineCount = yaml.split('\n').length
 
   return (
-    <div className="flex flex-col h-screen bg-[#0f0f0f] overflow-hidden">
+    <div className="flex flex-col h-screen bg-[var(--bg)] overflow-hidden">
 
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-4 h-12 border-b border-[#2a2a2a] flex-shrink-0">
+      <header className="flex items-center justify-between px-4 h-12 border-b border-[var(--border)] flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Link href="/editor" className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors">
+          <Link href="/editor" className="flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors">
             <ArrowLeft size={13} />
             {t.backToEditor}
           </Link>
-          <div className="w-px h-4 bg-[#2a2a2a]" />
+          <div className="w-px h-4 bg-[var(--border)]" />
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-[#FF9900] rounded flex items-center justify-center">
               <svg viewBox="0 0 16 16" fill="white" className="w-3 h-3">
@@ -1143,8 +1143,8 @@ export default function BuilderPage() {
                 <rect x="9" y="9" width="6" height="6" rx="1" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-[#e5e5e5]">{t.builderTitle}</span>
-            <span className="hidden sm:block text-xs text-[#444]">— {t.builderDesc}</span>
+            <span className="text-sm font-semibold text-[var(--text)]">{t.builderTitle}</span>
+            <span className="hidden sm:block text-xs text-[var(--text-6)]">— {t.builderDesc}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -1153,17 +1153,17 @@ export default function BuilderPage() {
             <button
               type="button"
               onClick={() => setExamplesOpen(o => !o)}
-              className="flex items-center gap-1 text-xs text-[#666] hover:text-[#ccc] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a] border border-[#2a2a2a]"
+              className="flex items-center gap-1 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)] border border-[var(--border)]"
             >
               Examples <ChevronDown size={11} className={`transition-transform ${examplesOpen ? 'rotate-180' : ''}`} />
             </button>
             {examplesOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setExamplesOpen(false)} />
-                <div className="absolute top-full right-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl z-20 min-w-[180px] py-1">
+                <div className="absolute top-full right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-20 min-w-[180px] py-1">
                   {Object.keys(BUILDER_EXAMPLES).map(name => (
                     <button key={name} type="button" onClick={() => loadExample(name)}
-                      className="w-full text-left px-3 py-2 text-xs text-[#ccc] hover:bg-[#252525] hover:text-[#e5e5e5] transition-colors">
+                      className="w-full text-left px-3 py-2 text-xs text-[var(--text-2)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)] transition-colors">
                       {name}
                     </button>
                   ))}
@@ -1176,7 +1176,7 @@ export default function BuilderPage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1 text-xs text-[#666] hover:text-[#ccc] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a] border border-[#2a2a2a]"
+            className="flex items-center gap-1 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)] border border-[var(--border)]"
           >
             <Upload size={12} /> Upload YAML
           </button>
@@ -1184,12 +1184,12 @@ export default function BuilderPage() {
 
           <LanguageSwitcher />
           <ThemeSwitcher />
-          <Link href="/docs" className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#999] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a]">
+          <Link href="/docs" className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]">
             <BookOpen size={13} />
             {t.docs}
           </Link>
           <a href="https://github.com/fernandofatech/diagram-as-code" target="_blank" rel="noopener noreferrer"
-            className="text-[#555] hover:text-[#999] transition-colors p-1" aria-label="GitHub">
+            className="text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors p-1" aria-label="GitHub">
             <Github size={16} />
           </a>
         </div>
@@ -1205,11 +1205,11 @@ export default function BuilderPage() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Left: Form */}
-        <div className="w-[55%] flex flex-col overflow-hidden border-r border-[#2a2a2a]">
+        <div className="w-[55%] flex flex-col overflow-hidden border-r border-[var(--border)]">
           <div className="flex-1 overflow-y-auto">
 
             {/* Definition File */}
-            <div className="border-b border-[#2a2a2a]">
+            <div className="border-b border-[var(--border)]">
               <SectionHeader title={t.defFileSection} open={sections.def} onToggle={() => toggleSection('def')} />
               {sections.def && (
                 <div className="p-4 space-y-3">
@@ -1221,7 +1221,7 @@ export default function BuilderPage() {
                           onChange={() => updateForm({ defType: type })}
                           className="accent-[#FF9900]"
                         />
-                        <span className="text-xs text-[#999]">
+                        <span className="text-xs text-[var(--text-3)]">
                           {type === 'URL' ? t.officialUrl : t.localFileLabel}
                         </span>
                       </label>
@@ -1243,7 +1243,7 @@ export default function BuilderPage() {
             </div>
 
             {/* Canvas */}
-            <div className="border-b border-[#2a2a2a]">
+            <div className="border-b border-[var(--border)]">
               <SectionHeader title={t.canvasSection} open={sections.canvas} onToggle={() => toggleSection('canvas')} />
               {sections.canvas && (
                 <div className="p-4">
@@ -1257,8 +1257,8 @@ export default function BuilderPage() {
                           onClick={() => updateForm({ canvasDirection: d })}
                           className={`px-4 py-1.5 rounded text-xs font-medium transition-all border ${
                             form.canvasDirection === d
-                              ? 'bg-[#FF9900] border-[#FF9900] text-[#0f0f0f]'
-                              : 'border-[#2a2a2a] text-[#666] hover:text-[#ccc] hover:border-[#444]'
+                              ? 'bg-[#FF9900] border-[#FF9900] text-[var(--accent-contrast)]'
+                              : 'border-[var(--border)] text-[var(--text-4)] hover:text-[var(--text-2)] hover:border-[var(--text-6)]'
                           }`}
                         >
                           {d}
@@ -1271,7 +1271,7 @@ export default function BuilderPage() {
             </div>
 
             {/* Resources */}
-            <div className="border-b border-[#2a2a2a]">
+            <div className="border-b border-[var(--border)]">
               <SectionHeader
                 title={`${t.resourcesSection} (${form.resources.length})`}
                 open={sections.resources}
@@ -1290,7 +1290,7 @@ export default function BuilderPage() {
               {sections.resources && (
                 <div className="p-3 space-y-2">
                   {form.resources.length === 0 ? (
-                    <p className="text-xs text-[#444] text-center py-6">{t.noResources}</p>
+                    <p className="text-xs text-[var(--text-6)] text-center py-6">{t.noResources}</p>
                   ) : (
                     form.resources.map((res, i) => (
                       <ResourceCard
@@ -1308,7 +1308,7 @@ export default function BuilderPage() {
                     <button
                       type="button"
                       onClick={addResource}
-                      className="w-full py-2 border border-dashed border-[#333] rounded-lg text-xs text-[#555] hover:border-[#FF9900]/40 hover:text-[#FF9900] transition-colors"
+                      className="w-full py-2 border border-dashed border-[var(--border-strong)] rounded-lg text-xs text-[var(--text-5)] hover:border-[#FF9900]/40 hover:text-[#FF9900] transition-colors"
                     >
                       {t.addResource}
                     </button>
@@ -1337,7 +1337,7 @@ export default function BuilderPage() {
               {sections.links && (
                 <div className="p-3 space-y-2">
                   {form.links.length === 0 ? (
-                    <p className="text-xs text-[#444] text-center py-6">{t.noLinks}</p>
+                    <p className="text-xs text-[var(--text-6)] text-center py-6">{t.noLinks}</p>
                   ) : (
                     form.links.map(link => (
                       <LinkCard
@@ -1354,7 +1354,7 @@ export default function BuilderPage() {
                     <button
                       type="button"
                       onClick={addLink}
-                      className="w-full py-2 border border-dashed border-[#333] rounded-lg text-xs text-[#555] hover:border-[#FF9900]/40 hover:text-[#FF9900] transition-colors"
+                      className="w-full py-2 border border-dashed border-[var(--border-strong)] rounded-lg text-xs text-[var(--text-5)] hover:border-[#FF9900]/40 hover:text-[#FF9900] transition-colors"
                     >
                       {t.addLink}
                     </button>
@@ -1368,16 +1368,16 @@ export default function BuilderPage() {
 
         {/* Right: YAML Preview */}
         <div className="w-[45%] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a] flex-shrink-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
             <div className="flex items-center gap-3">
-              <span className="text-xs text-[#555] font-medium uppercase tracking-wider">{t.yamlPreview}</span>
-              <span className="text-[10px] text-[#444]">{lineCount} lines</span>
+              <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">{t.yamlPreview}</span>
+              <span className="text-[10px] text-[var(--text-6)]">{lineCount} lines</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={copyYaml}
-                className="flex items-center gap-1.5 text-xs text-[#555] hover:text-[#ccc] transition-colors px-2 py-1 rounded hover:bg-[#1a1a1a] border border-[#2a2a2a]"
+                className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-2)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)] border border-[var(--border)]"
               >
                 {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
                 {copied ? t.copied : t.copyYaml}
@@ -1385,7 +1385,7 @@ export default function BuilderPage() {
               <button
                 type="button"
                 onClick={useInEditor}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FF9900] hover:bg-[#ffb340] text-[#0f0f0f] text-xs font-semibold rounded transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FF9900] hover:bg-[#ffb340] text-[var(--accent-contrast)] text-xs font-semibold rounded transition-colors"
               >
                 <Zap size={12} />
                 {t.useInEditor}
@@ -1393,11 +1393,11 @@ export default function BuilderPage() {
             </div>
           </div>
           <div className="flex-1 overflow-auto">
-            <pre className="text-xs font-mono text-[#ccc] leading-relaxed p-4 whitespace-pre min-h-full">
+            <pre className="text-xs font-mono text-[var(--text-2)] leading-relaxed p-4 whitespace-pre min-h-full">
               <code>
                 {yaml.split('\n').map((line, i) => (
                   <span key={i} className="block">
-                    <span className="text-[#333] select-none mr-3 text-[10px]">{String(i + 1).padStart(3, ' ')}</span>
+                    <span className="text-[var(--text-6)] select-none mr-3 text-[10px]">{String(i + 1).padStart(3, ' ')}</span>
                     {line
                       .replace(/^(\s*)([\w:]+:)(\s|$)/, (_, indent, key, rest) =>
                         `${indent}<k>${key}</k>${rest}`)
@@ -1417,7 +1417,7 @@ export default function BuilderPage() {
                                         s === '"' || s === "'"
                                           ? <span key={m} className="text-green-400">{s}</span>
                                           : s === '- '
-                                            ? <span key={m} className="text-[#888]">{s}</span>
+                                            ? <span key={m} className="text-[var(--text-3)]">{s}</span>
                                             : s
                                       )
                                     }</span>

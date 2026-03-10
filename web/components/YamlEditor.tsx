@@ -1,6 +1,7 @@
 'use client'
 
 import Editor from '@monaco-editor/react'
+import { useTheme } from '@/lib/theme'
 
 interface YamlEditorProps {
   value: string
@@ -8,12 +9,14 @@ interface YamlEditorProps {
 }
 
 export default function YamlEditor({ value, onChange }: YamlEditorProps) {
+  const { theme } = useTheme()
+
   return (
     <Editor
       language="yaml"
       value={value}
       onChange={(v) => onChange(v ?? '')}
-      theme="vs-dark"
+      theme={theme === 'light' ? 'vs' : 'vs-dark'}
       options={{
         fontSize: 13,
         lineHeight: 20,

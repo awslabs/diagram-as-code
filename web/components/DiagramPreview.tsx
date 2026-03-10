@@ -31,7 +31,7 @@ export default function DiagramPreview({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-3 text-[#666]">
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-[var(--text-4)]">
         <div className="w-8 h-8 border-2 border-[#FF9900] border-t-transparent rounded-full animate-spin" />
         <span className="text-sm">{t.generating}</span>
       </div>
@@ -60,7 +60,7 @@ export default function DiagramPreview({
             className="max-w-full max-h-full object-contain rounded shadow-lg"
           />
         </div>
-        <div className="border-t border-[#2a2a2a] px-4 py-2 flex items-center justify-end">
+        <div className="border-t border-[var(--border)] px-4 py-2 flex items-center justify-end">
           <a
             href={imageUrl}
             download="diagram.png"
@@ -82,8 +82,8 @@ export default function DiagramPreview({
             <FileCode2 size={28} className="text-[#4a9eff]" />
           </div>
           <div className="text-center">
-            <p className="text-sm text-[#e5e5e5] font-medium">{t.drawioReady}</p>
-            <p className="text-xs text-[#666] mt-1">{t.drawioHelper}</p>
+            <p className="text-sm text-[var(--text)] font-medium">{t.drawioReady}</p>
+            <p className="text-xs text-[var(--text-4)] mt-1">{t.drawioHelper}</p>
           </div>
           <button
             type="button"
@@ -99,7 +99,7 @@ export default function DiagramPreview({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-3 text-[#444]">
+    <div className="flex flex-col items-center justify-center h-full gap-3 text-[var(--text-6)]">
       <ImageIcon size={40} strokeWidth={1} />
       <p className="text-sm">
         {t.emptyStatePre} <span className="text-[#FF9900]">{t.generate}</span> {t.emptyStatePost}

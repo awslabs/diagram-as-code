@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 
 // ── Section IDs ───────────────────────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <h2
       id={id}
-      className="text-xl font-semibold text-[#e5e5e5] mt-12 mb-4 flex items-center gap-2 scroll-mt-20"
+      className="text-xl font-semibold text-[var(--text)] mt-12 mb-4 flex items-center gap-2 scroll-mt-20"
     >
       <span className="w-1 h-5 bg-[#FF9900] rounded-full inline-block flex-shrink-0" />
       {children}
@@ -47,16 +48,16 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
 }
 
 function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-base font-semibold text-[#ccc] mt-6 mb-2">{children}</h3>
+  return <h3 className="text-base font-semibold text-[var(--text-2)] mt-6 mb-2">{children}</h3>
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-[#999] text-sm leading-relaxed mb-3">{children}</p>
+  return <p className="text-[var(--text-3)] text-sm leading-relaxed mb-3">{children}</p>
 }
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="bg-[#1a1a1a] border border-[#2a2a2a] text-[#FF9900] text-xs px-1.5 py-0.5 rounded font-mono">
+    <code className="bg-[var(--surface)] border border-[var(--border)] text-[#FF9900] text-xs px-1.5 py-0.5 rounded font-mono">
       {children}
     </code>
   )
@@ -66,11 +67,11 @@ function Pre({ children, lang }: { children: string; lang?: string }) {
   return (
     <div className="relative my-4">
       {lang && (
-        <span className="absolute top-2 right-3 text-[10px] text-[#555] font-mono uppercase">
+        <span className="absolute top-2 right-3 text-[10px] text-[var(--text-5)] font-mono uppercase">
           {lang}
         </span>
       )}
-      <pre className="bg-[#111] border border-[#2a2a2a] rounded-lg p-4 text-xs text-[#ccc] font-mono overflow-x-auto leading-relaxed whitespace-pre">
+      <pre className="bg-[var(--code-bg)] border border-[var(--border)] rounded-lg p-4 text-xs text-[var(--text-2)] font-mono overflow-x-auto leading-relaxed whitespace-pre">
         {children}
       </pre>
     </div>
@@ -96,9 +97,9 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
     <div className="overflow-x-auto my-4">
       <table className="w-full text-xs text-left border-collapse">
         <thead>
-          <tr className="border-b border-[#2a2a2a]">
+          <tr className="border-b border-[var(--border)]">
             {headers.map((h) => (
-              <th key={h} className="pb-2 pr-6 text-[#666] font-medium uppercase tracking-wider text-[10px]">
+              <th key={h} className="pb-2 pr-6 text-[var(--text-4)] font-medium uppercase tracking-wider text-[10px]">
                 {h}
               </th>
             ))}
@@ -106,9 +107,9 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-b border-[#1a1a1a]">
+            <tr key={i} className="border-b border-[var(--border)]">
               {row.map((cell, j) => (
-                <td key={j} className="py-2.5 pr-6 text-[#aaa] align-top font-mono">
+                <td key={j} className="py-2.5 pr-6 text-[var(--text-2)] align-top font-mono">
                   {cell}
                 </td>
               ))}
@@ -156,19 +157,19 @@ export default function DocsPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0f0f0f] overflow-hidden">
+    <div className="flex flex-col h-screen bg-[var(--bg)] overflow-hidden">
 
       {/* Header */}
-      <header className="flex items-center justify-between px-4 h-12 border-b border-[#2a2a2a] flex-shrink-0">
+      <header className="flex items-center justify-between px-4 h-12 border-b border-[var(--border)] flex-shrink-0">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors"
           >
             <ArrowLeft size={13} />
             {t.backToEditor}
           </Link>
-          <div className="w-px h-4 bg-[#2a2a2a]" />
+          <div className="w-px h-4 bg-[var(--border)]" />
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-[#FF9900] rounded flex items-center justify-center">
               <svg viewBox="0 0 16 16" fill="white" className="w-3 h-3">
@@ -178,16 +179,17 @@ export default function DocsPage() {
                 <rect x="9" y="9" width="6" height="6" rx="1" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-[#e5e5e5]">{t.documentation}</span>
+            <span className="text-sm font-semibold text-[var(--text)]">{t.documentation}</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
+          <ThemeSwitcher />
           <a
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors"
           >
             <Github size={14} />
             GitHub
@@ -207,8 +209,8 @@ export default function DocsPage() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar */}
-        <aside className="w-52 flex-shrink-0 border-r border-[#2a2a2a] overflow-y-auto py-4">
-          <p className="px-4 text-[10px] text-[#444] uppercase tracking-widest font-medium mb-2">
+        <aside className="w-52 flex-shrink-0 border-r border-[var(--border)] overflow-y-auto py-4">
+          <p className="px-4 text-[10px] text-[var(--text-6)] uppercase tracking-widest font-medium mb-2">
             {t.contents}
           </p>
           <nav className="space-y-0.5 px-2">
@@ -220,7 +222,7 @@ export default function DocsPage() {
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs text-left transition-colors ${
                   active === id
                     ? 'bg-[#FF9900]/10 text-[#FF9900]'
-                    : 'text-[#666] hover:text-[#ccc] hover:bg-[#1a1a1a]'
+                    : 'text-[var(--text-4)] hover:text-[var(--text-2)] hover:bg-[var(--surface)]'
                 }`}
               >
                 {icon}
@@ -237,7 +239,7 @@ export default function DocsPage() {
           {/* ── Overview ──────────────────────────────────────────────────── */}
           <H2 id="overview">{t.navOverview}</H2>
           <P>
-            <strong className="text-[#ccc]">diagram-as-code</strong>{' '}
+            <strong className="text-[var(--text-2)]">diagram-as-code</strong>{' '}
             {t.overviewP1.replace('diagram-as-code is', '').replace('diagram-as-code é', '')}
           </P>
           <P>
@@ -271,9 +273,9 @@ export default function DocsPage() {
           <H2 id="web-editor">{t.navWebEditor}</H2>
           <P>{t.webEditorP1}</P>
           <H3>{t.howToUse}</H3>
-          <ol className="list-decimal list-inside space-y-2 text-sm text-[#999] mb-4 ml-2">
+          <ol className="list-decimal list-inside space-y-2 text-sm text-[var(--text-3)] mb-4 ml-2">
             <li>{t.webEditorStep1} <Link href="/" className="text-[#FF9900] hover:underline">diagram-as-code-ruddy.vercel.app</Link></li>
-            <li>{t.webEditorStep2} <strong className="text-[#ccc]">{t.examples}</strong> {t.webEditorStep2b}</li>
+            <li>{t.webEditorStep2} <strong className="text-[var(--text-2)]">{t.examples}</strong> {t.webEditorStep2b}</li>
             <li>{t.webEditorStep3} <Badge>PNG</Badge> {lang === 'pt' ? 'ou' : 'or'} <Badge color="blue">draw.io</Badge></li>
             <li>{t.webEditorStep4} <Badge color="orange">⚡ {t.generate}</Badge> {t.webEditorStep4b} <Code>Ctrl+Enter</Code></li>
             <li>{t.webEditorStep5}</li>
@@ -328,7 +330,7 @@ awsdac examples/alb-ec2.yaml -o output.drawio`}</Pre>
             {t.drawioP1} <Code>mxCell</Code> {t.drawioP1b}
           </P>
           <H3>{t.exportPipeline}</H3>
-          <ol className="list-decimal list-inside space-y-2 text-sm text-[#999] mb-4 ml-2">
+          <ol className="list-decimal list-inside space-y-2 text-sm text-[var(--text-3)] mb-4 ml-2">
             <li>{t.drawioStep1}</li>
             <li>{t.drawioStep2} (<Code>Scale</Code> + <Code>ZeroAdjust</Code>)</li>
             <li>{t.drawioStep3}</li>
@@ -619,14 +621,14 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
 
           {/* ── About ─────────────────────────────────────────────────────── */}
           <H2 id="about">{t.navAbout}</H2>
-          <div className="border border-[#2a2a2a] rounded-xl p-6 bg-[#111] mt-4">
+          <div className="border border-[var(--border)] rounded-xl p-6 bg-[var(--code-bg)] mt-4">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF9900] to-[#ff6600] flex items-center justify-center flex-shrink-0 text-white font-bold text-lg">
                 FA
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-[#e5e5e5] font-semibold text-base">Fernando Azevedo</h3>
-                <p className="text-[#666] text-xs mb-3">{t.authorSubtitle}</p>
+                <h3 className="text-[var(--text)] font-semibold text-base">Fernando Azevedo</h3>
+                <p className="text-[var(--text-4)] text-xs mb-3">{t.authorSubtitle}</p>
                 <div className="flex items-center gap-3 mb-4">
                   <a
                     href="https://fernando.moretes.com"
@@ -641,7 +643,7 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
                     href="https://github.com/fernandofatech"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors"
                   >
                     <Github size={11} />
                     fernandofatech
@@ -650,23 +652,23 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
                     href="https://www.linkedin.com/in/fernando-francisco-azevedo/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-[#666] hover:text-[#ccc] transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors"
                   >
                     <Linkedin size={11} />
                     LinkedIn
                   </a>
                 </div>
-                <div className="space-y-3 text-xs text-[#888] leading-relaxed">
+                <div className="space-y-3 text-xs text-[var(--text-3)] leading-relaxed">
                   <p>
                     {t.authorBio1}{' '}
-                    <strong className="text-[#aaa]">Banco Itaú</strong>
+                    <strong className="text-[var(--text-2)]">Banco Itaú</strong>
                     {t.authorBio1b}
                   </p>
                   <p>
                     {t.authorBio2}{' '}
-                    <strong className="text-[#aaa]">Clean Architecture</strong>,{' '}
-                    <strong className="text-[#aaa]">DDD</strong>,{' '}
-                    <strong className="text-[#aaa]">CQRS</strong>
+                    <strong className="text-[var(--text-2)]">Clean Architecture</strong>,{' '}
+                    <strong className="text-[var(--text-2)]">DDD</strong>,{' '}
+                    <strong className="text-[var(--text-2)]">CQRS</strong>
                     {t.authorBio2b}
                   </p>
                   <p>{t.authorBio3}</p>
@@ -678,7 +680,7 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
                   ].map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] bg-[#1a1a1a] border border-[#2a2a2a] text-[#666] px-2 py-0.5 rounded-full"
+                      className="text-[10px] bg-[var(--surface)] border border-[var(--border)] text-[var(--text-4)] px-2 py-0.5 rounded-full"
                     >
                       {tag}
                     </span>
@@ -688,13 +690,13 @@ vercel dev   # runs Next.js + Go serverless function together`}</Pre>
             </div>
           </div>
 
-          <div className="mt-12 pt-6 border-t border-[#1a1a1a] flex items-center justify-between">
-            <span className="text-[10px] text-[#333]">{t.footerFork}</span>
+          <div className="mt-12 pt-6 border-t border-[var(--border)] flex items-center justify-between">
+            <span className="text-[10px] text-[var(--text-6)]">{t.footerFork}</span>
             <a
               href="https://github.com/fernandofatech/diagram-as-code"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] text-[#444] hover:text-[#666] transition-colors flex items-center gap-1"
+              className="text-[10px] text-[var(--text-6)] hover:text-[var(--text-4)] transition-colors flex items-center gap-1"
             >
               <Github size={10} />
               {t.viewOnGithub}
