@@ -56,15 +56,31 @@ Key features:
 
 ## Getting started
 
-### for Gopher (go 1.21 or higher)
-```
-$ go install github.com/awslabs/diagram-as-code/cmd/awsdac@latest
+### macOS
+```bash
+brew install awsdac
 ```
 
-### for macOS user
+### Linux
+```bash
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+# or download the binary from GitHub Releases and move to /usr/local/bin/
 ```
-$ brew install awsdac
+
+### Windows
+```powershell
+go install github.com/fernandofatech/diagram-as-code/cmd/awsdac@latest
+# or download awsdac.exe from GitHub Releases and add to your PATH
 ```
+
+### From source (all platforms)
+```bash
+git clone https://github.com/fernandofatech/diagram-as-code.git
+cd diagram-as-code
+make build   # produces ./awsdac (or awsdac.exe on Windows)
+```
+
+**Prerequisites:** Go 1.21+ · Node.js 18+ (only for the web frontend)
 
 ## Usage
 
