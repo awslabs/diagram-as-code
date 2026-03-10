@@ -828,7 +828,11 @@ func loadLinks(template *TemplateStruct, resources map[string]*types.Resource) e
 		}
 
 		link := new(types.Link).Init(source, sourcePosition, v.SourceArrowHead, target, targetPosition, v.TargetArrowHead, lineWidth, lineColor)
-		link.SetType(v.Type)
+		linkType := v.Type
+		if linkType == "" {
+			linkType = "orthogonal"
+		}
+		link.SetType(linkType)
 		link.SetLineStyle(v.LineStyle)
 		if v.Labels.SourceRight != nil {
 			label, err := convertLabel(v.Labels.SourceRight)

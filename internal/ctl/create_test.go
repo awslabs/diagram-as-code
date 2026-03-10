@@ -368,3 +368,36 @@ func TestIsAllowedDefinitionURL(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadLinksDefaultsToOrthogonal(t *testing.T) {
+	source := new(types.Resource).Init()
+	target := new(types.Resource).Init()
+
+	resources := map[string]*types.Resource{
+		"Source": source,
+		"Target": target,
+	}
+
+	template := &TemplateStruct{
+		Diagram: Diagram{
+			Links: []Link{
+				{
+					Source: "Source",
+					Target: "Target",
+				},
+			},
+		},
+	}
+
+	if err := loadLinks(template, resources); err != nil {
+		t.Fatalf("loadLinks failed: %v", err)
+	}
+
+	links := source.GetLinks()
+	if len(links) != 1 {
+		t.Fatalf("expected 1 link on source, got %d", len(links))
+	}
+	if links[0].Type != "orthogonal" {
+		t.Fatalf("expected default link type to be orthogonal, got %q", links[0].Type)
+	}
+}
