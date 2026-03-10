@@ -1,7 +1,0 @@
-# Vercel deployment is handled automatically via Vercel's GitHub Git Integration.
-# When code is pushed to 'main', Vercel receives a webhook, builds the project
-# on their servers, and deploys to production — no CLI upload needed.
-#
-# To manage the integration: https://vercel.com/fernando-francisco-azevedos-projects/diagram-as-code/settings/git
-#
-# This file is kept as documentation only.
