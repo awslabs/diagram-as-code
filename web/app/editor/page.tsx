@@ -2403,6 +2403,7 @@ export default function Home() {
               pdfUrl={pdfUrl}
               loading={loading}
               error={error}
+              onDrawioChange={setDrawioContent}
             />
           </div>
         </div>

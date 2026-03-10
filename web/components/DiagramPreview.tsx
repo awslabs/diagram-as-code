@@ -2,6 +2,7 @@
 
 import { Download, FileCode2, FileText, ImageIcon } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
+import DrawioEmbed from '@/components/DrawioEmbed'
 
 interface DiagramPreviewProps {
   imageUrl: string | null
@@ -9,6 +10,7 @@ interface DiagramPreviewProps {
   pdfUrl: string | null
   loading: boolean
   error: string | null
+  onDrawioChange?: (xml: string) => void
 }
 
 export default function DiagramPreview({
@@ -17,6 +19,7 @@ export default function DiagramPreview({
   pdfUrl,
   loading,
   error,
+  onDrawioChange,
 }: DiagramPreviewProps) {
   const { t } = useLanguage()
 
@@ -79,20 +82,20 @@ export default function DiagramPreview({
   if (drawioContent) {
     return (
       <div className="flex flex-col h-full">
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <div className="w-14 h-14 bg-[#1e3a5f] rounded-xl flex items-center justify-center">
-            <FileCode2 size={28} className="text-[#4a9eff]" />
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-[var(--text)] font-medium">{t.drawioReady}</p>
-            <p className="text-xs text-[var(--text-4)] mt-1">{t.drawioHelper}</p>
+        <div className="flex-1 overflow-hidden">
+          <DrawioEmbed xml={drawioContent} onChange={onDrawioChange} />
+        </div>
+        <div className="border-t border-[var(--border)] px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-[var(--text-4)]">
+            <FileCode2 size={14} className="text-[#4a9eff]" />
+            <span>{t.drawioEmbedded}</span>
           </div>
           <button
             type="button"
             onClick={downloadDrawio}
-            className="flex items-center gap-2 text-sm text-[#FF9900] hover:text-[#ffb340] transition-colors px-4 py-2 rounded border border-[#FF9900]/30 hover:border-[#FF9900]/60"
+            className="flex items-center gap-2 text-xs text-[#FF9900] hover:text-[#ffb340] transition-colors px-3 py-1.5 rounded border border-[#FF9900]/30 hover:border-[#FF9900]/60"
           >
-            <Download size={14} />
+            <Download size={13} />
             {t.downloadDrawio}
           </button>
         </div>
