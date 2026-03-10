@@ -13,19 +13,16 @@ Maintain and evolve `diagram-as-code` as a reliable CLI and library to generate 
 5. [doc/ai/development-model.md](doc/ai/development-model.md)
 
 ## Non-Negotiable Rules
-- Keep docs, comments, and commit messages in English.
+- Keep docs and comments in English.
 - Preserve compatibility of PNG generation unless a change is explicitly intended and validated.
 - Do not add network dependence in tests unless mocked.
 - Keep changes small, scoped, and test-backed.
-- Never commit credentials, tokens, private keys, or environment secrets.
 
 ## Fast Workflow
-1. Create a branch from `develop`: `feature/<name>` or `fix/<name>`.
-2. Implement minimal change.
-3. Run validation:
+1. Implement minimal change.
+2. Run validation:
    - `go test ./...`
-4. Update docs when behavior changes.
-5. Open PR to `develop` with clear scope and risks.
+3. Update docs when behavior changes.
 
 ## Output Quality Bar
 - No silent behavior changes.
