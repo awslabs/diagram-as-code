@@ -27,7 +27,7 @@ var template = TemplateStruct{
 		DefinitionFiles: []DefinitionFile{
 			{
 				Type: "URL",
-				Url:  "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml",
+				Url:  "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml",
 			},
 		},
 		Resources: map[string]Resource{

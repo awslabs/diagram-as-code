@@ -21,7 +21,7 @@ const YamlEditor = dynamic(() => import('@/components/YamlEditor'), {
 
 // ── Example templates ────────────────────────────────────────────────────────
 
-const DEF_URL = 'https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml'
+const DEF_URL = 'https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml'
 
 const EXAMPLES: Record<string, string> = {
   'BFF Architecture': `Diagram:
@@ -1751,7 +1751,7 @@ const EXAMPLES: Record<string, string> = {
   'ALB + EC2': `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1834,7 +1834,7 @@ const EXAMPLES: Record<string, string> = {
   'VPC + NAT Gateway': `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1901,7 +1901,7 @@ const EXAMPLES: Record<string, string> = {
   'ALB + Auto Scaling': `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1985,7 +1985,7 @@ const EXAMPLES: Record<string, string> = {
   'Multi-Region': `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas

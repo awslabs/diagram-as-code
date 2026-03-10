@@ -162,7 +162,7 @@ const en: DocsCopy = {
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -325,7 +325,7 @@ const en: DocsCopy = {
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
 
   Resources:
     Canvas:
@@ -511,7 +511,7 @@ Content-Type: application/json
           lang: 'bash',
           code: `curl -X POST https://dac.moretes.com/api/generate \\
   -H "Content-Type: application/json" \\
-  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"pdf"}' \\
+  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"pdf"}' \\
   --output diagram.pdf`,
         },
         {
@@ -521,7 +521,7 @@ Content-Type: application/json
           code: `const yaml = \`Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -775,7 +775,7 @@ vercel dev`,
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -809,7 +809,7 @@ vercel dev`,
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1048,7 +1048,7 @@ const pt: DocsCopy = {
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1211,7 +1211,7 @@ const pt: DocsCopy = {
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
 
   Resources:
     Canvas:
@@ -1397,7 +1397,7 @@ Content-Type: application/json
           lang: 'bash',
           code: `curl -X POST https://dac.moretes.com/api/generate \\
   -H "Content-Type: application/json" \\
-  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"pdf"}' \\
+  -d '{"yaml":"Diagram:\\n  DefinitionFiles:\\n    - Type: URL\\n      Url: \\"https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml\\"\\n  Resources:\\n    Canvas:\\n      Type: AWS::Diagram::Canvas\\n      Children:\\n        - Bucket\\n    Bucket:\\n      Type: AWS::S3::Bucket","format":"pdf"}' \\
   --output diagram.pdf`,
         },
         {
@@ -1407,7 +1407,7 @@ Content-Type: application/json
           code: `const yaml = \`Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1661,7 +1661,7 @@ vercel dev`,
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1695,7 +1695,7 @@ vercel dev`,
           code: `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas

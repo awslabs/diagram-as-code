@@ -113,7 +113,7 @@ To use the pre-defined resource definitions from the awsdac GitHub repository, s
 ```yaml
     DefinitionFiles:
       - Type: URL
-        Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+        Url: https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
 ```
 
 If you want to customize the resource definitions locally, you can specify a local file path instead:

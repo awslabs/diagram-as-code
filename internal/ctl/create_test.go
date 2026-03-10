@@ -290,6 +290,11 @@ func TestIsAllowedDefinitionURL(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "fork raw.githubusercontent.com URL",
+			url:     "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml",
+			wantErr: false,
+		},
+		{
 			name:    "official github.com URL",
 			url:     "https://github.com/awslabs/diagram-as-code/releases/download/v1.0.0/definitions.yaml",
 			wantErr: false,

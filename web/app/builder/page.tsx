@@ -344,7 +344,7 @@ function newLink(): LinkEntry {
   }
 }
 
-const DEFAULT_URL = 'https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml'
+const DEFAULT_URL = 'https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml'
 
 // ── Example YAML templates for builder import ─────────────────────────────────
 

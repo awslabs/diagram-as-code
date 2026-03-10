@@ -25,7 +25,7 @@ func TestHandleGenerateDiagram(t *testing.T) {
 Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -147,7 +147,7 @@ func TestHandleGenerateDiagram_TempFileContent(t *testing.T) {
 	yamlContent := `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -663,7 +663,7 @@ func TestHandleGenerateDiagram_OutputFileContent(t *testing.T) {
 	yamlContent := `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+      Url: "https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -728,7 +728,7 @@ func TestHandleGenerateDiagramToFile(t *testing.T) {
 Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+      Url: https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -879,7 +879,7 @@ func TestHandleGenerateDiagramToFile_DirectoryCreation(t *testing.T) {
 Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+      Url: https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -931,7 +931,7 @@ func TestHandleGenerateDiagramToFile_FileVerification(t *testing.T) {
 Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+      Url: https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas
@@ -1037,7 +1037,7 @@ func TestHandleGenerateDiagramToFile_TempFileContent(t *testing.T) {
 	yamlContent := `Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+      Url: https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas

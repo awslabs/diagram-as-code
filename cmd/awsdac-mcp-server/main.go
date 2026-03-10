@@ -172,7 +172,7 @@ REQUIRED STRUCTURE:
 Diagram:
   DefinitionFiles:
     - Type: URL
-      Url: https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
+      Url: https://raw.githubusercontent.com/fernandofatech/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml
   Resources:
     Canvas:
       Type: AWS::Diagram::Canvas

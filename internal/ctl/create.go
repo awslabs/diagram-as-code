@@ -287,10 +287,12 @@ func resizeImage(src *image.RGBA, width, height int) *image.RGBA {
 }
 
 func isAllowedDefinitionURL(url string) error {
-	// Allow only official repository
+	// Allow the upstream project and this maintained fork.
 	allowedPrefixes := []string{
 		"https://raw.githubusercontent.com/awslabs/diagram-as-code/",
 		"https://github.com/awslabs/diagram-as-code/",
+		"https://raw.githubusercontent.com/fernandofatech/diagram-as-code/",
+		"https://github.com/fernandofatech/diagram-as-code/",
 	}
 
 	for _, prefix := range allowedPrefixes {
@@ -299,7 +301,7 @@ func isAllowedDefinitionURL(url string) error {
 		}
 	}
 
-	return fmt.Errorf("definition file URL must be from official repository (https://github.com/awslabs/diagram-as-code/), got: %s. Use --allow-untrusted-definitions to allow untrusted URLs", url)
+	return fmt.Errorf("definition file URL must be from a trusted diagram-as-code repository (https://github.com/awslabs/diagram-as-code/ or https://github.com/fernandofatech/diagram-as-code/), got: %s. Use --allow-untrusted-definitions to allow untrusted URLs", url)
 }
 
 func loadDefinitionFiles(template *TemplateStruct, ds *definition.DefinitionStructure, allowUntrusted bool) error {
