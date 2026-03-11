@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Github, Zap, Terminal, Globe, Wrench, ArrowRight, Code2, Layers, BookOpen, Menu, X } from 'lucide-react'
+import { Github, Linkedin, Zap, Terminal, Globe, Wrench, ArrowRight, Code2, Layers, BookOpen, Menu, X } from 'lucide-react'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useLanguage } from '@/lib/i18n'
@@ -60,7 +60,7 @@ const CONTENT = {
       sub: 'No sign-up. No install. Just open the editor and start writing.',
       btn: 'Open Editor →',
     },
-    footer: 'Made with ❤️ by Fernando Azevedo · Open Source',
+    footer: 'Made with ❤️ by',
   },
   pt: {
     nav: { editor: 'Editor', builder: 'Builder', docs: 'Docs' },
@@ -96,7 +96,7 @@ const CONTENT = {
       sub: 'Sem cadastro. Sem instalação. Só abrir o editor e começar a escrever.',
       btn: 'Abrir Editor →',
     },
-    footer: 'Feito com ❤️ por Fernando Azevedo · Open Source',
+    footer: 'Feito com ❤️ por',
   },
 }
 
@@ -304,9 +304,29 @@ export default function LandingPage() {
               <rect x="9" y="9" width="6" height="6" rx="1" />
             </svg>
           </div>
-          <span className="text-xs text-[var(--text-6)]">{c.footer}</span>
+          <span className="text-xs text-[var(--text-6)]">
+            {c.footer}{' '}
+            <a
+              href="https://fernando.moretes.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[var(--text-3)] transition-colors underline underline-offset-2"
+            >
+              Fernando Azevedo
+            </a>
+            {' '}· Open Source
+          </span>
         </div>
         <div className="flex items-center gap-4 flex-wrap justify-center">
+          <a
+            href="https://www.linkedin.com/in/fernando-francisco-azevedo/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors"
+            aria-label="LinkedIn"
+          >
+            <Linkedin size={13} />
+          </a>
           <Link href="/editor" className="text-xs text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors flex items-center gap-1">
             <Zap size={11} /> Editor
           </Link>

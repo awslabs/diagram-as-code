@@ -13,6 +13,7 @@ import {
   Github,
   Globe,
   Layers,
+  Linkedin,
   Menu,
   Server,
   ShieldCheck,
@@ -173,6 +174,26 @@ export default function DocsShell({ copy, sections, activeId, children }: DocsSh
               </div>
             ))}
           </nav>
+
+          <div className="mt-6 px-4 pt-4 border-t border-[var(--border)] flex items-center gap-3">
+            <a
+              href="https://fernando.moretes.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors"
+            >
+              fernando.moretes.com
+            </a>
+            <a
+              href="https://www.linkedin.com/in/fernando-francisco-azevedo/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors"
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={12} />
+            </a>
+          </div>
         </aside>
 
         <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 sm:py-8">
