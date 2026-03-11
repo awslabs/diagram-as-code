@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -12,6 +13,7 @@ import {
   Github,
   Globe,
   Layers,
+  Menu,
   Server,
   ShieldCheck,
   Sparkles,
@@ -20,6 +22,7 @@ import {
   User,
   Workflow,
   Wrench,
+  X,
 } from 'lucide-react'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
@@ -50,6 +53,7 @@ interface DocsShellProps {
 }
 
 export default function DocsShell({ copy, sections, activeId, children }: DocsShellProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const byCategory = copy.categories.map((category) => ({
     category,
     sections: sections.filter((section) => section.category === category),
@@ -80,14 +84,14 @@ export default function DocsShell({ copy, sections, activeId, children }: DocsSh
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeSwitcher />
           <a
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors"
+            className="hidden sm:flex items-center gap-1.5 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors"
           >
             <Github size={14} />
             {copy.ui.github}
@@ -96,22 +100,45 @@ export default function DocsShell({ copy, sections, activeId, children }: DocsSh
             href="https://dac.moretes.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-[#FF9900] hover:text-[#ffb340] transition-colors"
+            className="hidden sm:flex items-center gap-1.5 text-xs text-[#FF9900] hover:text-[#ffb340] transition-colors"
           >
             <ExternalLink size={12} />
             {copy.ui.site}
           </a>
+          {/* Mobile sidebar toggle */}
+          <button
+            onClick={() => setSidebarOpen(o => !o)}
+            className="lg:hidden p-1.5 rounded hover:bg-[var(--surface)] text-[var(--text-3)] transition-colors"
+            aria-label="Toggle navigation"
+          >
+            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-72 flex-shrink-0 border-r border-[var(--border)] overflow-y-auto py-4">
+        {/* Mobile overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        <aside className={`
+          fixed lg:relative inset-y-0 left-0 z-40
+          w-72 flex-shrink-0 border-r border-[var(--border)] overflow-y-auto py-4
+          bg-[var(--bg)] lg:bg-transparent
+          transition-transform duration-200
+          top-12 lg:top-auto h-[calc(100vh-3rem)] lg:h-auto
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
           <p className="px-4 text-[10px] text-[var(--text-6)] uppercase tracking-widest font-medium mb-2">
             {copy.ui.contents}
           </p>
           <nav className="space-y-4 px-2">
             <Link
               href="/docs"
+              onClick={() => setSidebarOpen(false)}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs text-left transition-colors ${
                 !activeId ? 'bg-[#FF9900]/10 text-[#FF9900]' : 'text-[var(--text-4)] hover:text-[var(--text-2)] hover:bg-[var(--surface)]'
               }`}
@@ -130,6 +157,7 @@ export default function DocsShell({ copy, sections, activeId, children }: DocsSh
                     <Link
                       key={section.id}
                       href={`/docs/${section.id}`}
+                      onClick={() => setSidebarOpen(false)}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs text-left transition-colors ${
                         activeId === section.id
                           ? 'bg-[#FF9900]/10 text-[#FF9900]'
@@ -147,7 +175,7 @@ export default function DocsShell({ copy, sections, activeId, children }: DocsSh
           </nav>
         </aside>
 
-        <main className="flex-1 overflow-y-auto px-8 py-8">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-5xl">{children}</div>
         </main>
       </div>

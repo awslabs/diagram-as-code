@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
-import { Github, Zap, Terminal, Globe, Wrench, ArrowRight, Code2, Layers, BookOpen } from 'lucide-react'
+import { Github, Zap, Terminal, Globe, Wrench, ArrowRight, Code2, Layers, BookOpen, Menu, X } from 'lucide-react'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useLanguage } from '@/lib/i18n'
@@ -102,6 +103,7 @@ const CONTENT = {
 export default function LandingPage() {
   const { lang } = useLanguage()
   const c = CONTENT[lang] ?? CONTENT.en
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-[var(--bg-elevated)] text-[var(--text)] flex flex-col">
@@ -120,7 +122,8 @@ export default function LandingPage() {
           <span className="font-semibold text-sm tracking-tight text-[var(--text)]">diagram-as-code</span>
         </div>
 
-        <nav className="flex items-center gap-1">
+        {/* Desktop nav */}
+        <nav className="hidden sm:flex items-center gap-1">
           <Link href="/editor" className="text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-3 py-1.5 rounded hover:bg-[var(--surface)]">{c.nav.editor}</Link>
           <Link href="/builder" className="text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-3 py-1.5 rounded hover:bg-[var(--surface)]">{c.nav.builder}</Link>
           <Link href="/docs" className="text-xs text-[var(--text-3)] hover:text-[var(--text)] transition-colors px-3 py-1.5 rounded hover:bg-[var(--surface)]">{c.nav.docs}</Link>
@@ -137,7 +140,33 @@ export default function LandingPage() {
             <Github size={16} />
           </a>
         </nav>
+
+        {/* Mobile controls */}
+        <div className="flex sm:hidden items-center gap-1">
+          <LanguageSwitcher />
+          <ThemeSwitcher />
+          <button
+            onClick={() => setMobileMenuOpen(o => !o)}
+            className="p-1.5 rounded hover:bg-[var(--surface)] text-[var(--text-3)] transition-colors"
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </header>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <>
+          <div className="fixed inset-0 z-40 sm:hidden" onClick={() => setMobileMenuOpen(false)} />
+          <div className="fixed top-14 left-0 right-0 z-50 sm:hidden bg-[var(--bg-elevated)] border-b border-[var(--border)] py-2 px-4 flex flex-col gap-0.5 shadow-lg">
+            <Link href="/editor" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--surface)] text-sm text-[var(--text-2)] transition-colors"><Zap size={15} className="text-[#FF9900]" />{c.nav.editor}</Link>
+            <Link href="/builder" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--surface)] text-sm text-[var(--text-2)] transition-colors"><Wrench size={15} className="text-[#FF9900]" />{c.nav.builder}</Link>
+            <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--surface)] text-sm text-[var(--text-2)] transition-colors"><BookOpen size={15} className="text-[#FF9900]" />{c.nav.docs}</Link>
+            <a href="https://github.com/fernandofatech/diagram-as-code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[var(--surface)] text-sm text-[var(--text-2)] transition-colors"><Github size={15} /> GitHub</a>
+          </div>
+        </>
+      )}
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="flex flex-col items-center justify-center text-center px-6 pt-24 pb-20 gap-6">
@@ -265,7 +294,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[var(--border)] px-6 py-6 flex items-center justify-between flex-wrap gap-3">
+      <footer className="border-t border-[var(--border)] px-6 py-6 flex flex-col sm:flex-row items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 bg-[#FF9900] rounded flex items-center justify-center">
             <svg viewBox="0 0 16 16" fill="white" className="w-3 h-3">
@@ -277,7 +306,7 @@ export default function LandingPage() {
           </div>
           <span className="text-xs text-[var(--text-6)]">{c.footer}</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap justify-center">
           <Link href="/editor" className="text-xs text-[var(--text-6)] hover:text-[var(--text-3)] transition-colors flex items-center gap-1">
             <Zap size={11} /> Editor
           </Link>

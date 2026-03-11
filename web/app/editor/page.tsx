@@ -2151,6 +2151,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [examplesOpen, setExamplesOpen] = useState(false)
   const [editorWidth, setEditorWidth] = useState(50)
+  const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor')
+  const [isMobile, setIsMobile] = useState(false)
   const prevImageUrl = useRef<string | null>(null)
   const prevPdfUrl = useRef<string | null>(null)
   const layoutRef = useRef<HTMLDivElement | null>(null)
@@ -2208,6 +2210,13 @@ export default function Home() {
       setEditorWidth(38)
     }
   }, [format, editorWidth])
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   // Ctrl+Enter shortcut
   useEffect(() => {
@@ -2400,14 +2409,14 @@ export default function Home() {
             ) : (
               <Zap size={13} />
             )}
-            {t.generate}
+            <span className="hidden sm:inline">{t.generate}</span>
           </button>
 
           {/* Builder link */}
           <Link
             data-tour="editor-builder"
             href="/builder"
-            className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
+            className="hidden sm:flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
           >
             <Wrench size={13} />
             {t.builderLink}
@@ -2416,7 +2425,7 @@ export default function Home() {
           {/* Docs link */}
           <Link
             href="/docs"
-            className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
+            className="hidden sm:flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]"
           >
             <BookOpen size={13} />
             {t.docs}
@@ -2427,7 +2436,7 @@ export default function Home() {
             href="https://github.com/fernandofatech/diagram-as-code"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors p-1"
+            className="hidden sm:block text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors p-1"
             aria-label="GitHub"
           >
             <Github size={16} />
@@ -2435,13 +2444,39 @@ export default function Home() {
         </div>
       </header>
 
+      {/* ── Mobile tab bar ─────────────────────────────────────────────────── */}
+      <div className="flex md:hidden border-b border-[var(--border)] flex-shrink-0 bg-[var(--bg)]">
+        <button
+          onClick={() => setMobileTab('editor')}
+          className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
+            mobileTab === 'editor'
+              ? 'text-[#FF9900] border-b-2 border-[#FF9900]'
+              : 'text-[var(--text-4)] hover:text-[var(--text-2)]'
+          }`}
+        >
+          {t.yamlEditor}
+        </button>
+        <button
+          onClick={() => setMobileTab('preview')}
+          className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
+            mobileTab === 'preview'
+              ? 'text-[#FF9900] border-b-2 border-[#FF9900]'
+              : 'text-[var(--text-4)] hover:text-[var(--text-2)]'
+          }`}
+        >
+          {t.preview}
+        </button>
+      </div>
+
       {/* ── Main content ────────────────────────────────────────────────────── */}
       <main ref={layoutRef} className="flex flex-1 overflow-hidden">
         {/* Editor panel */}
         <div
           data-tour="editor-panel"
-          className="flex flex-col overflow-hidden border-r border-[var(--border)] min-w-0"
-          style={{ width: `${editorWidth}%` }}
+          className={`flex-col overflow-hidden border-r border-[var(--border)] min-w-0 ${
+            mobileTab === 'preview' ? 'hidden md:flex' : 'flex'
+          }`}
+          style={isMobile ? { width: '100%' } : { width: `${editorWidth}%` }}
         >
           <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
             <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">
@@ -2456,7 +2491,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="group relative flex w-3 shrink-0 items-stretch justify-center bg-[var(--bg)]">
+        <div className="group relative hidden md:flex w-3 shrink-0 items-stretch justify-center bg-[var(--bg)]">
           <button
             type="button"
             onPointerDown={startResizing}
@@ -2472,8 +2507,10 @@ export default function Home() {
         {/* Preview panel */}
         <div
           data-tour="editor-preview"
-          className="flex flex-col overflow-hidden min-w-0"
-          style={{ width: `${100 - editorWidth}%` }}
+          className={`flex-col overflow-hidden min-w-0 ${
+            mobileTab === 'editor' ? 'hidden md:flex' : 'flex'
+          }`}
+          style={isMobile ? { width: '100%' } : { width: `${100 - editorWidth}%` }}
         >
           <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0 gap-3">
             <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">
@@ -2526,7 +2563,7 @@ export default function Home() {
 
       {/* ── Status bar ─────────────────────────────────────────────────────── */}
       <footer className="flex items-center justify-between px-4 h-6 border-t border-[var(--border)] flex-shrink-0">
-        <span className="text-[10px] text-[var(--text-6)]">
+        <span className="hidden sm:inline text-[10px] text-[var(--text-6)]">
           diagram-as-code · AWS Architecture Diagrams from YAML ·{' '}
           <a
             href="https://fernando.moretes.com"
@@ -2538,7 +2575,7 @@ export default function Home() {
           </a>
         </span>
         <span className="text-[10px] text-[var(--text-6)]">
-          {t.mode(format)} · <kbd className="font-mono">Ctrl+Enter</kbd>
+          {t.mode(format)} · <kbd className="hidden sm:inline font-mono">Ctrl+Enter</kbd>
         </span>
       </footer>
     </div>

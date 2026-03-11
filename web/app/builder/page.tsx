@@ -752,7 +752,7 @@ function ResourceCard({ res, index, resources, onChange, onRemove, t }: {
       {open && (
         <div className="p-3 space-y-3 bg-[var(--bg)]">
           {/* Name + Type */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="space-y-1">
               <Label>{t.resourceName}</Label>
               <Input
@@ -772,7 +772,7 @@ function ResourceCard({ res, index, resources, onChange, onRemove, t }: {
           </div>
 
           {/* Title + Preset */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="space-y-1">
               <Label>{t.resourceTitle}</Label>
               <Input value={res.title} onChange={v => update({ title: v })} placeholder="—" />
@@ -793,7 +793,7 @@ function ResourceCard({ res, index, resources, onChange, onRemove, t }: {
           </div>
 
           {/* Direction + Align + IconFill */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div className="space-y-1">
               <Label>{t.resourceDirection}</Label>
               <Select
@@ -917,7 +917,7 @@ function LinkCard({ link, resources, onChange, onRemove, t }: {
       {open && (
         <div className="p-3 space-y-3 bg-[var(--bg)]">
           {/* Source + Target */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="space-y-1">
               <Label>{t.linkSource}</Label>
               <Select
@@ -939,7 +939,7 @@ function LinkCard({ link, resources, onChange, onRemove, t }: {
           </div>
 
           {/* Positions + ArrowHead */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div className="space-y-1">
               <Label>{t.sourcePosLabel}</Label>
               <Select
@@ -979,7 +979,7 @@ function LinkCard({ link, resources, onChange, onRemove, t }: {
               {t.edgeLabels}
             </button>
             {labelsOpen && (
-              <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                 {labelKeys.map(k => (
                   <div key={k} className="space-y-0.5">
                     <Label>{k}</Label>
@@ -1022,6 +1022,7 @@ export default function BuilderPage() {
   })
 
   const [copied, setCopied] = useState(false)
+  const [mobileTab, setMobileTab] = useState<'form' | 'yaml'>('form')
 
   const yaml = generateYaml(form)
 
@@ -1175,18 +1176,18 @@ export default function BuilderPage() {
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center gap-1 text-xs text-[var(--text-4)] hover:text-[var(--text-2)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)] border border-[var(--border)]"
           >
-            <Upload size={12} /> Upload YAML
+            <Upload size={12} /> <span className="hidden sm:inline">Upload YAML</span>
           </button>
           <input ref={fileInputRef} type="file" accept=".yaml,.yml" className="hidden" onChange={handleUpload} />
 
           <LanguageSwitcher />
           <ThemeSwitcher />
-          <Link href="/docs" className="flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]">
+          <Link href="/docs" className="hidden sm:flex items-center gap-1.5 text-xs text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors px-2 py-1 rounded hover:bg-[var(--surface)]">
             <BookOpen size={13} />
             {t.docs}
           </Link>
           <a href="https://github.com/fernandofatech/diagram-as-code" target="_blank" rel="noopener noreferrer"
-            className="text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors p-1" aria-label="GitHub">
+            className="hidden sm:block text-[var(--text-5)] hover:text-[var(--text-3)] transition-colors p-1" aria-label="GitHub">
             <Github size={16} />
           </a>
         </div>
@@ -1198,11 +1199,37 @@ export default function BuilderPage() {
         </div>
       )}
 
+      {/* ── Mobile tab bar ── */}
+      <div className="flex md:hidden border-b border-[var(--border)] flex-shrink-0 bg-[var(--bg)]">
+        <button
+          onClick={() => setMobileTab('form')}
+          className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
+            mobileTab === 'form'
+              ? 'text-[#FF9900] border-b-2 border-[#FF9900]'
+              : 'text-[var(--text-4)] hover:text-[var(--text-2)]'
+          }`}
+        >
+          {t.builderTitle}
+        </button>
+        <button
+          onClick={() => setMobileTab('yaml')}
+          className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
+            mobileTab === 'yaml'
+              ? 'text-[#FF9900] border-b-2 border-[#FF9900]'
+              : 'text-[var(--text-4)] hover:text-[var(--text-2)]'
+          }`}
+        >
+          {t.yamlPreview}
+        </button>
+      </div>
+
       {/* ── Body ── */}
       <div className="flex flex-1 overflow-hidden">
 
         {/* Left: Form */}
-        <div className="w-[55%] flex flex-col overflow-hidden border-r border-[var(--border)]">
+        <div className={`md:w-[55%] flex-col overflow-hidden border-r border-[var(--border)] ${
+          mobileTab === 'yaml' ? 'hidden md:flex' : 'flex w-full'
+        }`}>
           <div className="flex-1 overflow-y-auto">
 
             {/* Definition File */}
@@ -1364,7 +1391,9 @@ export default function BuilderPage() {
         </div>
 
         {/* Right: YAML Preview */}
-        <div className="w-[45%] flex flex-col overflow-hidden">
+        <div className={`md:w-[45%] flex-col overflow-hidden ${
+          mobileTab === 'form' ? 'hidden md:flex' : 'flex w-full'
+        }`}>
           <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] flex-shrink-0">
             <div className="flex items-center gap-3">
               <span className="text-xs text-[var(--text-5)] font-medium uppercase tracking-wider">{t.yamlPreview}</span>
