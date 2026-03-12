@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -235,7 +236,15 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 }
 
 func ensureSingleParent(template *TemplateStruct) {
-	for logicalId, resource := range template.Resources {
+	// Sort resource keys for deterministic processing order
+	keys := make([]string, 0, len(template.Resources))
+	for k := range template.Resources {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, logicalId := range keys {
+		resource := template.Resources[logicalId]
 
 		if logicalId == "Canvas" || logicalId == "AWSCloud" {
 			continue
@@ -281,8 +290,15 @@ func ensureSingleParent(template *TemplateStruct) {
 }
 
 func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) {
+	// Sort resource keys for deterministic child association order
+	keys := make([]string, 0, len(template.Resources))
+	for k := range template.Resources {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 
-	for logicalId, resource := range template.Resources {
+	for _, logicalId := range keys {
+		resource := template.Resources[logicalId]
 
 		def, ok := ds.Definitions[resource.Type]
 

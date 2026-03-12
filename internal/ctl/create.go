@@ -11,6 +11,7 @@ import (
 	"image/png"
 	"math"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/awslabs/diagram-as-code/internal/cache"
@@ -343,7 +344,15 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 
 	resources["Canvas"] = new(types.Resource).Init()
 
-	for k, v := range template.Resources {
+	// Sort resource keys for deterministic processing order
+	resourceKeys := make([]string, 0, len(template.Resources))
+	for k := range template.Resources {
+		resourceKeys = append(resourceKeys, k)
+	}
+	sort.Strings(resourceKeys)
+
+	for _, k := range resourceKeys {
+		v := template.Resources[k]
 		// Override order: Definition{Resource Type -> Preset} -> Template
 		log.Infof("Load Resource: %s (%s)\n", k, v.Type)
 		switch v.Type {
@@ -664,7 +673,15 @@ func fallbackToServiceIcon(inputType string) string {
 
 func associateChildren(template *TemplateStruct, resources map[string]*types.Resource) error {
 
-	for logicalId, v := range template.Resources {
+	// Sort resource keys for deterministic child association order
+	childKeys := make([]string, 0, len(template.Resources))
+	for k := range template.Resources {
+		childKeys = append(childKeys, k)
+	}
+	sort.Strings(childKeys)
+
+	for _, logicalId := range childKeys {
+		v := template.Resources[logicalId]
 		resource, ok := resources[logicalId]
 		if !ok {
 			return fmt.Errorf("unknown resource %s", logicalId)
