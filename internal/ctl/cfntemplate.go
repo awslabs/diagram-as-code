@@ -153,8 +153,16 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 	if resourcesMap, ok := resources_cfn_template.(map[string]interface{}); ok {
 
+		// Sort logical IDs for deterministic processing order
+		logicalIds := make([]string, 0, len(resourcesMap))
+		for id := range resourcesMap {
+			logicalIds = append(logicalIds, id)
+		}
+		sort.Strings(logicalIds)
+
 		//Initialized with all logical IDs written in the template
-		for logicalId, res := range resourcesMap {
+		for _, logicalId := range logicalIds {
+			res := resourcesMap[logicalId]
 			resource := res.(map[string]interface{})
 			typeValue, exists := resource["Type"]
 			if !exists {
@@ -173,8 +181,8 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 		}
 
 		//Check dependencies between resources
-		for logicalId, res := range resourcesMap {
-			resource := res.(map[string]interface{})
+		for _, logicalId := range logicalIds {
+			resource := resourcesMap[logicalId].(map[string]interface{})
 
 			var findParent bool
 
