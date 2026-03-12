@@ -65,6 +65,7 @@ type Resource struct {
 	groupingOffset          bool // Flag: if true, enable grouping offset for links
 	groupingOffsetDirection bool // Flag: if true, enable directional grouping offset for links
 	unorderedChildren       bool // Flag: if true, children order can be rearranged based on links
+	spanTargets             []*Resource // Resources this overlay spans across
 }
 
 type ResourceIconFill struct {
@@ -246,6 +247,14 @@ func (r *Resource) SetUnorderedChildren(enable bool) {
 
 func (r *Resource) GetUnorderedChildren() bool {
 	return r.unorderedChildren
+}
+
+func (r *Resource) AddSpanTarget(target *Resource) {
+	r.spanTargets = append(r.spanTargets, target)
+}
+
+func (r *Resource) GetSpanTargets() []*Resource {
+	return r.spanTargets
 }
 
 func (r *Resource) AddLink(link *Link) {
@@ -703,6 +712,112 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 		}
 	}
 	return img, nil
+}
+
+// DrawOverlay draws this resource as a visual overlay spanning across
+// multiple referenced resources. It calculates the union bounding box
+// of all span targets and draws a border + label without affecting layout.
+func (r *Resource) DrawOverlay(img *image.RGBA, padding int) error {
+	if len(r.spanTargets) == 0 {
+		return nil
+	}
+
+	// Calculate union bounding box of all span targets
+	first := r.spanTargets[0]
+	if first.bindings == nil {
+		return nil
+	}
+	union := *first.bindings
+	for _, target := range r.spanTargets[1:] {
+		if target.bindings == nil {
+			continue
+		}
+		b := *target.bindings
+		if b.Min.X < union.Min.X {
+			union.Min.X = b.Min.X
+		}
+		if b.Min.Y < union.Min.Y {
+			union.Min.Y = b.Min.Y
+		}
+		if b.Max.X > union.Max.X {
+			union.Max.X = b.Max.X
+		}
+		if b.Max.Y > union.Max.Y {
+			union.Max.Y = b.Max.Y
+		}
+	}
+
+	// Expand by padding
+	union.Min.X -= padding
+	union.Min.Y -= padding
+	union.Max.X += padding
+	union.Max.Y += padding
+
+	// Prepare label dimensions for header area
+	var fontFace font.Face
+	var textHeight int
+	if r.label != "" {
+		var err error
+		fontFace, err = r.prepareFontFace(false, nil)
+		if err != nil {
+			return fmt.Errorf("failed to prepare font face for overlay: %w", err)
+		}
+		textHeight = fontFace.Metrics().Ascent.Round() + fontFace.Metrics().Descent.Round() + 10
+		// Expand top to accommodate label above the spanned area
+		union.Min.Y -= textHeight
+	}
+
+	// Store computed bindings for potential link drawing
+	r.bindings = &union
+
+	// Draw border (outline only, no fill)
+	borderColor := r.borderColor
+	if borderColor == nil {
+		defaultColor := color.RGBA{0, 0, 0, 255}
+		borderColor = &defaultColor
+	}
+	x1 := union.Min.X
+	x2 := union.Max.X
+	y1 := union.Min.Y
+	y2 := union.Max.Y
+	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
+		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
+			if x <= x1 || x >= x2-1 || y <= y1 || y >= y2-1 {
+				c := img.At(x, y)
+				switch r.borderType {
+				case BORDER_TYPE_STRAIGHT:
+					img.Set(x, y, _blend_color(c, borderColor))
+				case BORDER_TYPE_DASHED:
+					if (x+y)%9 <= 5 {
+						img.Set(x, y, _blend_color(c, borderColor))
+					}
+				}
+			}
+		}
+	}
+
+	// Draw label in the header area (above the spanned content)
+	if r.label != "" && fontFace != nil {
+		labelColor := r.labelColor
+		if labelColor == nil {
+			defaultLabelColor := color.RGBA{0, 0, 0, 255}
+			labelColor = &defaultLabelColor
+		}
+
+		labelX := union.Min.X + 10
+		labelY := union.Min.Y + fontFace.Metrics().Ascent.Round() + 5
+
+		d := &font.Drawer{
+			Dst:  img,
+			Src:  image.NewUniform(*labelColor),
+			Face: fontFace,
+			Dot:  fixed.Point26_6{X: fixed.I(labelX), Y: fixed.I(labelY)},
+		}
+		d.DrawString(r.label)
+	}
+
+	r.drawn = true
+	return nil
 }
 
 func (r *Resource) sortAllLinks() {
