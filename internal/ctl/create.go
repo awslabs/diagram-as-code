@@ -472,6 +472,16 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 			resource.SetIconBounds(image.Rect(0, 0, 64, 64))
 			resource.SetBorderColor(color.RGBA{0, 0, 0, 0})
+		case "Empty":
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for Empty preset", k)
+			}
+			resource.SetIconBounds(image.Rect(0, 0, 64, 64))
+			resource.SetBindings(image.Rect(0, 0, 64, 64))
+			resource.SetMargin(types.Margin{Top: 30, Right: 100, Bottom: 30, Left: 100})
+			resource.SetBorderColor(color.RGBA{0, 0, 0, 0})
+			resource.SetFillColor(color.RGBA{0, 0, 0, 0})
 		case "":
 		default:
 			def, ok := ds.Definitions[v.Preset]
