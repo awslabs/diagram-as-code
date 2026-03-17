@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -152,8 +153,16 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 	if resourcesMap, ok := resources_cfn_template.(map[string]interface{}); ok {
 
+		// Sort logical IDs for deterministic processing order
+		logicalIds := make([]string, 0, len(resourcesMap))
+		for id := range resourcesMap {
+			logicalIds = append(logicalIds, id)
+		}
+		sort.Strings(logicalIds)
+
 		//Initialized with all logical IDs written in the template
-		for logicalId, res := range resourcesMap {
+		for _, logicalId := range logicalIds {
+			res, _ := resourcesMap[logicalId]
 			resource := res.(map[string]interface{})
 			typeValue, exists := resource["Type"]
 			if !exists {
@@ -172,7 +181,8 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 		}
 
 		//Check dependencies between resources
-		for logicalId, res := range resourcesMap {
+		for _, logicalId := range logicalIds {
+			res, _ := resourcesMap[logicalId]
 			resource := res.(map[string]interface{})
 
 			var findParent bool
@@ -235,7 +245,15 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 }
 
 func ensureSingleParent(template *TemplateStruct) {
-	for logicalId, resource := range template.Resources {
+	// Sort resource keys for deterministic processing order
+	keys := make([]string, 0, len(template.Resources))
+	for k := range template.Resources {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, logicalId := range keys {
+		resource, _ := template.Resources[logicalId]
 
 		if logicalId == "Canvas" || logicalId == "AWSCloud" {
 			continue
@@ -281,8 +299,15 @@ func ensureSingleParent(template *TemplateStruct) {
 }
 
 func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStructure, resources map[string]*types.Resource) {
+	// Sort resource keys for deterministic child association order
+	keys := make([]string, 0, len(template.Resources))
+	for k := range template.Resources {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 
-	for logicalId, resource := range template.Resources {
+	for _, logicalId := range keys {
+		resource, _ := template.Resources[logicalId]
 
 		def, ok := ds.Definitions[resource.Type]
 
