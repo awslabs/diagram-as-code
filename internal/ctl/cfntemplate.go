@@ -162,7 +162,7 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 		//Initialized with all logical IDs written in the template
 		for _, logicalId := range logicalIds {
-			res := resourcesMap[logicalId]
+			res, _ := resourcesMap[logicalId]
 			resource := res.(map[string]interface{})
 			typeValue, exists := resource["Type"]
 			if !exists {
@@ -182,7 +182,8 @@ func convertTemplate(cfn_template cft.Template, template *TemplateStruct, ds def
 
 		//Check dependencies between resources
 		for _, logicalId := range logicalIds {
-			resource := resourcesMap[logicalId].(map[string]interface{})
+			res, _ := resourcesMap[logicalId]
+			resource := res.(map[string]interface{})
 
 			var findParent bool
 
@@ -252,7 +253,7 @@ func ensureSingleParent(template *TemplateStruct) {
 	sort.Strings(keys)
 
 	for _, logicalId := range keys {
-		resource := template.Resources[logicalId]
+		resource, _ := template.Resources[logicalId]
 
 		if logicalId == "Canvas" || logicalId == "AWSCloud" {
 			continue
@@ -306,7 +307,7 @@ func associateCFnChildren(template *TemplateStruct, ds definition.DefinitionStru
 	sort.Strings(keys)
 
 	for _, logicalId := range keys {
-		resource := template.Resources[logicalId]
+		resource, _ := template.Resources[logicalId]
 
 		def, ok := ds.Definitions[resource.Type]
 
