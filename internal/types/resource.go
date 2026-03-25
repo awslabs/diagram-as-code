@@ -659,27 +659,7 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 		r.drawPadding(img)
 	}
 
-	rctSrc := r.iconImage.Bounds()
-	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
-	switch r.headerAlign {
-	case "left":
-	case "center":
-		x.Min = x.Min.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
-		x.Max = x.Max.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
-	case "right":
-		x.Min = x.Min.Add(image.Point{r.bindings.Dx() - 64, 0})
-		x.Max = x.Max.Add(image.Point{r.bindings.Dx() - 64, 0})
-	}
-	if r.iconfill.Type == ICON_FILL_TYPE_RECT {
-		for _x := x.Min.X; _x < x.Max.X; _x++ {
-			for _y := x.Min.Y; _y < x.Max.Y; _y++ {
-				c := img.At(_x, _y)
-				img.Set(_x, _y, _blend_color(c, r.iconfill.Color))
-			}
-		}
-	}
-	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
-
+	r.drawIcon(img)
 	hasIcon := r.iconImage.Bounds().Max.X != 0
 	if parent != nil {
 		if err := r.drawLabel(img, parent, len(r.children) > 0, hasIcon); err != nil {
@@ -716,7 +696,9 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 
 // DrawOverlay draws this resource as a visual overlay spanning across
 // multiple referenced resources. It calculates the union bounding box
-// of all span targets and draws a border + label without affecting layout.
+// of all span targets and draws a border, icon, and label without
+// affecting layout. The rendering reuses drawBorder, drawIcon, and
+// drawLabel to maintain visual consistency with regular resources.
 func (r *Resource) DrawOverlay(img *image.RGBA, padding int) error {
 	if len(r.spanTargets) == 0 {
 		return nil
@@ -753,60 +735,59 @@ func (r *Resource) DrawOverlay(img *image.RGBA, padding int) error {
 	union.Max.X += padding
 	union.Max.Y += padding
 
-	// Prepare label dimensions for header area
+	// Reserve header space for compact icon and/or label above the spanned area.
+	// Overlay uses a smaller icon (overlayIconSize) than regular resources (64x64)
+	// to avoid overlapping with the content of parent containers.
+	const overlayIconSize = 28
+	const overlayHeaderPad = 4
+
+	hasIcon := r.iconImage.Bounds().Max.X != 0
+	headerHeight := 0
 	var fontFace font.Face
-	var textHeight int
 	if r.label != "" {
 		var err error
 		fontFace, err = r.prepareFontFace(false, nil)
 		if err != nil {
 			return fmt.Errorf("failed to prepare font face for overlay: %w", err)
 		}
-		textHeight = fontFace.Metrics().Ascent.Round() + fontFace.Metrics().Descent.Round() + 10
-		// Expand top to accommodate label above the spanned area
-		union.Min.Y -= textHeight
+		textHeight := fontFace.Metrics().Ascent.Round() + fontFace.Metrics().Descent.Round()
+		headerHeight = maxInt(overlayIconSize, textHeight) + overlayHeaderPad*2
+	} else if hasIcon {
+		headerHeight = overlayIconSize + overlayHeaderPad*2
 	}
+	union.Min.Y -= headerHeight
 
-	// Store computed bindings for potential link drawing
+	// Store computed bindings and ensure default border color
 	r.bindings = &union
-
-	// Draw border (outline only, no fill)
-	borderColor := r.borderColor
-	if borderColor == nil {
+	if r.borderColor == nil {
 		defaultColor := color.RGBA{0, 0, 0, 255}
-		borderColor = &defaultColor
-	}
-	x1 := union.Min.X
-	x2 := union.Max.X
-	y1 := union.Min.Y
-	y2 := union.Max.Y
-	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
-		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
-			if x <= x1 || x >= x2-1 || y <= y1 || y >= y2-1 {
-				c := img.At(x, y)
-				switch r.borderType {
-				case BORDER_TYPE_STRAIGHT:
-					img.Set(x, y, _blend_color(c, borderColor))
-				case BORDER_TYPE_DASHED:
-					if (x+y)%9 <= 5 {
-						img.Set(x, y, _blend_color(c, borderColor))
-					}
-				}
-			}
-		}
+		r.borderColor = &defaultColor
 	}
 
-	// Draw label in the header area (above the spanned content)
+	// Draw border outline (no background fill for overlay)
+	r.drawBorder(img)
+
+	// Draw compact overlay header: scaled-down icon + label
+	if hasIcon {
+		rctSrc := r.iconImage.Bounds()
+		iconRect := image.Rectangle{
+			r.bindings.Min.Add(image.Point{overlayHeaderPad, overlayHeaderPad}),
+			r.bindings.Min.Add(image.Point{overlayHeaderPad + overlayIconSize, overlayHeaderPad + overlayIconSize}),
+		}
+		draw.CatmullRom.Scale(img, iconRect, r.iconImage, rctSrc, draw.Over, nil)
+	}
+
 	if r.label != "" && fontFace != nil {
 		labelColor := r.labelColor
 		if labelColor == nil {
 			defaultLabelColor := color.RGBA{0, 0, 0, 255}
 			labelColor = &defaultLabelColor
 		}
-
-		labelX := union.Min.X + 10
-		labelY := union.Min.Y + fontFace.Metrics().Ascent.Round() + 5
-
+		labelX := r.bindings.Min.X + overlayHeaderPad
+		if hasIcon {
+			labelX += overlayIconSize + overlayHeaderPad
+		}
+		labelY := r.bindings.Min.Y + fontFace.Metrics().Ascent.Round() + overlayHeaderPad
 		d := &font.Drawer{
 			Dst:  img,
 			Src:  image.NewUniform(*labelColor),
@@ -968,16 +949,38 @@ func getDirectionVectorStatic(position int) vector.Vector {
 	}
 }
 
-func (r *Resource) drawFrame(img *image.RGBA) {
+func (r *Resource) drawIcon(img *image.RGBA) {
+	rctSrc := r.iconImage.Bounds()
+	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
+	switch r.headerAlign {
+	case "left":
+	case "center":
+		x.Min = x.Min.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
+		x.Max = x.Max.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
+	case "right":
+		x.Min = x.Min.Add(image.Point{r.bindings.Dx() - 64, 0})
+		x.Max = x.Max.Add(image.Point{r.bindings.Dx() - 64, 0})
+	}
+	if r.iconfill.Type == ICON_FILL_TYPE_RECT {
+		for _x := x.Min.X; _x < x.Max.X; _x++ {
+			for _y := x.Min.Y; _y < x.Max.Y; _y++ {
+				c := img.At(_x, _y)
+				img.Set(_x, _y, _blend_color(c, r.iconfill.Color))
+			}
+		}
+	}
+	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
+}
+
+func (r *Resource) drawBorder(img *image.RGBA) {
 	x1 := r.bindings.Min.X
 	x2 := r.bindings.Max.X
 	y1 := r.bindings.Min.Y
 	y2 := r.bindings.Max.Y
 	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
 		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
-			c := img.At(x, y)
 			if x <= x1 || x >= x2-1 || y <= y1 || y >= y2-1 {
-				// Set border
+				c := img.At(x, y)
 				switch r.borderType {
 				case BORDER_TYPE_STRAIGHT:
 					img.Set(x, y, _blend_color(c, r.borderColor))
@@ -986,13 +989,23 @@ func (r *Resource) drawFrame(img *image.RGBA) {
 						img.Set(x, y, _blend_color(c, r.borderColor))
 					}
 				}
-			} else {
-				// Set background
-				img.Set(x, y, _blend_color(c, r.fillColor))
-				if DEBUG_LAYOUT {
-					img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
-				}
-				//img.Set(x, y, fill_color)
+			}
+		}
+	}
+}
+
+func (r *Resource) drawFrame(img *image.RGBA) {
+	r.drawBorder(img)
+	x1 := r.bindings.Min.X + 1
+	x2 := r.bindings.Max.X - 1
+	y1 := r.bindings.Min.Y + 1
+	y2 := r.bindings.Max.Y - 1
+	for x := x1; x < x2; x++ {
+		for y := y1; y < y2; y++ {
+			c := img.At(x, y)
+			img.Set(x, y, _blend_color(c, r.fillColor))
+			if DEBUG_LAYOUT {
+				img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
 			}
 		}
 	}

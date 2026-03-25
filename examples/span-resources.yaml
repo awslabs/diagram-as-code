@@ -1,0 +1,126 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+        - User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Direction: vertical
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Children:
+        - AZStack
+      BorderChildren:
+        - Position: S
+          Resource: IGW
+    AZStack:
+      Type: AWS::Diagram::HorizontalStack
+      Children:
+        - AZ1
+        - AZ2
+    AZ1:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: vertical
+      Children:
+        - PrivateSubnet1
+        - PublicSubnet1
+    AZ2:
+      Type: AWS::EC2::AvailabilityZone
+      Direction: vertical
+      Children:
+        - PrivateSubnet2
+        - PublicSubnet2
+    PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Title: Public Subnet
+      Children:
+        - ENI1
+    PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Title: Public Subnet
+      Children:
+        - ENI2
+    ENI1:
+      Type: AWS::EC2::NetworkInterface
+      Title: NLB ENI
+    ENI2:
+      Type: AWS::EC2::NetworkInterface
+      Title: NLB ENI
+    PrivateSubnet1:
+      Type: AWS::EC2::Subnet
+      Title: Private Subnet
+      Children:
+        - EC2Instance1
+    PrivateSubnet2:
+      Type: AWS::EC2::Subnet
+      Title: Private Subnet
+      Children:
+        - EC2Instance2
+    EC2Instance1:
+      Type: AWS::EC2::Instance
+    EC2Instance2:
+      Type: AWS::EC2::Instance
+
+    # Overlay: Auto Scaling Group spanning instances across subnets
+    ASG:
+      Type: AWS::AutoScaling::AutoScalingGroup
+      SpanResources:
+        - EC2Instance1
+        - EC2Instance2
+      BorderType: "dashed"
+
+    # Overlay: NLB spanning ENIs across subnets
+    NLB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Network Load Balancer
+      SpanResources:
+        - ENI1
+        - ENI2
+      BorderType: "dashed"
+
+    IGW:
+      Type: AWS::EC2::InternetGateway
+      IconFill:
+        Type: rect
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+
+  Links:
+    - Source: ENI1
+      Target: EC2Instance1
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: ENI2
+      Target: EC2Instance2
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: IGW
+      Target: ENI1
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: IGW
+      Target: ENI2
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal
+    - Source: User
+      Target: IGW
+      TargetArrowHead:
+        Type: Open
+      Type: orthogonal

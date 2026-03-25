@@ -466,6 +466,172 @@ func TestResolveAutoPositions_NilBindings(t *testing.T) {
 	}
 }
 
+func TestDrawOverlay(t *testing.T) {
+	t.Run("NoSpanTargets", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
+		err := overlay.DrawOverlay(img, 10)
+		if err != nil {
+			t.Errorf("DrawOverlay with no span targets should return nil, got: %v", err)
+		}
+		if overlay.IsDrawn() {
+			t.Error("DrawOverlay should not mark resource as drawn when there are no span targets")
+		}
+	})
+
+	t.Run("NilTargetBindings", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		target := new(Resource).Init()
+		target.bindings = nil
+		overlay.AddSpanTarget(target)
+
+		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
+		err := overlay.DrawOverlay(img, 10)
+		if err != nil {
+			t.Errorf("DrawOverlay with nil target bindings should return nil, got: %v", err)
+		}
+		if overlay.IsDrawn() {
+			t.Error("DrawOverlay should not mark resource as drawn when first target has nil bindings")
+		}
+	})
+
+	t.Run("SingleTarget", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 50, 150, 150)
+		target.bindings = &targetRect
+		overlay.AddSpanTarget(target)
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img, 10)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		if !overlay.IsDrawn() {
+			t.Error("DrawOverlay should mark resource as drawn")
+		}
+		b := overlay.GetBindings()
+		if b.Min.X != 40 || b.Max.X != 160 {
+			t.Errorf("Expected X range [40, 160], got [%d, %d]", b.Min.X, b.Max.X)
+		}
+		if b.Max.Y != 160 {
+			t.Errorf("Expected Max.Y=160, got %d", b.Max.Y)
+		}
+	})
+
+	t.Run("MultipleTargets", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		t1 := new(Resource).Init()
+		t2 := new(Resource).Init()
+		r1 := image.Rect(10, 10, 50, 50)
+		r2 := image.Rect(100, 100, 200, 200)
+		t1.bindings = &r1
+		t2.bindings = &r2
+		overlay.AddSpanTarget(t1)
+		overlay.AddSpanTarget(t2)
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img, 5)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		b := overlay.GetBindings()
+		// Union of (10,10)-(50,50) and (100,100)-(200,200) = (10,10)-(200,200)
+		// With padding 5: (5,Y)-(205,205) where Y accounts for header
+		if b.Min.X != 5 || b.Max.X != 205 {
+			t.Errorf("Expected X range [5, 205], got [%d, %d]", b.Min.X, b.Max.X)
+		}
+		if b.Max.Y != 205 {
+			t.Errorf("Expected Max.Y=205, got %d", b.Max.Y)
+		}
+	})
+
+	t.Run("DefaultBorderColor", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		overlay.borderColor = nil
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 50, 150, 150)
+		target.bindings = &targetRect
+		overlay.AddSpanTarget(target)
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img, 10)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		if overlay.borderColor == nil {
+			t.Error("DrawOverlay should set a default border color when none is provided")
+		}
+		expected := color.RGBA{0, 0, 0, 255}
+		if *overlay.borderColor != expected {
+			t.Errorf("Expected default border color %v, got %v", expected, *overlay.borderColor)
+		}
+	})
+
+	t.Run("SkipsNilBindingsInLaterTargets", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		t1 := new(Resource).Init()
+		t2 := new(Resource).Init()
+		r1 := image.Rect(10, 10, 50, 50)
+		t1.bindings = &r1
+		t2.bindings = nil // nil bindings should be skipped
+		overlay.AddSpanTarget(t1)
+		overlay.AddSpanTarget(t2)
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img, 5)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		b := overlay.GetBindings()
+		// Should only use t1's bounds: (10,10)-(50,50) + padding 5
+		if b.Min.X != 5 || b.Max.X != 55 {
+			t.Errorf("Expected X range [5, 55], got [%d, %d]", b.Min.X, b.Max.X)
+		}
+	})
+
+	t.Run("WithLabel", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		label := "Auto Scaling Group"
+		labelColor := color.RGBA{0, 0, 0, 255}
+		overlay.SetLabel(&label, &labelColor, nil)
+
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 100, 150, 200)
+		target.bindings = &targetRect
+		overlay.AddSpanTarget(target)
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img, 10)
+		if err != nil {
+			t.Fatalf("DrawOverlay with label failed: %v", err)
+		}
+		b := overlay.GetBindings()
+		// The top should be expanded for the header (label text height)
+		if b.Min.Y >= 90 {
+			t.Errorf("Expected Min.Y < 90 (expanded for label header), got %d", b.Min.Y)
+		}
+	})
+
+	t.Run("DashedBorder", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		overlay.borderType = BORDER_TYPE_DASHED
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 50, 100, 100)
+		target.bindings = &targetRect
+		overlay.AddSpanTarget(target)
+
+		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
+		err := overlay.DrawOverlay(img, 5)
+		if err != nil {
+			t.Fatalf("DrawOverlay with dashed border failed: %v", err)
+		}
+		if !overlay.IsDrawn() {
+			t.Error("DrawOverlay should mark resource as drawn")
+		}
+	})
+}
+
 func TestCalculateTitleSize(t *testing.T) {
 	resource := new(Resource).Init()
 
