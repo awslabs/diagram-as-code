@@ -1,8 +1,6 @@
 module github.com/awslabs/diagram-as-code
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.25.0
 
 require (
 	github.com/aws-cloudformation/rain v1.8.6
@@ -12,7 +10,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
-	golang.org/x/image v0.18.0
+	golang.org/x/image v0.38.0
 	golang.org/x/net v0.38.0
 	gopkg.in/yaml.v3 v3.0.1
 )
