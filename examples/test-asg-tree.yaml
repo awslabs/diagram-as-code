@@ -19,6 +19,7 @@ Diagram:
         - ASG
     ASG:
       Type: AWS::AutoScaling::AutoScalingGroup
+      Title: "Auto Scaling Group"
       Children:
         - EC2
     EC2:

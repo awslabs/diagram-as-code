@@ -21,5 +21,6 @@ Diagram:
       Type: AWS::EC2::Instance
     ASG:
       Type: AWS::AutoScaling::AutoScalingGroup
+      Title: "Auto Scaling Group"
       SpanResources:
         - EC2
