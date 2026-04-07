@@ -735,27 +735,8 @@ func (r *Resource) DrawOverlay(img *image.RGBA, padding int) error {
 	union.Max.X += padding
 	union.Max.Y += padding
 
-	// Reserve header space for compact icon and/or label above the spanned area.
-	// Overlay uses a smaller icon (overlayIconSize) than regular resources (64x64)
-	// to avoid overlapping with the content of parent containers.
-	const overlayIconSize = 28
-	const overlayHeaderPad = 4
-
-	hasIcon := r.iconImage.Bounds().Max.X != 0
-	headerHeight := 0
-	var fontFace font.Face
-	if r.label != "" {
-		var err error
-		fontFace, err = r.prepareFontFace(false, nil)
-		if err != nil {
-			return fmt.Errorf("failed to prepare font face for overlay: %w", err)
-		}
-		textHeight := fontFace.Metrics().Ascent.Round() + fontFace.Metrics().Descent.Round()
-		headerHeight = maxInt(overlayIconSize, textHeight) + overlayHeaderPad*2
-	} else if hasIcon {
-		headerHeight = overlayIconSize + overlayHeaderPad*2
-	}
-	union.Min.Y -= headerHeight
+	// Reserve header space for icon (64x64)
+	union.Min.Y -= 64
 
 	// Store computed bindings and ensure default border color
 	r.bindings = &union
@@ -764,37 +745,16 @@ func (r *Resource) DrawOverlay(img *image.RGBA, padding int) error {
 		r.borderColor = &defaultColor
 	}
 
-	// Draw border outline (no background fill for overlay)
-	r.drawBorder(img)
+	// Draw frame (fillColor defaults to transparent, so no background overwrite)
+	r.drawFrame(img)
 
-	// Draw compact overlay header: scaled-down icon + label
-	if hasIcon {
-		rctSrc := r.iconImage.Bounds()
-		iconRect := image.Rectangle{
-			r.bindings.Min.Add(image.Point{overlayHeaderPad, overlayHeaderPad}),
-			r.bindings.Min.Add(image.Point{overlayHeaderPad + overlayIconSize, overlayHeaderPad + overlayIconSize}),
+	// Draw icon and label using shared methods
+	r.drawIcon(img)
+	hasIcon := r.iconImage.Bounds().Max.X != 0
+	if r.label != "" {
+		if err := r.drawLabel(img, nil, true, hasIcon); err != nil {
+			return fmt.Errorf("failed to draw overlay label: %w", err)
 		}
-		draw.CatmullRom.Scale(img, iconRect, r.iconImage, rctSrc, draw.Over, nil)
-	}
-
-	if r.label != "" && fontFace != nil {
-		labelColor := r.labelColor
-		if labelColor == nil {
-			defaultLabelColor := color.RGBA{0, 0, 0, 255}
-			labelColor = &defaultLabelColor
-		}
-		labelX := r.bindings.Min.X + overlayHeaderPad
-		if hasIcon {
-			labelX += overlayIconSize + overlayHeaderPad
-		}
-		labelY := r.bindings.Min.Y + fontFace.Metrics().Ascent.Round() + overlayHeaderPad
-		d := &font.Drawer{
-			Dst:  img,
-			Src:  image.NewUniform(*labelColor),
-			Face: fontFace,
-			Dot:  fixed.Point26_6{X: fixed.I(labelX), Y: fixed.I(labelY)},
-		}
-		d.DrawString(r.label)
 	}
 
 	r.drawn = true
@@ -972,15 +932,16 @@ func (r *Resource) drawIcon(img *image.RGBA) {
 	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
 }
 
-func (r *Resource) drawBorder(img *image.RGBA) {
+func (r *Resource) drawFrame(img *image.RGBA) {
 	x1 := r.bindings.Min.X
 	x2 := r.bindings.Max.X
 	y1 := r.bindings.Min.Y
 	y2 := r.bindings.Max.Y
 	for x := x1 - WIDTH + 1; x < x2+WIDTH-1; x++ {
 		for y := y1 - WIDTH + 1; y < y2+WIDTH-1; y++ {
+			c := img.At(x, y)
 			if x <= x1 || x >= x2-1 || y <= y1 || y >= y2-1 {
-				c := img.At(x, y)
+				// Set border
 				switch r.borderType {
 				case BORDER_TYPE_STRAIGHT:
 					img.Set(x, y, _blend_color(c, r.borderColor))
@@ -989,23 +950,13 @@ func (r *Resource) drawBorder(img *image.RGBA) {
 						img.Set(x, y, _blend_color(c, r.borderColor))
 					}
 				}
-			}
-		}
-	}
-}
-
-func (r *Resource) drawFrame(img *image.RGBA) {
-	r.drawBorder(img)
-	x1 := r.bindings.Min.X + 1
-	x2 := r.bindings.Max.X - 1
-	y1 := r.bindings.Min.Y + 1
-	y2 := r.bindings.Max.Y - 1
-	for x := x1; x < x2; x++ {
-		for y := y1; y < y2; y++ {
-			c := img.At(x, y)
-			img.Set(x, y, _blend_color(c, r.fillColor))
-			if DEBUG_LAYOUT {
-				img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
+			} else {
+				// Set background
+				img.Set(x, y, _blend_color(c, r.fillColor))
+				if DEBUG_LAYOUT {
+					img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
+				}
+				//img.Set(x, y, fill_color)
 			}
 		}
 	}
