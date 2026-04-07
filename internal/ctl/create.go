@@ -741,7 +741,9 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 				continue
 			}
 			log.Infof("Add span target(%s) on %s", spanRef, logicalId)
-			resource.AddSpanTarget(spanResource)
+			if err := resource.AddSpanTarget(spanResource); err != nil {
+				return fmt.Errorf("failed to add span target %s to %s: %w", spanRef, logicalId, err)
+			}
 		}
 	}
 	return nil

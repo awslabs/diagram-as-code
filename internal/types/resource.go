@@ -180,6 +180,9 @@ func (r *Resource) GetBindings() image.Rectangle {
 }
 
 func (r *Resource) GetMargin() Margin {
+	if r.margin == nil {
+		return Margin{}
+	}
 	return *r.margin
 }
 
@@ -250,9 +253,13 @@ func (r *Resource) GetUnorderedChildren() bool {
 	return r.unorderedChildren
 }
 
-func (r *Resource) AddSpanTarget(target *Resource) {
+func (r *Resource) AddSpanTarget(target *Resource) error {
+	if len(r.children) > 0 {
+		return fmt.Errorf("resource cannot have both Children and SpanResources")
+	}
 	r.spanTargets = append(r.spanTargets, target)
 	target.spanOverlays = append(target.spanOverlays, r)
+	return nil
 }
 
 // overlayMarginAddition returns the margin that should be added to a span target
@@ -301,6 +308,9 @@ func (r *Resource) AddChild(child *Resource) error {
 	// [TODO] check whether the parent is border children
 	if child == nil {
 		return fmt.Errorf("unknown child resource - please see debug logs with -v flag")
+	}
+	if len(r.spanTargets) > 0 {
+		return fmt.Errorf("resource cannot have both Children and SpanResources")
 	}
 	child.parent = r // 親ポインタを設定
 	r.children = append(r.children, child)
