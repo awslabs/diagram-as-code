@@ -649,6 +649,7 @@ func TestSpanOverlayMatchesTreeLayout(t *testing.T) {
 	ec2Tree.SetLabel(&ec2Label, nil, nil)
 	// Set icon bounds to simulate having an icon
 	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Tree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
 	subnetTree.AddChild(ec2Tree)
 	azTree.AddChild(subnetTree)
 	if err := azTree.Scale(nil, nil); err != nil {
@@ -664,6 +665,7 @@ func TestSpanOverlayMatchesTreeLayout(t *testing.T) {
 	ec2Span := new(Resource).Init()
 	ec2Span.SetLabel(&ec2Label, nil, nil)
 	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Span.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
 	subnetSpan.AddChild(ec2Span)
 	azSpan.AddSpanTarget(subnetSpan)
 
@@ -728,10 +730,12 @@ func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
 	asgLabel := "Auto Scaling Group"
 	asgTree.SetLabel(&asgLabel, nil, nil)
 	asgTree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	asgTree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
 	ec2Tree := new(Resource).Init()
 	ec2Label := "Instance"
 	ec2Tree.SetLabel(&ec2Label, nil, nil)
 	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Tree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
 	asgTree.AddChild(ec2Tree)
 	subnetTree.AddChild(asgTree)
 	if err := subnetTree.Scale(nil, nil); err != nil {
@@ -744,9 +748,11 @@ func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
 	asgSpan := new(Resource).Init()
 	asgSpan.SetLabel(&asgLabel, nil, nil)
 	asgSpan.SetIconBounds(image.Rect(0, 0, 64, 64))
+	asgSpan.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
 	ec2Span := new(Resource).Init()
 	ec2Span.SetLabel(&ec2Label, nil, nil)
 	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Span.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
 	subnetSpan.AddChild(ec2Span)
 	asgSpan.AddSpanTarget(ec2Span)
 	if err := subnetSpan.Scale(nil, nil); err != nil {
@@ -796,6 +802,18 @@ func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
 	}
 	if treeRight != spanRight {
 		t.Errorf("Right mismatch: tree=%d, span=%d (diff=%d)", treeRight, spanRight, treeRight-spanRight)
+	}
+
+	// Compare Subnet bindings (parent level)
+	treeSubnet := subnetTree.GetBindings()
+	spanSubnet := subnetSpan.GetBindings()
+	t.Logf("Tree: Subnet bindings=%v Dx=%d Dy=%d", treeSubnet, treeSubnet.Dx(), treeSubnet.Dy())
+	t.Logf("Span: Subnet bindings=%v Dx=%d Dy=%d", spanSubnet, spanSubnet.Dx(), spanSubnet.Dy())
+	if treeSubnet.Dx() != spanSubnet.Dx() {
+		t.Errorf("Subnet Width mismatch: tree=%d, span=%d (diff=%d)", treeSubnet.Dx(), spanSubnet.Dx(), treeSubnet.Dx()-spanSubnet.Dx())
+	}
+	if treeSubnet.Dy() != spanSubnet.Dy() {
+		t.Errorf("Subnet Height mismatch: tree=%d, span=%d (diff=%d)", treeSubnet.Dy(), spanSubnet.Dy(), treeSubnet.Dy()-spanSubnet.Dy())
 	}
 }
 
