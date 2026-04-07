@@ -255,6 +255,29 @@ func (r *Resource) AddSpanTarget(target *Resource) {
 	target.spanOverlays = append(target.spanOverlays, r)
 }
 
+// overlayMarginAddition returns the margin that should be added to a span target
+// to reserve space for this overlay resource. This is used by both Scale() and DrawOverlay().
+func (r *Resource) overlayMarginAddition() Margin {
+	defaults := defaultResourceValues(true, true)
+	m := Margin{
+		Top:    defaults.margin.Top + defaults.padding.Top,
+		Right:  defaults.margin.Right + defaults.padding.Right,
+		Bottom: defaults.margin.Bottom + defaults.padding.Bottom,
+		Left:   defaults.margin.Left + defaults.padding.Left,
+	}
+	// Top includes header height (icon/label)
+	fontFace, err := r.prepareFontFace(true, nil)
+	if err == nil {
+		_, textHeight := r.calculateTitleSize(fontFace)
+		headerHeight := maxInt(r.iconBounds.Dy(), textHeight)
+		if r.headerAlign == "center" {
+			headerHeight = r.iconBounds.Dy() + textHeight
+		}
+		m.Top += headerHeight
+	}
+	return m
+}
+
 func (r *Resource) GetSpanTargets() []*Resource {
 	return r.spanTargets
 }
@@ -445,23 +468,12 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 		}
 	}
 	if len(r.spanOverlays) > 0 {
-		overlayDefaults := defaultResourceValues(true, true)
 		for _, overlay := range r.spanOverlays {
-			r.margin.Right += overlayDefaults.margin.Right + overlayDefaults.padding.Right
-			r.margin.Bottom += overlayDefaults.margin.Bottom + overlayDefaults.padding.Bottom
-			r.margin.Left += overlayDefaults.margin.Left + overlayDefaults.padding.Left
-			// Top includes header height (icon/label) of the overlay
-			fontFace, err := overlay.prepareFontFace(true, nil)
-			if err == nil {
-				_, overlayTextHeight := overlay.calculateTitleSize(fontFace)
-				headerHeight := maxInt(overlay.iconBounds.Dy(), overlayTextHeight)
-				if overlay.headerAlign == "center" {
-					headerHeight = overlay.iconBounds.Dy() + overlayTextHeight
-				}
-				r.margin.Top += overlayDefaults.margin.Top + overlayDefaults.padding.Top + headerHeight
-			} else {
-				r.margin.Top += overlayDefaults.margin.Top + overlayDefaults.padding.Top
-			}
+			add := overlay.overlayMarginAddition()
+			r.margin.Top += add.Top
+			r.margin.Right += add.Right
+			r.margin.Bottom += add.Bottom
+			r.margin.Left += add.Left
 		}
 	}
 	if r.padding == nil {
@@ -726,8 +738,10 @@ func (r *Resource) DrawOverlay(img *image.RGBA) error {
 		return nil
 	}
 
-	// Calculate union bounding box of all span targets,
-	// using each target's default margin plus overlay's padding
+	// Calculate union bounding box of all span targets.
+	// Use each target's actual margin minus the overlay addition to get the original margin,
+	// then add overlay padding.
+	add := r.overlayMarginAddition()
 	overlayDefaults := defaultResourceValues(true, true)
 	op := overlayDefaults.padding
 
@@ -736,19 +750,19 @@ func (r *Resource) DrawOverlay(img *image.RGBA) error {
 		return nil
 	}
 	fb := *first.bindings
-	fd := defaultResourceValues(len(first.children) > 0, first.iconImage.Bounds().Max.X != 0)
+	fm := first.GetMargin()
 	union := image.Rect(
-		fb.Min.X-fd.margin.Left-op.Left, fb.Min.Y-fd.margin.Top-op.Top,
-		fb.Max.X+fd.margin.Right+op.Right, fb.Max.Y+fd.margin.Bottom+op.Bottom)
+		fb.Min.X-(fm.Left-add.Left)-op.Left, fb.Min.Y-(fm.Top-add.Top)-op.Top,
+		fb.Max.X+(fm.Right-add.Right)+op.Right, fb.Max.Y+(fm.Bottom-add.Bottom)+op.Bottom)
 	for _, target := range r.spanTargets[1:] {
 		if target.bindings == nil {
 			continue
 		}
 		b := *target.bindings
-		td := defaultResourceValues(len(target.children) > 0, target.iconImage.Bounds().Max.X != 0)
+		tm := target.GetMargin()
 		tb := image.Rect(
-			b.Min.X-td.margin.Left-op.Left, b.Min.Y-td.margin.Top-op.Top,
-			b.Max.X+td.margin.Right+op.Right, b.Max.Y+td.margin.Bottom+op.Bottom)
+			b.Min.X-(tm.Left-add.Left)-op.Left, b.Min.Y-(tm.Top-add.Top)-op.Top,
+			b.Max.X+(tm.Right-add.Right)+op.Right, b.Max.Y+(tm.Bottom-add.Bottom)+op.Bottom)
 		union = union.Union(tb)
 	}
 
@@ -758,18 +772,14 @@ func (r *Resource) DrawOverlay(img *image.RGBA) error {
 	if err != nil {
 		return fmt.Errorf("failed to prepare font face for overlay: %w", err)
 	}
-	textWidth, textHeight := r.calculateTitleSize(fontFace)
+	textWidth, _ := r.calculateTitleSize(fontFace)
 	headerWidth := textWidth + r.iconBounds.Dx() + 30
 	if union.Dx() < headerWidth {
 		expand := (headerWidth - union.Dx()) / 2
 		union.Min.X -= expand
 		union.Max.X += expand
 	}
-	headerHeight := maxInt(r.iconBounds.Dy(), textHeight)
-	if r.headerAlign == "center" {
-		headerHeight = r.iconBounds.Dy() + textHeight
-	}
-	union.Min.Y -= headerHeight
+	union.Min.Y -= add.Top - overlayDefaults.margin.Top - overlayDefaults.padding.Top
 	hasIcon := r.iconImage.Bounds().Max.X != 0
 	r.bindings = &union
 	if r.borderColor == nil {

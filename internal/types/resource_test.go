@@ -719,6 +719,86 @@ func TestSpanOverlayMatchesTreeLayout(t *testing.T) {
 	}
 }
 
+func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
+	// Tree: Subnet -> ASG -> EC2
+	subnetTree := new(Resource).Init()
+	subnetLabel := "Subnet"
+	subnetTree.SetLabel(&subnetLabel, nil, nil)
+	asgTree := new(Resource).Init()
+	asgLabel := "Auto Scaling Group"
+	asgTree.SetLabel(&asgLabel, nil, nil)
+	asgTree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Tree := new(Resource).Init()
+	ec2Label := "Instance"
+	ec2Tree.SetLabel(&ec2Label, nil, nil)
+	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	asgTree.AddChild(ec2Tree)
+	subnetTree.AddChild(asgTree)
+	if err := subnetTree.Scale(nil, nil); err != nil {
+		t.Fatalf("Tree Scale failed: %v", err)
+	}
+
+	// Span: Subnet -> EC2, ASG overlays EC2
+	subnetSpan := new(Resource).Init()
+	subnetSpan.SetLabel(&subnetLabel, nil, nil)
+	asgSpan := new(Resource).Init()
+	asgSpan.SetLabel(&asgLabel, nil, nil)
+	asgSpan.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Span := new(Resource).Init()
+	ec2Span.SetLabel(&ec2Label, nil, nil)
+	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
+	subnetSpan.AddChild(ec2Span)
+	asgSpan.AddSpanTarget(ec2Span)
+	if err := subnetSpan.Scale(nil, nil); err != nil {
+		t.Fatalf("Span Scale failed: %v", err)
+	}
+
+	img := image.NewRGBA(image.Rect(0, 0, 2000, 2000))
+	if _, err := subnetSpan.Draw(img, nil); err != nil {
+		t.Fatalf("Span Draw failed: %v", err)
+	}
+	if err := asgSpan.DrawOverlay(img); err != nil {
+		t.Fatalf("Span DrawOverlay failed: %v", err)
+	}
+
+	treeBounds := asgTree.GetBindings()
+	spanBounds := asgSpan.GetBindings()
+
+	t.Logf("Tree: ASG bindings=%v margin=%v padding=%v", treeBounds, asgTree.GetMargin(), asgTree.GetPadding())
+	t.Logf("Tree: EC2 bindings=%v margin=%v padding=%v", ec2Tree.GetBindings(), ec2Tree.GetMargin(), ec2Tree.GetPadding())
+	t.Logf("Span: ASG bindings=%v", spanBounds)
+	t.Logf("Span: EC2 bindings=%v margin=%v padding=%v", ec2Span.GetBindings(), ec2Span.GetMargin(), ec2Span.GetPadding())
+
+	treeEC2 := ec2Tree.GetBindings()
+	spanEC2 := ec2Span.GetBindings()
+
+	treeTop := treeEC2.Min.Y - treeBounds.Min.Y
+	treeBottom := treeBounds.Max.Y - treeEC2.Max.Y
+	treeLeft := treeEC2.Min.X - treeBounds.Min.X
+	treeRight := treeBounds.Max.X - treeEC2.Max.X
+
+	spanTop := spanEC2.Min.Y - spanBounds.Min.Y
+	spanBottom := spanBounds.Max.Y - spanEC2.Max.Y
+	spanLeft := spanEC2.Min.X - spanBounds.Min.X
+	spanRight := spanBounds.Max.X - spanEC2.Max.X
+
+	t.Logf("Tree: ASG-to-EC2  top=%d bottom=%d left=%d right=%d", treeTop, treeBottom, treeLeft, treeRight)
+	t.Logf("Span: ASG-to-EC2  top=%d bottom=%d left=%d right=%d", spanTop, spanBottom, spanLeft, spanRight)
+
+	if treeTop != spanTop {
+		t.Errorf("Top mismatch: tree=%d, span=%d (diff=%d)", treeTop, spanTop, treeTop-spanTop)
+	}
+	if treeBottom != spanBottom {
+		t.Errorf("Bottom mismatch: tree=%d, span=%d (diff=%d)", treeBottom, spanBottom, treeBottom-spanBottom)
+	}
+	if treeLeft != spanLeft {
+		t.Errorf("Left mismatch: tree=%d, span=%d (diff=%d)", treeLeft, spanLeft, treeLeft-spanLeft)
+	}
+	if treeRight != spanRight {
+		t.Errorf("Right mismatch: tree=%d, span=%d (diff=%d)", treeRight, spanRight, treeRight-spanRight)
+	}
+}
+
 func TestCalculateTitleSize(t *testing.T) {
 	resource := new(Resource).Init()
 
