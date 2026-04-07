@@ -1,0 +1,29 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: vertical
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Children:
+        - VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Children:
+        - AZ
+    AZ:
+      Type: AWS::EC2::AvailabilityZone
+      Children:
+        - Subnet
+    Subnet:
+      Type: AWS::EC2::Subnet
+      Children:
+        - EC2
+    EC2:
+      Type: AWS::EC2::Instance
