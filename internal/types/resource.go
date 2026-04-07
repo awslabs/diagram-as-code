@@ -66,6 +66,7 @@ type Resource struct {
 	groupingOffsetDirection bool // Flag: if true, enable directional grouping offset for links
 	unorderedChildren       bool // Flag: if true, children order can be rearranged based on links
 	spanTargets             []*Resource // Resources this overlay spans across
+	spanTargetCount         int         // Number of times this resource is referenced as a span target
 }
 
 type ResourceIconFill struct {
@@ -251,6 +252,7 @@ func (r *Resource) GetUnorderedChildren() bool {
 
 func (r *Resource) AddSpanTarget(target *Resource) {
 	r.spanTargets = append(r.spanTargets, target)
+	target.spanTargetCount++
 }
 
 func (r *Resource) GetSpanTargets() []*Resource {
@@ -441,6 +443,13 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 			r.margin.Bottom += addMargin.Bottom
 			r.margin.Left += addMargin.Left
 		}
+	}
+	if r.spanTargetCount > 0 {
+		overlayDefaults := defaultResourceValues(true, true)
+		r.margin.Top += (overlayDefaults.margin.Top + overlayDefaults.padding.Top) * r.spanTargetCount
+		r.margin.Right += (overlayDefaults.margin.Right + overlayDefaults.padding.Right) * r.spanTargetCount
+		r.margin.Bottom += (overlayDefaults.margin.Bottom + overlayDefaults.padding.Bottom) * r.spanTargetCount
+		r.margin.Left += (overlayDefaults.margin.Left + overlayDefaults.padding.Left) * r.spanTargetCount
 	}
 	if r.padding == nil {
 		r.padding = defaultResourceValues(hasChildren, hasIcon).padding
@@ -699,44 +708,32 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 // of all span targets and draws a border, icon, and label without
 // affecting layout. The rendering reuses drawBorder, drawIcon, and
 // drawLabel to maintain visual consistency with regular resources.
-func (r *Resource) DrawOverlay(img *image.RGBA, padding int) error {
+func (r *Resource) DrawOverlay(img *image.RGBA) error {
 	if len(r.spanTargets) == 0 {
 		return nil
 	}
 
-	// Calculate union bounding box of all span targets
+	// Calculate union bounding box of all span targets, including overlay margins
+	overlayDefaults := defaultResourceValues(true, true)
+	mx := overlayDefaults.margin.Left + overlayDefaults.padding.Left
+	my := overlayDefaults.margin.Top + overlayDefaults.padding.Top
+	mr := overlayDefaults.margin.Right + overlayDefaults.padding.Right
+	mb := overlayDefaults.margin.Bottom + overlayDefaults.padding.Bottom
+
 	first := r.spanTargets[0]
 	if first.bindings == nil {
 		return nil
 	}
-	union := *first.bindings
+	fb := *first.bindings
+	union := image.Rect(fb.Min.X-mx, fb.Min.Y-my, fb.Max.X+mr, fb.Max.Y+mb)
 	for _, target := range r.spanTargets[1:] {
 		if target.bindings == nil {
 			continue
 		}
 		b := *target.bindings
-		if b.Min.X < union.Min.X {
-			union.Min.X = b.Min.X
-		}
-		if b.Min.Y < union.Min.Y {
-			union.Min.Y = b.Min.Y
-		}
-		if b.Max.X > union.Max.X {
-			union.Max.X = b.Max.X
-		}
-		if b.Max.Y > union.Max.Y {
-			union.Max.Y = b.Max.Y
-		}
+		tb := image.Rect(b.Min.X-mx, b.Min.Y-my, b.Max.X+mr, b.Max.Y+mb)
+		union = union.Union(tb)
 	}
-
-	// Expand by padding
-	union.Min.X -= padding
-	union.Min.Y -= padding
-	union.Max.X += padding
-	union.Max.Y += padding
-
-	// Reserve header space for icon (64x64)
-	union.Min.Y -= 64
 
 	// Store computed bindings and ensure default border color
 	r.bindings = &union
