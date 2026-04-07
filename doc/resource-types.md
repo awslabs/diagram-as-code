@@ -126,9 +126,15 @@ A resource type that indicates a horizontal stack. It is treated internally as a
 
 ### SpanResources (Overlay)
 
-SpanResources allows a resource to be drawn as a visual overlay that spans across multiple other resources. Unlike regular parent-child relationships, an overlay does not affect layout — it calculates the union bounding box of its target resources and draws a border, icon, and label on top of the rendered diagram.
+SpanResources allows a resource to be drawn as a visual overlay that spans across multiple other resources. Unlike regular parent-child relationships, an overlay is not part of the tree hierarchy — it calculates the union bounding box of its target resources and draws a border, icon, and label on top of the rendered diagram.
+
+The layout engine automatically reserves space around span target resources so that the overlay border, icon, and label do not overlap with surrounding resources.
 
 This is useful for representing logical groupings that cut across the resource hierarchy, such as an Auto Scaling Group spanning multiple subnets.
+
+**Constraints:**
+- A resource cannot have both `Children` and `SpanResources`. Use one or the other.
+- Overlay resources do not support background fill color. Only the border outline is drawn to avoid obscuring underlying resources.
 
 | Attribute     | Type     | Description                                                    |
 | ------------- | -------- | -------------------------------------------------------------- |
