@@ -483,7 +483,9 @@ func TestDrawOverlay(t *testing.T) {
 		overlay := new(Resource).Init()
 		target := new(Resource).Init()
 		target.bindings = nil
-		overlay.AddSpanTarget(target)
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
 
 		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
 		err := overlay.DrawOverlay(img)
@@ -500,7 +502,9 @@ func TestDrawOverlay(t *testing.T) {
 		target := new(Resource).Init()
 		targetRect := image.Rect(50, 50, 150, 150)
 		target.bindings = &targetRect
-		overlay.AddSpanTarget(target)
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
 
 		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
 		err := overlay.DrawOverlay(img)
@@ -518,7 +522,9 @@ func TestDrawOverlay(t *testing.T) {
 		target := new(Resource).Init()
 		targetRect := image.Rect(50, 50, 150, 150)
 		target.bindings = &targetRect
-		overlay.AddSpanTarget(target)
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
 
 		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
 		err := overlay.DrawOverlay(img)
@@ -541,8 +547,12 @@ func TestDrawOverlay(t *testing.T) {
 		r1 := image.Rect(10, 10, 50, 50)
 		t1.bindings = &r1
 		t2.bindings = nil
-		overlay.AddSpanTarget(t1)
-		overlay.AddSpanTarget(t2)
+		if err := overlay.AddSpanTarget(t1); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+		if err := overlay.AddSpanTarget(t2); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
 
 		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
 		err := overlay.DrawOverlay(img)
@@ -560,7 +570,9 @@ func TestDrawOverlay(t *testing.T) {
 		target := new(Resource).Init()
 		targetRect := image.Rect(50, 50, 100, 100)
 		target.bindings = &targetRect
-		overlay.AddSpanTarget(target)
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
 
 		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
 		err := overlay.DrawOverlay(img)
@@ -615,8 +627,12 @@ func TestSpanOverlayMatchesTreeLayout(t *testing.T) {
 	// Set icon bounds to simulate having an icon
 	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
 	ec2Tree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
-	subnetTree.AddChild(ec2Tree)
-	azTree.AddChild(subnetTree)
+	if err := subnetTree.AddChild(ec2Tree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := azTree.AddChild(subnetTree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
 	if err := azTree.Scale(nil, nil); err != nil {
 		t.Fatalf("Tree Scale failed: %v", err)
 	}
@@ -631,8 +647,12 @@ func TestSpanOverlayMatchesTreeLayout(t *testing.T) {
 	ec2Span.SetLabel(&ec2Label, nil, nil)
 	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
 	ec2Span.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
-	subnetSpan.AddChild(ec2Span)
-	azSpan.AddSpanTarget(subnetSpan)
+	if err := subnetSpan.AddChild(ec2Span); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := azSpan.AddSpanTarget(subnetSpan); err != nil {
+		t.Fatalf("AddSpanTarget failed: %v", err)
+	}
 
 	if err := subnetSpan.Scale(nil, nil); err != nil {
 		t.Fatalf("Span Scale failed: %v", err)
@@ -701,8 +721,12 @@ func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
 	ec2Tree.SetLabel(&ec2Label, nil, nil)
 	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
 	ec2Tree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
-	asgTree.AddChild(ec2Tree)
-	subnetTree.AddChild(asgTree)
+	if err := asgTree.AddChild(ec2Tree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := subnetTree.AddChild(asgTree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
 	if err := subnetTree.Scale(nil, nil); err != nil {
 		t.Fatalf("Tree Scale failed: %v", err)
 	}
@@ -718,8 +742,12 @@ func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
 	ec2Span.SetLabel(&ec2Label, nil, nil)
 	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
 	ec2Span.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
-	subnetSpan.AddChild(ec2Span)
-	asgSpan.AddSpanTarget(ec2Span)
+	if err := subnetSpan.AddChild(ec2Span); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := asgSpan.AddSpanTarget(ec2Span); err != nil {
+		t.Fatalf("AddSpanTarget failed: %v", err)
+	}
 	if err := subnetSpan.Scale(nil, nil); err != nil {
 		t.Fatalf("Span Scale failed: %v", err)
 	}

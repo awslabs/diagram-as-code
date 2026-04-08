@@ -235,7 +235,7 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	}
 	sort.Strings(overlayNames)
 	for _, name := range overlayNames {
-		resource := resources[name]
+		resource, _ := resources[name]
 		log.Infof("Drawing overlay resource: %s", name)
 		if err := resource.DrawOverlay(img); err != nil {
 			return fmt.Errorf("error drawing overlay resource %s: %w", name, err)
