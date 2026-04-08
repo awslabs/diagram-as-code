@@ -134,6 +134,7 @@ This is useful for representing logical groupings that cut across the resource h
 
 **Constraints:**
 - A resource cannot have both `Children` and `SpanResources`. Use one or the other.
+- Nested overlays are not supported. An overlay resource cannot be a span target of another overlay.
 - Overlay resources do not support background fill color. Only the border outline is drawn to avoid obscuring underlying resources.
 
 | Attribute     | Type     | Description                                                    |

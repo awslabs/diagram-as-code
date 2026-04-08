@@ -257,6 +257,12 @@ func (r *Resource) AddSpanTarget(target *Resource) error {
 	if len(r.children) > 0 {
 		return fmt.Errorf("resource cannot have both Children and SpanResources")
 	}
+	if len(target.spanTargets) > 0 {
+		return fmt.Errorf("span target cannot itself be an overlay (nested SpanResources is not supported)")
+	}
+	if len(r.spanOverlays) > 0 {
+		return fmt.Errorf("overlay resource cannot be a span target of another overlay (nested SpanResources is not supported)")
+	}
 	r.spanTargets = append(r.spanTargets, target)
 	target.spanOverlays = append(target.spanOverlays, r)
 	return nil
