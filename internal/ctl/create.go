@@ -11,6 +11,7 @@ import (
 	"image/png"
 	"math"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/awslabs/diagram-as-code/internal/cache"
@@ -118,7 +119,9 @@ type Resource struct {
 	Font           string            `yaml:"Font"`
 	Children       []string          `yaml:"Children"`
 	BorderColor    string            `yaml:"BorderColor"`
+	BorderType     string            `yaml:"BorderType"`
 	BorderChildren []BorderChild     `yaml:"BorderChildren"`
+	SpanResources  []string          `yaml:"SpanResources"`
 	Options        *ResourceOptions  `yaml:"Options"`
 }
 
@@ -220,6 +223,23 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 	img, err := canvas.Draw(nil, nil)
 	if err != nil {
 		return fmt.Errorf("error drawing diagram: %w", err)
+	}
+
+	// Draw overlay resources (span across multiple resources)
+	// Collect and sort overlay resources for deterministic ordering
+	var overlayNames []string
+	for name, resource := range resources {
+		if len(resource.GetSpanTargets()) > 0 {
+			overlayNames = append(overlayNames, name)
+		}
+	}
+	sort.Strings(overlayNames)
+	for _, name := range overlayNames {
+		resource, _ := resources[name]
+		log.Infof("Drawing overlay resource: %s", name)
+		if err := resource.DrawOverlay(img); err != nil {
+			return fmt.Errorf("error drawing overlay resource %s: %w", name, err)
+		}
 	}
 
 	// Resize the image if width or height is specified
@@ -642,6 +662,20 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 			}
 			resource.SetBorderColor(borderColor)
 		}
+		if v.BorderType != "" {
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for border type", k)
+			}
+			switch v.BorderType {
+			case "straight":
+				resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
+			case "dashed":
+				resource.SetBorderType(types.BORDER_TYPE_DASHED)
+			default:
+				resource.SetBorderType(types.BORDER_TYPE_STRAIGHT)
+			}
+		}
 
 		// Process Options
 		if v.Options != nil {
@@ -710,6 +744,17 @@ func associateChildren(template *TemplateStruct, resources map[string]*types.Res
 				return fmt.Errorf("failed to add border child: %w", err)
 			}
 		}
+		for _, spanRef := range v.SpanResources {
+			spanResource, ok := resources[spanRef]
+			if !ok {
+				log.Warnf("Span resource `%s` was not found, ignoring it.", spanRef)
+				continue
+			}
+			log.Infof("Add span target(%s) on %s", spanRef, logicalId)
+			if err := resource.AddSpanTarget(spanResource); err != nil {
+				return fmt.Errorf("failed to add span target %s to %s: %w", spanRef, logicalId, err)
+			}
+		}
 	}
 	return nil
 }
@@ -722,13 +767,20 @@ func checkUnusedResources(template *TemplateStruct) {
 	// Canvas is always used as the root
 	usedResources["Canvas"] = true
 
-	// Mark resources that are referenced as children or border children
-	for _, v := range template.Resources {
+	// Mark resources that are referenced as children, border children, or span overlays
+	for name, v := range template.Resources {
 		for _, child := range v.Children {
 			usedResources[child] = true
 		}
 		for _, borderChild := range v.BorderChildren {
 			usedResources[borderChild.Resource] = true
+		}
+		for _, spanRef := range v.SpanResources {
+			usedResources[spanRef] = true
+		}
+		// Resources with SpanResources are overlay resources (used but not in tree)
+		if len(v.SpanResources) > 0 {
+			usedResources[name] = true
 		}
 	}
 

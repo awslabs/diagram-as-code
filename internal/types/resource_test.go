@@ -466,6 +466,360 @@ func TestResolveAutoPositions_NilBindings(t *testing.T) {
 	}
 }
 
+func TestDrawOverlay(t *testing.T) {
+	t.Run("NoSpanTargets", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
+		err := overlay.DrawOverlay(img)
+		if err != nil {
+			t.Errorf("DrawOverlay with no span targets should return nil, got: %v", err)
+		}
+		if overlay.IsDrawn() {
+			t.Error("DrawOverlay should not mark resource as drawn when there are no span targets")
+		}
+	})
+
+	t.Run("NilTargetBindings", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		target := new(Resource).Init()
+		target.bindings = nil
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+
+		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
+		err := overlay.DrawOverlay(img)
+		if err != nil {
+			t.Errorf("DrawOverlay with nil target bindings should return nil, got: %v", err)
+		}
+		if overlay.IsDrawn() {
+			t.Error("DrawOverlay should not mark resource as drawn when first target has nil bindings")
+		}
+	})
+
+	t.Run("SingleTarget", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 50, 150, 150)
+		target.bindings = &targetRect
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		if !overlay.IsDrawn() {
+			t.Error("DrawOverlay should mark resource as drawn")
+		}
+	})
+
+	t.Run("DefaultBorderColor", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		overlay.borderColor = nil
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 50, 150, 150)
+		target.bindings = &targetRect
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		if overlay.borderColor == nil {
+			t.Error("DrawOverlay should set a default border color when none is provided")
+		}
+		expected := color.RGBA{0, 0, 0, 255}
+		if *overlay.borderColor != expected {
+			t.Errorf("Expected default border color %v, got %v", expected, *overlay.borderColor)
+		}
+	})
+
+	t.Run("SkipsNilBindingsInLaterTargets", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		t1 := new(Resource).Init()
+		t2 := new(Resource).Init()
+		r1 := image.Rect(10, 10, 50, 50)
+		t1.bindings = &r1
+		t2.bindings = nil
+		if err := overlay.AddSpanTarget(t1); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+		if err := overlay.AddSpanTarget(t2); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+
+		img := image.NewRGBA(image.Rect(0, 0, 300, 300))
+		err := overlay.DrawOverlay(img)
+		if err != nil {
+			t.Fatalf("DrawOverlay failed: %v", err)
+		}
+		if !overlay.IsDrawn() {
+			t.Error("DrawOverlay should mark resource as drawn even with nil bindings in later targets")
+		}
+	})
+
+	t.Run("DashedBorder", func(t *testing.T) {
+		overlay := new(Resource).Init()
+		overlay.borderType = BORDER_TYPE_DASHED
+		target := new(Resource).Init()
+		targetRect := image.Rect(50, 50, 100, 100)
+		target.bindings = &targetRect
+		if err := overlay.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+
+		img := image.NewRGBA(image.Rect(0, 0, 200, 200))
+		err := overlay.DrawOverlay(img)
+		if err != nil {
+			t.Fatalf("DrawOverlay with dashed border failed: %v", err)
+		}
+		if !overlay.IsDrawn() {
+			t.Error("DrawOverlay should mark resource as drawn")
+		}
+	})
+}
+
+func TestAddSpanTargetAndChildMutualExclusion(t *testing.T) {
+	t.Run("ChildrenThenSpanResources", func(t *testing.T) {
+		r := new(Resource).Init()
+		child := new(Resource).Init()
+		if err := r.AddChild(child); err != nil {
+			t.Fatalf("AddChild failed: %v", err)
+		}
+		if err := r.AddSpanTarget(new(Resource).Init()); err == nil {
+			t.Error("AddSpanTarget should fail when Children already exist")
+		}
+	})
+
+	t.Run("SpanResourcesThenChildren", func(t *testing.T) {
+		r := new(Resource).Init()
+		target := new(Resource).Init()
+		if err := r.AddSpanTarget(target); err != nil {
+			t.Fatalf("AddSpanTarget failed: %v", err)
+		}
+		if err := r.AddChild(new(Resource).Init()); err == nil {
+			t.Error("AddChild should fail when SpanResources already exist")
+		}
+	})
+}
+
+// TestSpanOverlayMatchesTreeLayout verifies that a SpanResources overlay
+// produces the same bounding box as an equivalent tree hierarchy.
+// Tree: AZ -> Subnet -> EC2
+// Span: Subnet -> EC2, AZ overlays Subnet
+func TestSpanOverlayMatchesTreeLayout(t *testing.T) {
+	// Tree version: AZ contains Subnet contains EC2
+	azTree := new(Resource).Init()
+	azLabel := "Availability Zone"
+	azTree.SetLabel(&azLabel, nil, nil)
+	subnetTree := new(Resource).Init()
+	subnetLabel := "Subnet"
+	subnetTree.SetLabel(&subnetLabel, nil, nil)
+	ec2Tree := new(Resource).Init()
+	ec2Label := "Instance"
+	ec2Tree.SetLabel(&ec2Label, nil, nil)
+	// Set icon bounds to simulate having an icon
+	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Tree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
+	if err := subnetTree.AddChild(ec2Tree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := azTree.AddChild(subnetTree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := azTree.Scale(nil, nil); err != nil {
+		t.Fatalf("Tree Scale failed: %v", err)
+	}
+	treeBounds := azTree.GetBindings()
+
+	// Span version: Subnet contains EC2, AZ overlays Subnet
+	azSpan := new(Resource).Init()
+	azSpan.SetLabel(&azLabel, nil, nil)
+	subnetSpan := new(Resource).Init()
+	subnetSpan.SetLabel(&subnetLabel, nil, nil)
+	ec2Span := new(Resource).Init()
+	ec2Span.SetLabel(&ec2Label, nil, nil)
+	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Span.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
+	if err := subnetSpan.AddChild(ec2Span); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := azSpan.AddSpanTarget(subnetSpan); err != nil {
+		t.Fatalf("AddSpanTarget failed: %v", err)
+	}
+
+	if err := subnetSpan.Scale(nil, nil); err != nil {
+		t.Fatalf("Span Scale failed: %v", err)
+	}
+
+	img := image.NewRGBA(image.Rect(0, 0, 2000, 2000))
+	if _, err := subnetSpan.Draw(img, nil); err != nil {
+		t.Fatalf("Span Draw failed: %v", err)
+	}
+	if err := azSpan.DrawOverlay(img); err != nil {
+		t.Fatalf("Span DrawOverlay failed: %v", err)
+	}
+	spanBounds := azSpan.GetBindings()
+
+	// Compare: overlay should match tree AZ relative to Subnet
+	treeSubnet := subnetTree.GetBindings()
+	spanSubnet := subnetSpan.GetBindings()
+
+	t.Logf("Tree: AZ bindings=%v margin=%v padding=%v", treeBounds, azTree.GetMargin(), azTree.GetPadding())
+	t.Logf("Tree: Subnet bindings=%v margin=%v padding=%v", subnetTree.GetBindings(), subnetTree.GetMargin(), subnetTree.GetPadding())
+	t.Logf("Tree: EC2 bindings=%v margin=%v padding=%v", ec2Tree.GetBindings(), ec2Tree.GetMargin(), ec2Tree.GetPadding())
+	t.Logf("Span: AZ bindings=%v", spanBounds)
+	t.Logf("Span: Subnet bindings=%v margin=%v padding=%v", subnetSpan.GetBindings(), subnetSpan.GetMargin(), subnetSpan.GetPadding())
+	t.Logf("Span: EC2 bindings=%v margin=%v padding=%v", ec2Span.GetBindings(), ec2Span.GetMargin(), ec2Span.GetPadding())
+
+	// Distance from AZ edge to Subnet edge on each side
+	treeTop := treeSubnet.Min.Y - treeBounds.Min.Y
+	treeBottom := treeBounds.Max.Y - treeSubnet.Max.Y
+	treeLeft := treeSubnet.Min.X - treeBounds.Min.X
+	treeRight := treeBounds.Max.X - treeSubnet.Max.X
+
+	spanTop := spanSubnet.Min.Y - spanBounds.Min.Y
+	spanBottom := spanBounds.Max.Y - spanSubnet.Max.Y
+	spanLeft := spanSubnet.Min.X - spanBounds.Min.X
+	spanRight := spanBounds.Max.X - spanSubnet.Max.X
+
+	t.Logf("Tree: AZ-to-Subnet  top=%d bottom=%d left=%d right=%d", treeTop, treeBottom, treeLeft, treeRight)
+	t.Logf("Span: AZ-to-Subnet  top=%d bottom=%d left=%d right=%d", spanTop, spanBottom, spanLeft, spanRight)
+
+	if treeTop != spanTop {
+		t.Errorf("Top mismatch: tree=%d, span=%d", treeTop, spanTop)
+	}
+	if treeBottom != spanBottom {
+		t.Errorf("Bottom mismatch: tree=%d, span=%d", treeBottom, spanBottom)
+	}
+	if treeLeft != spanLeft {
+		t.Errorf("Left mismatch: tree=%d, span=%d", treeLeft, spanLeft)
+	}
+	if treeRight != spanRight {
+		t.Errorf("Right mismatch: tree=%d, span=%d", treeRight, spanRight)
+	}
+}
+
+func TestSpanOverlayMatchesTreeLayout_WithIcon(t *testing.T) {
+	// Tree: Subnet -> ASG -> EC2
+	subnetTree := new(Resource).Init()
+	subnetLabel := "Subnet"
+	subnetTree.SetLabel(&subnetLabel, nil, nil)
+	asgTree := new(Resource).Init()
+	asgLabel := "Auto Scaling Group"
+	asgTree.SetLabel(&asgLabel, nil, nil)
+	asgTree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	asgTree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
+	ec2Tree := new(Resource).Init()
+	ec2Label := "Instance"
+	ec2Tree.SetLabel(&ec2Label, nil, nil)
+	ec2Tree.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Tree.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
+	if err := asgTree.AddChild(ec2Tree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := subnetTree.AddChild(asgTree); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := subnetTree.Scale(nil, nil); err != nil {
+		t.Fatalf("Tree Scale failed: %v", err)
+	}
+
+	// Span: Subnet -> EC2, ASG overlays EC2
+	subnetSpan := new(Resource).Init()
+	subnetSpan.SetLabel(&subnetLabel, nil, nil)
+	asgSpan := new(Resource).Init()
+	asgSpan.SetLabel(&asgLabel, nil, nil)
+	asgSpan.SetIconBounds(image.Rect(0, 0, 64, 64))
+	asgSpan.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
+	ec2Span := new(Resource).Init()
+	ec2Span.SetLabel(&ec2Label, nil, nil)
+	ec2Span.SetIconBounds(image.Rect(0, 0, 64, 64))
+	ec2Span.iconImage = image.NewRGBA(image.Rect(0, 0, 64, 64))
+	if err := subnetSpan.AddChild(ec2Span); err != nil {
+		t.Fatalf("AddChild failed: %v", err)
+	}
+	if err := asgSpan.AddSpanTarget(ec2Span); err != nil {
+		t.Fatalf("AddSpanTarget failed: %v", err)
+	}
+	if err := subnetSpan.Scale(nil, nil); err != nil {
+		t.Fatalf("Span Scale failed: %v", err)
+	}
+
+	img := image.NewRGBA(image.Rect(0, 0, 2000, 2000))
+	if _, err := subnetSpan.Draw(img, nil); err != nil {
+		t.Fatalf("Span Draw failed: %v", err)
+	}
+	if err := asgSpan.DrawOverlay(img); err != nil {
+		t.Fatalf("Span DrawOverlay failed: %v", err)
+	}
+
+	treeBounds := asgTree.GetBindings()
+	spanBounds := asgSpan.GetBindings()
+
+	t.Logf("Tree: ASG bindings=%v margin=%v padding=%v", treeBounds, asgTree.GetMargin(), asgTree.GetPadding())
+	t.Logf("Tree: EC2 bindings=%v margin=%v padding=%v", ec2Tree.GetBindings(), ec2Tree.GetMargin(), ec2Tree.GetPadding())
+	t.Logf("Span: ASG bindings=%v", spanBounds)
+	t.Logf("Span: EC2 bindings=%v margin=%v padding=%v", ec2Span.GetBindings(), ec2Span.GetMargin(), ec2Span.GetPadding())
+
+	treeEC2 := ec2Tree.GetBindings()
+	spanEC2 := ec2Span.GetBindings()
+
+	treeTop := treeEC2.Min.Y - treeBounds.Min.Y
+	treeBottom := treeBounds.Max.Y - treeEC2.Max.Y
+	treeLeft := treeEC2.Min.X - treeBounds.Min.X
+	treeRight := treeBounds.Max.X - treeEC2.Max.X
+
+	spanTop := spanEC2.Min.Y - spanBounds.Min.Y
+	spanBottom := spanBounds.Max.Y - spanEC2.Max.Y
+	spanLeft := spanEC2.Min.X - spanBounds.Min.X
+	spanRight := spanBounds.Max.X - spanEC2.Max.X
+
+	t.Logf("Tree: ASG-to-EC2  top=%d bottom=%d left=%d right=%d", treeTop, treeBottom, treeLeft, treeRight)
+	t.Logf("Span: ASG-to-EC2  top=%d bottom=%d left=%d right=%d", spanTop, spanBottom, spanLeft, spanRight)
+
+	if treeTop != spanTop {
+		t.Errorf("Top mismatch: tree=%d, span=%d (diff=%d)", treeTop, spanTop, treeTop-spanTop)
+	}
+	if treeBottom != spanBottom {
+		t.Errorf("Bottom mismatch: tree=%d, span=%d (diff=%d)", treeBottom, spanBottom, treeBottom-spanBottom)
+	}
+	if treeLeft != spanLeft {
+		t.Errorf("Left mismatch: tree=%d, span=%d (diff=%d)", treeLeft, spanLeft, treeLeft-spanLeft)
+	}
+	if treeRight != spanRight {
+		t.Errorf("Right mismatch: tree=%d, span=%d (diff=%d)", treeRight, spanRight, treeRight-spanRight)
+	}
+
+	// Compare Subnet bindings (parent level)
+	treeSubnet := subnetTree.GetBindings()
+	spanSubnet := subnetSpan.GetBindings()
+
+	// Debug: ASG header width and EC2 placement width
+	asgFace, _ := asgTree.prepareFontFace(true, nil)
+	asgTextWidth, _ := asgTree.calculateTitleSize(asgFace)
+	asgHeaderWidth := asgTextWidth + asgTree.iconBounds.Dx() + 30
+	t.Logf("ASG headerWidth=%d (textWidth=%d + iconDx=%d + 30)", asgHeaderWidth, asgTextWidth, asgTree.iconBounds.Dx())
+	t.Logf("Tree: ASG bindings Dx=%d", asgTree.GetBindings().Dx())
+	t.Logf("Tree: EC2 margin=%v", ec2Tree.GetMargin())
+	t.Logf("Span: EC2 margin=%v", ec2Span.GetMargin())
+
+	t.Logf("Tree: Subnet bindings=%v Dx=%d Dy=%d", treeSubnet, treeSubnet.Dx(), treeSubnet.Dy())
+	t.Logf("Span: Subnet bindings=%v Dx=%d Dy=%d", spanSubnet, spanSubnet.Dx(), spanSubnet.Dy())
+	if treeSubnet.Dx() != spanSubnet.Dx() {
+		t.Logf("Subnet Width diff: tree=%d, span=%d (diff=%d) - expected due to overlay header width", treeSubnet.Dx(), spanSubnet.Dx(), treeSubnet.Dx()-spanSubnet.Dx())
+	}
+	if treeSubnet.Dy() != spanSubnet.Dy() {
+		t.Errorf("Subnet Height mismatch: tree=%d, span=%d (diff=%d)", treeSubnet.Dy(), spanSubnet.Dy(), treeSubnet.Dy()-spanSubnet.Dy())
+	}
+}
+
 func TestCalculateTitleSize(t *testing.T) {
 	resource := new(Resource).Init()
 

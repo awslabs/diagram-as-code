@@ -48,6 +48,8 @@ An essential resource type that represents a single resource or group. The follo
 | HeaderAlign    | string        | `left`                                     | Only group. You can align icon and title to left/center/right.          |
 | Children       | []string      | `[]`                                       |                                                                         |
 | BorderChildren | []borderchild | `[]`                                       | Resource children on border                                             |
+| BorderType     | string        | `Straight`                                 | Border style: `Straight` or `Dashed`                                    |
+| SpanResources  | []string      | `[]`                                       | Resources to span as an overlay (see [SpanResources](#spanresources-overlay)) |
 
 #### Single resource
 
@@ -121,5 +123,67 @@ A resource type that indicates a horizontal stack. It is treated internally as a
 `top` alignment, `center` alignment, or `bottom` alignment can be specified with `align` attribute when stacking.
 
 ![Horizontal Stack](static/horizontal_stack.png)
+
+### SpanResources (Overlay)
+
+SpanResources allows a resource to be drawn as a visual overlay that spans across multiple other resources. Unlike regular parent-child relationships, an overlay is not part of the tree hierarchy — it calculates the union bounding box of its target resources and draws a border, icon, and label on top of the rendered diagram.
+
+The layout engine automatically reserves space around span target resources so that the overlay border, icon, and label do not overlap with surrounding resources.
+
+This is useful for representing logical groupings that cut across the resource hierarchy, such as an Auto Scaling Group spanning multiple subnets.
+
+**Constraints:**
+- A resource cannot have both `Children` and `SpanResources`. Use one or the other.
+- Nested overlays are not supported. An overlay resource cannot be a span target of another overlay.
+- Overlay resources do not support background fill color. Only the border outline is drawn to avoid obscuring underlying resources.
+
+| Attribute     | Type     | Description                                                    |
+| ------------- | -------- | -------------------------------------------------------------- |
+| SpanResources | []string | List of resource names that the overlay spans across           |
+| BorderType    | string   | Border style: `Straight` (default) or `Dashed`                |
+| BorderColor   | string   | Border color (defaults to opaque black if not specified)       |
+| Title         | string   | Label displayed in the overlay header alongside the icon       |
+
+#### Example: Auto Scaling Group overlay
+
+<table>
+<tr>
+<td>
+<pre>
+    PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Children:
+        - Instance1
+    PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Children:
+        - Instance2
+    Instance1:
+      Type: AWS::EC2::Instance
+    Instance2:
+      Type: AWS::EC2::Instance
+
+    # Overlay spanning both subnets
+    ASG:
+      Type: AWS::AutoScaling::AutoScalingGroup
+      BorderType: Dashed
+      SpanResources:
+        - PublicSubnet1
+        - PublicSubnet2
+</pre>
+</td>
+</tr>
+</table>
+
+The overlay resource (`ASG`) is not added as a child of any resource. It is defined at the same level as other resources and references its targets via `SpanResources`. The overlay is drawn after the main diagram layout is complete.
+
+### BorderType
+
+BorderType controls the border style for both regular resources and overlay resources.
+
+| Value      | Description                              |
+| ---------- | ---------------------------------------- |
+| `Straight` | Solid continuous border line (default)   |
+| `Dashed`   | Dashed border line                       |
 
 ### Other predefined resource types

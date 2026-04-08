@@ -62,9 +62,11 @@ type Resource struct {
 	borderChildren          []*BorderChild
 	iconfill                ResourceIconFill
 	drawn                   bool
-	groupingOffset          bool // Flag: if true, enable grouping offset for links
-	groupingOffsetDirection bool // Flag: if true, enable directional grouping offset for links
-	unorderedChildren       bool // Flag: if true, children order can be rearranged based on links
+	groupingOffset          bool        // Flag: if true, enable grouping offset for links
+	groupingOffsetDirection bool        // Flag: if true, enable directional grouping offset for links
+	unorderedChildren       bool        // Flag: if true, children order can be rearranged based on links
+	spanTargets             []*Resource // Resources this overlay spans across
+	spanOverlays            []*Resource // Overlay resources that span across this resource
 }
 
 type ResourceIconFill struct {
@@ -178,6 +180,9 @@ func (r *Resource) GetBindings() image.Rectangle {
 }
 
 func (r *Resource) GetMargin() Margin {
+	if r.margin == nil {
+		return Margin{}
+	}
 	return *r.margin
 }
 
@@ -248,6 +253,48 @@ func (r *Resource) GetUnorderedChildren() bool {
 	return r.unorderedChildren
 }
 
+func (r *Resource) AddSpanTarget(target *Resource) error {
+	if len(r.children) > 0 {
+		return fmt.Errorf("resource cannot have both Children and SpanResources")
+	}
+	if len(target.spanTargets) > 0 {
+		return fmt.Errorf("span target cannot itself be an overlay (nested SpanResources is not supported)")
+	}
+	if len(r.spanOverlays) > 0 {
+		return fmt.Errorf("overlay resource cannot be a span target of another overlay (nested SpanResources is not supported)")
+	}
+	r.spanTargets = append(r.spanTargets, target)
+	target.spanOverlays = append(target.spanOverlays, r)
+	return nil
+}
+
+// overlayMarginAddition returns the margin that should be added to a span target
+// to reserve space for this overlay resource. This is used by both Scale() and DrawOverlay().
+func (r *Resource) overlayMarginAddition() Margin {
+	defaults := defaultResourceValues(true, true)
+	m := Margin{
+		Top:    defaults.margin.Top + defaults.padding.Top,
+		Right:  defaults.margin.Right + defaults.padding.Right,
+		Bottom: defaults.margin.Bottom + defaults.padding.Bottom,
+		Left:   defaults.margin.Left + defaults.padding.Left,
+	}
+	// Top includes header height (icon/label)
+	fontFace, err := r.prepareFontFace(true, nil)
+	if err == nil {
+		_, textHeight := r.calculateTitleSize(fontFace)
+		headerHeight := maxInt(r.iconBounds.Dy(), textHeight)
+		if r.headerAlign == "center" {
+			headerHeight = r.iconBounds.Dy() + textHeight
+		}
+		m.Top += headerHeight
+	}
+	return m
+}
+
+func (r *Resource) GetSpanTargets() []*Resource {
+	return r.spanTargets
+}
+
 func (r *Resource) AddLink(link *Link) {
 	r.links = append(r.links, link)
 }
@@ -267,6 +314,9 @@ func (r *Resource) AddChild(child *Resource) error {
 	// [TODO] check whether the parent is border children
 	if child == nil {
 		return fmt.Errorf("unknown child resource - please see debug logs with -v flag")
+	}
+	if len(r.spanTargets) > 0 {
+		return fmt.Errorf("resource cannot have both Children and SpanResources")
 	}
 	child.parent = r // 親ポインタを設定
 	r.children = append(r.children, child)
@@ -431,6 +481,15 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 			r.margin.Right += addMargin.Right
 			r.margin.Bottom += addMargin.Bottom
 			r.margin.Left += addMargin.Left
+		}
+	}
+	if len(r.spanOverlays) > 0 {
+		for _, overlay := range r.spanOverlays {
+			add := overlay.overlayMarginAddition()
+			r.margin.Top += add.Top
+			r.margin.Right += add.Right
+			r.margin.Bottom += add.Bottom
+			r.margin.Left += add.Left
 		}
 	}
 	if r.padding == nil {
@@ -650,27 +709,7 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 		r.drawPadding(img)
 	}
 
-	rctSrc := r.iconImage.Bounds()
-	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
-	switch r.headerAlign {
-	case "left":
-	case "center":
-		x.Min = x.Min.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
-		x.Max = x.Max.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
-	case "right":
-		x.Min = x.Min.Add(image.Point{r.bindings.Dx() - 64, 0})
-		x.Max = x.Max.Add(image.Point{r.bindings.Dx() - 64, 0})
-	}
-	if r.iconfill.Type == ICON_FILL_TYPE_RECT {
-		for _x := x.Min.X; _x < x.Max.X; _x++ {
-			for _y := x.Min.Y; _y < x.Max.Y; _y++ {
-				c := img.At(_x, _y)
-				img.Set(_x, _y, _blend_color(c, r.iconfill.Color))
-			}
-		}
-	}
-	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
-
+	r.drawIcon(img)
 	hasIcon := r.iconImage.Bounds().Max.X != 0
 	if parent != nil {
 		if err := r.drawLabel(img, parent, len(r.children) > 0, hasIcon); err != nil {
@@ -703,6 +742,80 @@ func (r *Resource) Draw(img *image.RGBA, parent *Resource) (*image.RGBA, error) 
 		}
 	}
 	return img, nil
+}
+
+// DrawOverlay draws this resource as a visual overlay spanning across
+// multiple referenced resources. It calculates the union bounding box
+// of all span targets and draws a border, icon, and label without
+// affecting layout. The rendering reuses drawBorder, drawIcon, and
+// drawLabel to maintain visual consistency with regular resources.
+func (r *Resource) DrawOverlay(img *image.RGBA) error {
+	if len(r.spanTargets) == 0 {
+		return nil
+	}
+
+	// Calculate union bounding box of all span targets.
+	// Use each target's actual margin minus the overlay addition to get the original margin,
+	// then add overlay padding.
+	add := r.overlayMarginAddition()
+	overlayDefaults := defaultResourceValues(true, true)
+	op := overlayDefaults.padding
+
+	first := r.spanTargets[0]
+	if first.bindings == nil {
+		return nil
+	}
+	fb := *first.bindings
+	fm := first.GetMargin()
+	union := image.Rect(
+		fb.Min.X-(fm.Left-add.Left)-op.Left, fb.Min.Y-(fm.Top-add.Top)-op.Top,
+		fb.Max.X+(fm.Right-add.Right)+op.Right, fb.Max.Y+(fm.Bottom-add.Bottom)+op.Bottom)
+	for _, target := range r.spanTargets[1:] {
+		if target.bindings == nil {
+			continue
+		}
+		b := *target.bindings
+		tm := target.GetMargin()
+		tb := image.Rect(
+			b.Min.X-(tm.Left-add.Left)-op.Left, b.Min.Y-(tm.Top-add.Top)-op.Top,
+			b.Max.X+(tm.Right-add.Right)+op.Right, b.Max.Y+(tm.Bottom-add.Bottom)+op.Bottom)
+		union = union.Union(tb)
+	}
+
+	// Store computed bindings and ensure default border color
+	// Expand width for header (icon + label) if needed, matching Scale() logic
+	fontFace, err := r.prepareFontFace(true, nil)
+	if err != nil {
+		return fmt.Errorf("failed to prepare font face for overlay: %w", err)
+	}
+	textWidth, _ := r.calculateTitleSize(fontFace)
+	headerWidth := textWidth + r.iconBounds.Dx() + 30
+	if union.Dx() < headerWidth {
+		expand := (headerWidth - union.Dx()) / 2
+		union.Min.X -= expand
+		union.Max.X += expand
+	}
+	union.Min.Y -= add.Top - overlayDefaults.margin.Top - overlayDefaults.padding.Top
+	hasIcon := r.iconImage.Bounds().Max.X != 0
+	r.bindings = &union
+	if r.borderColor == nil {
+		defaultColor := color.RGBA{0, 0, 0, 255}
+		r.borderColor = &defaultColor
+	}
+
+	// Draw frame (fillColor defaults to transparent, so no background overwrite)
+	r.drawFrame(img)
+
+	// Draw icon and label using shared methods
+	r.drawIcon(img)
+	if r.label != "" {
+		if err := r.drawLabel(img, nil, true, hasIcon); err != nil {
+			return fmt.Errorf("failed to draw overlay label: %w", err)
+		}
+	}
+
+	r.drawn = true
+	return nil
 }
 
 func (r *Resource) sortAllLinks() {
@@ -853,6 +966,29 @@ func getDirectionVectorStatic(position int) vector.Vector {
 	}
 }
 
+func (r *Resource) drawIcon(img *image.RGBA) {
+	rctSrc := r.iconImage.Bounds()
+	x := image.Rectangle{r.bindings.Min, r.bindings.Min.Add(image.Point{64, 64})}
+	switch r.headerAlign {
+	case "left":
+	case "center":
+		x.Min = x.Min.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
+		x.Max = x.Max.Add(image.Point{(r.bindings.Dx() - 64) / 2, 0})
+	case "right":
+		x.Min = x.Min.Add(image.Point{r.bindings.Dx() - 64, 0})
+		x.Max = x.Max.Add(image.Point{r.bindings.Dx() - 64, 0})
+	}
+	if r.iconfill.Type == ICON_FILL_TYPE_RECT {
+		for _x := x.Min.X; _x < x.Max.X; _x++ {
+			for _y := x.Min.Y; _y < x.Max.Y; _y++ {
+				c := img.At(_x, _y)
+				img.Set(_x, _y, _blend_color(c, r.iconfill.Color))
+			}
+		}
+	}
+	draw.CatmullRom.Scale(img, x, r.iconImage, rctSrc, draw.Over, nil)
+}
+
 func (r *Resource) drawFrame(img *image.RGBA) {
 	x1 := r.bindings.Min.X
 	x2 := r.bindings.Max.X
@@ -872,10 +1008,12 @@ func (r *Resource) drawFrame(img *image.RGBA) {
 					}
 				}
 			} else {
-				// Set background
-				img.Set(x, y, _blend_color(c, r.fillColor))
-				if DEBUG_LAYOUT {
-					img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
+				// Set background (skip for overlay resources)
+				if len(r.spanTargets) == 0 {
+					img.Set(x, y, _blend_color(c, r.fillColor))
+					if DEBUG_LAYOUT {
+						img.Set(x, y, _blend_color(c, color.RGBA{255, 255, 255, 255}))
+					}
 				}
 				//img.Set(x, y, fill_color)
 			}
