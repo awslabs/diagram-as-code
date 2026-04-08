@@ -62,9 +62,9 @@ type Resource struct {
 	borderChildren          []*BorderChild
 	iconfill                ResourceIconFill
 	drawn                   bool
-	groupingOffset          bool // Flag: if true, enable grouping offset for links
-	groupingOffsetDirection bool // Flag: if true, enable directional grouping offset for links
-	unorderedChildren       bool // Flag: if true, children order can be rearranged based on links
+	groupingOffset          bool        // Flag: if true, enable grouping offset for links
+	groupingOffsetDirection bool        // Flag: if true, enable directional grouping offset for links
+	unorderedChildren       bool        // Flag: if true, children order can be rearranged based on links
 	spanTargets             []*Resource // Resources this overlay spans across
 	spanOverlays            []*Resource // Overlay resources that span across this resource
 }
