@@ -41,7 +41,7 @@ An essential resource type that represents a single resource or group. The follo
 | IconFill       | IconFill      | `Type: none, Color: rgba(255,255,255,255)` | Filling icon background                                                 |
 | Direction      | string        | `horizontal`                               | `vertical`, `horizontal`                                                |
 | Preset         | string        | ` `                                        | Override resource attributes from preset                                |
-| Align          | string        | `center`                                   | vertical: `left`,`center`,`right` horizontal: `top`, `center`, `bottom` |
+| Align          | string        | `center`                                   | vertical: `left`,`center`,`right`,`expand` horizontal: `top`, `center`, `bottom`, `expand` |
 | FillColor      | string        | `rgba(0,0,0,0)`                            | Only group.                                                             |
 | BorderColor    | string        | `rgba(0,0,0,0)`                            |                                                                         |
 | Title          | string        | ` `                                        |                                                                         |
