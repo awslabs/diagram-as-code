@@ -116,6 +116,7 @@ type Resource struct {
 	FillColor      string            `yaml:"FillColor"`
 	Title          string            `yaml:"Title"`
 	TitleColor     string            `yaml:"TitleColor"`
+	TitleFillColor string            `yaml:"TitleFillColor"`
 	Font           string            `yaml:"Font"`
 	Children       []string          `yaml:"Children"`
 	BorderColor    string            `yaml:"BorderColor"`
@@ -461,6 +462,13 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 					}
 					resource.SetLabel(nil, nil, &label.Font)
 				}
+				if label.FillColor != "" {
+					c, err := stringToColor(label.FillColor)
+					if err != nil {
+						return fmt.Errorf("failed to parse label fill color for resource %s: %w", k, err)
+					}
+					resource.SetLabelFillColor(c)
+				}
 			}
 			if headerAlign := def.HeaderAlign; headerAlign != "" {
 				resource, exists := resources[k]
@@ -548,6 +556,13 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 					if label.Font != "" {
 						resource.SetLabel(nil, nil, &label.Font)
 					}
+					if label.FillColor != "" {
+						c, err := stringToColor(label.FillColor)
+						if err != nil {
+							return fmt.Errorf("failed to parse label fill color for resource %s: %w", k, err)
+						}
+						resource.SetLabelFillColor(c)
+					}
 				}
 				if headerAlign := def.HeaderAlign; headerAlign != "" {
 					resource.SetHeaderAlign(headerAlign)
@@ -611,6 +626,17 @@ func loadResources(template *TemplateStruct, ds definition.DefinitionStructure, 
 				return fmt.Errorf("resource %s not found for title color", k)
 			}
 			resource.SetLabel(nil, &c, nil)
+		}
+		if v.TitleFillColor != "" {
+			c, err := stringToColor(v.TitleFillColor)
+			if err != nil {
+				return fmt.Errorf("failed to parse title fill color for resource %s: %w", k, err)
+			}
+			resource, exists := resources[k]
+			if !exists {
+				return fmt.Errorf("resource %s not found for title fill color", k)
+			}
+			resource.SetLabelFillColor(c)
 		}
 		if v.HeaderAlign != "" {
 			resource, exists := resources[k]

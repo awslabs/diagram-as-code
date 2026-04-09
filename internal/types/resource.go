@@ -52,6 +52,7 @@ type Resource struct {
 	label                   string
 	labelFont               string
 	labelColor              *color.RGBA
+	labelFillColor          *color.RGBA
 	headerAlign             string // left(default) / center / right
 	margin                  *Margin
 	padding                 *Padding
@@ -220,6 +221,10 @@ func (r *Resource) SetLabel(label *string, labelColor *color.RGBA, labelFont *st
 	if labelFont != nil {
 		r.labelFont = *labelFont
 	}
+}
+
+func (r *Resource) SetLabelFillColor(c color.RGBA) {
+	r.labelFillColor = &c
 }
 
 func (r *Resource) SetAlign(align string) {
@@ -1103,6 +1108,22 @@ func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild, hasIco
 				})
 			}
 			point = fixed.Point26_6{fixed.I(p.X), fixed.I(p.Y)}
+		}
+
+		// Fill title background
+		if r.labelFillColor != nil {
+			dotX := point.X.Floor()
+			dotY := point.Y.Floor()
+			x1 := dotX + textBindings.Min.X.Floor() - 3
+			y1 := dotY + textBindings.Min.Y.Floor() - 3
+			x2 := dotX + textBindings.Max.X.Ceil() + 3
+			y2 := dotY + textBindings.Max.Y.Ceil() + 3
+			for x := x1; x < x2; x++ {
+				for y := y1; y < y2; y++ {
+					c := img.At(x, y)
+					img.Set(x, y, _blend_color(c, r.labelFillColor))
+				}
+			}
 		}
 
 		d := &font.Drawer{
