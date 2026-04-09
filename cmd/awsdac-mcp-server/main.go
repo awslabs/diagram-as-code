@@ -8,9 +8,11 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"strings"
 
 	"github.com/spf13/pflag"
 
+	"github.com/awslabs/diagram-as-code/doc"
 	"github.com/awslabs/diagram-as-code/internal/ctl"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -33,6 +35,8 @@ const (
 	GENERATE_DIAGRAM           ToolName = "generateDiagram"
 	GENERATE_DIAGRAM_TO_FILE   ToolName = "generateDiagramToFile"
 	GET_DIAGRAM_AS_CODE_FORMAT ToolName = "getDiagramAsCodeFormat"
+	LIST_DOCUMENTATION         ToolName = "listDocumentation"
+	GET_DOCUMENTATION          ToolName = "getDocumentation"
 )
 
 // Default prompt template file paths
@@ -117,6 +121,15 @@ WHEN TO USE:
 OUTPUT:
 Extensive documentation including format rules, examples, and architectural guidance for creating effective AWS diagrams.
 `
+
+	LIST_DOCUMENTATION_DESC = `List all available documentation files for diagram-as-code.
+
+Returns a list of markdown file paths that can be retrieved with getDocumentation.`
+
+	GET_DOCUMENTATION_DESC = `Get the content of a specific documentation file.
+
+Returns the full markdown content of the specified documentation file.
+Use listDocumentation first to see available files.`
 )
 
 // NewMCPServer creates a new MCP server with the necessary tools and configurations
@@ -233,6 +246,20 @@ TECHNICAL DETAILS:
 	mcpServer.AddTool(mcp.NewTool(string(GET_DIAGRAM_AS_CODE_FORMAT),
 		mcp.WithDescription(GET_FORMAT_DESC),
 	), withPanicRecovery("getDiagramAsCodeFormat", handleGenerateDacFromUserRequirements))
+
+	// Add the tool to list documentation files
+	mcpServer.AddTool(mcp.NewTool(string(LIST_DOCUMENTATION),
+		mcp.WithDescription(LIST_DOCUMENTATION_DESC),
+	), withPanicRecovery("listDocumentation", handleListDocumentation))
+
+	// Add the tool to get documentation content
+	mcpServer.AddTool(mcp.NewTool(string(GET_DOCUMENTATION),
+		mcp.WithDescription(GET_DOCUMENTATION_DESC),
+		mcp.WithString("path",
+			mcp.Description("Path to the documentation file (e.g. 'introduction.md' or 'advanced/auto-positioning.md'). Use listDocumentation to see available paths."),
+			mcp.Required(),
+		),
+	), withPanicRecovery("getDocumentation", handleGetDocumentation))
 
 	return mcpServer
 }
@@ -396,6 +423,55 @@ func handleGenerateDacFromUserRequirements(
 			mcp.TextContent{
 				Type: "text",
 				Text: string(templateContent),
+			},
+		},
+	}, nil
+}
+
+// handleListDocumentation returns a list of available documentation files
+func handleListDocumentation(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	files, err := doc.ListMarkdownFiles()
+	if err != nil {
+		return nil, fmt.Errorf("failed to list documentation files: %v", err)
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.TextContent{
+				Type: "text",
+				Text: strings.Join(files, "\n"),
+			},
+		},
+	}, nil
+}
+
+// handleGetDocumentation returns the content of a specific documentation file
+func handleGetDocumentation(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	pathArg, exists := request.GetArguments()["path"]
+	if !exists {
+		return nil, fmt.Errorf("missing path argument")
+	}
+	path, ok := pathArg.(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid path argument")
+	}
+
+	content, err := doc.FS.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read documentation file %q: %v", path, err)
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.TextContent{
+				Type: "text",
+				Text: string(content),
 			},
 		},
 	}, nil
