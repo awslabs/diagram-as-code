@@ -45,6 +45,7 @@ An essential resource type that represents a single resource or group. The follo
 | FillColor      | string        | `rgba(0,0,0,0)`                            | Only group.                                                             |
 | BorderColor    | string        | `rgba(0,0,0,0)`                            |                                                                         |
 | Title          | string        | ` `                                        |                                                                         |
+| TitleFillColor | string        | `rgba(0,0,0,0)`                            | Fill color behind title text.                                           |
 | HeaderAlign    | string        | `left`                                     | Only group. You can align icon and title to left/center/right.          |
 | Children       | []string      | `[]`                                       |                                                                         |
 | BorderChildren | []borderchild | `[]`                                       | Resource children on border                                             |
