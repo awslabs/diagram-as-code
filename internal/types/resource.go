@@ -1114,10 +1114,10 @@ func (r *Resource) drawLabel(img *image.RGBA, parent *Resource, hasChild, hasIco
 		if r.labelFillColor != nil {
 			dotX := point.X.Floor()
 			dotY := point.Y.Floor()
-			x1 := dotX + textBindings.Min.X.Floor()
-			y1 := dotY + textBindings.Min.Y.Floor()
-			x2 := dotX + textBindings.Max.X.Ceil()
-			y2 := dotY + textBindings.Max.Y.Ceil()
+			x1 := dotX + textBindings.Min.X.Floor() - 3
+			y1 := dotY + textBindings.Min.Y.Floor() - 3
+			x2 := dotX + textBindings.Max.X.Ceil() + 3
+			y2 := dotY + textBindings.Max.Y.Ceil() + 3
 			for x := x1; x < x2; x++ {
 				for y := y1; y < y2; y++ {
 					c := img.At(x, y)
