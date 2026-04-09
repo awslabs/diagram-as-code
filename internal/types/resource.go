@@ -543,10 +543,42 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 		b = *prev.bindings
 	}
 
+	// Pre-scale and equalize children for expand alignment
+	if r.align == "expand" && len(r.children) > 0 {
+		for _, c := range r.children {
+			if err := c.Scale(r, visited); err != nil {
+				return err
+			}
+		}
+		if r.direction == "vertical" {
+			maxW := 0
+			for _, c := range r.children {
+				maxW = maxInt(maxW, c.GetBindings().Dx())
+			}
+			for _, c := range r.children {
+				cb := c.GetBindings()
+				cb.Max.X = cb.Min.X + maxW
+				c.SetBindings(cb)
+			}
+		} else {
+			maxH := 0
+			for _, c := range r.children {
+				maxH = maxInt(maxH, c.GetBindings().Dy())
+			}
+			for _, c := range r.children {
+				cb := c.GetBindings()
+				cb.Max.Y = cb.Min.Y + maxH
+				c.SetBindings(cb)
+			}
+		}
+	}
+
 	for _, subResource := range r.children {
-		err := subResource.Scale(r, visited)
-		if err != nil {
-			return err
+		if r.align != "expand" {
+			err := subResource.Scale(r, visited)
+			if err != nil {
+				return err
+			}
 		}
 
 		bindings := subResource.GetBindings()
@@ -556,7 +588,7 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 			prevMargin := prev.GetMargin()
 			if r.direction == "horizontal" {
 				switch r.align {
-				case "top":
+				case "top", "expand":
 					if err := subResource.Translation(
 						prevBindings.Max.X+prevMargin.Right+margin.Left-bindings.Min.X,
 						prevBindings.Min.Y-prevMargin.Top+margin.Top-bindings.Min.Y,
@@ -582,7 +614,7 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 				}
 			} else {
 				switch r.align {
-				case "left":
+				case "left", "expand":
 					if err := subResource.Translation(
 						prevBindings.Min.X-prevMargin.Left+margin.Left-bindings.Min.X,
 						prevBindings.Max.Y+prevMargin.Bottom+margin.Top-bindings.Min.Y,

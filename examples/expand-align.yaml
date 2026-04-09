@@ -1,0 +1,41 @@
+Diagram:
+  DefinitionFiles:
+    - Type: LocalFile
+      LocalFile: definitions/definition-for-aws-icons-light.yaml
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Children:
+        - AWSCloud
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Preset: AWSCloudNoLogo
+      Children:
+        - VPC
+    VPC:
+      Type: AWS::EC2::VPC
+      Direction: vertical
+      Align: expand
+      Children:
+        - PublicSubnet
+        - PrivateSubnet
+    PublicSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - Instance1
+        - Instance2
+        - Instance3
+    PrivateSubnet:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - Instance4
+    Instance1:
+      Type: AWS::EC2::Instance
+    Instance2:
+      Type: AWS::EC2::Instance
+    Instance3:
+      Type: AWS::EC2::Instance
+    Instance4:
+      Type: AWS::EC2::Instance
