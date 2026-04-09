@@ -680,7 +680,42 @@ func (r *Resource) Scale(parent *Resource, visited map[*Resource]bool) error {
 			return fmt.Errorf("failed to translate border child resource: %w", err)
 		}
 	}
+	// After all recursive scaling is complete, propagate expand to nested children
+	if parent == nil {
+		r.propagateExpand()
+	}
 	return nil
+}
+
+// propagateExpand recursively re-equalizes children of expand groups
+// whose bindings were enlarged by a parent expand group.
+func (r *Resource) propagateExpand() {
+	if r.align == "expand" && len(r.children) > 0 {
+		if r.direction == "vertical" {
+			for _, c := range r.children {
+				m := c.GetMargin()
+				maxW := r.bindings.Dx() - r.padding.Left - r.padding.Right - m.Left - m.Right
+				cb := c.GetBindings()
+				if cb.Dx() < maxW {
+					cb.Max.X = cb.Min.X + maxW
+					c.SetBindings(cb)
+				}
+			}
+		} else {
+			for _, c := range r.children {
+				m := c.GetMargin()
+				maxH := r.bindings.Dy() - r.padding.Top - r.padding.Bottom - m.Top - m.Bottom
+				cb := c.GetBindings()
+				if cb.Dy() < maxH {
+					cb.Max.Y = cb.Min.Y + maxH
+					c.SetBindings(cb)
+				}
+			}
+		}
+	}
+	for _, c := range r.children {
+		c.propagateExpand()
+	}
 }
 
 func (r *Resource) Translation(dx, dy int) error {
