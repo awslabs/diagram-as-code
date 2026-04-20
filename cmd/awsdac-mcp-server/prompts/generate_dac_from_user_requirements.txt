@@ -1,6 +1,9 @@
 User: You will be generating a Diagram-as-code YAML file based on user requirements.
 The user requirements are provided in the <user-requirements></user-requirements> section.
 The Diagram-as-code file format uses YAML syntax and consists of 3 main sections and there is a custom rules section in <custom-rules></custom-rules>.
+
+IMPORTANT: If you need more details about specific features (resource types, links, auto-positioning, border children, etc.), use the `listDocumentation` tool to see available documentation files, then use the `getDocumentation` tool to retrieve the relevant content before generating the YAML.
+
 <diagram-as-code-format>
 Introduction
 Introductions
@@ -87,7 +90,7 @@ Set the Direction of the VPC resource to "vertical" so that the resources under 
         ...
 
 
-For more detailed information about "Resources" section, please refer to: resource-types.md
+For more detailed information about "Resources" section, use `getDocumentation` with path "resource-types.md".
 
 Links section
 You can draw a line between the resource specified as the Source and the resource specified as the Target. At this time, you can define "where the line is drawn on the icon" by specifying SourcePosition or TargetPosition. For example, if you make the following definition, you will get a diagram like this:
@@ -101,26 +104,30 @@ You can draw a line between the resource specified as the Source and the resourc
             Type: Open
 
 
-For more detailed information about Links, please refer to: links.md
+For more detailed information about Links, use `getDocumentation` with path "links.md".
 
 
 
-Links are lines that show relationships between resources. Currently supports a straight line between resources.
+Links are lines that show relationships between resources. Supports straight and orthogonal lines between resources.
 
 Link position
-The start and end points of the line specify the location as the 16-wind rose of the resource (for example, NNW).
-
-position
+SourcePosition and TargetPosition are optional. When omitted (or set to "auto"), the system automatically determines optimal connection points based on resource positions.
+You can also specify the location as the 16-wind rose of the resource (for example, NNW) to manually control the position.
 
 Diagrams:
   Resources:
     ALB: ...
     PublicSubnet1Instance: ...
   Links:
+    # Auto-positioning (recommended) - positions are determined automatically
     - Source: ALB # (required)
-      SourcePosition: NNE # (required)
       Target: PublicSubnet1Instance # (required)
-      TargetPosition: S # (required)
+
+    # Manual positioning - specify exact connection points
+    - Source: ALB # (required)
+      SourcePosition: NNE # (optional, default: auto)
+      Target: PublicSubnet1Instance # (required)
+      TargetPosition: S # (optional, default: auto)
       LineWidth: 1 # (optional)
       LineColor: 'rgba(255,255,255,255)' # (optional)
       LineStyle: `normal|dashed` (optional)
@@ -187,9 +194,9 @@ Link Labels add labels along the link
 
   Links:
     - Source: ALB # (required)
-      SourcePosition: NNE # (required)
       Target: PublicSubnet1Instance # (required)
-      TargetPosition: S # (required)
+      SourcePosition: NNE # (optional, default: auto)
+      TargetPosition: S # (optional, default: auto)
       Labels: (optional)
         SourceLeft: (optional)
           Type: (optional, default: horizontal, allowed: horizontal) 
@@ -209,6 +216,16 @@ Link Labels add labels along the link
         TargetRight: (optional)
           Type: (optional, default: horizontal, allowed: horizontal) 
           Title: (required on TargetRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        AutoRight: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on AutoRight, default: ``)
+          Color: (optional, default: `` inherit from Source,Target font color)
+          Font: (optional, default: `` inherit from Source,Target font name)
+        AutoLeft: (optional)
+          Type: (optional, default: horizontal, allowed: horizontal) 
+          Title: (required on AutoLeft, default: ``)
           Color: (optional, default: `` inherit from Source,Target font color)
           Font: (optional, default: `` inherit from Source,Target font name)
 
@@ -235,6 +252,9 @@ Diagram:
       Type: AWS::Diagram::Cloud
       Preset: AWSCloudNoLogo
 
+AWS::Diagram::Group [DEPRECATED]
+Use AWS::Diagram::Resource instead.
+
 AWS::Diagram::Resource
 An essential resource type that represents a single resource or group. The following attributes are defined for the resource, and it is possible to customize the decoration with these attributes. AWS::Diagram::Resource type are used implicitly from other predefined types, but you can specify AWS::Diagram::Resource explicitly and create custom resources.
 
@@ -243,12 +263,16 @@ Icon	string	 	Icon file path
 IconFill	IconFill	Type: none, Color: rgba(255,255,255,255)	Filling icon background
 Direction	string	horizontal	vertical: left,center,right horizontal: top, center, bottom
 Preset	string	 	Override resource attributes from preset
-Align	string	center	vertical, horizontal
+Align	string	center	vertical: left,center,right,expand horizontal: top,center,bottom,expand
 FillColor	string	rgba(0,0,0,0)	Only group.
 BorderColor	string	rgba(0,0,0,0)	
 Title	string	 	
+TitleFillColor	string	rgba(0,0,0,0)	Fill color behind title text.
 HeaderAlign	string	left	Only group. You can align icon and title to left/center/right.
 Children	[]string	[]	
+BorderChildren	[]borderchild	[]	Resource children on border (see BorderChildren section)
+BorderType	string	Straight	Border style: Straight or Dashed
+SpanResources	[]string	[]	Resources to span as an overlay (see SpanResources section)
 Single resource
     Subnet:
       Type: AWS::EC2::Subnet
@@ -281,6 +305,40 @@ AWS::Diagram::HorizontalStack
 A resource type that indicates a horizontal stack. It is treated internally as a Group resource type but is undecorated by default. top alignment, center alignment, or bottom alignment can be specified with align attribute when stacking.
 
 Horizontal Stack
+
+BorderChildren
+BorderChildren allows you to position resources on the edges (N, S, E, W) of their parent container, useful for gateways and boundary resources.
+
+    VPC:
+      Type: AWS::EC2::VPC
+      BorderChildren:
+        - Position: N
+          Resource: InternetGateway
+        - Position: S
+          Resource: VPNGateway
+      Children:
+        - PublicSubnet
+        - PrivateSubnet
+
+SpanResources (Overlay)
+SpanResources allows a resource to be drawn as a visual overlay that spans across multiple other resources. Unlike regular parent-child relationships, an overlay calculates the union bounding box of its target resources and draws a border, icon, and label on top.
+Constraints: A resource cannot have both Children and SpanResources. Nested overlays are not supported.
+
+    ASG:
+      Type: AWS::AutoScaling::AutoScalingGroup
+      BorderType: Dashed
+      SpanResources:
+        - PublicSubnet1
+        - PublicSubnet2
+
+Link Grouping Offset
+When multiple links originate from or terminate at the same position on a resource, they can overlap. Use Options.GroupingOffset to spread them apart. This is disabled by default.
+
+    ELB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Options:
+        GroupingOffset: true
+        GroupingOffsetDirection: true  # Groups links by target direction
 
 </diagram-as-code-format><beautiful-diagram-tips>
 - A Transit Gateway can be associated with multiple Availability Zones (subnets) through attachments. The association creates a network interface in each subnet. In terms of diagrams, it is best to place the attachment itself in BorderChildren and each ENI in a Transit Subnet, with dashed links to represent the relationship.
