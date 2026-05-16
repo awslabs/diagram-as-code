@@ -26,10 +26,16 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.39.4",
-    "eslint-config-next": "^16.1.6",
+    "eslint": "^10.4.0",
+    "eslint-config-next": "^16.2.6",
     "postcss": "^8.5.14",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "flatted": "3.4.2",
+    "picomatch": "4.0.4",
+    "brace-expansion": "5.0.5"
   }
 }
