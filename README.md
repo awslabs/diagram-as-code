@@ -285,3 +285,13 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This project is licensed under the Apache-2.0 License.
+
+## Portfolio / Portfólio
+
+- **Live / Ao vivo:** [Diagram as Code](https://dac.moretes.com)
+- **GitHub:** [fernandofatech/diagram-as-code](https://github.com/fernandofatech/diagram-as-code)
+- **Author / Autor:** [Fernando Francisco Azevedo](https://fernando.moretes.com) · [LinkedIn](https://www.linkedin.com/in/fernando-francisco-azevedo/) · [GitHub](https://github.com/fernandofatech)
+
+**PT-BR:** Diagram-as-code project/fork connected to Fernando Moretes architecture portfolio. Este repositório público faz parte do ecossistema de portfólio de Fernando Moretes.
+
+**EN:** Diagram-as-code project/fork connected to Fernando Moretes architecture portfolio. This public repository is part of Fernando Moretes' portfolio ecosystem.
