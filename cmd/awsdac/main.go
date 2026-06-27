@@ -109,6 +109,22 @@ func main() {
 	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
 	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
 
+	var extractCmd = &cobra.Command{
+		Use:   "extract <png file>",
+		Short: "Extract YAML diagram-as-code configuration from a generated PNG file",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pngFile := args[0]
+			yamlContent, err := ctl.ExtractYAMLFromPNGFile(pngFile)
+			if err != nil {
+				return err
+			}
+			fmt.Print(string(yamlContent))
+			return nil
+		},
+	}
+	rootCmd.AddCommand(extractCmd)
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
