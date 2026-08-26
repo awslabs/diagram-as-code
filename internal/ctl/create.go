@@ -5,6 +5,7 @@ package ctl
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
@@ -180,6 +181,7 @@ type CreateOptions struct {
 	OverrideFont              string
 	Width                     int
 	Height                    int
+	YAMLContent               []byte
 }
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
@@ -250,18 +252,24 @@ func createDiagram(resources map[string]*types.Resource, outputfile *string, opt
 		img = resizedImg
 	}
 
-	log.Infof("Save %s\n", *outputfile)
-	f, err := os.OpenFile(*outputfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		return fmt.Errorf("error opening output file: %w", err)
-	}
-	defer func() {
-		if closeErr := f.Close(); closeErr != nil {
-			log.Warnf("Failed to close output file: %v", closeErr)
-		}
-	}()
-	if err := png.Encode(f, img); err != nil {
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
 		return fmt.Errorf("error encoding PNG: %w", err)
+	}
+
+	pngBytes := buf.Bytes()
+	if opts != nil && len(opts.YAMLContent) > 0 {
+		embeddedBytes, err := EmbedYAMLInPNG(pngBytes, opts.YAMLContent)
+		if err != nil {
+			log.Warnf("Failed to embed YAML in PNG: %v", err)
+		} else {
+			pngBytes = embeddedBytes
+		}
+	}
+
+	log.Infof("Save %s\n", *outputfile)
+	if err := os.WriteFile(*outputfile, pngBytes, 0600); err != nil {
+		return fmt.Errorf("error writing PNG file: %w", err)
 	}
 	return nil
 }

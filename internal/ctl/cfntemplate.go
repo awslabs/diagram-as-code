@@ -137,6 +137,15 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 		go generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
+	if opts != nil {
+		yamlBytes, err := yaml.Marshal(template)
+		if err == nil {
+			opts.YAMLContent = yamlBytes
+		} else {
+			log.Warnf("Failed to marshal generated DAC template to YAML: %v", err)
+		}
+	}
+
 	if err := createDiagram(resources, outputfile, opts); err != nil {
 		return fmt.Errorf("failed to create diagram: %w", err)
 	}

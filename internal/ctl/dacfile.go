@@ -94,6 +94,10 @@ func CreateDiagramFromDacFile(inputfile string, outputfile *string, opts *Create
 		processedData = data
 	}
 
+	if opts != nil {
+		opts.YAMLContent = processedData
+	}
+
 	// Unmarshal the processed YAML
 	dec := yaml.NewDecoder(bytes.NewReader(processedData))
 	dec.KnownFields(true)
