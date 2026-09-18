@@ -5,8 +5,11 @@ package ctl
 
 import (
 	"image"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/awslabs/diagram-as-code/internal/definition"
 	"github.com/awslabs/diagram-as-code/internal/types"
@@ -328,5 +331,113 @@ func TestIsAllowedDefinitionURL(t *testing.T) {
 				t.Errorf("isAllowedDefinitionURL() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestEnsurePNGExtension(t *testing.T) {
+	tests := []struct {
+		name     string
+		filename string
+		want     string
+	}{
+		{
+			name:     "no extension gets .png appended",
+			filename: "example",
+			want:     "example.png",
+		},
+		{
+			name:     "already .png is unchanged",
+			filename: "example.png",
+			want:     "example.png",
+		},
+		{
+			name:     "already .PNG (different case) is unchanged",
+			filename: "example.PNG",
+			want:     "example.PNG",
+		},
+		{
+			name:     "a different extension is left as typed",
+			filename: "example.jpg",
+			want:     "example.jpg",
+		},
+		{
+			name:     "a non-image extension is left as typed",
+			filename: "my.diagram",
+			want:     "my.diagram",
+		},
+		{
+			name:     "bare .png is unchanged",
+			filename: ".png",
+			want:     ".png",
+		},
+		{
+			name:     "no extension with a directory component gets .png appended",
+			filename: "diagrams/production",
+			want:     "diagrams/production.png",
+		},
+		{
+			name:     "a dot in a directory component is not mistaken for an extension",
+			filename: "diagrams/v1.2/output",
+			want:     "diagrams/v1.2/output.png",
+		},
+		{
+			name:     "the flag's default is unchanged",
+			filename: "output.png",
+			want:     "output.png",
+		},
+		{
+			name:     "empty filename falls back to the flag's default",
+			filename: "",
+			want:     "output.png",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ensurePNGExtension(tt.filename)
+			if got != tt.want {
+				t.Errorf("ensurePNGExtension(%q) = %q, want %q", tt.filename, got, tt.want)
+			}
+		})
+	}
+}
+
+// TestCreateDiagramFromCFnTemplateKeepsExplicitYamlName is a regression test for the DAC-file workflow
+// at doc/cloudformation.md:74 ("--cfn-template --dac-file -o custom.yaml"). The PNG auto-extension fix
+// must not turn "custom.yaml" into "custom.yaml.png" before generateDacFileFromCFnTemplate derives its
+// own name from it, or that would become "custom.yaml.yaml".
+//
+// It checks filenames only, not contents: createDiagram writes PNG bytes to "custom.yaml" synchronously, and
+// the goroutine below writes YAML to that same path -- a pre-existing race, unrelated to #77, left alone here.
+func TestCreateDiagramFromCFnTemplateKeepsExplicitYamlName(t *testing.T) {
+	tmpDir := t.TempDir()
+	outputFile := filepath.Join(tmpDir, "custom.yaml")
+	want := outputFile
+
+	opts := CreateOptions{
+		OverrideDefFile: "../../definitions/definition-for-aws-icons-light.yaml",
+		OverwriteMode:   Force,
+	}
+
+	if err := CreateDiagramFromCFnTemplate("../../examples/vpc-subnet-ec2-cfn.yaml", &outputFile, true, &opts); err != nil {
+		t.Fatalf("CreateDiagramFromCFnTemplate failed: %v", err)
+	}
+
+	// outputFile may have been mutated through the pointer;
+	// compare against want (captured pre-call) so a future regression cannot hide behind it.
+	if outputFile != want {
+		t.Fatalf("outputfile was mutated to %q, want unchanged %q", outputFile, want)
+	}
+
+	if _, err := os.Stat(want); err != nil {
+		t.Fatalf("expected output file %s was not written: %v", want, err)
+	}
+
+	// The YAML write runs on its own untracked goroutine;
+	// give it a moment before checking it never produced the corrupted "<name>.yaml" name.
+	time.Sleep(200 * time.Millisecond)
+
+	if _, err := os.Stat(want + ".yaml"); err == nil {
+		t.Errorf("unexpected file %s.yaml: DAC YAML name must stay exactly %s", want, want)
 	}
 }

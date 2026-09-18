@@ -63,6 +63,8 @@ $ awsdac examples/alb-ec2.yaml
 $ awsdac privatelink.yaml -o custom-output.png
 ```
 
+If `-o` has no file extension, `.png` is appended automatically; an `-o` value that already has any extension is used exactly as given.
+
 ## Documentation
 
 ### Getting Started

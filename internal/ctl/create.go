@@ -11,6 +11,7 @@ import (
 	"image/png"
 	"math"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -182,7 +183,25 @@ type CreateOptions struct {
 	Height                    int
 }
 
+// ensurePNGExtension appends ".png" when filename has no extension. Any existing extension
+// is left as-is, and an empty filename becomes "output.png".
+func ensurePNGExtension(filename string) string {
+	if filename == "" {
+		return "output.png"
+	}
+	if filepath.Ext(filename) == "" {
+		return filename + ".png"
+	}
+	return filename
+}
+
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
+
+	// Normalize the extension here, and nowhere earlier in the call chain. CreateDiagramFromCFnTemplate reads
+	// *outputfile by value into the generateDacFileFromCFnTemplate goroutine before calling createDiagram. If
+	// this mutation were hoisted upstream (e.g. into main.go), "-o custom.yaml" would become "custom.yaml.png"
+	// here and the YAML writer would then derive "custom.yaml.yaml" instead of "custom.yaml".
+	*outputfile = ensurePNGExtension(*outputfile)
 
 	// Check for file overwrite before processing
 	if err := CheckOutputFileOverwrite(*outputfile, opts.OverwriteMode); err != nil {
