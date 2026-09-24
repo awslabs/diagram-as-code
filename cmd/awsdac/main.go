@@ -26,6 +26,7 @@ func main() {
 	var force bool
 	var width int
 	var height int
+	var embedYAML bool
 
 	var rootCmd = &cobra.Command{
 		Use:     "awsdac <input filename>",
@@ -65,6 +66,7 @@ func main() {
 					AllowUntrustedDefinitions: allowUntrustedDefinitions,
 					Width:                     width,
 					Height:                    height,
+					EmbedYAML:                 embedYAML,
 				}
 				if force {
 					opts.OverwriteMode = ctl.Force
@@ -82,6 +84,7 @@ func main() {
 					AllowUntrustedDefinitions: allowUntrustedDefinitions,
 					Width:                     width,
 					Height:                    height,
+					EmbedYAML:                 embedYAML,
 				}
 				if force {
 					opts.OverwriteMode = ctl.Force
@@ -108,6 +111,7 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Overwrite output file without confirmation")
 	rootCmd.PersistentFlags().IntVar(&width, "width", 0, "Resize output image width (0 means no resizing)")
 	rootCmd.PersistentFlags().IntVar(&height, "height", 0, "Resize output image height (0 means no resizing)")
+	rootCmd.PersistentFlags().BoolVar(&embedYAML, "embed-yaml", false, "Embed the input YAML (including comments) in the output PNG metadata. Do not use with files containing sensitive information")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
