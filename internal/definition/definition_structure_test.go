@@ -1,8 +1,12 @@
 package definition
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
+	"time"
 )
 
 func TestDefinitionStructure_LoadDefinitions(t *testing.T) {
@@ -91,4 +95,43 @@ func TestDefinitionStructure_LoadDefinitions(t *testing.T) {
 			t.Errorf("Definition mismatch\n===load from file===\n%v\b======\n===expects===\n%v\n===", tc.Definitions, ds.Definitions)
 		}
 	})
+}
+
+func TestDefinitionStructure_LoadDefinitionsUnresolvableSource(t *testing.T) {
+	// "URL" is not a supported ZipFile.SourceType ("url" is), so Icons never
+	// gets a CacheFilePath and the icon that depends on it can never resolve.
+	data := `Definitions:
+  Icons:
+    Type: Zip
+    ZipFile:
+      SourceType: URL
+      Url: https://github.com/awslabs/diagram-as-code/archive/icons.zip
+  AWS::S3::Bucket:
+    Type: Resource
+    Icon:
+      Source: Icons
+      Path: s3.png
+`
+	filePath := filepath.Join(t.TempDir(), "definitions.yaml")
+	if err := os.WriteFile(filePath, []byte(data), 0600); err != nil {
+		t.Fatalf("failed to write definition file: %v", err)
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		ds := &DefinitionStructure{}
+		done <- ds.LoadDefinitions(filePath, false)
+	}()
+
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Fatal("expected an error for a definition whose source never resolves")
+		}
+		if !strings.Contains(err.Error(), "AWS::S3::Bucket") {
+			t.Errorf("expected error to name the unresolved definition, got: %v", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("LoadDefinitions did not return for a definition whose source never resolves")
+	}
 }
