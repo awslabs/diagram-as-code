@@ -6,6 +6,7 @@ package definition
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/awslabs/diagram-as-code/internal/cache"
@@ -59,8 +60,13 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string, allowUntrusted b
 	for k := range b.Definitions {
 		q = append(q, k)
 	}
+	// stalled counts consecutive entries that were re-queued because their
+	// source has no CacheFilePath yet. Once every remaining entry has been
+	// re-queued without any progress, the sources can never resolve.
+	stalled := 0
 	for len(q) > 0 {
 		k := q[0]
+		queued := len(q)
 		v, ok := b.Definitions[k]
 		if !ok {
 			return fmt.Errorf("definition key %s not found in definitions map", k)
@@ -147,7 +153,16 @@ func (ds *DefinitionStructure) LoadDefinitions(filePath string, allowUntrusted b
 				}
 			}
 		}
+		if len(q) > queued {
+			stalled++
+		} else {
+			stalled = 0
+		}
 		q = q[1:]
+		if stalled > 0 && stalled >= len(q) {
+			sort.Strings(q)
+			return fmt.Errorf("cannot resolve source of definitions %v: the referenced Zip, Directory or Icon source never provides a path", q)
+		}
 	}
 	if ds.Definitions == nil {
 		ds.Definitions = map[string]*Definition{}
