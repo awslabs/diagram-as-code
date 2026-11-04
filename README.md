@@ -45,6 +45,7 @@ Usage:
 Flags:
   -c, --cfn-template               [beta] Create diagram from CloudFormation template
   -d, --dac-file                   [beta] Generate YAML file in dac (diagram-as-code) format from CloudFormation template
+      --embed-yaml                 Embed the input YAML (including comments) in the output PNG metadata
   -h, --help                       help for awsdac
   -o, --output string              Output file name (default "output.png")
       --override-def-file string   For testing purpose, override DefinitionFiles to another url/local file
@@ -64,6 +65,8 @@ $ awsdac privatelink.yaml -o custom-output.png
 ```
 
 If `-o` has no file extension, `.png` is appended automatically; an `-o` value that already has any extension is used exactly as given.
+
+> **Note:** `--embed-yaml` stores the full input YAML, including comments, in a PNG `tEXt` chunk (keyword `awsdac.yaml`). Anyone who receives the image can read it, so do not use this option with files that contain sensitive information.
 
 ## Documentation
 

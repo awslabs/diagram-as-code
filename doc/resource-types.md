@@ -49,7 +49,7 @@ An essential resource type that represents a single resource or group. The follo
 | HeaderAlign    | string        | `left`                                     | Only group. You can align icon and title to left/center/right.          |
 | Children       | []string      | `[]`                                       |                                                                         |
 | BorderChildren | []borderchild | `[]`                                       | Resource children on border                                             |
-| BorderType     | string        | `Straight`                                 | Border style: `Straight` or `Dashed`                                    |
+| BorderType     | string        | `straight`                                 | Border style: `straight` or `dashed`                                    |
 | SpanResources  | []string      | `[]`                                       | Resources to span as an overlay (see [SpanResources](#spanresources-overlay)) |
 
 #### Single resource
@@ -141,7 +141,7 @@ This is useful for representing logical groupings that cut across the resource h
 | Attribute     | Type     | Description                                                    |
 | ------------- | -------- | -------------------------------------------------------------- |
 | SpanResources | []string | List of resource names that the overlay spans across           |
-| BorderType    | string   | Border style: `Straight` (default) or `Dashed`                |
+| BorderType    | string   | Border style: `straight` (default) or `dashed`                |
 | BorderColor   | string   | Border color (defaults to opaque black if not specified)       |
 | Title         | string   | Label displayed in the overlay header alongside the icon       |
 
@@ -167,7 +167,7 @@ This is useful for representing logical groupings that cut across the resource h
     # Overlay spanning both subnets
     ASG:
       Type: AWS::AutoScaling::AutoScalingGroup
-      BorderType: Dashed
+      BorderType: dashed
       SpanResources:
         - PublicSubnet1
         - PublicSubnet2
@@ -184,7 +184,7 @@ BorderType controls the border style for both regular resources and overlay reso
 
 | Value      | Description                              |
 | ---------- | ---------------------------------------- |
-| `Straight` | Solid continuous border line (default)   |
-| `Dashed`   | Dashed border line                       |
+| `straight` | Solid continuous border line (default)   |
+| `dashed`   | Dashed border line                       |
 
 ### Other predefined resource types
