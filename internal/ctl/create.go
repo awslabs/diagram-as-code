@@ -12,6 +12,7 @@ import (
 	"image/png"
 	"math"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -186,7 +187,21 @@ type CreateOptions struct {
 	YAMLContent []byte
 }
 
+// ensurePNGExtension appends ".png" when filename has no extension. Any existing extension
+// is left as-is, and an empty filename becomes "output.png".
+func ensurePNGExtension(filename string) string {
+	if filename == "" {
+		return "output.png"
+	}
+	if filepath.Ext(filename) == "" {
+		return filename + ".png"
+	}
+	return filename
+}
+
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
+
+	*outputfile = ensurePNGExtension(*outputfile)
 
 	// Check for file overwrite before processing
 	if err := CheckOutputFileOverwrite(*outputfile, opts.OverwriteMode); err != nil {

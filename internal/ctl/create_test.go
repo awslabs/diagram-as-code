@@ -5,8 +5,12 @@ package ctl
 
 import (
 	"image"
+	"os"
+	"path/filepath"
 	"reflect"
+	"slices"
 	"testing"
+	"time"
 
 	"github.com/awslabs/diagram-as-code/internal/definition"
 	"github.com/awslabs/diagram-as-code/internal/types"
@@ -329,4 +333,106 @@ func TestIsAllowedDefinitionURL(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestEnsurePNGExtension(t *testing.T) {
+	tests := []struct {
+		name     string
+		filename string
+		want     string
+	}{
+		{name: "no extension", filename: "example", want: "example.png"},
+		{name: "png extension", filename: "example.png", want: "example.png"},
+		{name: "uppercase png extension", filename: "example.PNG", want: "example.PNG"},
+		{name: "other image extension", filename: "example.jpg", want: "example.jpg"},
+		{name: "non-image extension", filename: "custom.yaml", want: "custom.yaml"},
+		{name: "dotfile", filename: ".png", want: ".png"},
+		{name: "no extension in subdirectory", filename: "diagrams/production", want: "diagrams/production.png"},
+		{name: "dot in directory name", filename: "diagrams/v1.2/output", want: "diagrams/v1.2/output.png"},
+		{name: "empty", filename: "", want: "output.png"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ensurePNGExtension(tt.filename); got != tt.want {
+				t.Errorf("ensurePNGExtension(%q) = %q, want %q", tt.filename, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCreateDiagramOutputExtension(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		cfnTemplate bool
+		dacFile     bool
+		output      string
+		want        string
+		wantDacFile string
+	}{
+		{name: "dac file without extension", input: "../../examples/alb-ec2.yaml", output: "diagram", want: "diagram.png"},
+		{name: "dac file with custom extension", input: "../../examples/alb-ec2.yaml", output: "custom.yaml", want: "custom.yaml"},
+		{name: "cfn template without extension", input: "../../examples/vpc-subnet-ec2-cfn.yaml", cfnTemplate: true, dacFile: true, output: "diagram", want: "diagram.png", wantDacFile: "diagram.yaml"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			outputFile := filepath.Join(dir, tt.output)
+			opts := CreateOptions{
+				OverrideDefFile: "../../definitions/definition-for-aws-icons-light.yaml",
+				OverwriteMode:   Force,
+				OverrideFont:    "goregular",
+			}
+
+			var err error
+			if tt.cfnTemplate {
+				resetCFnTemplate(t)
+				err = CreateDiagramFromCFnTemplate(tt.input, &outputFile, tt.dacFile, &opts)
+			} else {
+				err = CreateDiagramFromDacFile(tt.input, &outputFile, &opts)
+			}
+			if err != nil {
+				t.Fatalf("create diagram: %v", err)
+			}
+
+			want := filepath.Join(dir, tt.want)
+			if outputFile != want {
+				t.Errorf("outputFile = %q, want %q", outputFile, want)
+			}
+			if _, err := os.Stat(want); err != nil {
+				t.Errorf("output file not written: %v", err)
+			}
+			if tt.wantDacFile != "" {
+				// The DAC file is written by a goroutine that the caller cannot wait on.
+				waitForFile(t, filepath.Join(dir, tt.wantDacFile))
+			}
+		})
+	}
+}
+
+func waitForFile(t *testing.T, path string) {
+	t.Helper()
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		if _, err := os.Stat(path); err == nil {
+			return
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("file %s was not written", path)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
+// resetCFnTemplate restores the package-level template that CreateDiagramFromCFnTemplate adds resources to.
+func resetCFnTemplate(t *testing.T) {
+	t.Helper()
+	saved := make(map[string]Resource, len(template.Resources))
+	for name, r := range template.Resources {
+		r.Children = slices.Clone(r.Children)
+		saved[name] = r
+	}
+	t.Cleanup(func() { template.Resources = saved })
 }

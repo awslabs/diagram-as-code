@@ -73,6 +73,7 @@ awsdac template.yaml --cfn-template --dac-file
    ```bash
    awsdac template.yaml --cfn-template --dac-file -o custom.yaml
    ```
+   The automatic `.png` extension logic does not modify this `-o` value, so `custom.yaml` is passed through unchanged.
 
 2. **Edit the DAC file** (`custom.yaml`):
    - Adjust resource positioning

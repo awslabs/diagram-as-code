@@ -64,6 +64,8 @@ $ awsdac examples/alb-ec2.yaml
 $ awsdac privatelink.yaml -o custom-output.png
 ```
 
+If `-o` has no file extension, `.png` is appended automatically; an `-o` value that already has any extension is used exactly as given.
+
 > **Note:** `--embed-yaml` stores the full input YAML, including comments, in a PNG `tEXt` chunk (keyword `awsdac.yaml`). Anyone who receives the image can read it, so do not use this option with files that contain sensitive information.
 
 ## Documentation
