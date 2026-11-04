@@ -201,10 +201,6 @@ func ensurePNGExtension(filename string) string {
 
 func createDiagram(resources map[string]*types.Resource, outputfile *string, opts *CreateOptions) error {
 
-	// Normalize the extension here, and nowhere earlier in the call chain. CreateDiagramFromCFnTemplate reads
-	// *outputfile by value into the generateDacFileFromCFnTemplate goroutine before calling createDiagram. If
-	// this mutation were hoisted upstream (e.g. into main.go), "-o custom.yaml" would become "custom.yaml.png"
-	// here and the YAML writer would then derive "custom.yaml.yaml" instead of "custom.yaml".
 	*outputfile = ensurePNGExtension(*outputfile)
 
 	// Check for file overwrite before processing
