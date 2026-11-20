@@ -134,7 +134,10 @@ func CreateDiagramFromCFnTemplate(inputfile string, outputfile *string, generate
 
 	if generateDacFile {
 		log.Info("--- Generate dac file from CloudFormation template ---")
-		go generateDacFileFromCFnTemplate(&template, *outputfile)
+		if strings.EqualFold(filepath.Ext(*outputfile), ".yaml") {
+			*outputfile = strings.TrimSuffix(*outputfile, filepath.Ext(*outputfile)) + ".png"
+		}
+		generateDacFileFromCFnTemplate(&template, *outputfile)
 	}
 
 	if opts != nil && opts.EmbedYAML {
