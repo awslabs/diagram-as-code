@@ -303,6 +303,41 @@ func ensureSingleParent(template *TemplateStruct) {
 					log.Infof("Updated resource %s children: %v", logicalId, newChildren)
 				}
 			}
+
+			parentsByChild := make(map[string][]string)
+			for _, parentID := range resource.Children {
+				parent, ok := template.Resources[parentID]
+				if !ok {
+					continue
+				}
+				for _, childID := range parent.Children {
+					parents, _ := parentsByChild[childID]
+					if !contains(parents, parentID) {
+						parentsByChild[childID] = append(parents, parentID)
+					}
+				}
+			}
+			for _, childID := range keys {
+				parents, _ := parentsByChild[childID]
+				if len(parents) < 2 {
+					continue
+				}
+				for _, parentID := range parents {
+					parent, _ := template.Resources[parentID]
+					children := make([]string, 0, len(parent.Children))
+					for _, id := range parent.Children {
+						if id != childID {
+							children = append(children, id)
+						}
+					}
+					parent.Children = children
+					template.Resources[parentID] = parent
+				}
+				if !contains(resource.Children, childID) {
+					resource.Children = append(resource.Children, childID)
+				}
+			}
+			template.Resources[logicalId] = resource
 		}
 	}
 }
